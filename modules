@@ -1,0 +1,24 @@
+module "jastaddad", {
+
+	imports "java8 frontend"
+
+	java {
+		basedir "src/main/java/"
+		include "**/*.java"
+	}
+
+	jastadd {
+		basedir "src/main/jastadd/"
+		include "**/*.jrag"
+		include "**/*.ast"
+	}
+
+	//scanner {
+	// no additions
+	//}
+
+	//parser {
+	// no additions
+	//}
+}
+

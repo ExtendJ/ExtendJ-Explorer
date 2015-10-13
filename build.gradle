@@ -1,0 +1,74 @@
+buildscript {
+	repositories.mavenCentral()
+	repositories.maven {
+		url 'http://jastadd.org/mvn/'
+	}
+	dependencies {
+		classpath group: 'org.jastadd', name: 'jastaddgradle', version: '1.9'
+	}
+}
+
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+apply plugin: 'application'
+apply plugin: 'jastadd'
+apply plugin: 'eclipse'
+
+jastadd {
+	modules 'jastaddj/java4', 'jastaddj/java5', 'jastaddj/java6', 'jastaddj/java7', 'jastaddj/java8', '.'
+
+	module = 'jastaddad'
+
+	astPackage = 'AST'
+	genDir = 'src/gen/java'
+	buildInfoDir = 'src/gen/resources'
+	parser.name = 'JavaParser'
+}
+
+tasks.eclipseClasspath.dependsOn generateJava
+
+// fix the generated .classpath
+eclipse.classpath.file {
+	beforeMerged { classpath ->
+		classpath.entries << new org.gradle.plugins.ide.eclipse.model.SourceFolder('jastaddj/src/frontend', null)
+		classpath.entries << new org.gradle.plugins.ide.eclipse.model.SourceFolder('jastaddj/java8/src', null)
+	}
+	withXml { node ->
+		def gen = node.asNode().find { it.@kind == 'src' && it.@path == 'src/gen/java' }
+		if (gen?.children()?.isEmpty())
+			gen.appendNode('attributes').appendNode('attribute', [ name: 'ignore_optional_problems', value: 'true' ])
+	}
+}
+
+dependencies {
+	compile group: 'org.apache.ant', name: 'ant', version: '1.9.4'
+}
+
+
+mainClassName = 'astgen.ASTGen'
+
+jar.manifest.attributes 'Main-Class': mainClassName
+jar.destinationDir = projectDir
+
+// java -source and -target
+sourceCompatibility = '1.6'
+targetCompatibility = '1.6'
+
+sourceSets {
+	main {
+		resources {
+			srcDir 'src/main/resources'
+			srcDir jastadd.buildInfoDir
+		}
+	}
+}
+
+
