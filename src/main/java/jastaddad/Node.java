@@ -7,9 +7,11 @@ import java.lang.annotation.Annotation;
 public class Node{
   public final String name;
   public final ArrayList<Node> children;
+  public final Attributes attributes;
 
   public Node(Object root, boolean isList){
     children = new ArrayList<Node>();
+    attributes = new Attributes();
     name = root.getClass().getName();
     if(isList) {
       for (Object child: (Iterable<?>) root) {
@@ -33,9 +35,7 @@ public class Node{
             System.out.println(m.getName());
             children.add(new Node(m.invoke(root, new Object[]{}), false));
           }
-            /*if (a.getClass().getMethod("name") != null) {
-              name = (String) a.getClass().getMethod("name").invoke(a, new Object[]{});
-            }*/
+          attributes.add(m,a);
         }
       }
 		} catch (Throwable e) {

@@ -6,6 +6,7 @@ public class NpClass2{
 
 	public static void main(String args[]){
 		NpClass2 n = new NpClass2();
+		System.out.println("Din mamma");
 	}
 
 	public NpClass2(){
