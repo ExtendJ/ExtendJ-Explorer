@@ -5,23 +5,26 @@ import java.util.ArrayList;
 import java.lang.annotation.Annotation;
 
 public class Node{
-    public final String name;
-    public final ArrayList<Node> children;
-    private int level;
 
-    public Node(Object root, boolean isList, int level){
-        this.level = level;
-        children = new ArrayList<Node>();
-        name = root.getClass().getName();
-        System.out.println(name);
-        if(isList) {
-            for (Object child: (Iterable<?>) root) {
-                traversDown(child);
-            }
-        } else {
-            traversDown(root);
-        }
-    }
+  public final String name;
+  public final ArrayList<Node> children;
+  private int level;
+  private Attributes attributes;
+
+  public Node(Object root, boolean isList, int level){
+      this.attributes = new Attributes();
+      this.level = level;
+      this.children = new ArrayList<Node>();
+      name = root.getClass().getName();
+      System.out.println(name);
+      if(isList) {
+          for (Object child: (Iterable<?>) root) {
+              traversDown(child);
+          }
+      } else {
+          traversDown(root);
+      }
+  }
 
     private void traversDown(Object root){
         System.out.println("trav - " + root);
@@ -36,9 +39,7 @@ public class Node{
                         //System.out.println(m.getName());
                         children.add(new Node(m.invoke(root, new Object[]{}), false, level+1));
                     }
-                    /*if (a.getClass().getMethod("name") != null) {
-                    name = (String) a.getClass().getMethod("name").invoke(a, new Object[]{});
-                    }*/
+                  attributes.add(m,a);
                 }
             }
         } catch (Throwable e) {
