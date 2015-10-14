@@ -1,0 +1,10 @@
+/*
+!.gitignore
+!readme.txt
+!gradlew.bat
+!gradlew
+!build.gradle
+!/gradle/
+!/samples/
+!/src/test
+!/src/main
