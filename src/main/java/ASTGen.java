@@ -2,6 +2,7 @@ package astgen;
 
 import jastaddad.*;
 
+import java.io.File;
 import java.util.*;
 
 import org.jastadd.jastaddj.JastAddJVersion;
