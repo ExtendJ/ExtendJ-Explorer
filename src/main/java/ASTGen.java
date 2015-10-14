@@ -35,7 +35,7 @@ class ASTGen extends Frontend {
 
 	@Override
 	protected void processNoErrors(CompilationUnit unit) {
-		new JastAdd(unit);
+		new JastAddAd(unit);
 	}
 
 	@Override

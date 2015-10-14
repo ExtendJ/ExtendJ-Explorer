@@ -6,5 +6,5 @@
 !build.gradle
 !/gradle/
 !/samples/
-!/src/test
-!/src/main
+!/src
+/src/gen
