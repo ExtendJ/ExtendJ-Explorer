@@ -1,4 +1,4 @@
-package jastaddadui;
+package uicomponent;
 
 import java.util.HashMap;
 import java.io.FileReader;
@@ -8,7 +8,7 @@ import java.io.IOException;
 public class Config{
     private HashMap<String, String> mainConfigs;
     private HashMap<String, String> configs;
-    public static final String FILE_NAME = "jastaddadui-config.cfg";
+    public static final String FILE_NAME = "uicomponent-config.cfg";
 
     public Config(){
         configs = new HashMap<String, String>();
