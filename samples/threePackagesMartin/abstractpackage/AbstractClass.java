@@ -1,14 +1,14 @@
 package abstractpackage;
 
-public abstract class AbstractClass{
-	public abstract void exe();
-	String name;
+public class AbstractClass{
+	public AbstractClass(){}
 	
-	AbstractClass(String name){
-		this.name = name;
+	private int a = 1337;
+	
+	public static int getValue(){ return 1337 + 1; }
+	
+	public static void main(String[] args) { 
+	  System.out.print(AbstractClass.getValue()); 
 	}
-
-	public String getName(){
-		return name;
-	}	
+	
 }
