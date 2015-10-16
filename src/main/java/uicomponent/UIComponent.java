@@ -1,5 +1,6 @@
 package uicomponent;
 
+import jastaddad.ASTAPI;
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -21,12 +22,12 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 public class UIComponent extends Application {
-    private static Node root;
+    private static ASTAPI api;
 
     public UIComponent() {} // This one is used by Application
 
-    public UIComponent(Node root) {
-        this.root = root;
+    public UIComponent(ASTAPI api) {
+        this.api = api;
         launch(new String[0]);
     }
 
@@ -34,9 +35,9 @@ public class UIComponent extends Application {
     public void start (Stage stage) throws IOException {
         Parent a = FXMLLoader.load(getClass().getResource("/sample.fxml"));
         ScrollPane center = (ScrollPane) a.lookup("#graphView");
-        center.setContent(new GraphView(root));
+        center.setContent(new GraphView(api));
         stage.setTitle("JastAddDebugger");
-        stage.setScene(new Scene(a,1000,1000));
+        stage.setScene(new Scene(a, 1000, 1000));
         stage.setMaximized(true);
         stage.show();
     }
