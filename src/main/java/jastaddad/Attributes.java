@@ -10,18 +10,19 @@ import java.util.Objects;
 /**
  * Created by gda10jli on 10/14/15.
  */
-public class Attributes extends ArrayList {
+public class Attributes {
     private ArrayList<Attribute> attributes;
 
     public Attributes(){
         attributes = new ArrayList<>();
     }
 
-    public boolean add(Object obj){
+    public ArrayList<Attribute> getAttributes(){ return attributes; }
+
+    public void add(Object obj){
         for(Method m : obj.getClass().getMethods()){
             add(obj, m);
         }
-        return true;
     }
 
     public void add(Object obj, Method m) {
