@@ -12,7 +12,7 @@
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uicomponent.controllers.Controller">
    <top>
       <HBox styleClass="topParent">
-
+         <Label text="Här skall det vara en meny" />
       </HBox>
    </top>
    <left>

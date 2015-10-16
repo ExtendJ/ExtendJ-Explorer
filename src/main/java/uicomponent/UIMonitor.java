@@ -1,19 +1,20 @@
 package uicomponent;
 
+import jastaddad.FilteredTreeNode;
 import jastaddad.Node;
 
 /**
  * Created by gda10jli on 10/16/15.
  */
 public class UIMonitor {
-    private Node selectedNode;
-    private Node root;
+    private FilteredTreeNode selectedNode;
+    private FilteredTreeNode root;
 
-    public UIMonitor(Node root){ this.root = root; }
+    public UIMonitor(FilteredTreeNode root){ this.root = root; }
 
-    public Node getRootNode(){ return root; }
-    public void setRootNode(Node root){ this.root = root; }
+    public FilteredTreeNode getRootNode(){ return root; }
+    public void setRootNode(FilteredTreeNode root){ this.root = root; }
 
-    public Node getSelectedNode(){ return selectedNode; }
-    public void setSelectedNode(Node selectedNode){ this.selectedNode = selectedNode; }
+    public FilteredTreeNode getSelectedNode(){ return selectedNode; }
+    public void setSelectedNode(FilteredTreeNode selectedNode){ this.selectedNode = selectedNode; }
 }
