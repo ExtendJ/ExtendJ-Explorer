@@ -4,36 +4,22 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.picking.PickedState;
-import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
-import edu.uci.ics.jung.algorithms.layout.FRLayout;
-import edu.uci.ics.jung.graph.DelegateTree;
-import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.util.Context;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
-import edu.uci.ics.jung.visualization.decorators.PickableVertexPaintTransformer;
-import javafx.scene.layout.Pane;
-import uicomponent.ViewUtil;
 import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.Forest;
-import edu.uci.ics.jung.visualization.VisualizationImageServer;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import jastaddad.Node;
 import javafx.embed.swing.SwingNode;
-import javafx.scene.layout.Region;
 import org.apache.commons.collections15.Transformer;
+import uicomponent.UIMonitor;
 
-import javax.swing.*;
+import javax.management.monitor.Monitor;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
 
 /**
  * Created by gda10jli on 10/15/15.
@@ -41,19 +27,19 @@ import java.awt.geom.Point2D;
 public class GraphView extends SwingNode {
 
     private int id;
-    private Node root;
+    private UIMonitor mon;
     private VisualizationViewer vs;
 
-    public GraphView(Node root){
+    public GraphView(UIMonitor mon){
         this.id = 0;
-        this.root = root;
+        this.mon = mon;
         init();
     }
 
     public void init(){
         //Creates the tree with the nodes
         Forest<Node, String> g = new DelegateForest<Node, String>();
-        addToTree(g, root);
+        addToTree(g, mon.getRootNode());
 
         //Set ui specific stuff
         TreeLayout<Node, String> layout = new TreeLayout<Node, String>(g, 100, 100);
@@ -74,7 +60,9 @@ public class GraphView extends SwingNode {
         pickedState.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                System.out.println("HATA LIVET LITE MER");
+                Object subject = e.getItem();
+                if(subject instanceof Node)
+                    mon.setSelectedNode((Node) subject);
             }
         });
 
@@ -98,6 +86,7 @@ public class GraphView extends SwingNode {
             id++;
             addToTree(g, child);
         }
+        
     }
 
 
