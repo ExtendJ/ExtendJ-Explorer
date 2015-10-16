@@ -1,3 +1,9 @@
-.bajs {
-    -fx-background-color: #ff0000;
+.leftParent {
+    -fx-fit-to-width:true;
+    -fx-fit-to-height:true;
+}
+
+.centerParent {
+    -fx-fit-to-width:true;
+    -fx-fit-to-height:true;
 }

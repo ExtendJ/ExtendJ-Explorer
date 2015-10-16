@@ -10,16 +10,20 @@
 <?import javafx.scene.control.Label?>
 
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uicomponent.controllers.AttributeListController">
+   <top>
+      <HBox styleClass="topParent">
 
+      </HBox>
+   </top>
    <left>
-      <ScrollPane styleClass="bajs" fx:id="attributeView" fitToHeight="true" fitToWidth="true">
+      <ScrollPane styleClass="leftParent" fx:id="attributeView">
          <content>
             <ListView fx:id="listView" />
          </content>
       </ScrollPane>
    </left>
    <center>
-      <ScrollPane fx:id="graphView" fitToHeight="true" fitToWidth="true" />
+      <ScrollPane styleClass="centerParent" fx:id="graphView"/>
    </center>
    <stylesheets>style.css</stylesheets>
 </BorderPane>

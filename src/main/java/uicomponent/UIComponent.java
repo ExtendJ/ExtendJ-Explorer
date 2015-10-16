@@ -37,6 +37,7 @@ public class UIComponent extends Application {
         center.setContent(new GraphView(root));
         stage.setTitle("JastAddDebugger");
         stage.setScene(new Scene(a,1000,1000));
+        stage.setMaximized(true);
         stage.show();
     }
 }
