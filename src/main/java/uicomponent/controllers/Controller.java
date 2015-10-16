@@ -49,7 +49,7 @@ public class Controller implements Initializable {
         Object subject = e.getItem();
         if(subject != null && subject instanceof FilteredTreeNode) {
             mon.setSelectedNode((FilteredTreeNode) subject);
-            setAttributeList();
+            setAttributeList(); 
         }
     }
 
