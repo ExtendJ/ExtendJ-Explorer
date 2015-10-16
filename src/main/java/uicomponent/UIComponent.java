@@ -33,7 +33,8 @@ public class UIComponent extends Application {
         graph.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         graph.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         stage.setTitle("JastAddDebugger");
-        stage.setScene(new Scene(a));
+        Scene scene = new Scene(a, 1000,1000);
+        stage.setScene(scene);
         stage.show();
 
     }
