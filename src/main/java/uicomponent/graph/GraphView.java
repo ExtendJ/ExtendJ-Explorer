@@ -112,8 +112,8 @@ public class GraphView extends SwingNode {
         public Paint transform(FilteredTreeNode fNode) {
             if(pi.isPicked(fNode))
                 return new Color(240, 240, 240);
-            if(fNode.node.isList()) return new Color(200, 240, 230);
-            return new Color(200, 200, 200);
+            if(fNode.node.isList()) return new Color(200, 200, 200);
+            return new Color(200, 240, 230);
         }
     }
 

@@ -53,7 +53,7 @@ public class Attributes {
 
         @Override
         public String toString(){
-            return "Attribute : " + name + " : " + value;
+            return name + " : " + value;
          }
     }
 }

@@ -1,6 +1,6 @@
 .leftParent {
-    -fx-fit-to-width:true;
     -fx-fit-to-height:true;
+    -fx-width:1000;
 }
 
 .centerParent {
