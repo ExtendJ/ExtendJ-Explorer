@@ -35,6 +35,7 @@ public class UIComponent extends Application {
         stage.setTitle("JastAddDebugger");
         Scene scene = new Scene(a, 1000,1000);
         stage.setScene(scene);
+        stage.setMaximized(true);
         stage.show();
 
     }
