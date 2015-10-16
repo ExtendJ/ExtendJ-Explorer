@@ -12,6 +12,7 @@ public class Node{
 
     public final String name;
     public final ArrayList<Node> children;
+    private boolean isList;
     private int level;
     private Attributes attributes;
 
@@ -27,9 +28,13 @@ public class Node{
         init(root, isList, level);
     }
 
+    public boolean isList(){ return isList; }
+
     private void init(Object root, boolean isList, int level){
+        this.isList = isList;
         this.attributes = new Attributes();
         this.level = level;
+
         if(isList) {
             for (Object child: (Iterable<?>) root) {
                 traversDown(child);
