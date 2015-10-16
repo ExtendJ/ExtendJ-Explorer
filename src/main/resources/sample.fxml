@@ -9,18 +9,17 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 
-<GridPane alignment="center" hgap="10" prefHeight="500.0" prefWidth="1000.0" vgap="10" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uicomponent.controllers.Controller">
-   <children>
-      <ScrollPane fx:id="attributeView"  GridPane.columnIndex="0" GridPane.rowIndex="0" />
-   </children>
-   <children>
-      <ScrollPane fx:id="graphView" fitToHeight="true" fitToWidth="true" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-   </children>
-   <columnConstraints>
-      <ColumnConstraints />
-      <ColumnConstraints />
-   </columnConstraints>
-   <rowConstraints>
-      <RowConstraints />
-   </rowConstraints>
-</GridPane>
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uicomponent.controllers.AttributeListController">
+
+   <left>
+      <ScrollPane styleClass="bajs" fx:id="attributeView" fitToHeight="true" fitToWidth="true">
+         <content>
+            <ListView fx:id="listView" />
+         </content>
+      </ScrollPane>
+   </left>
+   <center>
+      <ScrollPane fx:id="graphView" fitToHeight="true" fitToWidth="true" />
+   </center>
+   <stylesheets>style.css</stylesheets>
+</BorderPane>
