@@ -7,6 +7,7 @@ import edu.uci.ics.jung.visualization.picking.PickedState;
 import jastaddad.Attributes;
 import jastaddad.FilteredTreeNode;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
@@ -16,6 +17,7 @@ import uicomponent.UIMonitor;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -34,15 +36,11 @@ public class Controller implements Initializable {
     public void setMonitor(UIMonitor mon){ this.mon = mon; }
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // change next line to DB load
-        List<String> values = Arrays.asList("one", "two", "three");
-        listView.setItems(FXCollections.observableList(values));
-    }
+    public void initialize(URL url, ResourceBundle rb) {}
 
     private void setAttributeList(){
         Attributes a = mon.getSelectedNode().node.getAttributes();
-        listView.setItems(FXCollections.observableList(a));
+        listView.setItems(FXCollections.observableList(a.getAttributes()));
     }
 
     public void itemStateChanged(ItemEvent e){//Sets UI listeners of the graph

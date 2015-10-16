@@ -16,6 +16,7 @@ import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
+import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import org.apache.commons.collections15.Transformer;
 import uicomponent.UIMonitor;
@@ -85,7 +86,12 @@ public class GraphView extends SwingNode {
         pickedState.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                con.itemStateChanged(e);
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        con.itemStateChanged(e);
+                    }
+                });
             }
         });
 
