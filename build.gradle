@@ -8,17 +8,15 @@ buildscript {
 		classpath group: 'net.sf.jung', name: 'jung-api', version: '2.0.1'
 		classpath group: 'net.sf.jung', name: 'jung-visualization', version: '2.0.1'
 		classpath group: 'net.sf.jung', name: 'jung-graph-impl', version: '2.0.1'
+
 	}
 }
+apply plugin: 'java'
 
 repositories {
 	mavenCentral()
 }
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
-
-apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'jastadd'
 apply plugin: 'eclipse'

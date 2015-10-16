@@ -30,8 +30,8 @@ public class UIComponent extends Application {
         Parent a = FXMLLoader.load(getClass().getResource("/sample.fxml"));
         ScrollPane graph = (ScrollPane) a.lookup("#graphView");
         graph.setContent(new GraphView(root).getChild());
-        graph.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        graph.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        graph.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        graph.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         stage.setTitle("JastAddDebugger");
         stage.setScene(new Scene(a));
         stage.show();

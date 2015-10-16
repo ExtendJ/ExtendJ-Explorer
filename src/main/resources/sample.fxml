@@ -14,7 +14,7 @@
       <ScrollPane fx:id="attributeView"  GridPane.columnIndex="0" GridPane.rowIndex="0" />
    </children>
    <children>
-      <ScrollPane fx:id="graphView" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+      <ScrollPane fx:id="graphView" fitToHeight="true" fitToWidth="true" GridPane.columnIndex="1" GridPane.rowIndex="0" />
    </children>
    <columnConstraints>
       <ColumnConstraints />
