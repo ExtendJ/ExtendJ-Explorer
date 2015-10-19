@@ -1,83 +1,35 @@
 buildscript {
 	repositories.mavenCentral()
-	repositories.maven {
-		url 'http://jastadd.org/mvn/'
-	}
-	dependencies {
-		classpath group: 'org.jastadd', name: 'jastaddgradle', version: '1.9'
-		classpath group: 'net.sf.jung', name: 'jung-api', version: '2.0.1'
-		classpath group: 'net.sf.jung', name: 'jung-visualization', version: '2.0.1'
-		classpath group: 'net.sf.jung', name: 'jung-graph-impl', version: '2.0.1'
-
-	}
 }
-apply plugin: 'java'
 
 repositories {
 	mavenCentral()
 }
 
+apply plugin: 'java'
 apply plugin: 'application'
-apply plugin: 'jastadd'
-apply plugin: 'eclipse'
 apply plugin: 'idea'
 
 
 dependencies {
 	compile fileTree(dir: 'libs', include: '*.jar')
-
-	compile group: 'org.apache.ant', name: 'ant', version: '1.9.4'
-    testCompile group: 'junit', name: 'junit', version: '4.+'
-
+	compile 'org.apache.ant:ant:1.9.4'
 	compile 'net.sf.jung:jung-graph-impl:2.0.1'
 	compile 'net.sf.jung:jung-api:2.0.1'
 	compile 'net.sf.jung:jung-visualization:2.0.1'
 	compile 'net.sf.jung:jung-algorithms:2.0.1'
+	testCompile group: 'junit', name: 'junit', version: '4.+'
 
 }
 
 
 task fatJar(type: Jar) {
-
-	mainClassName = 'astgen.ASTGen'
-	jar.manifest.attributes 'Main-Class': mainClassName
 	destinationDir = projectDir
-	baseName = project.name
+	manifest.attributes 'Main-Class': 'jastaddad.JastAddAd'
+	baseName = "${project.name}"
 	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 	with jar
 }
 
-jastadd {
-	modules 'jastaddj/java4', 'jastaddj/java5', 'jastaddj/java6', 'jastaddj/java7', 'jastaddj/java8', '.'
-	module = 'jastaddad'
-	astPackage = 'AST'
-	genDir = 'src/gen/java'
-	buildInfoDir = 'src/gen/resources'
-	parser.name = 'JavaParser'
-}
-
-tasks.eclipseClasspath.dependsOn generateJava
-
-// fix the generated .classpath
-eclipse.classpath.file {
-	beforeMerged { classpath ->
-		classpath.entries << new org.gradle.plugins.ide.eclipse.model.SourceFolder('jastaddj/src/frontend', null)
-		classpath.entries << new org.gradle.plugins.ide.eclipse.model.SourceFolder('jastaddj/java8/src', null)
-	}
-	withXml { node ->
-		def gen = node.asNode().find { it.@kind == 'src' && it.@path == 'src/gen/java' }
-		if (gen?.children()?.isEmpty())
-			gen.appendNode('attributes').appendNode('attribute', [ name: 'ignore_optional_problems', value: 'true' ])
-	}
-}
-
-sourceSets {
-	main {
-		resources {
-			srcDir 'src/main/resources'
-			srcDir jastadd.buildInfoDir
-		}
-	}
-}
 
 
