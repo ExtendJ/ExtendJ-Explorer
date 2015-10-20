@@ -1,13 +1,8 @@
 package uicomponent.controllers;
 
-import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
-import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
-import edu.uci.ics.jung.visualization.picking.PickedState;
-import jastaddad.Attributes;
+import jastaddad.objectinfo.NodeContent;
 import jastaddad.FilteredTreeNode;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -16,11 +11,7 @@ import javafx.scene.control.ScrollPane;
 import uicomponent.UIMonitor;
 
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -48,8 +39,8 @@ public class Controller implements Initializable {
 
     private void setAttributeList(){
         if(mon.getSelectedNode().isNode()) {
-            Attributes a = mon.getSelectedNode().node.getAttributes();
-            listView.setItems(FXCollections.observableList(a.getAttributes()));
+            NodeContent a = mon.getSelectedNode().node.getNodeContent();
+            listView.setItems(FXCollections.observableList(a.toArray()));
         }
     }
 

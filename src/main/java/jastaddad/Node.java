@@ -1,11 +1,11 @@
 package jastaddad;
 
-import java.lang.reflect.Field;
+import jastaddad.objectinfo.NodeContent;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.lang.annotation.Annotation;
-import java.util.Objects;
 
 public class Node{
     private Object node;
@@ -15,7 +15,7 @@ public class Node{
     public final ArrayList<Node> children;
     private boolean isList;
     private int level;
-    private Attributes attributes;
+    private NodeContent nodeContent;
 
     public Node(Object root, boolean isList, int level){
         this.children = new ArrayList<>();
@@ -39,7 +39,7 @@ public class Node{
     private void init(Object root, boolean isList, int level){
         node = root;
         this.isList = isList;
-        this.attributes = new Attributes();
+        this.nodeContent = new NodeContent();
         this.level = level;
 
         if(isList) {
@@ -59,7 +59,7 @@ public class Node{
                     if(ASTAnnotation.isChild(a)) {
                         children.add(new Node(m.invoke(root, new Object[]{}), getName(a, root), !ASTAnnotation.isSingleChild(a), level+1));
                     }
-                    attributes.add(root, m, a);
+                    nodeContent.add(root, m, a);
                 }
             }
         } catch (Throwable e) {
@@ -83,5 +83,5 @@ public class Node{
 
     public int getLevel(){ return level;}
 
-    public Attributes getAttributes(){ return attributes;}
+    public NodeContent getNodeContent(){ return nodeContent;}
 }

@@ -8,6 +8,7 @@ public class ASTAnnotation{
   private static final String AST_NODE_LIST_CHILD = "ASTNodeAnnotation.ListChild";
   private static final String AST_NODE_CHILD = "ASTNodeAnnotation.Child";
   private static final String AST_NODE_ATTRIBUTE = "ASTNodeAnnotation.Attribute";
+  private static final String AST_NODE_TOKEN = "ASTNodeAnnotation.Token";
 
   public static boolean isChild(Annotation a){ return isListChild(a) || isOptChild(a) || isSingleChild(a); }
 
@@ -25,5 +26,9 @@ public class ASTAnnotation{
 
   public static boolean isAttribute(Annotation annotation){
     return annotation.annotationType().getCanonicalName().endsWith(AST_NODE_ATTRIBUTE);
+  }
+
+  public static boolean isToken(Annotation annotation){
+    return annotation.annotationType().getCanonicalName().endsWith(AST_NODE_TOKEN);
   }
 }
