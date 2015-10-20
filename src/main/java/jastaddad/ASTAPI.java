@@ -1,5 +1,6 @@
 package jastaddad;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -42,11 +43,13 @@ public class ASTAPI {
         FilteredTreeNode fNode = new FilteredTreeNode(node);
         FilteredTreeNode tmpCluster = cluster;
 
+
+
         typeHash.put(fNode.node.className, 1);
         if(fNode.node.name != "")
             typeHash.put(fNode.node.className + ":" + fNode.node.name, 1);
 
-        //System.out.println("class: " + fNode.node.className + " name: " + fNode.node.name);
+        System.out.println("class: " + fNode.node.className + " name: " + fNode.node.name);
 
         boolean normalNode = cfgTypeList.configCount() == 0 || (cfgTypeList.isEnabled(node.name) && cfgTypeList.isEnabled(node.className));
 
