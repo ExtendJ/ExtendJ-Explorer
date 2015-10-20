@@ -12,12 +12,13 @@
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uicomponent.controllers.Controller">
    <top>
       <HBox styleClass="topParent">
-         <Label text="Här skall det vara en meny" />
+         <Label text=" " />
       </HBox>
    </top>
    <center>
       <SplitPane fx:id="centerSplitPane" orientation="HORIZONTAL" dividerPositions="0,1">
          <VBox styleClass="paneParent">
+            <Label text="Attributes of selected Node:"></Label>
             <ScrollPane styleClass="attributeListView" fx:id="typeView">
                <content>
                   <ListView fx:id="listView" />
@@ -28,6 +29,7 @@
             <ScrollPane styleClass="graphView" fx:id="graphView"/>
          </VBox>
          <VBox styleClass="paneParent">
+            <Label text="Classes in this AST:"></Label>
             <ScrollPane styleClass="typeListView">
                <content>
                   <ListView fx:id="typeListView" />
