@@ -11,6 +11,7 @@
 /src/gen
 
 !/A6-CalcASM
+/A6-CalcASM/src/gen
 /A6-CalcASM/ant-bin
 /A6-CalcASM/out
 /A6-CalcASM/compiler.jar
