@@ -45,7 +45,7 @@ public class ASTAPI {
 
         typeHash.put(fNode.node.className, 1);
         typeHash.put(fNode.node.name, 1);
-
+        System.out.println("class: " + fNode.node.className + " name: " + fNode.node.name);
         boolean normalFuckingNode = cfgTypeList.configCount() == 0 || (cfgTypeList.isEnabled(node.name) && cfgTypeList.isEnabled(node.className));
         // if the class is not filtered
         if(normalFuckingNode){

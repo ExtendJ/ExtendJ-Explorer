@@ -57,7 +57,7 @@ public class Node{
             for (Method m : root.getClass().getMethods()) {
                 for (Annotation a: m.getAnnotations()) {
                     if(ASTAnnotation.isChild(a)) {
-                        children.add(new Node(m.invoke(root, new Object[]{}), getName(a), !ASTAnnotation.isSingleChild(a), level+1));
+                        children.add(new Node(m.invoke(root, new Object[]{}), getName(a, root), !ASTAnnotation.isSingleChild(a), level+1));
                     }
                     attributes.add(root, m, a);
                 }
@@ -68,10 +68,11 @@ public class Node{
         }
     }
 
-    private String getName(Annotation a) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        if (a.getClass().getMethod("name") != null)
+    private String getName(Annotation a, Object node) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        if (a.getClass().getMethod("name") != null &&
+                !a.getClass().getMethod("name").equals(node.getClass().getName()))
             return (String) a.getClass().getMethod("name").invoke(a, new Object[]{});
-        return null + "";
+        return "";
 
     }
 
