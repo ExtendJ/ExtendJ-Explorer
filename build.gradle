@@ -1,6 +1,28 @@
 buildscript {
-	repositories.mavenCentral()
+	repositories {
+		mavenLocal()
+		maven {
+			name = 'BinTray'
+			url = 'http://dl.bintray.com/content/shemnon/javafx-gradle/'
+		}
+		maven {
+			name = 'CloudBees Snapshot'
+			url = 'http://repository-javafx-gradle-plugin.forge.cloudbees.com/snapshot'
+		}
+		ivy {
+			url = 'http://repository-javafx-gradle-plugin.forge.cloudbees.com/snapshot'
+		}
+		mavenCentral()
+	}
+	dependencies {
+		classpath 'org.bitbucket.shemnon.javafxplugin:gradle-javafx-plugin:0.3.0'
+		classpath project.files("${System.properties['java.home']}/lib/ant-javafx.jar")
+		classpath project.files("${System.properties['java.home']}/lib/javafx-mx.jar")
+		classpath project.files("${System.properties['java.home']}/lib/jfxrt.jar")
+		classpath project.files("${System.properties['java.home']}/lib/jfxswt.jar")
+	}
 }
+
 if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
 	throw new GradleException("Must Build with Java 1.8")
 }
@@ -15,10 +37,10 @@ repositories {
 	mavenCentral()
 }
 
+//apply from: "http://dl.bintray.com/content/shemnon/javafx-gradle/0.3.0/javafx.plugin"
+
 apply plugin: 'java'
 apply plugin: 'application'
-apply plugin: 'idea'
-
 
 dependencies {
 	compile fileTree(dir: 'libs', include: '*.jar')
@@ -28,12 +50,17 @@ dependencies {
 	compile 'net.sf.jung:jung-visualization:2.0.1'
 	compile 'net.sf.jung:jung-algorithms:2.0.1'
 	testCompile 'junit:junit:4.+'
-	compile 'org.jclarion:image4j:0.7'
 	compile fileTree(dir: "${System.properties['java.home']}", include: '**/jfxrt.jar')
 	compile fileTree(dir: "${System.properties['java.home']}", include: '**/jfxswt.jar')
-
+	compile fileTree(dir: "${System.properties['java.home']}", include: '**/ant-javafx.jar')
+	runtime fileTree(dir: "${System.properties['java.home']}", include: '**/javafx-mx.jar')
 }
 
+
+
+String getProjectProperty(String propertyName) {
+	project.hasProperty(propertyName) ? project.property(propertyName) : null
+}
 
 task fatJar(type: Jar) {
 	destinationDir = projectDir

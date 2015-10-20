@@ -38,7 +38,7 @@ public class UIComponent extends Application {
         ScrollPane center = (ScrollPane) a.lookup("#graphView");
         con = loader.<Controller>getController();
         con.setMonitor(mon);
-        //center.setContent(new GraphView(mon, con));
+        center.setContent(new GraphView(mon, con));
         stage.setTitle("JastAddDebugger");
         stage.setScene(new Scene(a, 1000, 1000));
         stage.setMaximized(true);

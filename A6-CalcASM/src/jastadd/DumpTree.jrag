@@ -1,0 +1,50 @@
+import java.util.ArrayList;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
+
+// Don't import java.lang.reflect.Method because it may conflict with student code.
+
+aspect DumpTree {
+	private String ASTNode.DUMP_TREE_INDENT = "  ";
+
+	public String ASTNode.dumpTree() {
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		dumpTree(new PrintStream(bytes));
+		return bytes.toString();
+	}
+
+	public void ASTNode.dumpTree(PrintStream out) {
+		dumpTree(out, "");
+		out.flush();
+	}
+
+	public void ASTNode.dumpTree(PrintStream out, String indent) {
+		out.print(indent + getClass().getSimpleName());
+		out.println(getTokens());
+		String childIndent = indent + DUMP_TREE_INDENT;
+		for (ASTNode child : this) {
+			if (child == null)  {
+				out.println(childIndent + "null");
+			} else {
+				child.dumpTree(out, childIndent);
+			}
+		}
+	}
+	
+	public String ASTNode.getTokens() {
+		StringBuilder sb = new StringBuilder();
+		java.lang.reflect.Method[] methods = getClass().getMethods();
+		for (java.lang.reflect.Method method : getClass().getMethods()) {
+			ASTNodeAnnotation.Token token = method.getAnnotation(ASTNodeAnnotation.Token.class);
+			if (token != null) {
+				try {
+					sb.append(" " + token.name() + "=\"" + method.invoke(this) + "\"");
+				} catch (IllegalAccessException e) {
+				} catch (InvocationTargetException e) {
+				}
+			}
+		}
+		return sb.toString();
+	}
+}

@@ -1,0 +1,6 @@
+let
+	a = 4
+	b = 2
+in
+	a / b
+end
