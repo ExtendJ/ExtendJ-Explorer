@@ -8,6 +8,7 @@ import jastaddad.Attributes;
 import jastaddad.FilteredTreeNode;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
@@ -29,18 +30,27 @@ public class Controller implements Initializable {
     @FXML
     private ListView listView;
     @FXML
+    private ListView typeListView;
+    @FXML
     private ScrollPane scrollPane;
+
+    @FXML protected void hideShowLeftPane(ActionEvent event) {
+        System.out.println("godis");
+    }
 
     private UIMonitor mon;
 
     public void setMonitor(UIMonitor mon){ this.mon = mon; }
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {}
+    public void initialize(URL url, ResourceBundle rb) {
+    }
 
     private void setAttributeList(){
-        Attributes a = mon.getSelectedNode().node.getAttributes();
-        listView.setItems(FXCollections.observableList(a.getAttributes()));
+        if(mon.getSelectedNode().isNode()) {
+            Attributes a = mon.getSelectedNode().node.getAttributes();
+            listView.setItems(FXCollections.observableList(a.getAttributes()));
+        }
     }
 
     public void itemStateChanged(ItemEvent e){//Sets UI listeners of the graph

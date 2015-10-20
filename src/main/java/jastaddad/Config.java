@@ -1,14 +1,17 @@
-package uicomponent;
+package jastaddad;
 
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 
 public class Config{
     private HashMap<String, String> mainConfigs;
     private HashMap<String, String> configs;
-    public static final String FILE_NAME = "uicomponent-config.cfg";
+    public static final String FILE_NAME = "jastaddadui-typelist.cfg";
 
     public Config(){
         configs = new HashMap<String, String>();
@@ -17,8 +20,12 @@ public class Config{
     }
     public Config(String filePath){
         configs = new HashMap<String, String>();
-        readConfigFile(filePath + FILE_NAME);
+        readConfigFile(filePath);
         mainConfigs = configs;
+    }
+
+    public int configCount(){
+        return configs.size();
     }
 
     public void loadMainConfigs(){
@@ -68,6 +75,21 @@ public class Config{
                     }
                 }
             }
+        }catch(IOException e){
+            System.out.println("MetricPCE.java: Error reading file:\n");
+            e.printStackTrace();
+        }
+    }
+
+    public void writeConfigFile(String fileName, Iterator it, String start){
+        try{
+            PrintWriter writer = new PrintWriter(fileName, "UTF-8");
+            writer.println(start);
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry)it.next();
+                writer.println(pair.getKey() + " = " + pair.getValue());
+            }
+            writer.close();
         }catch(IOException e){
             System.out.println("MetricPCE.java: Error reading file:\n");
             e.printStackTrace();

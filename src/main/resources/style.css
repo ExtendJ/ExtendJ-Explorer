@@ -1,9 +1,25 @@
-.leftParent {
+.paneParent{
+    -fx-background-color: #2f4f4f;
     -fx-fit-to-height:true;
-    -fx-width:1000;
+    -fx-fit-to-width:true;
 }
 
-.centerParent {
+.attributeListView {
+    -fx-fit-to-height:true;
+    -fx-fit-to-width:true;
+}
+
+.typeListView {
+    -fx-fit-to-height:true;
+    -fx-fit-to-width:true;
+}
+
+.graphView {
     -fx-fit-to-width:true;
     -fx-fit-to-height:true;
 }
+
+.graphSplitPane{
+
+}
+

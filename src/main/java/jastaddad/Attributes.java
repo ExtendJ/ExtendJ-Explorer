@@ -35,7 +35,7 @@ public class Attributes {
         if(!ASTAnnotation.isAttribute(a))
             return;
         try{
-            System.out.println(m.getName() + " : " + m.invoke(obj, new Object[m.getParameterCount()]));
+            //System.out.println(m.getName() + " : " + m.invoke(obj, new Object[m.getParameterCount()]));
             attributes.add(new Attribute(m.getName(), m.invoke(obj, new Object[m.getParameterCount()]) + ""));
         } catch (Throwable e) {
            // e.printStackTrace();

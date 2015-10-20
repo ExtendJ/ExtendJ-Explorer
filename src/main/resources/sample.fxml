@@ -15,15 +15,26 @@
          <Label text="Här skall det vara en meny" />
       </HBox>
    </top>
-   <left>
-      <ScrollPane styleClass="leftParent" fx:id="attributeView">
-         <content>
-            <ListView fx:id="listView" />
-         </content>
-      </ScrollPane>
-   </left>
    <center>
-      <ScrollPane styleClass="centerParent" fx:id="graphView"/>
+      <SplitPane fx:id="centerSplitPane" orientation="HORIZONTAL" dividerPositions="0,1">
+         <VBox styleClass="paneParent">
+            <ScrollPane styleClass="attributeListView" fx:id="typeView">
+               <content>
+                  <ListView fx:id="listView" />
+               </content>
+            </ScrollPane>
+         </VBox>
+         <VBox styleClass="paneParent">
+            <ScrollPane styleClass="graphView" fx:id="graphView"/>
+         </VBox>
+         <VBox styleClass="paneParent">
+            <ScrollPane styleClass="typeListView">
+               <content>
+                  <ListView fx:id="typeListView" />
+               </content>
+            </ScrollPane>
+         </VBox>
+      </SplitPane>
    </center>
    <stylesheets>style.css</stylesheets>
 </BorderPane>
