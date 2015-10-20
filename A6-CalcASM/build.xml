@@ -19,8 +19,8 @@
 
 	<target name="build" depends="gen">
 		<mkdir dir="${bin.dir}" />
+		<javac srcdir="../src/main/java" destdir="${bin.dir}"  classpath="${cp.lib}" source="1.8" debug="true" />
 		<javac srcdir="." destdir="${bin.dir}" includeantruntime="true" classpath="${cp.lib}" source="1.8" debug="true" />
-		<javac srcdir="../src/main/java" destdir="${bin.dir}" includeantruntime="true" classpath="${cp.lib}" source="1.8" debug="true" />
 	</target>
 
 	<target name="gen" depends="scanner-gen,parser-gen,ast-gen">

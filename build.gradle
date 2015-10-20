@@ -56,8 +56,6 @@ dependencies {
 	runtime fileTree(dir: "${System.properties['java.home']}", include: '**/javafx-mx.jar')
 }
 
-
-
 String getProjectProperty(String propertyName) {
 	project.hasProperty(propertyName) ? project.property(propertyName) : null
 }
