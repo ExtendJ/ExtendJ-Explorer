@@ -38,7 +38,7 @@ public class Attributes {
             //System.out.println(m.getName() + " : " + m.invoke(obj, new Object[m.getParameterCount()]));
             attributes.add(new Attribute(m.getName(), m.invoke(obj, new Object[m.getParameterCount()]) + ""));
         } catch (Throwable e) {
-           // e.printStackTrace();
+           attributes.add(new Attribute(m.getName(), m.getParameterTypes().toString()));
         }
     }
 
@@ -53,7 +53,7 @@ public class Attributes {
 
         @Override
         public String toString(){
-            return name + " : " + value;
+            return name + " :\t " + value;
          }
     }
 }
