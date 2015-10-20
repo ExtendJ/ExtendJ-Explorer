@@ -24,7 +24,7 @@ public class ASTAPI {
         Iterator it = typeHash.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
-            System.out.println(pair.getKey() + "");
+            //System.out.println(pair.getKey() + "");
         }
 
         if(cfgTypeList.configCount() == 0){
@@ -43,7 +43,8 @@ public class ASTAPI {
         FilteredTreeNode tmpCluster = cluster;
 
         typeHash.put(fNode.node.className, 1);
-        typeHash.put(fNode.node.name, 1);
+        if(fNode.node.name != "")
+            typeHash.put(fNode.node.className + ":" + fNode.node.name, 1);
 
         //System.out.println("class: " + fNode.node.className + " name: " + fNode.node.name);
 

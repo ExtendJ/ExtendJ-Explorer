@@ -19,8 +19,8 @@ public class Node{
 
     public Node(Object root, boolean isList, int level){
         this.children = new ArrayList<>();
-        this.name = root.getClass().getName();
-        this.className = name;
+        this.name = "";
+        this.className = root.getClass().getName();
         id = System.identityHashCode(this.toString());
         init(root, isList, level);
 
@@ -28,8 +28,11 @@ public class Node{
 
     public Node(Object root, String name, boolean isList, int level){
         this.children = new ArrayList<Node>();
-        this.name = name;
         this.className = root.getClass().getName();
+        if(name == className){
+            this.name = "";
+        }else
+            this.name = name;
         id = System.identityHashCode(this.toString());
         init(root, isList, level);
     }
@@ -37,6 +40,7 @@ public class Node{
     public boolean isList(){ return isList; }
 
     private void init(Object root, boolean isList, int level){
+
         node = root;
         this.isList = isList;
         this.attributes = new Attributes();
@@ -69,9 +73,12 @@ public class Node{
     }
 
     private String getName(Annotation a, Object node) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        if (a.getClass().getMethod("name") != null &&
-                !a.getClass().getMethod("name").equals(node.getClass().getName()))
-            return (String) a.getClass().getMethod("name").invoke(a, new Object[]{});
+        if (a.getClass().getMethod("name") != null){
+            String name = (String) a.getClass().getMethod("name").invoke(a, new Object[]{});
+            //System.out.println("kukar: " + node.getClass().getName() + " - " + name);
+            //if(!name.equals(node.getClass().getName()))
+                return name;
+        }
         System.out.println("NOPE");
         return "";
 
