@@ -39,16 +39,18 @@ public class ASTAPI {
             return;
 
         FilteredTreeNode addToParent = null;
-
         FilteredTreeNode fNode = new FilteredTreeNode(node);
         FilteredTreeNode tmpCluster = cluster;
 
         typeHash.put(fNode.node.className, 1);
         typeHash.put(fNode.node.name, 1);
-        System.out.println("class: " + fNode.node.className + " name: " + fNode.node.name);
-        boolean normalFuckingNode = cfgTypeList.configCount() == 0 || (cfgTypeList.isEnabled(node.name) && cfgTypeList.isEnabled(node.className));
+
+        //System.out.println("class: " + fNode.node.className + " name: " + fNode.node.name);
+
+        boolean normalNode = cfgTypeList.configCount() == 0 || (cfgTypeList.isEnabled(node.name) && cfgTypeList.isEnabled(node.className));
+
         // if the class is not filtered
-        if(normalFuckingNode){
+        if(normalNode){
             // is this the root?
             if(parent == null){
                 filteredTree = fNode;
@@ -81,7 +83,7 @@ public class ASTAPI {
             traversTree(child, fNode, tmpCluster);
         }
 
-        if(normalFuckingNode) {
+        if(normalNode) {
             FilteredTreeNode newCluster = new FilteredTreeNode();
             for (FilteredTreeNode fChild : fNode.getChildren()) {
                 if (fChild.isCluster && fChild.getChildren().size() == 0) {
@@ -93,7 +95,6 @@ public class ASTAPI {
                 for(FilteredTreeNode cChild : newCluster.getClusterContainer()){
                     fNode.getChildren().remove(cChild);
                 }
-
                 fNode.addChild(newCluster);
             }
         }
@@ -113,17 +114,4 @@ public class ASTAPI {
         parent.addChild(childNode);
     }
 
-    /*
-    private void addToFilteredTree(FilteredTreeNode parent) {
-        for (Node child : parent.node.children) {
-            FilteredTreeNode childNode = new FilteredTreeNode(child);
-            if(!child.name.equals("Stmt")) {
-                parent.addChild(childNode);
-            }else{
-                System.out.print("Skip");
-            }
-            addToFilteredTree(childNode);
-        }
-    }
-    */
 }

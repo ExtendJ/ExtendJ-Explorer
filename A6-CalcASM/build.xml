@@ -10,7 +10,6 @@
 
 	<property name="cp.lib"
 		value="${lib.dir}/beaver-rt.jar:${lib.dir}/hamcrest-core-1.3.jar:${lib.dir}/junit-4.11.jar:../jastadddebugger-exjobb.jar" />
-
 	<taskdef name="jflex" classname="jflex.anttask.JFlexTask"
 		classpath="${lib.dir}/jflex-1.6.0.jar"/>
 	<taskdef name="beaver" classname="beaver.comp.run.AntTask"
@@ -21,6 +20,7 @@
 	<target name="build" depends="gen">
 		<mkdir dir="${bin.dir}" />
 		<javac srcdir="." destdir="${bin.dir}" includeantruntime="true" classpath="${cp.lib}" source="1.8" debug="true" />
+		<javac srcdir="../src/main/java" destdir="${bin.dir}" includeantruntime="true" classpath="${cp.lib}" source="1.8" debug="true" />
 	</target>
 
 	<target name="gen" depends="scanner-gen,parser-gen,ast-gen">
