@@ -1,83 +1,73 @@
 buildscript {
-	repositories.mavenCentral()
-	repositories.maven {
-		url 'http://jastadd.org/mvn/'
+	repositories {
+		mavenLocal()
+		maven {
+			name = 'BinTray'
+			url = 'http://dl.bintray.com/content/shemnon/javafx-gradle/'
+		}
+		maven {
+			name = 'CloudBees Snapshot'
+			url = 'http://repository-javafx-gradle-plugin.forge.cloudbees.com/snapshot'
+		}
+		ivy {
+			url = 'http://repository-javafx-gradle-plugin.forge.cloudbees.com/snapshot'
+		}
+		mavenCentral()
 	}
 	dependencies {
-		classpath group: 'org.jastadd', name: 'jastaddgradle', version: '1.9'
-		classpath group: 'net.sf.jung', name: 'jung-api', version: '2.0.1'
-		classpath group: 'net.sf.jung', name: 'jung-visualization', version: '2.0.1'
-		classpath group: 'net.sf.jung', name: 'jung-graph-impl', version: '2.0.1'
-
+		classpath 'org.bitbucket.shemnon.javafxplugin:gradle-javafx-plugin:0.3.0'
+		classpath project.files("${System.properties['java.home']}/lib/ant-javafx.jar")
+		classpath project.files("${System.properties['java.home']}/lib/javafx-mx.jar")
+		classpath project.files("${System.properties['java.home']}/lib/jfxrt.jar")
+		classpath project.files("${System.properties['java.home']}/lib/jfxswt.jar")
 	}
 }
-apply plugin: 'java'
+
+if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
+	throw new GradleException("Must Build with Java 1.8")
+}
+// check for 8u20
+def matcher = System.getProperty("java.runtime.version") =~ /(\d*)\.(\d*)\.(\d*)(_(\d*))?(\D.*)/
+if (matcher?.matches() && (!matcher?.group(5) || Integer.parseInt(matcher?.group(5)) < 20)) {
+	throw new GradleException("Must Build with Java 8 update 20 or later")
+}
 
 repositories {
+	mavenLocal()
 	mavenCentral()
 }
 
-apply plugin: 'application'
-apply plugin: 'jastadd'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
+//apply from: "http://dl.bintray.com/content/shemnon/javafx-gradle/0.3.0/javafx.plugin"
 
+apply plugin: 'java'
+apply plugin: 'application'
 
 dependencies {
 	compile fileTree(dir: 'libs', include: '*.jar')
-
-	compile group: 'org.apache.ant', name: 'ant', version: '1.9.4'
-    testCompile group: 'junit', name: 'junit', version: '4.+'
-
+	compile 'org.apache.ant:ant:1.9.4'
 	compile 'net.sf.jung:jung-graph-impl:2.0.1'
 	compile 'net.sf.jung:jung-api:2.0.1'
 	compile 'net.sf.jung:jung-visualization:2.0.1'
 	compile 'net.sf.jung:jung-algorithms:2.0.1'
-
+	testCompile 'junit:junit:4.+'
+	compile fileTree(dir: "${System.properties['java.home']}", include: '**/jfxrt.jar')
+	compile fileTree(dir: "${System.properties['java.home']}", include: '**/jfxswt.jar')
+	compile fileTree(dir: "${System.properties['java.home']}", include: '**/ant-javafx.jar')
+	runtime fileTree(dir: "${System.properties['java.home']}", include: '**/javafx-mx.jar')
 }
 
+
+
+String getProjectProperty(String propertyName) {
+	project.hasProperty(propertyName) ? project.property(propertyName) : null
+}
 
 task fatJar(type: Jar) {
-
-	mainClassName = 'astgen.ASTGen'
-	jar.manifest.attributes 'Main-Class': mainClassName
 	destinationDir = projectDir
-	baseName = project.name
+	manifest.attributes 'Main-Class': 'jastaddad.JastAddAd'
+	baseName = "${project.name}"
 	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 	with jar
-}
-
-jastadd {
-	modules 'jastaddj/java4', 'jastaddj/java5', 'jastaddj/java6', 'jastaddj/java7', 'jastaddj/java8', '.'
-	module = 'jastaddad'
-	astPackage = 'AST'
-	genDir = 'src/gen/java'
-	buildInfoDir = 'src/gen/resources'
-	parser.name = 'JavaParser'
-}
-
-tasks.eclipseClasspath.dependsOn generateJava
-
-// fix the generated .classpath
-eclipse.classpath.file {
-	beforeMerged { classpath ->
-		classpath.entries << new org.gradle.plugins.ide.eclipse.model.SourceFolder('jastaddj/src/frontend', null)
-		classpath.entries << new org.gradle.plugins.ide.eclipse.model.SourceFolder('jastaddj/java8/src', null)
-	}
-	withXml { node ->
-		def gen = node.asNode().find { it.@kind == 'src' && it.@path == 'src/gen/java' }
-		if (gen?.children()?.isEmpty())
-			gen.appendNode('attributes').appendNode('attribute', [ name: 'ignore_optional_problems', value: 'true' ])
-	}
-}
-
-sourceSets {
-	main {
-		resources {
-			srcDir 'src/main/resources'
-			srcDir jastadd.buildInfoDir
-		}
-	}
 }
 
 

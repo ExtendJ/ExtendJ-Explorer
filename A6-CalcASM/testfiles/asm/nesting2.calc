@@ -1,0 +1,10 @@
+let
+	a = 2
+in
+	let
+		x = 3
+		y = a * 2
+	in
+		a * x * y
+	end
+end

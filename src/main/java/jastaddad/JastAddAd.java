@@ -16,4 +16,9 @@ public class JastAddAd{
     UIComponent ui = new UIComponent(api);
     //javafx.application.Application.launch(JastAddAdUi.class);
   }
+  
+  public static void main(String[] args) {
+        System.out.println("JastAddAd is running, this is a test message");
+        JastAddAd ui = new JastAddAd(new Object());
+  }
 }

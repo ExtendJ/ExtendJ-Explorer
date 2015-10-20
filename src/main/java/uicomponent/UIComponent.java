@@ -1,6 +1,7 @@
 package uicomponent;
 
 import jastaddad.ASTAPI;
+import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
