@@ -1,7 +1,5 @@
 package jastaddad;
 
-import AST.BooleanLiteral;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
