@@ -12,22 +12,18 @@ public class ASTAnnotation{
   public static boolean isChild(Annotation a){ return isListChild(a) || isOptChild(a) || isSingleChild(a); }
 
   public static boolean isListChild(Annotation annotation){
-    String annotationName = annotation.annotationType().getCanonicalName();
-    return annotationName.endsWith(AST_NODE_LIST_CHILD);
+    return annotation.annotationType().getCanonicalName().endsWith(AST_NODE_LIST_CHILD);
   }
 
   public static boolean isOptChild(Annotation annotation){
-    String annotationName = annotation.annotationType().getCanonicalName();
-    return annotationName.endsWith(AST_NODE_OPT_CHILD);
+    return annotation.annotationType().getCanonicalName().endsWith(AST_NODE_OPT_CHILD);
   }
 
   public static boolean isSingleChild(Annotation annotation){
-    String annotationName = annotation.annotationType().getCanonicalName();
-    return annotationName.endsWith(AST_NODE_CHILD);
+    return annotation.annotationType().getCanonicalName().endsWith(AST_NODE_CHILD);
   }
 
   public static boolean isAttribute(Annotation annotation){
-    String annotationName = annotation.annotationType().getCanonicalName();
-    return annotationName.endsWith(AST_NODE_ATTRIBUTE);
+    return annotation.annotationType().getCanonicalName().endsWith(AST_NODE_ATTRIBUTE);
   }
 }
