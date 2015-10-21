@@ -62,6 +62,14 @@ public class Config{
         return cfg == null || cfg.equals("1");
     }
 
+    public void printConfigs(){
+        Iterator it = configs.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            System.out.println(pair.getKey() + " - " + pair.getValue());
+        }
+    }
+
     private void readConfigFile(String fileName){
         try{
             BufferedReader reader = new BufferedReader(new FileReader(fileName));

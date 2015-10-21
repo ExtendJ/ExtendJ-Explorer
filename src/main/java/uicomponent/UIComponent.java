@@ -39,14 +39,15 @@ public class UIComponent extends Application {
         FXMLLoader loader = new FXMLLoader();
         Parent a = loader.load(getClass().getResource("/sample.fxml").openStream());
 
+        con = loader.<Controller>getController();
+        con.init(mon);
+
         stage.setTitle("JastAddDebugger");
         stage.setScene(new Scene(a, 1000, 1000));
         stage.setMaximized(true);
         stage.show();
 
         ScrollPane center = (ScrollPane) a.lookup("#graphView");
-        con = loader.<Controller>getController();
-        con.setMonitor(mon);
         if(center == null)
             System.out.println("NULL");
         center.setContent(new GraphView(mon, con));

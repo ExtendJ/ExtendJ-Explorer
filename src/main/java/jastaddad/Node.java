@@ -12,6 +12,7 @@ public class Node{
     public final int id;
     public final String name;
     public final String className;
+    public final String fullName;
     public final ArrayList<Node> children;
     private boolean isList;
     private int level;
@@ -21,6 +22,7 @@ public class Node{
         this.children = new ArrayList<>();
         this.name = "";
         this.className = root.getClass().getName();
+        fullName = className;
         id = System.identityHashCode(this.toString());
         init(root, isList, level);
 
@@ -29,10 +31,14 @@ public class Node{
     public Node(Object root, String name, boolean isList, int level){
         this.children = new ArrayList<Node>();
         this.className = root.getClass().getName();
+
         if(name == className){
             this.name = "";
-        }else
+            fullName = className;
+        }else {
             this.name = name;
+            fullName = className + ":" + name;
+        }
         id = System.identityHashCode(this.toString());
         init(root, isList, level);
     }

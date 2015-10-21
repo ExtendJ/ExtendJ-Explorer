@@ -31,9 +31,7 @@
          <VBox styleClass="paneParent">
             <Label text="Classes in this AST:"></Label>
             <ScrollPane styleClass="typeListView">
-               <content>
-                  <ListView fx:id="typeListView" />
-               </content>
+               <TreeView fx:id="typeListView"/>
             </ScrollPane>
          </VBox>
       </SplitPane>

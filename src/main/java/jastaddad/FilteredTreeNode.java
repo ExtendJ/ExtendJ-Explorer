@@ -12,9 +12,9 @@ public class FilteredTreeNode{
     public final Node node;
     public final FilteredTreeNode cluster;
     private List<FilteredTreeNode> clusterContainer;
-    public final boolean isCluster;
-    public final boolean isClusterParent;
-
+    private boolean isCluster;
+    private boolean isClusterParent;
+    private boolean enabled;
     private List<FilteredTreeNode> children;
     private HashMap<Integer, Boolean> realChildEdge;
 
@@ -27,6 +27,8 @@ public class FilteredTreeNode{
 
         children = new ArrayList<>();
         realChildEdge = new HashMap<>();
+
+        enabled = false;
     }
 
     public FilteredTreeNode(FilteredTreeNode cluster){
@@ -37,9 +39,11 @@ public class FilteredTreeNode{
         clusterContainer = null;
         children = new ArrayList<>();
         realChildEdge = new HashMap<>();
+
+        enabled = false;
     }
 
-    public FilteredTreeNode(Node data){
+    public FilteredTreeNode(Node data, Config cfgTypeList){
         node = data;
         isCluster = false;
         isClusterParent = false;
@@ -47,7 +51,18 @@ public class FilteredTreeNode{
         cluster = null;
         children = new ArrayList<>();
         realChildEdge = new HashMap<>();
+
+        enabled = setEnabled(cfgTypeList);
     }
+
+    private boolean setEnabled(Config cfgTypeList){
+        return cfgTypeList.configCount() == 0
+                || cfgTypeList.isEnabled(node.className)
+                && (cfgTypeList.get(node.className + ":" + node.name) == null
+                || cfgTypeList.isEnabled(node.className + ":" + node.name));
+    }
+
+    public boolean isEnabled(){ return enabled; }
 
     public void addChild(FilteredTreeNode child){
         if(isNode() && child.isNode()) {
@@ -79,6 +94,10 @@ public class FilteredTreeNode{
     }
 
     public Iterator<FilteredTreeNode> iterator(){ return children.iterator(); }
+
+    public boolean isCluster(){return isCluster;}
+
+    public boolean isClusterParent(){return isClusterParent;}
 
     @Override
     public String toString(){
