@@ -53,21 +53,52 @@ public class NodeContent {
         return false;
     }
 
+    //Todo might move these methods to their specific classes
     private boolean addAttribute(Object obj, Method m, Annotation a){
         try{
-            attributes.add(new Attribute(m.getName(), m.invoke(obj, m.getParameters()).toString(), ""));
+            attributes.add(new Attribute(m.getName(), m.invoke(obj, new Object[m.getParameterCount()]).toString(), ""));
         } catch (Throwable e) {
-            attributes.add(new Attribute("EX: " + m.getName(), m.getParameterTypes().toString(), ""));
+            //e.printStackTrace();
+            attributes.add(new Attribute(m.getName(),"Param count: " + m.getParameterCount() +  ", Error message: " + e.getMessage(), ""));
         }
         return true;
     }
 
     private boolean addToken(Object obj, Method m, Annotation a){
         try{
-            tokens.add(new Token(m.getName(), m.invoke(obj, m.getParameters()).toString()));
+            tokens.add(new Token(m.getName(), m.invoke(obj, new Object[m.getParameterCount()]).toString()));
         } catch (Throwable e) {
-            tokens.add(new Token("EX: " + m.getName(), m.getParameterTypes().toString()));
+            //e.printStackTrace();
+            tokens.add(new Token(m.getName(), "Param count: " + m.getParameterCount() +  ", Error message: " + e.getMessage()));
         }
         return true;
     }
+
+    private Object [] getParameters(Method m) throws IllegalAccessException, InstantiationException { //Todo check validity of this code, note sure if this is the right approach
+        Object[] params = new Object[m.getParameterCount()];
+        Class<?>[] types = m.getParameterTypes();
+        for(int i = 0; i < params.length; i++){
+            System.out.println(types[i]);
+            if(types[i] == byte.class || types[i] == Byte.class)
+                params[i] = new byte[0];
+            else if(types[i] == short.class || types[i] == Short.class)
+                params[i] = new short[0];
+            else if(types[i] == int.class || types[i] == Integer.class)
+                params[i] = new Integer(0);
+            else if(types[i] == double.class || types[i] == Double.class)
+                params[i] = new Double(0);
+            else if(types[i] == long.class || types[i] == Long.class)
+                params[i] = new Long(0);
+            else if(types[i] == float.class || types[i] == Float.class)
+                params[i] = new Float(0);
+            else if(types[i] == char.class || types[i] == Character.class)
+                params[i] = new char[0];
+            else if(types[i] == boolean.class || types[i] == Boolean.class)
+                params[i] = new Boolean(false);
+            else
+                params[i] = m.getParameterTypes()[i].newInstance();
+        }
+        return params;
+    }
+
 }

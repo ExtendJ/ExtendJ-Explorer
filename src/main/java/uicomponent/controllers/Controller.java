@@ -1,7 +1,9 @@
 package uicomponent.controllers;
 
+import jastaddad.Node;
 import jastaddad.objectinfo.NodeContent;
 import jastaddad.FilteredTreeNode;
+import jastaddad.objectinfo.NodeInfo;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,6 +14,7 @@ import uicomponent.UIMonitor;
 
 import java.awt.event.ItemEvent;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 /**
@@ -38,10 +41,17 @@ public class Controller implements Initializable {
     }
 
     private void setAttributeList(){
-        if(mon.getSelectedNode().isNode()) {
-            NodeContent a = mon.getSelectedNode().node.getNodeContent();
-            listView.setItems(FXCollections.observableList(a.toArray()));
-        }
+        if(!mon.getSelectedNode().isNode())
+            return;
+        NodeContent a = mon.getSelectedNode().node.getNodeContent();
+        ArrayList<NodeInfo> al = a.toArray();  //Todo remove this when we change the UI, ie we add a proper node name label
+        al.add(0, new NodeInfo(mon.getSelectedNode().node.toString(), "") {
+            @Override
+            public String print() {
+                return "Node name: " + name;
+            }
+        });
+        listView.setItems(FXCollections.observableList(al));
     }
 
     public void itemStateChanged(ItemEvent e){//Sets UI listeners of the graph

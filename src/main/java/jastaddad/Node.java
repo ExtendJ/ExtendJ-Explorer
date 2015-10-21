@@ -72,7 +72,6 @@ public class Node{
         if (a.getClass().getMethod("name") != null &&
                 !a.getClass().getMethod("name").equals(node.getClass().getName()))
             return (String) a.getClass().getMethod("name").invoke(a, new Object[]{});
-        System.out.println("NOPE");
         return "";
 
     }

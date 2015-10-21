@@ -12,4 +12,6 @@ public class Attribute extends NodeInfo {
     public String print(){ return type + "" + name + " : " + value ; }
 
     public String getType(){ return type; }
+
+
 }
