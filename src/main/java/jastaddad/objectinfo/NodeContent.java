@@ -57,7 +57,7 @@ public class NodeContent {
             attributes.add(new Attribute(m.getName(), m.invoke(obj, new Object[m.getParameterCount()]).toString(), ""));
         } catch (Throwable e) {
             //e.printStackTrace();
-            attributes.add(new Attribute(m.getName(),"Param count: " + m.getParameterCount() +  ", Error message: " + e.getMessage(), ""));
+            attributes.add(new Attribute(m.getName(),"Error message: " + e.getCause(), ""));
         }
         return true;
     }
@@ -67,7 +67,7 @@ public class NodeContent {
             tokens.add(new Token(m.getName(), m.invoke(obj, new Object[m.getParameterCount()]).toString()));
         } catch (Throwable e) {
             //e.printStackTrace();
-            tokens.add(new Token(m.getName(), "Param count: " + m.getParameterCount() +  ", Error message: " + e.getMessage()));
+            tokens.add(new Token(m.getName(), "Error message: " + e.getCause()));
         }
         return true;
     }
