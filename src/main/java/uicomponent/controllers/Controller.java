@@ -3,6 +3,7 @@ package uicomponent.controllers;
 import jastaddad.FilteredTreeNode;
 import jastaddad.objectinfo.NodeContent;
 import jastaddad.objectinfo.NodeInfo;
+import jastaddad.objectinfo.Token;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -85,7 +86,7 @@ public class Controller implements Initializable {
             return;
         NodeContent a = mon.getSelectedNode().node.getNodeContent();
         ArrayList<NodeInfo> al = a.toArray();  //Todo remove this when we change the UI, ie we add a proper node name label
-        al.add(0, new NodeInfo(mon.getSelectedNode().node.toString(), "") {
+        al.add(0, new Token(mon.getSelectedNode().node.nodeName(), "") {
             @Override
             public String print() {
                 return "Node name: " + name;
