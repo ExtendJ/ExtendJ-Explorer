@@ -5,8 +5,6 @@ import jastaddad.ASTAnnotation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Created by gda10jli on 10/14/15.

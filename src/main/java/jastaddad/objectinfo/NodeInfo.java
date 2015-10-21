@@ -1,8 +1,5 @@
 package jastaddad.objectinfo;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-
 /**
  * Created by gda10jli on 10/20/15.
  */

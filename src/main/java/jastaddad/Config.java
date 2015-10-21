@@ -1,10 +1,10 @@
 package jastaddad;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -60,6 +60,14 @@ public class Config{
     public boolean isPrintEnabled(String name){
         String cfg = configs.get(name);
         return cfg == null || cfg.equals("1");
+    }
+
+    public void printConfigs(){
+        Iterator it = configs.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            System.out.println(pair.getKey() + " - " + pair.getValue());
+        }
     }
 
     private void readConfigFile(String fileName){
