@@ -1,0 +1,122 @@
+%class "LangParser";
+%package "lang.ast";
+
+%embed {:
+	static public class SyntaxError extends RuntimeException { public SyntaxError(String msg) {super(msg);}}
+	// Disable syntax error recovery
+	protected void recoverFromError(Symbol token, TokenStream in) {
+		throw new SyntaxError("Cannot recover from the syntax error");
+	}
+:};
+
+%terminals CONFIGS, INCLUDE, ASSIGNMENT, LT, GT, EQ, GEQ, LEQ, NEQ, COL, SEMI, COMMA, LSQBRACKET, RSQBRACKET, LBRACKET, RBRACKET, ID, COLOR, NUMERAL, STRING, BOOL, FILTER;
+
+%typeof debuggerConfig = "DebuggerConfig";
+%typeof binding_list = "List";
+%typeof filter_list = "List";
+%typeof filter_tmp = "List";
+%typeof configList = "List";
+%typeof configs = "Configs";
+%typeof binding = "Binding";
+%typeof binding_tmp = "List";
+%typeof include = "List";
+%typeof node_list = "List";
+%typeof node_name = "NodeName";
+%typeof node = "Node";
+%typeof filter = "List";
+%typeof binexpr = "BinExpr";
+%typeof value = "Value";
+%typeof iddecl = "IdDecl";
+%typeof str_list = "List";
+%typeof num_list = "List";
+%typeof empty_list = "Value";
+%typeof str = "Str";
+%typeof num = "Num";
+%typeof color = "Color";
+
+%goal debuggerConfig;
+
+debuggerConfig = CONFIGS LBRACKET binding_list.a RBRACKET include.b {: return new DebuggerConfig(new Opt(a), b); :}
+		| include.a {: return new DebuggerConfig(new Opt(), a); :} ;
+
+binding_list =
+	/*EmptyList*/ {: return new List(); :}
+	| binding_tmp.a SEMI {: return a; :};
+
+
+binding_tmp =
+ 	binding.d {: return new List().add(d); :}
+ 	| binding_tmp.c SEMI binding.d {: return c.add(d); :} ;
+
+binding = iddecl.a ASSIGNMENT value.b {: return new Binding(a,b); :};
+
+include =
+	INCLUDE LBRACKET RBRACKET {: return new List(); :}
+	| INCLUDE LBRACKET node_list.a RBRACKET {: return a; :} ;
+
+node_list =
+	node.e {: return new List().add(e); :}
+	| node_list.f node.g {: return f.add(g); :} ;
+
+node =
+	node_name.a SEMI {: return new Node(a, new Opt(), new Opt()); :}
+	| node_name.a LBRACKET RBRACKET {: return new Node(a, new Opt(), new Opt()); :}
+	| node_name.a LBRACKET filter.c RBRACKET {: return new Node(a, new Opt(c), new Opt()); :}
+	| node_name.a LBRACKET configList.c RBRACKET {: return new Node(a, new Opt(), new Opt(c)); :}
+	| node_name.a LBRACKET filter.c configList.d RBRACKET {: return new Node(a, new Opt(c), new Opt(d)); :};
+
+node_name =
+	iddecl.a  {: return new NodeName(a, new Opt()); :}
+	| iddecl.a COL iddecl.b {: return new NodeName(a, new Opt(b)); :};
+
+configList =
+	configs.a {: return new List().add(a); :}
+	| configList.a configs.b {: return a.add(b); :};
+
+configs =
+	iddecl.a LBRACKET binding_list.h RBRACKET {: return new Configs(a, new Opt(h)); :};
+
+filter =
+	FILTER LBRACKET filter_list.c RBRACKET {: return c; :};
+
+filter_list =
+		/*Empty*/{: return new List(); :}
+		| filter_tmp.a SEMI {: return a; :};
+
+filter_tmp =
+	binexpr.h {: return new List().add(h); :}
+	| filter_tmp.i SEMI binexpr.j {: return i.add(j); :} ;
+
+binexpr =
+	 value.a EQ value.b {:return new EQ(a,b); :}
+	| value.a NEQ value.b {:return new NEQ(a,b); :}
+	| value.a LEQ value.b  {:return new LEQ(a,b); :}
+	| value.a GEQ value.b {:return new GEQ(a,b); :}
+	| value.a LT value.b {:return new LT(a,b); :}
+	| value.a GT value.b {:return new GT(a,b); :} ;
+
+value =
+	LSQBRACKET empty_list.a RSQBRACKET {: return a; :}
+	| num
+	| str
+	| BOOL.a {: return new Bool(a); :}
+	| iddecl
+	| color;
+
+empty_list =
+	/*EmptyList*/ {: return new EmptyArray(); :}
+	| str_list.a {: return new StrArray(a); :}
+	| num_list.a {: return new NumArray(a); :};
+
+str_list =
+	 str.l {: return new List().add(l); :}
+	| str_list.m COMMA str.n {: return m.add(n); :} ;
+
+num_list =
+	 num.o {: return new List().add(o); :}
+	| num_list.p COMMA num.q {: return p.add(q); :} ;
+
+num =  NUMERAL.a {: return new Num(a); :};
+str = STRING.a {: return new Str(a); :};
+iddecl = ID.a {: return new IdDecl(a); :};
+color = COLOR.a {: return new Color(a); :};

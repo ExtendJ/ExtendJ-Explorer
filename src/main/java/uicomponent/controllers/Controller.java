@@ -129,14 +129,11 @@ public class Controller implements Initializable {
 
         @Override
         public String toString() {
-            if(name.length() <= 0){
-                return className;
-            }
-            return name;
+            return name.length() <= 0 ? className : name;
         }
 
         public int compareTo(TmpTreeItem item) {
-            return (className+":"+name).compareTo(item.className+":"+item.name) ;
+            return (fullName).compareTo(item.fullName) ;
         }
     }
 }
