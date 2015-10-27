@@ -1,0 +1,63 @@
+aspect Values{
+
+    syn String BinExpr.print() =  getLeft().print() + getOp() + getRight().print();
+
+    syn String BinExpr.getOp();
+
+    eq EQ.getOp() = "==";
+    eq NEQ.getOp() = "!=";
+    eq GT.getOp() = ">";
+    eq LT.getOp() = "<";
+    eq GEQ.getOp() = ">=";
+    eq LEQ.getOp() = "<=";
+
+    syn String Value.print();
+
+    eq Num.print() = getNUMERAL();
+    eq EmptyArray.print() = "[]";
+
+    eq NumArray.print() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for(int i = 0; i < getNumNum(); i++){
+            sb.append(getNum(i).print());
+            if(i + 1 < getNumNum())
+                sb.append(", ");
+        }
+        return sb.append("]").toString();
+    }
+
+    eq Str.print() = getString();
+
+    eq StrArray.print(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for(int i = 0; i < getNumStr(); i++){
+            sb.append(getStr(i).print());
+            if(i + 1 < getNumStr())
+                sb.append(", ");
+        }
+        return sb.append("]").toString();
+    }
+
+    eq Color.print() = getColor();
+    eq Bool.print() = getBOOL();
+    eq IdDecl.print() = getID();
+    syn String Binding.print() = getName().getID() + "=" + getValue();
+
+    syn boolean BinExpr.isDoubleDecl() = getLeft().isIdDecl() && getRight().isIdDecl();
+    syn IdDecl BinExpr.getDecl(){
+        if(getLeft().isIdDecl())
+            return (IdDecl) getLeft();
+        return (IdDecl) getRight();
+    }
+
+    syn Value BinExpr.getValue(){
+        if(!getLeft().isIdDecl())
+            return  getLeft();
+        return getRight();
+    }
+
+    inh Node NodeName.getNode();
+    eq Node.getNodeName().getNode() = this;
+}

@@ -13,5 +13,4 @@ public class Attribute extends NodeInfo {
 
     public String getType(){ return type; }
 
-
 }

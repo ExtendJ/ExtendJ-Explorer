@@ -1,0 +1,41 @@
+import java.util.Set;
+import java.util.TreeSet;
+
+aspect Errors {
+	public class ErrorMessage implements Comparable<ErrorMessage> {
+		protected final String message;
+		protected final int lineNumber;
+		public ErrorMessage(String message, int lineNumber) {
+			this.message = message;
+			this.lineNumber = lineNumber;
+		}
+		public int compareTo(ErrorMessage other) {
+			if (lineNumber == other.lineNumber) {
+				return message.compareTo(other.message);
+			}
+			return Integer.compare(lineNumber, other.lineNumber);
+		}
+		public String toString() {
+			return "Error at line " + lineNumber + ": " + message;
+		}
+	}
+	protected ErrorMessage ASTNode.error(String message) {
+		return new ErrorMessage(message, getLine(getStart()));
+	}
+
+	coll Set<ErrorMessage> DebuggerConfig.errors() [new TreeSet<ErrorMessage>()] with add;
+
+	inh DebuggerConfig ASTNode.debuggerConfig();
+	eq DebuggerConfig.getChild().debuggerConfig() = this;
+}
+
+
+aspect ErrorContributions {
+	BinExpr contributes error("In a expresion, one argument must be an ID: " + print())
+		when !getLeft().isIdDecl() && !getRight().isIdDecl()
+		to DebuggerConfig.errors() for debuggerConfig();
+
+	Node contributes error("Node :" + getNodeName().getClassName().print() + " is already declared")
+    		when !isAlone()
+    		to DebuggerConfig.errors() for debuggerConfig();
+}

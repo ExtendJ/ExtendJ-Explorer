@@ -3,7 +3,7 @@ package jastaddad.objectinfo;
 /**
  * Created by gda10jli on 10/20/15.
  */
-public abstract class NodeInfo {
+public abstract class NodeInfo implements Comparable<NodeInfo> {
 
     protected String value;
     protected String name;
@@ -18,5 +18,8 @@ public abstract class NodeInfo {
     @Override
     public String toString(){ return print(); }
 
-
+    @Override
+    public int compareTo(NodeInfo o) {
+        return name.compareTo(o.name);
+    }
 }

@@ -67,6 +67,7 @@ public class GraphView extends SwingNode {
                 return new RoundRectangle2D.Double(-50, -20, 130, 40,10,10);
             return new RoundRectangle2D.Double(-50, -20, 130, 40,40,40);
         };
+
         float dash[] = {10.0f};
         final Stroke dashedEdgeStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
                 BasicStroke.JOIN_MITER, 10.0f, dash, 0.0f);

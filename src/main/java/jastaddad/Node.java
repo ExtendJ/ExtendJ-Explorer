@@ -29,7 +29,7 @@ public class Node{
     }
 
     public Node(Object root, String name, boolean isList, int level){
-        this.children = new ArrayList<Node>();
+        this.children = new ArrayList<>();
         this.className = root.getClass().getName();
 
         if(name == className){
@@ -40,13 +40,16 @@ public class Node{
             fullName = className + ":" + name;
         }
         id = System.identityHashCode(this.toString());
+        //System.out.println(name + " : " + isList + " : " + className);
         init(root, isList, level);
     }
+
+
 
     public boolean isList(){ return isList; }
 
     private void init(Object root, boolean isList, int level){
-
+        //System.out.println("Node " + root.getClass().getName());
         node = root;
         this.isList = isList;
         this.nodeContent = new NodeContent();
@@ -54,20 +57,23 @@ public class Node{
 
         if(isList) {
             for (Object child: (Iterable<?>) root) {
-                traversDown(child);
+                // System.out.println(root.getClass().getCanonicalName());
+                // TODO: Find a better solution for Lists with List children
+                children.add(new Node(child, "", child.getClass().getName().equals("lang.ast.List"), 1));
+                traversDown(root, isList);
             }
         } else {
-            traversDown(root);
+            traversDown(root, isList);
         }
     }
 
-    private void traversDown(Object root){
+    private void traversDown(Object root, boolean isList){
         //System.out.println("Node : " + root);
         try {
             for (Method m : root.getClass().getMethods()) {
                 for (Annotation a: m.getAnnotations()) {
                     if(ASTAnnotation.isChild(a)) {
-                        children.add(new Node(m.invoke(root, new Object[]{}), getName(a, root), !ASTAnnotation.isSingleChild(a), level+1));
+                        children.add(new Node(m.invoke(root, new Object[m.getParameterCount()]), getName(a, root), !ASTAnnotation.isSingleChild(a), level+1));
                     }
                     nodeContent.add(root, m, a);
                 }
