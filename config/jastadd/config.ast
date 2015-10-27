@@ -1,0 +1,30 @@
+DebuggerConfig ::= [Configs] Include:Node*;
+
+Node ::= NodeName [Filter] [ConfigList];
+
+NodeName ::= ClassName:IdDecl [Name:IdDecl];
+
+ConfigList ::= Configs*;
+Configs ::= Name:IdDecl [BindingList];
+BindingList ::= Binding*;
+Binding ::= Name:IdDecl Value;
+
+Filter ::= BinExpr*;
+
+abstract BinExpr ::= Left:Value Right:Value;
+EQ : BinExpr;
+NEQ :BinExpr;
+LEQ : BinExpr;
+LT : BinExpr;
+GT : BinExpr;
+GEQ : BinExpr;
+
+abstract Value;
+Num : Value ::= <NUMERAL>;
+Str : Value ::= <String>;
+Bool : Value ::= <BOOL>;
+Color : Value ::= <Color>;
+StrArray : Value ::= Str*;
+NumArray : Value ::= Num*;
+EmptyArray : Value;
+IdDecl : Value ::= <ID:String>;

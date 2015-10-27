@@ -1,0 +1,13 @@
+import java.util.ArrayList;
+
+aspect Collections {
+    coll ArrayList<IdDecl> DebuggerConfig.IdDecls() [new ArrayList<IdDecl> ()] with add;
+
+	IdDecl contributes this
+		to DebuggerConfig.IdDecls() for debuggerConfig ();
+
+	coll Set<NodeName> DebuggerConfig.nodes() [new TreeSet<NodeName>()] with add;
+	NodeName contributes this to DebuggerConfig.nodes() for debuggerConfig();
+
+}
+
