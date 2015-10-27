@@ -1,19 +1,12 @@
-package lang;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.lang.System;
 
-import beaver.Parser.Exception;
-import lang.ast.DebuggerConfig;
-import lang.ast.ErrorMessage;
-import lang.ast.LangParser;
-import lang.ast.LangScanner;
+import AST.*;
+import AST.ConfigParser;
+import AST.ConfigScanner;
 import jastaddad.JastAddAd;
-import javafx.application.Application;
-
-import javax.swing.*;
 
 /**
  * Computes the maximum statement nesting depth for a Calc program.
@@ -34,8 +27,8 @@ public class Compiler {
 			}
 
 			String filename = args[0];
-			LangScanner scanner = new LangScanner(new FileReader(filename));
-			LangParser parser = new LangParser();
+			ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
+			ConfigParser parser = new ConfigParser();
 			DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);
 			if (!program.errors().isEmpty()) {
 				System.err.println();

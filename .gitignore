@@ -17,8 +17,7 @@
 /A6-CalcASM/compiler.jar
 /A6-CalcASM/jastaddadui-typelist.cfg
 
-
-!/configCompiler
+/configCompiler
 /configCompiler/src/gen
 /configCompiler/ant-bin
 /configCompiler/out
