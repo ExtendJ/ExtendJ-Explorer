@@ -84,8 +84,7 @@ public class Config{
                 }
             }
         }catch(IOException e){
-            System.out.println("MetricPCE.java: Error reading file:\n");
-            e.printStackTrace();
+            System.out.println("Config.java: file not found. Config map will be empty. \n");
         }
     }
 
@@ -99,7 +98,7 @@ public class Config{
             }
             writer.close();
         }catch(IOException e){
-            System.out.println("MetricPCE.java: Error reading file:\n");
+            System.out.println("Config.java: Error writing to file:\n");
             e.printStackTrace();
         }
     }

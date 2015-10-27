@@ -1,6 +1,6 @@
 package uicomponent.controllers;
 
-import jastaddad.FilteredTreeNode;
+import jastaddad.filteredtree.FilteredTreeNode;
 import jastaddad.objectinfo.NodeContent;
 import jastaddad.objectinfo.NodeInfo;
 import jastaddad.objectinfo.Token;
@@ -14,6 +14,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import uicomponent.UIMonitor;
+import uicomponent.graph.GraphView;
 
 import java.awt.event.ItemEvent;
 import java.net.URL;
@@ -33,12 +34,14 @@ public class Controller implements Initializable {
     private TreeView<TmpTreeItem> typeListView;
 
     private UIMonitor mon;
+    private GraphView graphView;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {}
 
-    public void init(UIMonitor mon){
+    public void init(UIMonitor mon, GraphView graphView){
         this.mon = mon;
+        this.graphView = graphView;
         loadTreeView();
     }
 
@@ -61,7 +64,8 @@ public class Controller implements Initializable {
 
             treeItem.selectedProperty().addListener(new ChangeListener<Boolean>() {
                 public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    mon.getApi().newTypeFiltered(treeItem.getValue().fullName);
+                    mon.getApi().newTypeFiltered(treeItem.getValue().fullName, newValue);
+                    graphView.updateGraph();
                 }
             });
 
@@ -84,9 +88,10 @@ public class Controller implements Initializable {
     private void setAttributeList(){
         if(!mon.getSelectedNode().isNode())
             return;
-        NodeContent a = mon.getSelectedNode().node.getNodeContent();
+        FilteredTreeNode fNode = ((FilteredTreeNode)mon.getSelectedNode());
+        NodeContent a = fNode.node.getNodeContent();
         ArrayList<NodeInfo> al = a.toArray();  //Todo remove this when we change the UI, ie we add a proper node name label
-        al.add(0, new Token(mon.getSelectedNode().node.nodeName(), "") {
+        al.add(0, new Token(fNode.node.nodeName(), "") {
             @Override
             public String print() {
                 return "Node name: " + name;

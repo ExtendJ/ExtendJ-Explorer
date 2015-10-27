@@ -22,7 +22,7 @@ public class UIComponent extends Application {
 
     public UIComponent(ASTAPI api) {
         this.api = api;
-        this.mon = new UIMonitor(api.getFilteredTree(), api);
+        this.mon = new UIMonitor(api);
         launch(new String[0]);
     }
 
@@ -32,7 +32,9 @@ public class UIComponent extends Application {
         Parent a = loader.load(getClass().getResource("/sample.fxml").openStream());
 
         con = loader.<Controller>getController();
-        con.init(mon);
+        GraphView graphview = new GraphView(mon, con);
+        con.init(mon, graphview);
+
 
         stage.setTitle("JastAddDebugger");
         stage.setScene(new Scene(a, 1000, 1000));
@@ -42,9 +44,9 @@ public class UIComponent extends Application {
         ScrollPane center = (ScrollPane) a.lookup("#graphView");
         if(center == null)
             System.out.println("NULL");
-        center.setContent(new GraphView(mon, con));
-
-
+        center.setContent(graphview);
     }
+
+
 
 }
