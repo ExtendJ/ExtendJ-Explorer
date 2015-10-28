@@ -4,10 +4,7 @@ import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
-import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
-import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
-import edu.uci.ics.jung.visualization.control.ScalingControl;
+import edu.uci.ics.jung.visualization.control.*;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.picking.PickedInfo;
@@ -24,6 +21,7 @@ import uicomponent.controllers.Controller;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 
@@ -55,8 +53,14 @@ public class GraphView extends SwingNode {
 
     private void createTree(Forest<FilteredTreeItem, UIEdge> g, FilteredTreeItem parent){
         for (FilteredTreeItem child : parent.getChildren()) {
-            UIEdge egde = new UIEdge(parent.isRealChild(child));
-            g.addEdge(egde, parent, child);
+            UIEdge edge;
+            if(child.isNode()){
+                FilteredTreeNode n = (FilteredTreeNode) child;
+                edge = new UIEdge(parent.isRealChild(child), n.node.name);
+            }else {
+                edge = new UIEdge(parent.isRealChild(child));
+            }
+            g.addEdge(edge, parent, child);
             id++;
             createTree(g, child);
         }
@@ -105,6 +109,7 @@ public class GraphView extends SwingNode {
 
         vs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState()));
         vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<FilteredTreeNode, String>());
+        vs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
         vs.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
         vs.getRenderContext().setVertexShapeTransformer(vertexShape);
         vs.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
@@ -125,10 +130,14 @@ public class GraphView extends SwingNode {
                 });
             }
         });
+        PluggableGraphMouse gm = new PluggableGraphMouse();
+        gm.add(new TranslatingGraphMousePlugin(MouseEvent.BUTTON2_MASK));
+        gm.add(new PickingGraphMousePlugin());
+        gm.add(new ScalingGraphMousePlugin(new CrossoverScalingControl(), 0, 1.1f, 0.9f));
 
-        DefaultModalGraphMouse<FilteredTreeNode, UIEdge> picker = new DefaultModalGraphMouse<>();
-        picker.setMode(ModalGraphMouse.Mode.PICKING);
-        vs.setGraphMouse(picker);
+        //DefaultModalGraphMouse<FilteredTreeNode, UIEdge> picker = new DefaultModalGraphMouse<>();
+        //gm.setMode(ModalGraphMouse.Mode.PICKING);
+        vs.setGraphMouse(gm);
     }
 
     private static class VertexPaintTransformer implements Transformer<FilteredTreeItem,Paint> {

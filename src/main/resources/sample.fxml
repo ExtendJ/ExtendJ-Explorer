@@ -10,23 +10,50 @@
    </top>
    <center>
       <SplitPane fx:id="centerSplitPane" orientation="HORIZONTAL" dividerPositions="0,1">
-         <VBox styleClass="paneParent">
-            <Label text="Attributes of selected Node:"></Label>
-            <ScrollPane styleClass="attributeListView" fx:id="typeView">
-               <content>
-                  <ListView fx:id="listView" />
-               </content>
-            </ScrollPane>
-         </VBox>
+          <TabPane>
+              <tabs>
+                  <Tab text="Attributes">
+                     <VBox styleClass="paneParent">
+                        <ScrollPane styleClass="attributeScrollView" fx:id="typeView">
+                           <content>
+                              <ListView styleClass="attributeListView" fx:id="listView" />
+                           </content>
+                        </ScrollPane>
+                     </VBox>
+                  </Tab>
+              </tabs>
+          </TabPane>
          <VBox styleClass="paneParent">
             <ScrollPane styleClass="graphView" fx:id="graphView"/>
          </VBox>
-         <VBox styleClass="paneParent">
-            <Label text="Classes in this AST:"></Label>
-            <ScrollPane styleClass="typeListView">
-               <TreeView fx:id="typeListView"/>
-            </ScrollPane>
-         </VBox>
+          <VBox styleClass="paneParent">
+              <SplitPane orientation="VERTICAL" dividerPositions="0.5">
+                 <TabPane>
+                    <tabs>
+                        <Tab text="Filter">
+                        <VBox styleClass="paneParent" fx:id="lala">
+                            <TextArea styleClass="textAreaConfig" fx:id="filteredConfigTextArea" />
+                        </VBox>
+                        </Tab>
+                       <Tab text="Classes">
+                          <VBox styleClass="paneParent">
+                             <ScrollPane styleClass="typeListView">
+                                <TreeView styleClass="typeTreeView" fx:id="typeListView"/>
+                             </ScrollPane>
+                          </VBox>
+                       </Tab>
+                    </tabs>
+                 </TabPane>
+                  <TabPane>
+                    <tabs>
+                        <Tab text="empty">
+                            <VBox styleClass="paneParent"></VBox>
+                        </Tab>
+                        <Tab text="empty"><VBox styleClass="paneParent"></VBox></Tab>
+                    </tabs>
+                  </TabPane>
+              </SplitPane>
+          </VBox>
       </SplitPane>
    </center>
    <stylesheets>style.css</stylesheets>

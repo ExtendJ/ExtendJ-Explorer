@@ -15,20 +15,21 @@ public class Node{
     public final String fullName;
     public final ArrayList<Node> children;
     private boolean isList;
+    private boolean isOpt;
     private int level;
     private NodeContent nodeContent;
 
-    public Node(Object root, boolean isList, int level){
+    public Node(Object root, boolean isList, boolean isOpt, int level){
         this.children = new ArrayList<>();
         this.name = "";
         this.className = root.getClass().getName();
         fullName = className;
         id = System.identityHashCode(this.toString());
-        init(root, isList, level);
+        init(root, isList, isOpt, level);
 
     }
 
-    public Node(Object root, String name, boolean isList, int level){
+    public Node(Object root, String name, boolean isList, boolean isOpt, int level){
         this.children = new ArrayList<>();
         this.className = root.getClass().getName();
 
@@ -41,16 +42,13 @@ public class Node{
         }
         id = System.identityHashCode(this.toString());
         //System.out.println(name + " : " + isList + " : " + className);
-        init(root, isList, level);
+        init(root, isList, isOpt, level);
     }
 
-
-
-    public boolean isList(){ return isList; }
-
-    private void init(Object root, boolean isList, int level){
+    private void init(Object root, boolean isList, boolean isOpt, int level){
         //System.out.println("Node " + root.getClass().getName());
         node = root;
+        this.isOpt = isOpt;
         this.isList = isList;
         this.nodeContent = new NodeContent();
         this.level = level;
@@ -59,7 +57,7 @@ public class Node{
             for (Object child: (Iterable<?>) root) {
                 // System.out.println(root.getClass().getCanonicalName());
                 // TODO: Find a better solution for Lists with List children
-                children.add(new Node(child, "", child.getClass().getName().equals("lang.ast.List"), 1));
+                children.add(new Node(child, isOpt ? name : "", child.getClass().getName().equals("lang.ast.List"), false, 1));
                 traversDown(root, isList);
             }
         } else {
@@ -73,7 +71,11 @@ public class Node{
             for (Method m : root.getClass().getMethods()) {
                 for (Annotation a: m.getAnnotations()) {
                     if(ASTAnnotation.isChild(a)) {
-                        children.add(new Node(m.invoke(root, new Object[m.getParameterCount()]), getName(a, root), !ASTAnnotation.isSingleChild(a), level+1));
+                        children.add(new Node(m.invoke(root, new Object[m.getParameterCount()]),
+                                getName(a, root),
+                                !ASTAnnotation.isSingleChild(a),
+                                ASTAnnotation.isOptChild(a),
+                                level+1));
                     }
                     nodeContent.add(root, m, a);
                 }
@@ -91,9 +93,10 @@ public class Node{
     }
 
     public String nodeName() { return node.toString(); }
-
+    public boolean isOpt(){return isOpt;}
+    public boolean isList(){ return isList; }
     public String toString() {
-        return "<html>" + name + "<br>" + className + "</html>";
+        return "<html>" + className + "</html>";
     }
 
     public int getLevel(){ return level;}

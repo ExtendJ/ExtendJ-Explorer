@@ -27,10 +27,11 @@ public class FilteredTreeNode implements FilteredTreeItem {
     public void setEnabled(boolean enabled){ this.enabled = enabled; }
 
     private boolean setEnabled(Config cfgTypeList){
-        return cfgTypeList.configCount() == 0
+        return true;
+        /*return cfgTypeList.configCount() == 0
                 || cfgTypeList.isEnabled(node.className)
                 && (cfgTypeList.get(node.className + ":" + node.name) == null
-                || cfgTypeList.isEnabled(node.className + ":" + node.name));
+                || cfgTypeList.isEnabled(node.className + ":" + node.name));*/
     }
 
     public boolean isEnabled(){ return enabled; }

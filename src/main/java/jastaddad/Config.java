@@ -83,6 +83,7 @@ public class Config{
                     }
                 }
             }
+            reader.close();
         }catch(IOException e){
             System.out.println("Config.java: file not found. Config map will be empty. \n");
         }

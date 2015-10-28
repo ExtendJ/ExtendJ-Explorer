@@ -1,25 +1,136 @@
+.topParent{
+-fx-background-color: #606060;
+}
+
 .paneParent{
-    -fx-background-color: #DDDDDD;
+    -fx-background-color: #606060;
     -fx-fit-to-height:true;
     -fx-fit-to-width:true;
+    -fx-background-insets: 0
+}
+
+.attributeScrollView {
+    -fx-fit-to-height:true;
+    -fx-fit-to-width:true;
+    -fx-background-insets: 0;
 }
 
 .attributeListView {
     -fx-fit-to-height:true;
     -fx-fit-to-width:true;
+    -fx-background-color: #606060;
+    -fx-background-insets: 0;
+
 }
 
 .typeListView {
     -fx-fit-to-height:true;
     -fx-fit-to-width:true;
+    -fx-background-color: #606060;
+}
+
+.typeTreeView, .tree-cell {
+ -fx-background-color: #606060 ;
+ -fx-text-fill: white ;
+}
+
+.tree-cell:expanded, .tree-cell:sub-tree-item {
+    -fx-background-color: #404040 ;
+}
+
+.tree-cell {
+    -fx-padding: 0.75em 0em 0.75em 0em ;
+}
+.tree-cell:sub-tree-item {
+    -fx-padding: 0.25em ;
+}
+
+.tree-cell .tree-disclosure-node .arrow {
+-fx-background-color: #ffffff;
+}
+
+.tree-cell:expanded .tree-disclosure-node .arrow {
 }
 
 .graphView {
     -fx-fit-to-width:true;
     -fx-fit-to-height:true;
+    -fx-background-color: #606060;
 }
 
 .graphSplitPane{
 
 }
 
+.textAreaConfig{
+    -fx-pref-row-count:600;
+    -fx-text-fill: #ffffff ;
+    -fx-background-insets: 0;
+    -fx-focus-color: transparent;
+}
+
+.textAreaConfig .content{
+    -fx-background-color: #363636;
+}
+
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-opacity: 1;
+    -fx-background-color: #808080;
+    -fx-padding: 0 0 0 0;
+}
+
+.tab-pane
+{
+    -fx-tab-min-width:90px;
+}
+
+.tab{
+    -fx-background-insets: 0 0 0 0,0,0;
+}
+.tab-pane .tab
+{
+    -fx-background-color: #808080;
+}
+
+.tab-pane .tab:selected
+{
+    -fx-background-color: #606060;
+    -fx-focus-color: transparent;
+}
+
+.tab .tab-label {
+    -fx-alignment: CENTER;
+    -fx-text-fill: #aaaaaa;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.tab:selected .tab-label {
+    -fx-alignment: CENTER;
+    -fx-text-fill: #eeeeee;
+}
+
+.tab-pane:top *.tab-header-area {
+    -fx-background-insets: 0, 0 0 1 0;
+ /* -fx-padding: 0.416667em 0.166667em 0.0em 0.833em; /* 5 2 0 10 */
+    -fx-padding: 0.416667em 0.166667em 0.0em 0.0em; /* overriden as 5 2 0 0 */
+}
+
+.list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-background-color: #AAAAAA;
+    -fx-text-fill: white;
+}
+
+.list-cell:even { /* <=== changed to even */
+    -fx-background-color: #808080;
+}
+
+.list-cell:odd { /* <=== changed to even */
+    -fx-background-color: #707070;
+}
+
+.list-cell:filled:hover {
+    -fx-background-color: #999999;
+    -fx-text-fill: white;
+}

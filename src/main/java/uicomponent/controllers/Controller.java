@@ -9,14 +9,15 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.CheckBoxTreeItem;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.CheckBoxTreeCell;
+import javafx.scene.layout.VBox;
 import uicomponent.UIMonitor;
 import uicomponent.graph.GraphView;
 
 import java.awt.event.ItemEvent;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import java.util.ResourceBundle;
  * Created by gda10jth on 10/16/15.
  */
 public class Controller implements Initializable {
+    public VBox lala;
     @FXML
     private ListView listView;
 
@@ -36,6 +38,9 @@ public class Controller implements Initializable {
     private UIMonitor mon;
     private GraphView graphView;
 
+    @FXML
+    private TextArea filteredConfigTextArea;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {}
 
@@ -43,6 +48,28 @@ public class Controller implements Initializable {
         this.mon = mon;
         this.graphView = graphView;
         loadTreeView();
+        loadFilterFileText();
+    }
+
+    private void loadFilterFileText() {
+        String line;
+        String textContent = "";
+        int lineCount = 0;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("../configCompiler/testfiles/config.cfg"));
+            while ((line = reader.readLine()) != null) {
+                textContent += line + "\n";
+                lineCount++;
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            textContent = "Can not read the configuration file!";
+        }
+
+        filteredConfigTextArea.setText(textContent);
+        filteredConfigTextArea.setPrefColumnCount(lineCount);
+
     }
 
     private void loadTreeView(){
