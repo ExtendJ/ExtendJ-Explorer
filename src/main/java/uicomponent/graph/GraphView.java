@@ -2,6 +2,7 @@ package uicomponent.graph;
 
 import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
+import edu.uci.ics.jung.graph.DirectedOrderedSparseMultigraph;
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.*;
@@ -41,7 +42,8 @@ public class GraphView extends SwingNode {
         this.id = 0;
         this.mon = mon;
         this.con = con;
-        g = new DelegateForest<>();
+        DirectedOrderedSparseMultigraph n = new DirectedOrderedSparseMultigraph();
+        g = new DelegateForest<>(n);
 
         root = null;
 
@@ -70,7 +72,8 @@ public class GraphView extends SwingNode {
     }
 
     public void updateGraph(){
-        g = new DelegateForest<>();
+        DirectedOrderedSparseMultigraph n = new DirectedOrderedSparseMultigraph();
+        g = new DelegateForest<>(n);
         createTree(g, mon.getRootNode());
         createLayout(g);
         setListeners();
@@ -120,6 +123,7 @@ public class GraphView extends SwingNode {
         vs.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
         vs.getRenderContext().setVertexShapeTransformer(vertexShape);
         vs.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
+        //vs.getRenderContext().setVertexD
     }
 
     public void setListeners(){//Sets UI listeners of the graph
@@ -157,7 +161,7 @@ public class GraphView extends SwingNode {
         @Override
         public Paint transform(TreeItem fNode) {
             if(pi.isPicked(fNode))
-                return new Color(200, 240, 200);
+                return new Color(200, 240, 240);
             if(!fNode.isNode())
                 return new Color(220,220, 220);
             if(((TreeNode)fNode).node.isList()) return new Color(200, 200, 200);
