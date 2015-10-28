@@ -1,0 +1,21 @@
+ module ("config") {
+    java {
+		basedir "src/"
+        include "main/**/*.java"
+        include "gen/**/*.java"
+    }
+
+    jastadd {
+        include "config/jastadd/*.ast"
+        include "config/jastadd/*.jadd"
+        include "config/jastadd/*.jrag"
+    }
+
+   scanner {
+   		include "config/*.flex"
+   	}
+
+   	parser {
+   		include "config/*.parser"
+   	}
+}
