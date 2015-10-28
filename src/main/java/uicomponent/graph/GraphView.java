@@ -126,7 +126,6 @@ public class GraphView extends SwingNode {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        System.out.println(con);
                         con.itemStateChanged(e);
                     }
                 });
