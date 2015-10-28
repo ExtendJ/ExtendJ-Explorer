@@ -16,4 +16,10 @@ aspect Values{
     inh Node NodeName.getNode();
     eq Node.getNodeName().getNode() = this;
 
+    syn String Value.getStr() = null;
+    syn int Value.getInt() = 0;
+    syn boolean Value.getBool() = false;
+    eq Bool.getBool() = Boolean.parseBoolean(getBOOL());
+    eq Num.getInt() = Integer.parseInt(getNUMERAL());
+    eq Str.getStr() = getString();
 }

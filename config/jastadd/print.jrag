@@ -43,7 +43,7 @@ aspect Print{
     eq Bool.print() = getBOOL();
     eq IdDecl.print() = getID();
 
-    syn String Binding.print() = getName().getID() + "=" + getValue();
+    syn String Binding.print() = getName().getID() + " = " + getValue().print();
 
     syn String NodeName.print() = getClassName().print() + (hasName() ? ":" + getName().print() : "");
 }

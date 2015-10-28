@@ -42,12 +42,5 @@ aspect NameAnalysis {
     eq Num.isInt() = true;
     eq Str.isString() = true;
 
-    // get values
-    syn String Value.getStr() = "";
-    syn int Value.getInt() = 0;
-    syn boolean Value.getBool() = false;
-    eq Bool.getBool() = Boolean.parseBoolean(getBOOL());
-    eq Num.getInt() = Integer.parseInt(getNUMERAL());
-    eq Str.getStr() = getString();
 
 }

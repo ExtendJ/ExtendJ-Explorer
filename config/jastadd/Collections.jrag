@@ -11,6 +11,7 @@ aspect Collections {
 	Node contributes this to DebuggerConfig.nodes() for debuggerConfig();
 
 	syn HashMap<String, Node> DebuggerConfig.getNodes(){
+		System.out.println(hasConfigs() + ":" + getConfigs());
 		HashMap<String, Node> map = new HashMap();
 		for(Node node : ((HashSet<Node>) nodes()))
 			map.put(node.getNodeName().print(), node);
