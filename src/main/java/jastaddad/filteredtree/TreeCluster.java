@@ -6,11 +6,11 @@ import java.util.List;
 /**
  * Created by gda10jth on 10/21/15.
  */
-public class FilteredTreeCluster implements FilteredTreeItem {
-    private FilteredTreeNode cluster;
-    private List<FilteredTreeItem> children;
+public class TreeCluster implements TreeItem {
+    private TreeNode cluster;
+    private List<TreeItem> children;
 
-    public FilteredTreeCluster(FilteredTreeNode cluster){
+    public TreeCluster(TreeNode cluster){
         this.cluster = cluster;
         children = new ArrayList<>();
     }
@@ -31,17 +31,17 @@ public class FilteredTreeCluster implements FilteredTreeItem {
     }
 
     @Override
-    public boolean isRealChild(FilteredTreeItem child){
+    public boolean isRealChild(TreeItem child){
         return false;
     }
 
     @Override
-    public void addChild(FilteredTreeItem child) {
+    public void addChild(TreeItem child) {
         children.add(child);
     }
 
     @Override
-    public List<FilteredTreeItem> getChildren(){
+    public List<TreeItem> getChildren(){
         return children;
     }
 

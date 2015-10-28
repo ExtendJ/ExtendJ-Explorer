@@ -58,7 +58,7 @@ public class Node{
             for (Object child: (Iterable<?>) root) {
                 // TODO: Find a better solution for Lists with List children
 
-                children.add(new Node(child, isOpt ? name : "", child instanceof List, 1));
+                children.add(new Node(child, isOpt ? name : "", child instanceof List, false, 1));
                 traversDown(root, isList);
             }
         } else {

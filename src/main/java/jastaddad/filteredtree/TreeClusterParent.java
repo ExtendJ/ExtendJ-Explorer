@@ -6,10 +6,10 @@ import java.util.List;
 /**
  * Created by gda10jth on 10/21/15.
  */
-public class FilteredTreeClusterParent implements FilteredTreeItem {
-    private List<FilteredTreeItem> children;
-    private List<FilteredTreeCluster> clusters;
-    public FilteredTreeClusterParent(){
+public class TreeClusterParent implements TreeItem {
+    private List<TreeItem> children;
+    private List<TreeCluster> clusters;
+    public TreeClusterParent(){
         children = new ArrayList<>();
         clusters = new ArrayList<>();
     }
@@ -30,25 +30,25 @@ public class FilteredTreeClusterParent implements FilteredTreeItem {
     }
 
     @Override
-    public void addChild(FilteredTreeItem child) {
+    public void addChild(TreeItem child) {
         children.add(child);
     }
 
-    public void addCluster(FilteredTreeCluster cluster){
+    public void addCluster(TreeCluster cluster){
         clusters.add(cluster);
     }
 
     @Override
-    public List<FilteredTreeItem> getChildren() {
+    public List<TreeItem> getChildren() {
         return children;
     }
 
-    public List<FilteredTreeCluster> getClusters(){
+    public List<TreeCluster> getClusters(){
         return clusters;
     }
 
     @Override
-    public boolean isRealChild(FilteredTreeItem child) {
+    public boolean isRealChild(TreeItem child) {
         return false;
     }
 

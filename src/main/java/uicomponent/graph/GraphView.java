@@ -10,8 +10,8 @@ import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.picking.PickedInfo;
 import edu.uci.ics.jung.visualization.picking.PickedState;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
-import jastaddad.filteredtree.FilteredTreeItem;
-import jastaddad.filteredtree.FilteredTreeNode;
+import jastaddad.filteredtree.TreeItem;
+import jastaddad.filteredtree.TreeNode;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import org.apache.commons.collections15.Transformer;
@@ -23,7 +23,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
-import java.util.ArrayList;
 
 /**
  * Created by gda10jli on 10/15/15.
@@ -34,7 +33,7 @@ public class GraphView extends SwingNode {
     private UIMonitor mon;
     private Controller con;
     private VisualizationViewer vs;
-    private Forest<FilteredTreeItem, UIEdge> g;
+    private Forest<TreeItem, UIEdge> g;
     private UIEdge root;
 
     public GraphView(UIMonitor mon, Controller con){
@@ -51,12 +50,15 @@ public class GraphView extends SwingNode {
         setContent(vs);
     }
 
-    private void createTree(Forest<FilteredTreeItem, UIEdge> g, FilteredTreeItem parent){
-        for (FilteredTreeItem child : parent.getChildren()) {
-            UIEdge edge;
+    private void createTree(Forest<TreeItem, UIEdge> g, TreeItem parent){
+        for (TreeItem child : parent.getChildren()) {
+            UIEdge edge = null;
             if(child.isNode()){
-                FilteredTreeNode n = (FilteredTreeNode) child;
-                edge = new UIEdge(parent.isRealChild(child), n.node.name);
+                TreeNode n = (TreeNode) child;
+                if(parent.isNode() && !((TreeNode)parent).node.isOpt())
+                    edge = new UIEdge(parent.isRealChild(child), n.node.name);
+                else
+                    edge = new UIEdge(parent.isRealChild(child));
             }else {
                 edge = new UIEdge(parent.isRealChild(child));
             }
@@ -75,16 +77,16 @@ public class GraphView extends SwingNode {
         setContent(vs);
     }
 
-    public void createLayout(Forest<FilteredTreeItem, UIEdge> g ){//Creates UI specific stuff
+    public void createLayout(Forest<TreeItem, UIEdge> g ){//Creates UI specific stuff
 
-        TreeLayout<FilteredTreeItem, UIEdge> layout = new TreeLayout<>(g, 150, 100);
+        TreeLayout<TreeItem, UIEdge> layout = new TreeLayout<>(g, 150, 100);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        Transformer <FilteredTreeItem, Shape> vertexShape = fNode -> {
+        Transformer <TreeItem, Shape> vertexShape = fNode -> {
             //CompositeShape shape = new CompositeShape();
             if(!fNode.isNode())
                 return new RoundRectangle2D.Double(-50, -20, 130, 40,0,0);
-            if(((FilteredTreeNode)fNode).node.isList())
+            if(((TreeNode)fNode).node.isList())
                 return new RoundRectangle2D.Double(-50, -20, 130, 40,10,10);
             return new RoundRectangle2D.Double(-50, -20, 130, 40,40,40);
         };
@@ -108,7 +110,7 @@ public class GraphView extends SwingNode {
 
 
         vs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState()));
-        vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<FilteredTreeNode, String>());
+        vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<TreeNode, String>());
         vs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
         vs.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
         vs.getRenderContext().setVertexShapeTransformer(vertexShape);
@@ -140,21 +142,21 @@ public class GraphView extends SwingNode {
         vs.setGraphMouse(gm);
     }
 
-    private static class VertexPaintTransformer implements Transformer<FilteredTreeItem,Paint> {
-        private final PickedInfo<FilteredTreeItem> pi;
-        VertexPaintTransformer ( PickedInfo<FilteredTreeItem> pi ) {
+    private static class VertexPaintTransformer implements Transformer<TreeItem,Paint> {
+        private final PickedInfo<TreeItem> pi;
+        VertexPaintTransformer ( PickedInfo<TreeItem> pi ) {
             super();
             if (pi == null)
                 throw new IllegalArgumentException("PickedInfo instance must be non-null");
             this.pi = pi;
         }
         @Override
-        public Paint transform(FilteredTreeItem fNode) {
+        public Paint transform(TreeItem fNode) {
             if(pi.isPicked(fNode))
                 return new Color(240, 240, 240);
             if(!fNode.isNode())
                 return new Color(140,150, 32);
-            if(((FilteredTreeNode)fNode).node.isList()) return new Color(200, 200, 200);
+            if(((TreeNode)fNode).node.isList()) return new Color(200, 200, 200);
             return new Color(200, 240, 230);
         }
     }

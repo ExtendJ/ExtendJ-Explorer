@@ -11,13 +11,13 @@ import java.util.List;
 /**
  * Created by gda10jth on 10/16/15.
  */
-public class FilteredTreeNode implements FilteredTreeItem {
+public class TreeNode implements TreeItem {
     public final Node node;
     private boolean enabled;
-    private List<FilteredTreeItem> children;
+    private List<TreeItem> children;
     private HashMap<Integer, Boolean> realChildEdge;
 
-    public FilteredTreeNode(Node data, Config cfgTypeList){
+    public TreeNode(Node data, Config cfgTypeList){
         node = data;
         children = new ArrayList<>();
         realChildEdge = new HashMap<>();
@@ -37,28 +37,28 @@ public class FilteredTreeNode implements FilteredTreeItem {
     public boolean isEnabled(){ return enabled; }
 
     @Override
-    public void addChild(FilteredTreeItem child){
+    public void addChild(TreeItem child){
         if(child.isNode()) {
-            FilteredTreeNode c = (FilteredTreeNode)child;
+            TreeNode c = (TreeNode)child;
             realChildEdge.put(c.node.id, node.children.contains(c.node));
         }
         children.add(child);
     }
 
-    public boolean isRealChild(FilteredTreeItem child){
+    public boolean isRealChild(TreeItem child){
         //System.out.println(realChildEdge.get(child.node.id));
         if(!child.isNode())
             return false;
 
-        return realChildEdge.get(((FilteredTreeNode)child).node.id);
+        return realChildEdge.get(((TreeNode)child).node.id);
     }
 
     @Override
-    public List<FilteredTreeItem> getChildren(){
+    public List<TreeItem> getChildren(){
         return children;
     }
 
-    public Iterator<FilteredTreeItem> iterator(){ return children.iterator(); }
+    public Iterator<TreeItem> iterator(){ return children.iterator(); }
 
     public boolean isNode(){ return true; }
     public boolean isCluster(){return false;}

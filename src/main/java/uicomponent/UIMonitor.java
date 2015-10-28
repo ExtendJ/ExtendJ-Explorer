@@ -1,14 +1,14 @@
 package uicomponent;
 
 import jastaddad.ASTAPI;
-import jastaddad.filteredtree.FilteredTreeItem;
-import jastaddad.filteredtree.FilteredTreeNode;
+import jastaddad.filteredtree.TreeItem;
+import jastaddad.filteredtree.TreeNode;
 
 /**
  * Created by gda10jli on 10/16/15.
  */
 public class UIMonitor {
-    private FilteredTreeItem selectedNode;
+    private TreeItem selectedNode;
     private ASTAPI api;
 
     public UIMonitor(ASTAPI api){
@@ -19,8 +19,8 @@ public class UIMonitor {
         return api;
     }
 
-    public FilteredTreeItem getRootNode(){ return api.getFilteredTree(); }
+    public TreeItem getRootNode(){ return api.getFilteredTree(); }
 
-    public FilteredTreeItem getSelectedNode(){ return selectedNode; }
-    public void setSelectedNode(FilteredTreeNode selectedNode){ this.selectedNode = selectedNode; }
+    public TreeItem getSelectedNode(){ return selectedNode; }
+    public void setSelectedNode(TreeNode selectedNode){ this.selectedNode = selectedNode; }
 }

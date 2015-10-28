@@ -1,6 +1,6 @@
 package uicomponent.controllers;
 
-import jastaddad.filteredtree.FilteredTreeNode;
+import jastaddad.filteredtree.TreeNode;
 import jastaddad.objectinfo.NodeContent;
 import jastaddad.objectinfo.NodeInfo;
 import jastaddad.objectinfo.Token;
@@ -56,7 +56,7 @@ public class Controller implements Initializable {
         String textContent = "";
         int lineCount = 0;
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("../configCompiler/testfiles/config.cfg"));
+            BufferedReader reader = new BufferedReader(new FileReader("config.cfg"));
             while ((line = reader.readLine()) != null) {
                 textContent += line + "\n";
                 lineCount++;
@@ -115,7 +115,7 @@ public class Controller implements Initializable {
     private void setAttributeList(){
         if(!mon.getSelectedNode().isNode())
             return;
-        FilteredTreeNode fNode = ((FilteredTreeNode)mon.getSelectedNode());
+        TreeNode fNode = ((TreeNode)mon.getSelectedNode());
         NodeContent a = fNode.node.getNodeContent();
         ArrayList<NodeInfo> al = a.toArray();  //Todo remove this when we change the UI, ie we add a proper node name label
         al.add(0, new Token(fNode.node.nodeName(), "") {
@@ -129,8 +129,8 @@ public class Controller implements Initializable {
 
     public void itemStateChanged(ItemEvent e){//Sets UI listeners of the graph
         Object subject = e.getItem();
-        if(subject != null && subject instanceof FilteredTreeNode) {
-            mon.setSelectedNode((FilteredTreeNode) subject);
+        if(subject != null && subject instanceof TreeNode) {
+            mon.setSelectedNode((TreeNode) subject);
             setAttributeList();
         }
     }

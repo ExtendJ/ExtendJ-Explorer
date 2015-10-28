@@ -1,9 +1,9 @@
 package jastaddad;
 
-import jastaddad.filteredtree.FilteredTreeCluster;
-import jastaddad.filteredtree.FilteredTreeClusterParent;
-import jastaddad.filteredtree.FilteredTreeItem;
-import jastaddad.filteredtree.FilteredTreeNode;
+import jastaddad.filteredtree.TreeCluster;
+import jastaddad.filteredtree.TreeClusterParent;
+import jastaddad.filteredtree.TreeItem;
+import jastaddad.filteredtree.TreeNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,10 +14,10 @@ import java.util.List;
  */
 public class ASTAPI {
     private Node tree;
-    private FilteredTreeItem filteredTree;
+    private TreeItem filteredTree;
     private Config cfgTypeList;
     private HashMap<String, Integer> typeHash;
-    private HashMap<String, List<FilteredTreeNode>> typeNodeHash;
+    private HashMap<String, List<TreeNode>> typeNodeHash;
 
     public ASTAPI(Node tree){
         this.tree = tree;
@@ -33,7 +33,7 @@ public class ASTAPI {
     }
 
     public boolean newTypeFiltered(String type, boolean enabled){
-        for(FilteredTreeNode fNode : typeNodeHash.get(type) ){
+        for(TreeNode fNode : typeNodeHash.get(type) ){
             fNode.setEnabled(enabled);
             addToConfigs(fNode);
             cfgTypeList.writeConfigFile("jastaddadui-typelist.cfg",
@@ -45,7 +45,7 @@ public class ASTAPI {
         return true;
     }
 
-    private void addToTypes(FilteredTreeNode fNode){
+    private void addToTypes(TreeNode fNode){
         // add the node to the hashmap of types
         if(!typeNodeHash.containsKey(fNode.node.className))
             typeNodeHash.put(fNode.node.className, new ArrayList<>());
@@ -57,41 +57,41 @@ public class ASTAPI {
         }
     }
 
-    private void addToConfigs(FilteredTreeNode fNode){
+    private void addToConfigs(TreeNode fNode){
         // Add the node to the config hash
         if(fNode.node.name != "")
             typeHash.put(fNode.node.fullName, fNode.isEnabled() ? 1:0);
         typeHash.put(fNode.node.className, fNode.isEnabled() ? 1:0);
     }
 
-    private void clusterClusters(FilteredTreeNode fNode){
+    private void clusterClusters(TreeNode fNode){
         // put child clusters together in a parent cluster if they have no children in the filtered tree
         if(fNode.isNode()) {
             //FilteredTreeNode n = (FilteredTreeNode) fNode;
-            FilteredTreeClusterParent clusterParent = new FilteredTreeClusterParent();
+            TreeClusterParent clusterParent = new TreeClusterParent();
             // get all children cluster children that have no children
-            for (FilteredTreeItem fChild : fNode.getChildren()) {
+            for (TreeItem fChild : fNode.getChildren()) {
                 if (fChild.isCluster() && fChild.getChildren().size() == 0) {
-                    clusterParent.addCluster((FilteredTreeCluster)fChild);
+                    clusterParent.addCluster((TreeCluster)fChild);
                 }
             }
 
             //System.out.println("BU:" + newCluster.getClusterContainer().size() + " " + newCluster.isClusterParent);
             if(clusterParent.getClusters().size() > 1) {
-                for(FilteredTreeItem cChild : clusterParent.getClusters()) {
+                for(TreeItem cChild : clusterParent.getClusters()) {
                     fNode.getChildren().remove(cChild);
                 }
                 fNode.addChild(clusterParent);
             }
         }
     }
-    private void traversTree(Node node, FilteredTreeItem parent, FilteredTreeCluster cluster, boolean firstTime){
+    private void traversTree(Node node, TreeItem parent, TreeCluster cluster, boolean firstTime){
         if(node == null)
             return;
 
-        FilteredTreeItem addToParent = null;
-        FilteredTreeNode fNode = new FilteredTreeNode(node, cfgTypeList);
-        FilteredTreeCluster tmpCluster = cluster;
+        TreeItem addToParent = null;
+        TreeNode fNode = new TreeNode(node, cfgTypeList);
+        TreeCluster tmpCluster = cluster;
 
         if(firstTime) {
             addToTypes(fNode);
@@ -116,7 +116,7 @@ public class ASTAPI {
         }else{
             // first node in this cluster?
             if(tmpCluster == null){
-                tmpCluster = new FilteredTreeCluster(fNode);
+                tmpCluster = new TreeCluster(fNode);
                 // is this cluster the root of the tree?
                 if(parent != null)
                     addToParent = tmpCluster;
@@ -141,7 +141,7 @@ public class ASTAPI {
 
     public HashMap<String, Integer> getTypeHash(){ return typeHash; }
 
-    public FilteredTreeItem getFilteredTree(){
+    public TreeItem getFilteredTree(){
         return filteredTree;
     }
 }
