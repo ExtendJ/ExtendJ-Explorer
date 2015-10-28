@@ -122,6 +122,11 @@
     -fx-text-fill: white;
 }
 
+.list-cell{
+   
+    -fx-text-fill: white;
+}
+
 .list-cell:even { /* <=== changed to even */
     -fx-background-color: #808080;
 }
