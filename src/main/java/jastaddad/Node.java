@@ -1,5 +1,6 @@
 package jastaddad;
 
+import AST.List;
 import jastaddad.objectinfo.NodeContent;
 
 import java.lang.annotation.Annotation;
@@ -57,9 +58,8 @@ public class Node{
 
         if(isList) {
             for (Object child: (Iterable<?>) root) {
-                // System.out.println(root.getClass().getCanonicalName());
                 // TODO: Find a better solution for Lists with List children
-                children.add(new Node(child, "", child.getClass().getName().equals("lang.ast.List"), 1));
+                children.add(new Node(child, "", child instanceof List, 1));
                 traversDown(root, isList);
             }
         } else {

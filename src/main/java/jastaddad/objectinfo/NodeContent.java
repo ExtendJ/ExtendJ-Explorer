@@ -59,14 +59,14 @@ public class NodeContent {
     //Todo might move these methods to their specific classes
     private boolean addAttribute(Object obj, Method m, Annotation a){
         try{
-            HashMap<Object, Object> map = parameterized(obj, m);
+            HashMap<Object, Object> map = getCachedMapValues(obj, m);
             if(map != null){
                 for(Map.Entry<Object, Object> e : map.entrySet())
                     attributes.add(new Attribute(m.getName(), e.getKey() + " : " + e.getValue(), ""));
             }else
                 attributes.add(new Attribute(m.getName(), m.invoke(obj, new Object[m.getParameterCount()]).toString(), ""));
         } catch (Throwable e) {
-            System.out.println(obj.getClass() + ": " + m.getName() + ":" + m.getParameterCount());
+            //System.out.println(obj.getClass() + ": " + m.getName() + ":" + m.getParameterCount());
             //e.printStackTrace();
             attributes.add(new Attribute(getName(m),"Error message: " + e.getCause(), ""));
         }
@@ -75,14 +75,14 @@ public class NodeContent {
 
     private boolean addToken(Object obj, Method m, Annotation a){
         try{
-            HashMap<Object, Object> map = parameterized(obj, m);
+            HashMap<Object, Object> map = getCachedMapValues(obj, m);
             if(map != null){
                 for(Map.Entry<Object, Object> e : map.entrySet())
                     tokens.add(new Token(m.getName(), e.getKey() + " : " + e.getValue()));
             }else
                 tokens.add(new Token(m.getName(), m.invoke(obj, new Object[m.getParameterCount()]).toString()));
         } catch (Throwable e) {
-            //e.printStackTrace();
+           // e.printStackTrace();
             tokens.add(new Token(getName(m), "Error message: " + e.getCause()));
         }
         return true;
@@ -90,12 +90,11 @@ public class NodeContent {
 
     private String getName(Method m){ return m.getName() + (m.getParameterCount() > 0 ? "(" + m.getParameterCount()+")" : ""); }
 
-    private HashMap<Object, Object> parameterized(Object obj, Method m) throws IllegalAccessException, InstantiationException {
-        //Todo this is sooooo ugly, ask Görel for a better solution
+    private HashMap<Object, Object> getCachedMapValues(Object obj, Method m) throws IllegalAccessException, InstantiationException {
         try {
             if(m.getParameterCount() != 1)
                 return null;
-            Field f = getField(obj.getClass(), m.getName());
+            Field f = getField(obj.getClass(), m.getName(), "_values");
             if(f == null)
                 return null;
             f.setAccessible(true);
@@ -109,16 +108,16 @@ public class NodeContent {
         }
     }
 
-    private Field getField(Class clazz, String mName) throws NoSuchFieldException {
+    private Field getField(Class clazz, String mName, String fieldName) throws NoSuchFieldException {
         for(Field f : clazz.getDeclaredFields()){
-            if(f.getName().startsWith(mName+'_') && f.getName().endsWith("_values"))
+            if(f.getName().contains(mName+'_') && f.getName().endsWith(fieldName))
                 return f;
         }
         Class superClass = clazz.getSuperclass();
         if (superClass == null)
            return null;
         else
-            return getField(superClass, mName);
+            return getField(superClass, mName, fieldName);
     }
 
 }

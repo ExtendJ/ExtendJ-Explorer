@@ -6,6 +6,12 @@ import uicomponent.UIComponent;
 import java.util.ArrayList;
 import java.lang.reflect.Method;
 import java.lang.annotation.Annotation;
+import AST.*;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.lang.System;
 
 public class JastAddAd{
 
@@ -18,7 +24,29 @@ public class JastAddAd{
   }
   
   public static void main(String[] args) {
-        System.out.println("JastAddAd is running, this is a test message");
-        JastAddAd ui = new JastAddAd(new Object());
+      try{
+	String filename = "config.cfg";
+	ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
+	ConfigParser parser = new ConfigParser();
+	DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);
+	if (!program.errors().isEmpty()) {
+	      System.err.println();
+	      System.err.println("Errors: ");
+	      for (ErrorMessage e: program.errors()) {
+		      System.err.println("- " + e);
+	      }
+	} else {
+	      JastAddAd debugger = new JastAddAd(program);
+	      //program.genCode(System.out);
+	}
+
+    } catch (FileNotFoundException e) {
+	  System.out.println("File not found!");
+	  System.exit(1);
+    } catch (IOException e) {
+	  e.printStackTrace(System.err);
+    } catch (Exception e) {
+	  e.printStackTrace();
+    }
   }
 }

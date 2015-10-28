@@ -1,13 +1,20 @@
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.HashMap;
 
 aspect Collections {
     coll ArrayList<IdDecl> DebuggerConfig.IdDecls() [new ArrayList<IdDecl> ()] with add;
 
-	IdDecl contributes this
-		to DebuggerConfig.IdDecls() for debuggerConfig ();
+	IdDecl contributes this to DebuggerConfig.IdDecls() for debuggerConfig ();
 
-	coll Set<NodeName> DebuggerConfig.nodes() [new TreeSet<NodeName>()] with add;
-	NodeName contributes this to DebuggerConfig.nodes() for debuggerConfig();
+	coll HashSet DebuggerConfig.nodes() [new HashSet()] with add;
+	Node contributes this to DebuggerConfig.nodes() for debuggerConfig();
 
+	syn HashMap<String, Node> DebuggerConfig.getNodes(){
+		HashMap<String, Node> map = new HashMap();
+		for(Node node : ((HashSet<Node>) nodes()))
+			map.put(node.getNodeName().print(), node);
+		return map;
+	}
 }
 
