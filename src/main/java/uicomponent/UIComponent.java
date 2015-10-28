@@ -42,8 +42,6 @@ public class UIComponent extends Application {
         stage.show();
 
         ScrollPane center = (ScrollPane) a.lookup("#graphView");
-        if(center == null)
-            System.out.println("NULL");
         center.setContent(graphview);
     }
 
