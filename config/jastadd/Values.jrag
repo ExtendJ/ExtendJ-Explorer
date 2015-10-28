@@ -1,0 +1,19 @@
+aspect Values{
+
+    syn boolean BinExpr.isDoubleDecl() = getLeft().isIdDecl() && getRight().isIdDecl();
+    syn IdDecl BinExpr.getDecl(){
+        if(getLeft().isIdDecl())
+            return (IdDecl) getLeft();
+        return (IdDecl) getRight();
+    }
+
+    syn Value BinExpr.getValue(){
+        if(!getLeft().isIdDecl())
+            return  getLeft();
+        return getRight();
+    }
+
+    inh Node NodeName.getNode();
+    eq Node.getNodeName().getNode() = this;
+
+}

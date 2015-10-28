@@ -1,27 +1,13 @@
 buildscript {
-	repositories {
-		mavenLocal()
-		maven {
-			name = 'BinTray'
-			url = 'http://dl.bintray.com/content/shemnon/javafx-gradle/'
-		}
-		maven {
-			name = 'CloudBees Snapshot'
-			url = 'http://repository-javafx-gradle-plugin.forge.cloudbees.com/snapshot'
-		}
-		ivy {
-			url = 'http://repository-javafx-gradle-plugin.forge.cloudbees.com/snapshot'
-		}
-		mavenCentral()
+	repositories.mavenLocal()
+	repositories.maven {
+		url 'http://jastadd.org/mvn/'
 	}
 	dependencies {
-		classpath 'org.bitbucket.shemnon.javafxplugin:gradle-javafx-plugin:0.3.0'
-		classpath project.files("${System.properties['java.home']}/lib/ant-javafx.jar")
-		classpath project.files("${System.properties['java.home']}/lib/javafx-mx.jar")
-		classpath project.files("${System.properties['java.home']}/lib/jfxrt.jar")
-		classpath project.files("${System.properties['java.home']}/lib/jfxswt.jar")
+		classpath group: 'org.jastadd', name: 'jastaddgradle', version: '1.9'
 	}
 }
+
 
 if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
 	throw new GradleException("Must Build with Java 1.8")
@@ -32,15 +18,19 @@ if (matcher?.matches() && (!matcher?.group(5) || Integer.parseInt(matcher?.group
 	throw new GradleException("Must Build with Java 8 update 20 or later")
 }
 
-repositories {
-	mavenLocal()
-	mavenCentral()
-}
-
-//apply from: "http://dl.bintray.com/content/shemnon/javafx-gradle/0.3.0/javafx.plugin"
-
 apply plugin: 'java'
 apply plugin: 'application'
+apply plugin: 'jastadd'
+
+jastadd {
+	modules "."
+	module = "config"
+	astPackage = "AST"
+	genDir = "src/gen"
+	scanner.genDir = "src/gen/AST"
+	parser.name = "ConfigParser"
+	parser.genDir = "src/gen/AST"
+}
 
 dependencies {
 	compile fileTree(dir: 'libs', include: '*.jar')
@@ -56,10 +46,6 @@ dependencies {
 	runtime fileTree(dir: "${System.properties['java.home']}", include: '**/javafx-mx.jar')
 }
 
-String getProjectProperty(String propertyName) {
-	project.hasProperty(propertyName) ? project.property(propertyName) : null
-}
-
 task fatJar(type: Jar) {
 	destinationDir = projectDir
 	manifest.attributes 'Main-Class': 'jastaddad.JastAddAd'
@@ -67,5 +53,3 @@ task fatJar(type: Jar) {
 	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 	with jar
 }
-
-

@@ -1,7 +1,6 @@
-aspect Values{
+aspect Print{
 
     syn String BinExpr.print() =  getLeft().print() + getOp() + getRight().print();
-
     syn String BinExpr.getOp();
 
     eq EQ.getOp() = "==";
@@ -43,21 +42,8 @@ aspect Values{
     eq Color.print() = getColor();
     eq Bool.print() = getBOOL();
     eq IdDecl.print() = getID();
+
     syn String Binding.print() = getName().getID() + "=" + getValue();
 
-    syn boolean BinExpr.isDoubleDecl() = getLeft().isIdDecl() && getRight().isIdDecl();
-    syn IdDecl BinExpr.getDecl(){
-        if(getLeft().isIdDecl())
-            return (IdDecl) getLeft();
-        return (IdDecl) getRight();
-    }
-
-    syn Value BinExpr.getValue(){
-        if(!getLeft().isIdDecl())
-            return  getLeft();
-        return getRight();
-    }
-
-    inh Node NodeName.getNode();
-    eq Node.getNodeName().getNode() = this;
+    syn String NodeName.print() = getClassName().print() + (hasName() ? ":" + getName().print() : "");
 }

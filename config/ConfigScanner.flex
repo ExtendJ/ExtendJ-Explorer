@@ -1,15 +1,16 @@
-package lang.ast; // The generated scanner will belong to the package lang.ast
+package AST; // The generated parser will belong to package AST
 
-import lang.ast.LangParser.Terminals; // The terminals are implicitly defined in the parser
-import lang.ast.LangParser.SyntaxError;
+import AST.ConfigParser.Terminals;
+import AST.ConfigParser.SyntaxError;
 
 %%
 
 // define the signature for the generated scanner
 %public
 %final
-%class LangScanner
+%class ConfigScanner
 %extends beaver.Scanner
+
 
 // the interface between the scanner and the parser is the nextToken() method
 %type beaver.Symbol
