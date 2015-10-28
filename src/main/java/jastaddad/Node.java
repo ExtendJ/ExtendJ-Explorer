@@ -56,7 +56,6 @@ public class Node{
 
         if(isList) {
             for (Object child: (Iterable<?>) root) {
-                System.out.println(child.getClass());
                 // TODO: Find a better solution for Lists with List children
                 children.add(new Node(child, isOpt ? name : "", child instanceof List, false, 1));
                 traversDown(root, isList);
@@ -72,7 +71,6 @@ public class Node{
             for (Method m : root.getClass().getMethods()) {
                 for (Annotation a: m.getAnnotations()) {
                     if(ASTAnnotation.isChild(a)) {
-                        System.out.println(m.getName());
                         children.add(new Node(m.invoke(root, new Object[m.getParameterCount()]),
                                 getName(a, root),
                                 !ASTAnnotation.isSingleChild(a),

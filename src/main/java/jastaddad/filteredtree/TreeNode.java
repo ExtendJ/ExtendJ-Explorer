@@ -3,10 +3,7 @@ package jastaddad.filteredtree;
 import jastaddad.Config;
 import jastaddad.Node;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by gda10jth on 10/16/15.
@@ -15,12 +12,12 @@ public class TreeNode implements TreeItem {
     public final Node node;
     private boolean enabled;
     private List<TreeItem> children;
-    private HashMap<Integer, Boolean> realChildEdge;
+    private LinkedHashMap<Integer, Boolean> realChildEdge;
 
     public TreeNode(Node data, Config filter){
         node = data;
         children = new ArrayList<>();
-        realChildEdge = new HashMap<>();
+        realChildEdge = new LinkedHashMap<>();
         enabled = setEnabled(filter);
     }
 
