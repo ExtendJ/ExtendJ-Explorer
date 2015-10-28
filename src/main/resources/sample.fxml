@@ -10,7 +10,7 @@
    </top>
    <center>
       <SplitPane fx:id="centerSplitPane" orientation="HORIZONTAL" dividerPositions="0,1">
-          <TabPane>
+          <TabPane tabClosingPolicy="UNAVAILABLE">
               <tabs>
                   <Tab text="Attributes">
                      <VBox styleClass="paneParent">
@@ -28,12 +28,13 @@
          </VBox>
           <VBox styleClass="paneParent">
               <SplitPane orientation="VERTICAL" dividerPositions="0.5">
-                 <TabPane>
+                 <TabPane tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                         <Tab text="Filter">
-                        <VBox styleClass="paneParent" fx:id="lala">
-                            <TextArea styleClass="textAreaConfig" fx:id="filteredConfigTextArea" />
-                        </VBox>
+                            <VBox styleClass="paneParent">
+                                <TextArea styleClass="textAreaConfig" fx:id="filteredConfigTextArea" />
+                                <Button text="Update" fx:id="saveNewFilterButton"></Button>
+                            </VBox>
                         </Tab>
                        <Tab text="Classes">
                           <VBox styleClass="paneParent">
@@ -44,7 +45,7 @@
                        </Tab>
                     </tabs>
                  </TabPane>
-                  <TabPane>
+                  <TabPane tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                         <Tab text="empty">
                             <VBox styleClass="paneParent"></VBox>

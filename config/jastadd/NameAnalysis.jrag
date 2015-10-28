@@ -1,11 +1,11 @@
 aspect NameAnalysis {
 
     // is alone
-    eq DebuggerConfig.getInclude().isDeclared(Node node) = exists(node, getNumInclude()-1);
+    eq DebuggerConfig.getInclude().isDeclared(NodeConfig node) = exists(node, getNumInclude()-1);
 
-    syn boolean DebuggerConfig.exists(Node node, int until) {
+    syn boolean DebuggerConfig.exists(NodeConfig node, int until) {
         for (int i = 0; i < until; i++) {
-            Node child = getInclude(i);
+            NodeConfig child = getInclude(i);
             if(child != node){
                 String childName = child.getNodeName().getClassName().getID();
                 if(child.getNodeName().hasName())
@@ -22,8 +22,8 @@ aspect NameAnalysis {
         return true;
     }
 
-    syn boolean Node.isAlone() = isDeclared(this);
-    inh boolean Node.isDeclared(Node node);
+    syn boolean NodeConfig.isAlone() = isDeclared(this);
+    inh boolean NodeConfig.isDeclared(NodeConfig node);
 
     // is idIdDecl
     syn boolean Value.isIdDecl() = false;

@@ -23,7 +23,7 @@ public class Node{
     public Node(Object root, boolean isList, boolean isOpt, int level){
         this.children = new ArrayList<>();
         this.name = "";
-        this.className = root.getClass().getName();
+        this.className = root.getClass().getSimpleName();
         fullName = className;
         id = System.identityHashCode(this.toString());
         init(root, isList, isOpt, level);
@@ -32,9 +32,9 @@ public class Node{
 
     public Node(Object root, String name, boolean isList, boolean isOpt, int level){
         this.children = new ArrayList<>();
-        this.className = root.getClass().getName();
+        this.className = root.getClass().getSimpleName();
 
-        if(name == className){
+        if(name == className || name.length() == 0){
             this.name = "";
             fullName = className;
         }else {

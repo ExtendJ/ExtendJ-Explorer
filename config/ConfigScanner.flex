@@ -41,7 +41,6 @@ Comment = \/\*[^]*\*\/
 {WhiteSpace}  { }
 {Comment} {   }
 //token definitions
-"configs"       { return sym(Terminals.CONFIGS); }
 "filter"        { return sym(Terminals.FILTER); }
 "include"       { return sym(Terminals.INCLUDE); }
 "="        		{ return sym(Terminals.ASSIGNMENT); }

@@ -28,7 +28,9 @@ import java.util.ResourceBundle;
  * Created by gda10jth on 10/16/15.
  */
 public class Controller implements Initializable {
-    public VBox lala;
+    @FXML
+    private Button saveNewFilterButton;
+
     @FXML
     private ListView listView;
 
@@ -49,6 +51,10 @@ public class Controller implements Initializable {
         this.graphView = graphView;
         loadTreeView();
         loadFilterFileText();
+        saveNewFilterButton.setOnAction((event) -> {
+            mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
+            graphView.updateGraph();
+        });
     }
 
     private void loadFilterFileText() {
@@ -56,7 +62,7 @@ public class Controller implements Initializable {
         String textContent = "";
         int lineCount = 0;
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("config.cfg"));
+            BufferedReader reader = new BufferedReader(new FileReader("filter.cfg"));
             while ((line = reader.readLine()) != null) {
                 textContent += line + "\n";
                 lineCount++;

@@ -24,21 +24,21 @@ public class JastAddAd{
   }
   
   public static void main(String[] args) {
-      try{
-	String filename = "config.cfg";
-	ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
-	ConfigParser parser = new ConfigParser();
-	DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);
-	if (!program.errors().isEmpty()) {
-	      System.err.println();
-	      System.err.println("Errors: ");
-	      for (ErrorMessage e: program.errors()) {
-		      System.err.println("- " + e);
-	      }
-	} else {
-	      JastAddAd debugger = new JastAddAd(program);
-	      //program.genCode(System.out);
-	}
+	  try{
+		String filename = "testInput.cfg";
+		ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
+		ConfigParser parser = new ConfigParser();
+		DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);
+		if (!program.errors().isEmpty()) {
+			  System.err.println();
+			  System.err.println("Errors: ");
+			  for (ErrorMessage e: program.errors()) {
+				  System.err.println("- " + e);
+			  }
+		} else {
+			  JastAddAd debugger = new JastAddAd(program);
+			  //program.genCode(System.out);
+		}
 
     } catch (FileNotFoundException e) {
 	  System.out.println("File not found!");

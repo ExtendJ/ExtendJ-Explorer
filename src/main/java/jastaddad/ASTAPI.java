@@ -15,31 +15,23 @@ import java.util.List;
 public class ASTAPI {
     private Node tree;
     private TreeItem filteredTree;
-    private Config cfgTypeList;
+    private Config filterConfig;
     private HashMap<String, Integer> typeHash;
     private HashMap<String, List<TreeNode>> typeNodeHash;
 
     public ASTAPI(Node tree){
         this.tree = tree;
         this.filteredTree = null;
-        cfgTypeList = new Config("jastaddadui-typelist.cfg");
+        filterConfig = new Config();
         typeHash = new HashMap<>();
         typeNodeHash = new HashMap<>();
-        //System.out.println("configCount: " + cfgTypeList.configCount());
         traversTree(this.tree, null, null, true);
-        cfgTypeList.writeConfigFile("jastaddadui-typelist.cfg",
-                typeHash.entrySet().iterator(),
-                "# This file will be read by the Interactive user interface JastAddAdUi for JastAddAd");
     }
 
     public boolean newTypeFiltered(String type, boolean enabled){
         for(TreeNode fNode : typeNodeHash.get(type) ){
             fNode.setEnabled(enabled);
             addToConfigs(fNode);
-            cfgTypeList.writeConfigFile("jastaddadui-typelist.cfg",
-                    typeHash.entrySet().iterator(),
-                    "# This file will be read by the Interactive user interface JastAddAdUi for JastAddAd");
-            cfgTypeList = new Config("jastaddadui-typelist.cfg");
         }
         traversTree(this.tree, null, null, true);
         return true;
@@ -90,7 +82,7 @@ public class ASTAPI {
             return;
 
         TreeItem addToParent = null;
-        TreeNode fNode = new TreeNode(node, cfgTypeList);
+        TreeNode fNode = new TreeNode(node, filterConfig);
         TreeCluster tmpCluster = cluster;
 
         if(firstTime) {
@@ -143,5 +135,12 @@ public class ASTAPI {
 
     public TreeItem getFilteredTree(){
         return filteredTree;
+    }
+
+    public boolean saveNewFilter(String text){
+        boolean res = filterConfig.saveAndUpdateFilter(text);
+        if(res)
+            traversTree(this.tree, null, null, true);
+        return res;
     }
 }

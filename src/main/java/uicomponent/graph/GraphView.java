@@ -22,6 +22,7 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.RoundRectangle2D;
 
 /**
@@ -69,7 +70,6 @@ public class GraphView extends SwingNode {
     }
 
     public void updateGraph(){
-
         g = new DelegateForest<>();
         createTree(g, mon.getRootNode());
         createLayout(g);
@@ -85,21 +85,26 @@ public class GraphView extends SwingNode {
         Transformer <TreeItem, Shape> vertexShape = fNode -> {
             //CompositeShape shape = new CompositeShape();
             if(!fNode.isNode())
-                return new RoundRectangle2D.Double(-50, -20, 130, 40,0,0);
+                return new Ellipse2D.Float(-20, -20, 40, 40);
             if(((TreeNode)fNode).node.isList())
                 return new RoundRectangle2D.Double(-50, -20, 130, 40,10,10);
             return new RoundRectangle2D.Double(-50, -20, 130, 40,40,40);
         };
 
-        float dash[] = {10.0f};
-        final Stroke dashedEdgeStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
-                BasicStroke.JOIN_MITER, 10.0f, dash, 0.0f);
-        final Stroke edgeStroke = new BasicStroke(1.0f);
+        float dash[] = {5.0f};
+        final Stroke dashedStroke = new BasicStroke(0.2f, BasicStroke.CAP_BUTT,
+                BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
+        final Stroke normalStroke = new BasicStroke(1.0f);
         Transformer<UIEdge, Stroke> edgeStrokeTransformer = edge -> {
             if(edge.isRealChild())
-                return edgeStroke;
-            return dashedEdgeStroke;
+                return normalStroke;
+            return dashedStroke;
+        };
 
+        Transformer<TreeItem, Stroke> vertexStrokeTransformer = item -> {
+            if(!item.isNode())
+                return dashedStroke;
+            return normalStroke;
         };
 
         ScalingControl visualizationViewerScalingControl = new CrossoverScalingControl();
@@ -108,7 +113,7 @@ public class GraphView extends SwingNode {
         vs.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
         vs.scaleToLayout(visualizationViewerScalingControl);
 
-
+        vs.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
         vs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState()));
         vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<TreeNode, String>());
         vs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
@@ -153,9 +158,9 @@ public class GraphView extends SwingNode {
         @Override
         public Paint transform(TreeItem fNode) {
             if(pi.isPicked(fNode))
-                return new Color(240, 240, 240);
+                return new Color(200, 240, 200);
             if(!fNode.isNode())
-                return new Color(140,150, 32);
+                return new Color(220,220, 220);
             if(((TreeNode)fNode).node.isList()) return new Color(200, 200, 200);
             return new Color(200, 240, 230);
         }

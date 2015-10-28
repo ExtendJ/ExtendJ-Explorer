@@ -1,6 +1,6 @@
-DebuggerConfig ::= [Configs] Include:Node*;
+DebuggerConfig ::= [Configs] Include:NodeConfig*;
 
-Node ::= NodeName [Filter] [ConfigList];
+NodeConfig ::= NodeName [Filter] [ConfigList];
 
 NodeName ::= ClassName:IdDecl [Name:IdDecl];
 

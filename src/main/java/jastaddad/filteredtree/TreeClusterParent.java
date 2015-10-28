@@ -54,6 +54,6 @@ public class TreeClusterParent implements TreeItem {
 
     @Override
      public String toString(){
-        return "ClusterParent";
+        return "";
     }
 }

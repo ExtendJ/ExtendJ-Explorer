@@ -1,106 +1,67 @@
 package jastaddad;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import AST.*;
+
+import java.io.*;
 
 public class Config{
-    private HashMap<String, String> mainConfigs;
-    private HashMap<String, String> configs;
-    public static final String FILE_NAME = "jastaddadui-typelist.cfg";
+    private DebuggerConfig configs;
+    private boolean noError;
 
     public Config(){
-        configs = new HashMap<String, String>();
-        readConfigFile(FILE_NAME);
-        mainConfigs = configs;
-    }
-    public Config(String filePath){
-        configs = new HashMap<String, String>();
-        readConfigFile(filePath);
-        mainConfigs = configs;
+        noError = readFilter();
     }
 
-    public int configCount(){
-        return configs.size();
-    }
-
-    public void loadMainConfigs(){
-        configs = mainConfigs;
-    }
-
-    public void loadConfigsForTest(String fileName){
-        readConfigFile(fileName);
-    }
-
-    public void put(String name, String value){
-        configs.put(name, value);
-    }
-
-    public String get(String name){
-        return configs.get(name);
-    }
-
-    // does the config exist and is it equals to value
-    public boolean isValue(String name, String value){
-        String cfg = configs.get(name);
-        return cfg != null && cfg.equals(value);
-    }
-
-    // does the config exist and is it set to 1
-    public boolean isEnabled(String name){
-        String cfg = configs.get(name);
-        return cfg != null && cfg.equals("1");
-    }
-
-
-    public boolean isPrintEnabled(String name){
-        String cfg = configs.get(name);
-        return cfg == null || cfg.equals("1");
-    }
-
-    public void printConfigs(){
-        Iterator it = configs.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            System.out.println(pair.getKey() + " - " + pair.getValue());
-        }
-    }
-
-    private void readConfigFile(String fileName){
+    private boolean readFilter(){
+        DebuggerConfig tmpFilter;
         try{
-            BufferedReader reader = new BufferedReader(new FileReader(fileName));
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                if(line.length() > 0){
-                    line = line.replace(" ", "");
-                    if(!line.startsWith("#")){
-                        String[] one_config = line.split("=");
-                        configs.put(one_config[0], one_config[1]);
-                    }
+            String filename = "filter.cfg";
+            ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
+            ConfigParser parser = new ConfigParser();
+            tmpFilter = (DebuggerConfig) parser.parse(scanner);
+            if (!tmpFilter.errors().isEmpty()) {
+                System.err.println();
+                System.err.println("Errors: ");
+                for (ErrorMessage e: tmpFilter.errors()) {
+                    System.err.println("- " + e);
                 }
+                return false;
             }
-            reader.close();
-        }catch(IOException e){
-            System.out.println("Config.java: file not found. Config map will be empty. \n");
+
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found!");
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace(System.err);
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
+        configs = tmpFilter;
+        return true;
     }
 
-    public void writeConfigFile(String fileName, Iterator it, String start){
-        try{
-            PrintWriter writer = new PrintWriter(fileName, "UTF-8");
-            writer.println(start);
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry)it.next();
-                writer.println(pair.getKey() + " = " + pair.getValue());
-            }
+    public boolean isEnabled(Node node){
+        //System.out.println(node.fullName);
+        return noError && (configs.configs().get("showAll").getBool() || configs.getNodes().containsKey(node.className) || configs.getNodes().containsKey(node.fullName));
+    }
+
+    public boolean saveAndUpdateFilter(String text){
+        System.out.println("SAVE");
+        PrintWriter writer = null;
+        try {
+            writer = new PrintWriter("filter.cfg", "UTF-8");
+            writer.print(text);
             writer.close();
-        }catch(IOException e){
-            System.out.println("Config.java: Error writing to file:\n");
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
+            noError = false;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            noError = false;
         }
+        noError = readFilter();
+        return noError;
     }
 }

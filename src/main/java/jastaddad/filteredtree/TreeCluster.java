@@ -47,6 +47,6 @@ public class TreeCluster implements TreeItem {
 
     @Override
      public String toString(){
-        return "Cluster";
+        return "";
     }
 }

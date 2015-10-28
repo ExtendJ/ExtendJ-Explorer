@@ -12,12 +12,12 @@
 
 %goal debuggerconfig
 
-DebuggerConfig debuggerconfig = CONFIGS LBRACKET binding_list.a RBRACKET include.b {: return new DebuggerConfig(new Opt(a), b); :}
+DebuggerConfig debuggerconfig = configs.a include.b {: return new DebuggerConfig(new Opt(a), b); :}
 		| include.a {: return new DebuggerConfig(new Opt(), a); :} ;
 
-List binding_list =
-	/*EmptyList*/ {: return new List(); :}
-	| binding_tmp.a SEMI {: return a; :};
+BindingList binding_list =
+	/*EmptyList*/ {: return new BindingList(new List()); :}
+	| binding_tmp.a SEMI {: return new BindingList(a); :};
 
 
 List binding_tmp =
@@ -34,12 +34,12 @@ List node_list =
 	node.e {: return new List().add(e); :}
 	| node_list.f node.g {: return f.add(g); :} ;
 
-Node node =
-	node_name.a SEMI {: return new Node(a, new Opt(), new Opt()); :}
-	| node_name.a LBRACKET RBRACKET {: return new Node(a, new Opt(), new Opt()); :}
-	| node_name.a LBRACKET filter.c RBRACKET {: return new Node(a, new Opt(c), new Opt()); :}
-	| node_name.a LBRACKET configList.c RBRACKET {: return new Node(a, new Opt(), new Opt(c)); :}
-	| node_name.a LBRACKET filter.c configList.d RBRACKET {: return new Node(a, new Opt(c), new Opt(d)); :};
+NodeConfig node =
+	node_name.a SEMI {: return new NodeConfig(a, new Opt(), new Opt()); :}
+	| node_name.a LBRACKET RBRACKET {: return new NodeConfig(a, new Opt(), new Opt()); :}
+	| node_name.a LBRACKET filter.c RBRACKET {: return new NodeConfig(a, new Opt(c), new Opt()); :}
+	| node_name.a LBRACKET configList.c RBRACKET {: return new NodeConfig(a, new Opt(), new Opt(c)); :}
+	| node_name.a LBRACKET filter.c configList.d RBRACKET {: return new NodeConfig(a, new Opt(c), new Opt(d)); :};
 
 NodeName node_name =
 	iddecl.a  {: return new NodeName(a, new Opt()); :}

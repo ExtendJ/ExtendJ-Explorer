@@ -17,21 +17,17 @@ public class TreeNode implements TreeItem {
     private List<TreeItem> children;
     private HashMap<Integer, Boolean> realChildEdge;
 
-    public TreeNode(Node data, Config cfgTypeList){
+    public TreeNode(Node data, Config filter){
         node = data;
         children = new ArrayList<>();
         realChildEdge = new HashMap<>();
-        enabled = setEnabled(cfgTypeList);
+        enabled = setEnabled(filter);
     }
 
     public void setEnabled(boolean enabled){ this.enabled = enabled; }
 
-    private boolean setEnabled(Config cfgTypeList){
-        return true;
-        /*return cfgTypeList.configCount() == 0
-                || cfgTypeList.isEnabled(node.className)
-                && (cfgTypeList.get(node.className + ":" + node.name) == null
-                || cfgTypeList.isEnabled(node.className + ":" + node.name));*/
+    private boolean setEnabled(Config filter){
+        return filter.isEnabled(node);
     }
 
     public boolean isEnabled(){ return enabled; }

@@ -35,7 +35,7 @@ aspect ErrorContributions {
 		when !getLeft().isIdDecl() && !getRight().isIdDecl()
 		to DebuggerConfig.errors() for debuggerConfig();
 
-	Node contributes error("Node :" + getNodeName().getClassName().print() + " is already declared")
+	NodeConfig contributes error("Node :" + getNodeName().getClassName().print() + " is already declared")
     		when !isAlone()
     		to DebuggerConfig.errors() for debuggerConfig();
 }

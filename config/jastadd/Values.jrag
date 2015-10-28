@@ -13,7 +13,7 @@ aspect Values{
         return getRight();
     }
 
-    inh Node NodeName.getNode();
-    eq Node.getNodeName().getNode() = this;
+    inh NodeConfig NodeName.getNode();
+    eq NodeConfig.getNodeName().getNode() = this;
 
 }
