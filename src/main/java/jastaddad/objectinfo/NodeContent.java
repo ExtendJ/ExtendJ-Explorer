@@ -77,10 +77,10 @@ public class NodeContent {
     private boolean addAttribute(Object obj, Method m){
         String name = getName(m);
         try{
-            attributes.put(name, new Attribute(name, m.invoke(obj, new Object[m.getParameterCount()]), ""));
+            attributes.put(name, new Attribute(name, m.invoke(obj, new Object[m.getParameterCount()]), m, ""));
         } catch (Throwable e) {
             //e.printStackTrace();
-            attributes.put(name, new Attribute(name, e.getCause().toString(), ""));
+            attributes.put(name, new Attribute(name, e.getCause().toString(), m, ""));
         }
         return true;
     }
@@ -88,10 +88,10 @@ public class NodeContent {
     private boolean addToken(Object obj, Method m, Annotation a){
         String name = getName(m);
         try{
-            tokens.put(name, new Token(name, m.invoke(obj, new Object[m.getParameterCount()])));
+            tokens.put(name, new Token(name, m.invoke(obj, new Object[m.getParameterCount()]), m));
         } catch (Throwable e) {
             e.printStackTrace();
-            tokens.put(name, new Token(name, e.getCause().toString()));
+            tokens.put(name, new Token(name, e.getCause().toString(), m));
         }
         return true;
     }
@@ -102,12 +102,12 @@ public class NodeContent {
             HashMap<Object, Object> map = getCachedMapValues(obj, m); //tries to find cached values
             if(map != null){
                 for(Map.Entry<Object, Object> e : map.entrySet())
-                    attributes.put(name + e.getKey(), new Attribute(name, e.getKey() + " : " + e.getValue(), ""));
+                    attributes.put(name + e.getKey(), new Attribute(name, e.getKey() + " : " + e.getValue(), m, ""));
             }else
-                attributes.put(name, new Attribute(name, "Need input from user", ""));
+                attributes.put(name, new Attribute(name, "Need input from user", m, ""));
         } catch (Throwable e) {
             e.printStackTrace();
-            attributes.put(name, new Attribute(name, e.getCause()+ "", ""));
+            attributes.put(name, new Attribute(name, e.getCause()+ "", m, ""));
         }
         return true;
     }

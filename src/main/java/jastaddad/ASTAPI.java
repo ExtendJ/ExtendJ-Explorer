@@ -18,9 +18,11 @@ public class ASTAPI {
     private Config filterConfig;
     private HashMap<String, Integer> typeHash;
     private HashMap<String, List<TreeNode>> typeNodeHash;
+    private HashMap<Object, Node> nodeRefs;
 
-    public ASTAPI(Node tree){
-        this.tree = tree;
+    public ASTAPI(Object root){
+        nodeRefs = new HashMap();
+        tree = new Node(nodeRefs, root);
         this.filteredTree = null;
         filterConfig = new Config();
         typeHash = new HashMap<>();
@@ -132,6 +134,14 @@ public class ASTAPI {
     }
 
     public HashMap<String, Integer> getTypeHash(){ return typeHash; }
+
+    public boolean isReferenceNode(Object node){
+        return nodeRefs.containsKey(node);
+    }
+
+    public Node getReference(Object node){
+        return nodeRefs.get(node);
+    }
 
     public TreeItem getFilteredTree(){
         return filteredTree;

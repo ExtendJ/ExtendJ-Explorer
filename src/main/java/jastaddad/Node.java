@@ -21,13 +21,13 @@ public class Node{
     private int level;
     private NodeContent nodeContent;
 
-    public Node(HashMap<Object, Node> nodes, Object root, boolean isList, boolean isOpt, int level){
+    public Node(HashMap<Object, Node> nodes, Object root){
         this.children = new ArrayList<>();
         this.name = "";
         this.className = root.getClass().getSimpleName();
         fullName = className;
         id = System.identityHashCode(this.toString());
-        init(nodes, root, isList, isOpt, level);
+        init(nodes, root, false, false, 1);
     }
 
     public Node(HashMap<Object, Node> nodes, Object root, String name, boolean isList, boolean isOpt, int level){
@@ -77,7 +77,7 @@ public class Node{
                 for (Annotation a: m.getAnnotations()) {
                     if(ASTAnnotation.isChild(a)) {
                         children.add(new Node(nodes,m.invoke(root, new Object[m.getParameterCount()]),
-                                getName(a, root),
+                                getName(a),
                                 !ASTAnnotation.isSingleChild(a),
                                 ASTAnnotation.isOptChild(a),
                                 level + 1));
@@ -91,7 +91,7 @@ public class Node{
         }
     }
 
-    private String getName(Annotation a, Object node) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private String getName(Annotation a) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         if (a.getClass().getMethod("name") != null)
             return (String) a.getClass().getMethod("name").invoke(a, new Object[]{});
         return "";

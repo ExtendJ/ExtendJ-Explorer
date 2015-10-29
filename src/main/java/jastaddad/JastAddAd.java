@@ -17,9 +17,7 @@ import java.lang.System;
 public class JastAddAd{
 
   public JastAddAd(Object root){
-    HashMap<Object, Node> nodes = new HashMap();
-    Node tree = new Node(nodes, root, false, false, 1);
-    ASTAPI api = new ASTAPI(tree);
+    ASTAPI api = new ASTAPI(root);
     //System.out.println("asdasd");
     UIComponent ui = new UIComponent(api);
     //javafx.application.Application.launch(JastAddAdUi.class);
