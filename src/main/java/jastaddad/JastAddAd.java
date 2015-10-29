@@ -4,6 +4,7 @@ package jastaddad;
 import uicomponent.UIComponent;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.lang.reflect.Method;
 import java.lang.annotation.Annotation;
 import AST.*;
@@ -16,7 +17,8 @@ import java.lang.System;
 public class JastAddAd{
 
   public JastAddAd(Object root){
-    Node tree = new Node(root, false, false, 1); //Unknown if root is a list, TODO check this shit out
+    HashMap<Object, Node> nodes = new HashMap();
+    Node tree = new Node(nodes, root, false, false, 1);
     ASTAPI api = new ASTAPI(tree);
     //System.out.println("asdasd");
     UIComponent ui = new UIComponent(api);

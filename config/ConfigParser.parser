@@ -45,15 +45,17 @@ NodeName node_name =
 	iddecl.a  {: return new NodeName(a, new Opt()); :}
 	| iddecl.a COL iddecl.b {: return new NodeName(a, new Opt(b)); :};
 
-List configList =
+ConfigList configList = configList_list.a {: return new ConfigList(a); :}
+
+List configList_list  =
 	configs.a {: return new List().add(a); :}
-	| configList.a configs.b {: return a.add(b); :};
+	| configList_list.a configs.b {: return a.add(b); :};
 
 Configs configs =
 	iddecl.a LBRACKET binding_list.h RBRACKET {: return new Configs(a, new Opt(h)); :};
 
-List filter =
-	FILTER LBRACKET filter_list.c RBRACKET {: return c; :};
+Filter filter =
+	FILTER LBRACKET filter_list.c RBRACKET {: return new Filter(c); :};
 
 List filter_list =
 		/*Empty*/{: return new List(); :}

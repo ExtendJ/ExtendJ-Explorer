@@ -7,6 +7,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Node{
     private Object node;
@@ -20,17 +21,16 @@ public class Node{
     private int level;
     private NodeContent nodeContent;
 
-    public Node(Object root, boolean isList, boolean isOpt, int level){
+    public Node(HashMap<Object, Node> nodes, Object root, boolean isList, boolean isOpt, int level){
         this.children = new ArrayList<>();
         this.name = "";
         this.className = root.getClass().getSimpleName();
         fullName = className;
         id = System.identityHashCode(this.toString());
-        init(root, isList, isOpt, level);
-
+        init(nodes, root, isList, isOpt, level);
     }
 
-    public Node(Object root, String name, boolean isList, boolean isOpt, int level){
+    public Node(HashMap<Object, Node> nodes, Object root, String name, boolean isList, boolean isOpt, int level){
         this.children = new ArrayList<>();
         this.className = root.getClass().getSimpleName();
 
@@ -42,36 +42,33 @@ public class Node{
             fullName = className + ":" + name;
         }
         id = System.identityHashCode(this.toString());
-        //System.out.println(name + " : " + isList + " : " + className);
-        init(root, isList, isOpt, level);
+        init(nodes, root, isList, isOpt, level);
     }
 
-    private void init(Object root, boolean isList, boolean isOpt, int level){
-        //System.out.println("Node " + root.getClass().getName());
+    private void init(HashMap<Object, Node> nodes, Object root, boolean isList, boolean isOpt, int level){
         node = root;
         this.isOpt = isOpt;
         this.isList = isList;
         this.nodeContent = new NodeContent();
         this.level = level;
 
+        nodes.put(root, this);
         if(isList) {
             for (Object child: (Iterable<?>) root) {
-                // TODO: Find a better solution for Lists with List children
-                children.add(new Node(child, isOpt ? name : "", child instanceof List, false, 1));
-                traversDown(root, isList);
+                children.add(new Node(nodes, child, isOpt ? name : "", child instanceof List, false, 1));
+                traversDown(nodes, root);
             }
         } else {
-            traversDown(root, isList);
+            traversDown(nodes, root);
         }
     }
 
-    private void traversDown(Object root, boolean isList){
-        //System.out.println("Node : " + root);
+    private void traversDown(HashMap<Object, Node> nodes, Object root){
         try {
             for (Method m : root.getClass().getMethods()) {
                 for (Annotation a: m.getAnnotations()) {
                     if(ASTAnnotation.isChild(a)) {
-                        children.add(new Node(m.invoke(root, new Object[m.getParameterCount()]),
+                        children.add(new Node(nodes,m.invoke(root, new Object[m.getParameterCount()]),
                                 getName(a, root),
                                 !ASTAnnotation.isSingleChild(a),
                                 ASTAnnotation.isOptChild(a),

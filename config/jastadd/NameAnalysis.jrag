@@ -22,7 +22,7 @@ aspect NameAnalysis {
         return true;
     }
 
-    syn boolean NodeConfig.isAlone() = isDeclared(this);
+    syn boolean NodeConfig.multipleDeclared() = !isDeclared(this);
     inh boolean NodeConfig.isDeclared(NodeConfig node);
 
     // is idIdDecl
