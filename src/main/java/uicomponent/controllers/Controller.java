@@ -27,7 +27,7 @@ import java.util.ResourceBundle;
 /**
  * Created by gda10jth on 10/16/15.
  */
-public class Controller implements Initializable {
+public class Controller implements Initializable, ChangeListener<NodeInfo> {
     @FXML
     private Button saveNewFilterButton;
 
@@ -44,7 +44,10 @@ public class Controller implements Initializable {
     private TextArea filteredConfigTextArea;
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {}
+    public void initialize(URL url, ResourceBundle rb) {
+        //Attribute Listener
+        listView.getSelectionModel().selectedItemProperty().addListener(this);
+    }
 
     public void init(UIMonitor mon, GraphView graphView){
         this.mon = mon;
@@ -54,8 +57,8 @@ public class Controller implements Initializable {
         saveNewFilterButton.setOnAction((event) -> {
             mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
             graphView.updateGraph();
-
         });
+
     }
 
     private void loadFilterFileText() {
@@ -116,7 +119,12 @@ public class Controller implements Initializable {
         typeListView.setShowRoot(false);
         typeListView.setCellFactory(CheckBoxTreeCell.<TmpTreeItem>forTreeView());
 
+    }
 
+    @Override
+    public void changed(ObservableValue<? extends NodeInfo> observable, NodeInfo oldValue, NodeInfo newValue) {
+        if(newValue == null || !mon.getApi().isReferenceNode(newValue.getValue()))
+            return;
     }
 
     private void setAttributeList(){
@@ -125,13 +133,15 @@ public class Controller implements Initializable {
         TreeNode fNode = ((TreeNode)mon.getSelectedNode());
         NodeContent a = fNode.node.getNodeContent();
         ArrayList<NodeInfo> al = a.toArray();  //Todo remove this when we change the UI, ie we add a proper node name label
-        al.add(0, new Token(fNode.node.nodeName(), "") {
+        al.add(0, new NodeInfo(fNode.node.nodeName(), "", null) {
             @Override
             public String print() {
                 return "Node name: " + name;
             }
         });
+        listView.getSelectionModel().clearSelection();
         listView.setItems(FXCollections.observableList(al));
+
     }
 
     public void itemStateChanged(ItemEvent e){//Sets UI listeners of the graph

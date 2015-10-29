@@ -123,7 +123,6 @@ public class GraphView extends SwingNode {
         vs.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
         vs.getRenderContext().setVertexShapeTransformer(vertexShape);
         vs.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
-        //vs.getRenderContext().setVertexD
     }
 
     public void setListeners(){//Sets UI listeners of the graph
@@ -144,9 +143,6 @@ public class GraphView extends SwingNode {
         gm.add(new TranslatingGraphMousePlugin(MouseEvent.BUTTON2_MASK));
         gm.add(new PickingGraphMousePlugin());
         gm.add(new ScalingGraphMousePlugin(new CrossoverScalingControl(), 0, 1.1f, 0.9f));
-
-        //DefaultModalGraphMouse<FilteredTreeNode, UIEdge> picker = new DefaultModalGraphMouse<>();
-        //gm.setMode(ModalGraphMouse.Mode.PICKING);
         vs.setGraphMouse(gm);
     }
 

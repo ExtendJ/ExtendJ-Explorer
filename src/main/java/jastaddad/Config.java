@@ -1,6 +1,7 @@
 package jastaddad;
 
 import AST.*;
+import jastaddad.objectinfo.NodeInfo;
 
 import java.io.*;
 import java.util.HashMap;
@@ -80,22 +81,22 @@ public class Config{
 
             System.out.println(decl);
             if(!node.containsAttributeOrToken(decl)) {
-                System.out.println("END1");
                 return false;
             }
             if(be.isDoubleDecl()){
-                System.out.println("TWO");
                 String decl2 = ((IdDecl)be.getValue()).getID() + "()";
-                if(node.containsAttributeOrToken(decl2)) {
+                if(!node.containsAttributeOrToken(decl2))
+                    return false;
+                NodeInfo a = node.getAttributeOrTokenValue(decl);
+                NodeInfo b = node.getAttributeOrTokenValue(decl2);
+                if(!a.getReturnType().equals(b.getReturnType()))
+                    return false;
+                if (!be.validateExpr(a.getValue(), b.getValue(), a.getReturnType(), decl)) {
 
-                    if (!be.validateExpr(node.getAttributeOrTokenValue(decl).getValue(), node.getAttributeOrTokenValue(decl2).getValue())) {
-                        System.out.println("END ");
-                        return false;
-                    }
+                    return false;
                 }
-            }else{
-                System.out.println("alone");
 
+            }else{
                 if(!be.validateExpr(node.getAttributeOrTokenValue(decl).getValue())) {
                     //System.out.println("END2: " + be.getValue().getStr());
                     return false;
