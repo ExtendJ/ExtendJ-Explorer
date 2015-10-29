@@ -13,6 +13,10 @@ public abstract class NodeInfo implements Comparable<NodeInfo> {
         this.value = value;
     }
 
+    public Object getValue(){
+        return value;
+    }
+
     public abstract String print();
 
     @Override

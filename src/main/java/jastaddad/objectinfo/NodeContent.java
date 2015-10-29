@@ -30,6 +30,13 @@ public class NodeContent {
         return attributes.containsKey(key);
     }
 
+    public NodeInfo get(String key){
+        NodeInfo ret = attributes.get(key);
+        if(ret == null)
+            ret = tokens.get(key);
+        return ret;
+    }
+
     public ArrayList<NodeInfo> toArray(){
         ArrayList<NodeInfo> temp = new ArrayList<>();
         if(attributes != null)
