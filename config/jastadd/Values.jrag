@@ -22,4 +22,58 @@ aspect Values{
     eq Bool.getBool() = Boolean.parseBoolean(getBOOL());
     eq Num.getInt() = Integer.parseInt(getNUMERAL());
     eq Str.getStr() = getString();
+
+    // ============================
+        // See if an variable, var, is correct according to the filter
+        // ============================
+        syn boolean BinExpr.validateExpression(int attr) = false;
+        syn boolean BinExpr.validateExpression(boolean attr) = false;
+        syn boolean BinExpr.validateExpression(String attr) = false;
+
+        // String
+        eq EQ.validateExpression(String attr){
+            if(getValue().isStrArray()){
+                for(Str str : ((StrArray)getValue()).getStrList()){
+                    if(str.getString().equals(attr))
+                        return true;
+                }
+                return false;
+            }else{
+                return getValue().getStr().equals(attr);
+            }
+        }
+        eq NEQ.validateExpression(String attr) = !getValue().getStr().equals(attr);
+
+        //Boolean
+        eq EQ.validateExpression(boolean attr) = (getValue().getBool() && attr) || (!getValue().getBool() && !attr);
+        eq NEQ.validateExpression(boolean attr) = (getValue().getBool() && !attr) || (!getValue().getBool() && attr);
+
+        // Integer
+        eq EQ.validateExpression(int attr) = getValue().getInt() == attr;
+        eq NEQ.validateExpression(int attr) = getValue().getInt() != attr;
+        eq LEQ.validateExpression(int attr) = getValue().getInt() <= attr;
+        eq GEQ.validateExpression(int attr) = getValue().getInt() >= attr;
+        eq LT.validateExpression(int attr) = getValue().getInt() < attr;
+        eq GT.validateExpression(int attr) = getValue().getInt() > attr;
+
+        // ---------------- two variables
+        syn boolean BinExpr.validateExpression(int attr, int attr2) = false;
+        syn boolean BinExpr.validateExpression(boolean attr, boolean attr2) = false;
+        syn boolean BinExpr.validateExpression(String attr, String attr2) = false;
+
+        // String
+        eq EQ.validateExpression(String attr, String attr2) = attr.equals(attr2);
+        eq NEQ.validateExpression(String attr, String attr2) = !attr.equals(attr2);
+
+        // Boolean
+        eq EQ.validateExpression(boolean attr, boolean attr2) = (attr && attr2) || (!attr && !attr2);
+        eq NEQ.validateExpression(boolean attr, boolean attr2) = (attr && !attr2) || (!attr && attr2);
+
+        // Integer
+        eq EQ.validateExpression(int  attr, int attr2) = attr == attr2;
+        eq NEQ.validateExpression(int attr, int attr2) = attr != attr2;
+        eq LEQ.validateExpression(int attr, int attr2) = attr <= attr2;
+        eq GEQ.validateExpression(int attr, int attr2) = attr >= attr2;
+        eq LT.validateExpression(int attr, int attr2) = attr < attr2;
+        eq GT.validateExpression(int attr, int attr2) = attr > attr2;
 }

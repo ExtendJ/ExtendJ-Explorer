@@ -22,6 +22,14 @@ public class NodeContent {
         tokens = new HashMap();
     }
 
+    public boolean containsToken(String key){
+        return tokens.containsKey(key);
+    }
+
+    public boolean containsAttribute(String key){
+        return attributes.containsKey(key);
+    }
+
     public ArrayList<NodeInfo> toArray(){
         ArrayList<NodeInfo> temp = new ArrayList<>();
         if(attributes != null)
@@ -69,7 +77,7 @@ public class NodeContent {
     private boolean addAttribute(Object obj, Method m){
         String name = getName(m);
         try{
-            attributes.put(name, new Attribute(name, m.invoke(obj, new Object[m.getParameterCount()]) + "", ""));
+            attributes.put(name, new Attribute(name, m.invoke(obj, new Object[m.getParameterCount()]), ""));
         } catch (Throwable e) {
             //e.printStackTrace();
             attributes.put(name, new Attribute(name, e.getCause().toString(), ""));
@@ -80,7 +88,7 @@ public class NodeContent {
     private boolean addToken(Object obj, Method m, Annotation a){
         String name = getName(m);
         try{
-            tokens.put(name, new Token(name, m.invoke(obj, new Object[m.getParameterCount()]) + ""));
+            tokens.put(name, new Token(name, m.invoke(obj, new Object[m.getParameterCount()])));
         } catch (Throwable e) {
             e.printStackTrace();
             tokens.put(name, new Token(name, e.getCause().toString()));

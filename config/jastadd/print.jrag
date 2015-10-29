@@ -1,6 +1,6 @@
 aspect Print{
 
-    syn String BinExpr.print() =  getLeft().print() + getOp() + getRight().print();
+    syn String BinExpr.print() =  getLeft().print()  + getOp() + getRight().print();
     syn String BinExpr.getOp();
 
     eq EQ.getOp() = "==";

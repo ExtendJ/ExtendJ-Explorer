@@ -63,6 +63,14 @@ public class Node{
         }
     }
 
+    public boolean containsAttributeOrToken(String key){
+        return getNodeContent().containsAttribute(key) || getNodeContent().containsToken(key);
+    }
+
+    public boolean getAttributeOrTokenValue(String key){
+        return getNodeContent().containsAttribute(key) || getNodeContent().containsToken(key);
+    }
+
     private void traversDown(HashMap<Object, Node> nodes, Object root){
         try {
             for (Method m : root.getClass().getMethods()) {
