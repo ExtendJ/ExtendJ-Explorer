@@ -66,11 +66,12 @@ values can use the following operands: ==, <, >, <=, >=. z in this example must 
 Here is a list of the different combinations of filter expressions: (Note that the attribute, x in this case, can be either on left
 or right side of the expression)
 
-x [==, <, >, <=, >=] Integer;
-x == String;
-x == Boolean;
-x == Array(String | Integer);
-x == y;
+x [==, !=, <, >, <=, >=] <Integer>;
+x [==, !=, <, >, <=, >=] y;
+x [==, !=] <String>;
+x [==, !=] <Boolean>;
+x [==, !=] Array(<String> | <Integer>);
+
 
 
 ------------ Styles

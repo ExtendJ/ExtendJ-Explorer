@@ -65,6 +65,15 @@ public class Node{
         }
     }
 
+    public boolean containsAttributeOrToken(String key){
+        return getNodeContent().containsAttribute(key) || getNodeContent().containsToken(key);
+    }
+
+    public boolean getAttributeOrTokenValue(String key){
+        return getNodeContent().containsAttribute(key) || getNodeContent().containsToken(key);
+    }
+
+
     private void traversDown(Object root, boolean isList){
         //System.out.println("Node : " + root);
         try {

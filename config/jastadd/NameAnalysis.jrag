@@ -38,9 +38,14 @@ aspect NameAnalysis {
     syn boolean Value.isBool() = false;
     syn boolean Value.isInt() = false;
     syn boolean Value.isString() = false;
+    syn boolean Value.isStrArray() = false;
+    syn boolean Value.isIntArray() = false;
+
     eq Bool.isBool() = true;
     eq Num.isInt() = true;
     eq Str.isString() = true;
+    eq StrArray.isStrArray() = true;
+    eq NumArray.isIntArray() = true;
 
 
 }

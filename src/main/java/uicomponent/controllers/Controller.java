@@ -54,6 +54,7 @@ public class Controller implements Initializable {
         saveNewFilterButton.setOnAction((event) -> {
             mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
             graphView.updateGraph();
+
         });
     }
 

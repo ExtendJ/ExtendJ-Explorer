@@ -5,10 +5,10 @@ package jastaddad.objectinfo;
  */
 public abstract class NodeInfo implements Comparable<NodeInfo> {
 
-    protected String value;
+    protected Object value;
     protected String name;
 
-    public NodeInfo(String name, String value){
+    public NodeInfo(String name, Object value){
         this.name = name;
         this.value = value;
     }

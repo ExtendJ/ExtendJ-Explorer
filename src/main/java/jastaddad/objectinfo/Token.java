@@ -5,7 +5,7 @@ package jastaddad.objectinfo;
  */
 public class Token extends NodeInfo {
 
-    public Token(String name, String value){ super(name, value);}
+    public Token(String name, Object value){ super(name, value);}
 
     @Override
     public String print(){ return name + " : " + value; }
