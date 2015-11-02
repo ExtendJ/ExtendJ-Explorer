@@ -1,18 +1,16 @@
 package uicomponent.controllers;
 
-import jastaddad.filteredtree.TreeNode;
-import jastaddad.objectinfo.NodeContent;
-import jastaddad.objectinfo.NodeInfo;
+import jastaddad.filteredtree.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTreeCell;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import uicomponent.UIComponent;
 import uicomponent.UIMonitor;
 import uicomponent.graph.GraphView;
 
@@ -27,15 +25,17 @@ import java.util.ResourceBundle;
 /**
  * Created by gda10jth on 10/16/15.
  */
-public class Controller implements Initializable, ChangeListener<NodeInfo> {
+public class Controller implements Initializable {
+    @FXML private VBox attributeTab;
+    @FXML private AttributeTabController attributeTabController;
+    @FXML private ScrollPane textTreeTab;
+    @FXML private TextTreeTabController textTreeTabController;
+
+    @FXML
+    private TabPane graphViewTabs;
+
     @FXML
     private Button saveNewFilterButton;
-
-    @FXML
-    private ListView listView;
-
-    @FXML
-    private VBox vBoxFilterTab;
 
     @FXML
     private TreeView<TmpTreeItem> typeListView;
@@ -46,25 +46,48 @@ public class Controller implements Initializable, ChangeListener<NodeInfo> {
     @FXML
     private TextArea filteredConfigTextArea;
 
-    @FXML
-    private ScrollPane scrollPaneClassFilter;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        //Attribute Listener
-        listView.getSelectionModel().selectedItemProperty().addListener(this);
     }
 
-    public void init(UIMonitor mon, GraphView graphView){
+    public void init(UIMonitor mon, GraphView graphView, UIComponent uiComponent) throws IOException {
         this.mon = mon;
         this.graphView = graphView;
-        loadTreeView();
+
+        attributeTabController.init(mon, graphView);
+        textTreeTabController.init(mon);
+
+        loadClassTreeView();
         loadFilterFileText();
+
         saveNewFilterButton.setOnAction((event) -> {
             mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
             graphView.updateGraph();
+            textTreeTabController.updateTree();
         });
-        vBoxFilterTab.setVgrow(scrollPaneClassFilter, Priority.ALWAYS);
+
+        graphViewTabs.getSelectionModel().selectedItemProperty().addListener(
+                new ChangeListener<Tab>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Tab> ov, Tab t, Tab t1) {
+                        if(t1.getId().equals("graphViewTabNode")){
+                            graphView.repaint();
+                        } else if(t1.getId().equals("treeViewTabNode")){
+
+                        }
+                    }
+                }
+        );
+    }
+
+    public void newNodeSelected(GenericTreeNode node, boolean fromGraph){
+        mon.setSelectedNode(node);
+        attributeTabController.setAttributeList();
+        if(fromGraph)
+            textTreeTabController.newNodeSelected(node);
+        else
+            graphView.newNodeSelected(node);
     }
 
     private void loadFilterFileText() {
@@ -88,7 +111,7 @@ public class Controller implements Initializable, ChangeListener<NodeInfo> {
 
     }
 
-    private void loadTreeView(){
+    private void loadClassTreeView(){
         ArrayList<TmpTreeItem> treeItems = new ArrayList<>();
         for (Map.Entry<String, Integer> config : mon.getApi().getTypeHash().entrySet()) {
             treeItems.add(new TmpTreeItem(config.getKey(), config.getValue()));
@@ -124,40 +147,13 @@ public class Controller implements Initializable, ChangeListener<NodeInfo> {
         typeListView.setRoot(root);
         typeListView.setShowRoot(false);
         typeListView.setCellFactory(CheckBoxTreeCell.<TmpTreeItem>forTreeView());
-
-    }
-
-    @Override
-    public void changed(ObservableValue<? extends NodeInfo> observable, NodeInfo oldValue, NodeInfo newValue) {
-        if (oldValue != null && mon.getApi().isReferenceNode(oldValue.getValue()))
-            mon.getApi().getReferenceNode(oldValue.getValue()).setRefrenceHighlight(false);
-        if(newValue != null && mon.getApi().isReferenceNode(newValue.getValue()))
-            mon.getApi().getReferenceNode(newValue.getValue()).setRefrenceHighlight(true);
-        graphView.repaint();
-    }
-
-    private void setAttributeList(){
-        if(!mon.getSelectedNode().isNode())
-            return;
-        TreeNode fNode = ((TreeNode)mon.getSelectedNode());
-        NodeContent a = fNode.node.getNodeContent();
-        ArrayList<NodeInfo> al = a.toArray();  //Todo remove this when we change the UI, ie we add a proper node name label
-        al.add(0, new NodeInfo(fNode.node.nodeName(), "", null) {
-            @Override
-            public String print() {
-                return "Node name: " + name;
-            }
-        });
-        listView.getSelectionModel().clearSelection();
-        listView.setItems(FXCollections.observableList(al));
-
     }
 
     public void itemStateChanged(ItemEvent e){//Sets UI listeners of the graph
         Object subject = e.getItem();
         if(subject != null && subject instanceof TreeNode) {
             mon.setSelectedNode((TreeNode) subject);
-            setAttributeList();
+            attributeTabController.setAttributeList();
         }
     }
 

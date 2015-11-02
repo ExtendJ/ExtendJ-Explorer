@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by gda10jth on 10/21/15.
  */
-public class TreeClusterParent extends TreeItem {
+public class TreeClusterParent extends GenericTreeNode {
     private List<TreeCluster> clusters;
     public TreeClusterParent(){
         super();
@@ -37,7 +37,7 @@ public class TreeClusterParent extends TreeItem {
     }
 
     @Override
-    public boolean isRealChild(TreeItem child) {
+    public boolean isRealChild(GenericTreeNode child) {
         return false;
     }
 

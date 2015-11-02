@@ -11,7 +11,7 @@ import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.picking.PickedInfo;
 import edu.uci.ics.jung.visualization.picking.PickedState;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
-import jastaddad.filteredtree.TreeItem;
+import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.filteredtree.TreeNode;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
@@ -35,13 +35,13 @@ public class GraphView extends SwingNode {
     private UIMonitor mon;
     private Controller con;
     private VisualizationViewer vs;
-    private Forest<TreeItem, UIEdge> g;
+    private Forest<GenericTreeNode, UIEdge> g;
     private UIEdge root;
 
-    public GraphView(UIMonitor mon, Controller con){
+    public GraphView(UIMonitor mon){
         this.id = 0;
         this.mon = mon;
-        this.con = con;
+        this.con = mon.getController();
         DirectedOrderedSparseMultigraph n = new DirectedOrderedSparseMultigraph();
         g = new DelegateForest<>(n);
 
@@ -53,8 +53,8 @@ public class GraphView extends SwingNode {
         setContent(vs);
     }
 
-    private void createTree(Forest<TreeItem, UIEdge> g, TreeItem parent){
-        for (TreeItem child : parent.getChildren()) {
+    private void createTree(Forest<GenericTreeNode, UIEdge> g, GenericTreeNode parent){
+        for (GenericTreeNode child : parent.getChildren()) {
             UIEdge edge = null;
             if(child.isNode()){
                 TreeNode n = (TreeNode) child;
@@ -81,12 +81,12 @@ public class GraphView extends SwingNode {
 
     public void repaint(){ vs.repaint(); }
 
-    public void createLayout(Forest<TreeItem, UIEdge> g ){//Creates UI specific stuff
+    public void createLayout(Forest<GenericTreeNode, UIEdge> g ){//Creates UI specific stuff
 
-        TreeLayout<TreeItem, UIEdge> layout = new TreeLayout<>(g, 150, 100);
+        TreeLayout<GenericTreeNode, UIEdge> layout = new TreeLayout<>(g, 150, 100);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        Transformer <TreeItem, Shape> vertexShape = fNode -> {
+        Transformer <GenericTreeNode, Shape> vertexShape = fNode -> {
             //CompositeShape shape = new CompositeShape();
             if(!fNode.isNode())
                 return new Ellipse2D.Float(-20, -20, 40, 40);
@@ -105,7 +105,7 @@ public class GraphView extends SwingNode {
             return dashedStroke;
         };
 
-        Transformer<TreeItem, Stroke> vertexStrokeTransformer = item -> {
+        Transformer<GenericTreeNode, Stroke> vertexStrokeTransformer = item -> {
             if(!item.isNode())
                 return dashedStroke;
             return normalStroke;
@@ -118,7 +118,7 @@ public class GraphView extends SwingNode {
         vs.scaleToLayout(visualizationViewerScalingControl);
 
         vs.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
-        vs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState()));
+        vs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
         vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<TreeNode, String>());
         vs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
         vs.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
@@ -135,7 +135,10 @@ public class GraphView extends SwingNode {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        con.itemStateChanged(e);
+                        Object subject = e.getItem();
+                        if(subject != null && subject instanceof TreeNode) {
+                            con.newNodeSelected((TreeNode) subject, true);
+                        }
                     }
                 });
             }
@@ -148,16 +151,25 @@ public class GraphView extends SwingNode {
         
     }
 
-    private static class VertexPaintTransformer implements Transformer<TreeItem,Paint> {
-        private final PickedInfo<TreeItem> pi;
-        VertexPaintTransformer ( PickedInfo<TreeItem> pi ) {
+    public void newNodeSelected(GenericTreeNode node) {
+        vs.getPickedVertexState().clear();
+        vs.getPickedVertexState().pick(node, true);
+        vs.repaint();
+    }
+
+    private static class VertexPaintTransformer implements Transformer<GenericTreeNode,Paint> {
+        private final PickedInfo<GenericTreeNode> pi;
+        private final UIMonitor mon;
+        VertexPaintTransformer ( PickedInfo<GenericTreeNode> pi, UIMonitor mon ) {
             super();
+            this.mon = mon;
             if (pi == null)
                 throw new IllegalArgumentException("PickedInfo instance must be non-null");
             this.pi = pi;
+
         }
         @Override
-        public Paint transform(TreeItem fNode) {
+        public Paint transform(GenericTreeNode fNode) {
             if(pi.isPicked(fNode))
                 return new Color(240, 240, 200);
             if(!fNode.isNode())

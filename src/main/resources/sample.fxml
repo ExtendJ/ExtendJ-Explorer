@@ -13,20 +13,21 @@
           <TabPane tabClosingPolicy="UNAVAILABLE">
               <tabs>
                   <Tab text="Attributes">
-                     <VBox styleClass="paneParent">
-                        <ScrollPane styleClass="attributeScrollView" fx:id="typeView">
-                           <content>
-                              <ListView styleClass="attributeListView" fx:id="listView" />
-                           </content>
-                        </ScrollPane>
-                     </VBox>
+                     <fx:include fx:id="attributeTab" source="/attributeTab.fxml" />
                   </Tab>
               </tabs>
           </TabPane>
-         <VBox styleClass="paneParent">
-
+         <VBox styleClass="paneParent" VBox.vgrow="ALWAYS">
+             <TabPane tabClosingPolicy="UNAVAILABLE" fx:id="graphViewTabs">
+                <tabs>
+                    <Tab text="Graph" fx:id="graphViewTabNode">
                         <ScrollPane styleClass="graphView" fx:id="graphView"/>
-
+                    </Tab>
+                    <Tab text="Tree" fx:id="treeViewTabNode">
+                        <fx:include fx:id="textTreeTab" source="/textTreeTab.fxml"/>
+                    </Tab>
+                </tabs>
+             </TabPane>
          </VBox>
           <VBox styleClass="paneParent">
               <SplitPane orientation="VERTICAL" dividerPositions="0.5">
@@ -39,8 +40,8 @@
                             </VBox>
                         </Tab>
                        <Tab text="Classes">
-                          <VBox styleClass="paneParent" fx:id="vBoxFilterTab">
-                             <ScrollPane styleClass="typeListView" fx:id="scrollPaneClassFilter">
+                          <VBox styleClass="paneParent" VBox.vgrow="ALWAYS">
+                             <ScrollPane styleClass="typeListView" fx:id="scrollPaneClassFilter" prefHeight="1000">
                                 <TreeView styleClass="typeTreeView" fx:id="typeListView"/>
                              </ScrollPane>
                           </VBox>

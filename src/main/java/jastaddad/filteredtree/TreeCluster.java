@@ -3,7 +3,7 @@ package jastaddad.filteredtree;
 /**
  * Created by gda10jth on 10/21/15.
  */
-public class TreeCluster extends TreeItem {
+public class TreeCluster extends GenericTreeNode {
     private TreeNode cluster;
 
     public TreeCluster(TreeNode cluster){
@@ -27,7 +27,7 @@ public class TreeCluster extends TreeItem {
     }
 
     @Override
-    public boolean isRealChild(TreeItem child){
+    public boolean isRealChild(GenericTreeNode child){
         return false;
     }
 

@@ -6,17 +6,17 @@ import java.util.List;
 /**
  * Created by gda10jli on 11/2/15.
  */
-public abstract class TreeItem {
-    protected List<TreeItem> children;
+public abstract class GenericTreeNode {
+    protected List<GenericTreeNode> children;
     protected boolean refrenceHighlight;
 
-    public TreeItem(){
+    public GenericTreeNode(){
         children = new ArrayList();
     }
 
-    public List<TreeItem> getChildren(){ return children; }
+    public List<GenericTreeNode> getChildren(){ return children; }
 
-    public void addChild(TreeItem child) {
+    public void addChild(GenericTreeNode child) {
         children.add(child);
     }
 
@@ -27,10 +27,11 @@ public abstract class TreeItem {
     public abstract boolean isNode();
     public abstract boolean isCluster();
     public abstract boolean isClusterParent();
-    public abstract boolean isRealChild(TreeItem child);
+    public abstract boolean isRealChild(GenericTreeNode child);
 
     @Override
     public String toString(){
         return "";
     }
+
 }

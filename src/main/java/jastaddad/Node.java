@@ -101,7 +101,7 @@ public class Node{
     public boolean isOpt(){return isOpt;}
     public boolean isList(){ return isList; }
     public String toString() {
-        return "<html>" + className + "</html>";
+        return className;
     }
 
     public int getLevel(){ return level;}

@@ -12,14 +12,13 @@
 .attributeScrollView {
     -fx-fit-to-height:true;
     -fx-fit-to-width:true;
-    -fx-background-insets: 0;
+    -fx-background-insets: 0 0 0 0,0,0;
 }
 
 .attributeListView {
-    -fx-fit-to-height:true;
-    -fx-fit-to-width:true;
-    -fx-background-color: #606060;
-    -fx-background-insets: 0;
+    -fx-background-insets: 0 0 0 0,0,0;
+    -fx-background-color: -fx-background;
+    -fx-background:#606060;
 
 }
 
@@ -34,8 +33,13 @@
  -fx-text-fill: white ;
 }
 
+.tree-cell:selected{
+    -fx-background-color:#609060;
+}
+
+
 .tree-cell:expanded, .tree-cell:sub-tree-item {
-    -fx-background-color: #404040 ;
+
 }
 
 .tree-cell {
@@ -53,6 +57,7 @@
 }
 
 .graphView {
+    -fx-pref-height:2000;
     -fx-fit-to-width:true;
     -fx-fit-to-height:true;
     -fx-background-color: #606060;

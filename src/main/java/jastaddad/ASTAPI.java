@@ -2,7 +2,7 @@ package jastaddad;
 
 import jastaddad.filteredtree.TreeCluster;
 import jastaddad.filteredtree.TreeClusterParent;
-import jastaddad.filteredtree.TreeItem;
+import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.filteredtree.TreeNode;
 
 import java.util.ArrayList;
@@ -14,11 +14,11 @@ import java.util.List;
  */
 public class ASTAPI {
     private Node tree;
-    private TreeItem filteredTree;
+    private GenericTreeNode filteredTree;
     private Config filterConfig;
     private HashMap<String, Integer> typeHash;
     private HashMap<String, List<TreeNode>> typeNodeHash;
-    private HashMap<Object, TreeItem> realNodeRefs;
+    private HashMap<Object, GenericTreeNode> realNodeRefs;
 
     public ASTAPI(Object root){
         realNodeRefs = new HashMap();
@@ -64,7 +64,7 @@ public class ASTAPI {
             //FilteredTreeNode n = (FilteredTreeNode) fNode;
             TreeClusterParent clusterParent = new TreeClusterParent();
             // get all children cluster children that have no children
-            for (TreeItem fChild : fNode.getChildren()) {
+            for (GenericTreeNode fChild : fNode.getChildren()) {
                 if (fChild.isCluster() && fChild.getChildren().size() == 0) {
                     clusterParent.addCluster((TreeCluster)fChild);
                 }
@@ -72,18 +72,18 @@ public class ASTAPI {
 
             //System.out.println("BU:" + newCluster.getClusterContainer().size() + " " + newCluster.isClusterParent);
             if(clusterParent.getClusters().size() > 1) {
-                for(TreeItem cChild : clusterParent.getClusters()) {
+                for(GenericTreeNode cChild : clusterParent.getClusters()) {
                     fNode.getChildren().remove(cChild);
                 }
                 fNode.addChild(clusterParent);
             }
         }
     }
-    private void traversTree(Node node, TreeItem parent, TreeCluster cluster, boolean firstTime){
+    private void traversTree(Node node, GenericTreeNode parent, TreeCluster cluster, boolean firstTime){
         if(node == null)
             return;
 
-        TreeItem addToParent = null;
+        GenericTreeNode addToParent = null;
         TreeNode fNode = new TreeNode(node, filterConfig);
         realNodeRefs.put(node.node, fNode);
         TreeCluster tmpCluster = cluster;
@@ -112,9 +112,11 @@ public class ASTAPI {
             // first node in this cluster?
             if(tmpCluster == null){
                 tmpCluster = new TreeCluster(fNode);
+
                 // is this cluster the root of the tree?
                 if(parent != null)
                     addToParent = tmpCluster;
+
             }else{
                 // add node to cluster but not to the filtered tree
                 addToParent = fNode;
@@ -140,11 +142,11 @@ public class ASTAPI {
         return realNodeRefs.containsKey(node);
     }
 
-    public TreeItem getReferenceNode(Object node){
+    public GenericTreeNode getReferenceNode(Object node){
         return realNodeRefs.get(node);
     }
 
-    public TreeItem getFilteredTree(){
+    public GenericTreeNode getFilteredTree(){
         return filteredTree;
     }
 
