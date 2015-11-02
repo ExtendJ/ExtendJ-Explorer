@@ -1,8 +1,11 @@
 package jastaddad;
 
 import AST.*;
+import jastaddad.objectinfo.NodeInfo;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Config{
     private DebuggerConfig configs;
@@ -54,22 +57,49 @@ public class Config{
         if(!tellingName && !className)
             return false;
 
-        if(tellingName){
-            NodeConfig cNode = configs.getNodes().get(node.fullName);
-            if(cNode.hasFilter()){
-                for(BinExpr be : cNode.getFilter().getBinExprList()){
-                    String decl = be.getDecl().getID();
-                    if(!node.containsAttributeOrToken(decl))
-                        return false;
-                    if(be.isDoubleDecl()){
-                        String decl2 = ((IdDecl)be.getValue()).getID();
-                        if(node.containsAttributeOrToken(decl2))
-                            if(!be.validateExpression(node.getAttributeOrTokenValue(decl), node.getAttributeOrTokenValue(decl2)))
-                                return false;
-                    }else{
-                        if(be.validateExpression(node.getAttributeOrTokenValue(decl)))
-                            return false;
-                    }
+        // Add all class and telling bin expressions to one hashmap. this will öet the telling expressions to override
+        HashMap<String, BinExpr> binExprs = new HashMap<>();
+        NodeConfig cNode = configs.getNodes().get(node.className);
+        if(className && cNode.hasFilter()) {
+            for (BinExpr be : cNode.getFilter().getBinExprList()) {
+                binExprs.put(be.getDecl().getID(), be);
+            }
+        }
+
+        NodeConfig tNode = configs.getNodes().get(node.fullName);
+        if(tellingName && tNode.hasFilter()) {
+            for (BinExpr be : tNode.getFilter().getBinExprList()) {
+                binExprs.put(be.getDecl().getID(), be);
+            }
+        }
+
+
+        for(Map.Entry<String, BinExpr> entry : binExprs.entrySet()){
+
+            String decl = entry.getKey() + "()";
+            BinExpr be = entry.getValue();
+
+            System.out.println(decl);
+            if(!node.containsAttributeOrToken(decl)) {
+                return false;
+            }
+            if(be.isDoubleDecl()){
+                String decl2 = ((IdDecl)be.getValue()).getID() + "()";
+                if(!node.containsAttributeOrToken(decl2))
+                    return false;
+                NodeInfo a = node.getAttributeOrTokenValue(decl);
+                NodeInfo b = node.getAttributeOrTokenValue(decl2);
+                if(!a.getReturnType().equals(b.getReturnType()))
+                    return false;
+                if (!be.validateExpr(a.getValue(), b.getValue(), a.getReturnType(), decl)) {
+
+                    return false;
+                }
+
+            }else{
+                if(!be.validateExpr(node.getAttributeOrTokenValue(decl).getValue())) {
+                    //System.out.println("END2: " + be.getValue().getStr());
+                    return false;
                 }
             }
         }

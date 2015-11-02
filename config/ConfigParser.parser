@@ -81,7 +81,7 @@ Value value =
 	| iddecl
 	| color;
 
-List empty_list =
+Value empty_list =
 	/*EmptyList*/ {: return new EmptyArray(); :}
 	| str_list.a {: return new StrArray(a); :}
 	| num_list.a {: return new NumArray(a); :};

@@ -2,6 +2,7 @@ package jastaddad;
 
 import AST.List;
 import jastaddad.objectinfo.NodeContent;
+import jastaddad.objectinfo.NodeInfo;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -66,8 +67,8 @@ public class Node{
         return getNodeContent().containsAttribute(key) || getNodeContent().containsToken(key);
     }
 
-    public boolean getAttributeOrTokenValue(String key){
-        return getNodeContent().containsAttribute(key) || getNodeContent().containsToken(key);
+    public NodeInfo getAttributeOrTokenValue(String key){
+        return getNodeContent().get(key);
     }
 
     private void traversDown(Object root){
