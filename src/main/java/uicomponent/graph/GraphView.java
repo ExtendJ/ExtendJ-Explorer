@@ -77,11 +77,8 @@ public class GraphView extends SwingNode {
         DirectedOrderedSparseMultigraph n = new DirectedOrderedSparseMultigraph();
         g = new DelegateForest<>(n);
         createTree(g, mon.getRootNode());
-        createLayout(g);
-        setListeners();
-        setContent(vs);
-        vs.removeAll();
-
+        vs.getGraphLayout().setGraph(g);
+        vs.repaint();
     }
 
     public void setReferenceEdge(GenericTreeNode newRef, GenericTreeNode ref){
