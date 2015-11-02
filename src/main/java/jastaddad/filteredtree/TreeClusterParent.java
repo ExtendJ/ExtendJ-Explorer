@@ -28,9 +28,7 @@ public class TreeClusterParent extends GenericTreeNode {
         return true;
     }
 
-    public void addCluster(TreeCluster cluster){
-        clusters.add(cluster);
-    }
+    public void addCluster(TreeCluster cluster){ clusters.add(cluster); cluster.clusterRef = this; }
 
     public List<TreeCluster> getClusters(){
         return clusters;

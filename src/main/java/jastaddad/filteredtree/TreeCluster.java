@@ -4,11 +4,12 @@ package jastaddad.filteredtree;
  * Created by gda10jth on 10/21/15.
  */
 public class TreeCluster extends GenericTreeNode {
-    private TreeNode cluster;
 
-    public TreeCluster(TreeNode cluster){
+    private TreeNode node;
+
+    public TreeCluster(TreeNode node){
         super();
-        this.cluster = cluster;
+        this.node = node;
     }
 
     @Override
@@ -30,5 +31,6 @@ public class TreeCluster extends GenericTreeNode {
     public boolean isRealChild(GenericTreeNode child){
         return false;
     }
+
 
 }

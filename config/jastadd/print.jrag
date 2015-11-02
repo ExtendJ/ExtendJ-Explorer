@@ -46,4 +46,5 @@ aspect Print{
     syn String Binding.print() = getName().getID() + " = " + getValue().print();
 
     syn String NodeName.print() = getClassName().print() + (hasName() ? ":" + getName().print() : "");
+    syn IdDecl NodeName.getTstName() = getClassName();
 }

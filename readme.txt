@@ -7,7 +7,7 @@ libgtk+2.0_0 - The GIMP ToolKit (GTK+), a library for creating GUIs​ ﻿
 =======================================
 Filtering the tree
 =======================================
-In order to view the nodes your intressted in, a filter configuration language have been implemented into JastAddJ. 
+In order to view the nodes your intressted in, a filter configuration language have been implemented into JastAddAd. 
 
 ------------ Basic example: 
 Here is an basic example:

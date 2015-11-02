@@ -1,13 +1,15 @@
 package uicomponent.controllers;
 
-import jastaddad.filteredtree.*;
+import jastaddad.filteredtree.GenericTreeNode;
+import jastaddad.filteredtree.TreeNode;
+import jastaddad.objectinfo.NodeContent;
+import jastaddad.objectinfo.NodeInfo;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.layout.VBox;
 import uicomponent.UIComponent;
@@ -65,6 +67,7 @@ public class Controller implements Initializable {
             mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
             graphView.updateGraph();
             textTreeTabController.updateTree();
+            resetUI();
         });
 
         graphViewTabs.getSelectionModel().selectedItemProperty().addListener(
@@ -83,6 +86,7 @@ public class Controller implements Initializable {
 
     public void newNodeSelected(GenericTreeNode node, boolean fromGraph){
         mon.setSelectedNode(node);
+        mon.setReferenceNode(null);
         attributeTabController.setAttributeList();
         if(fromGraph)
             textTreeTabController.newNodeSelected(node);
@@ -109,6 +113,28 @@ public class Controller implements Initializable {
         filteredConfigTextArea.setText(textContent);
         filteredConfigTextArea.setPrefColumnCount(lineCount);
 
+    }
+
+    private void resetUI(){
+        GenericTreeNode node = getNode(mon.getSelectedNode());
+        if(node == null)
+            return;
+        mon.setSelectedNode(node);
+        graphView.setSelectedNode(node);
+        node = getNode(mon.getReferenceNode());
+        if(node == null)
+            return;
+        mon.setReferenceNode(node);
+        node.setReferenceHighlight(true);
+        graphView.setReferenceEdge(mon.getReferenceNode(), mon.getSelectedNode());
+
+    }
+
+    private GenericTreeNode getNode(GenericTreeNode node){
+        if(node == null || !node.isNode())
+            return null;
+        TreeNode treeNode = ((TreeNode) node);
+        return mon.getApi().getReferenceNode(treeNode.node.node);
     }
 
     private void loadClassTreeView(){
@@ -147,14 +173,6 @@ public class Controller implements Initializable {
         typeListView.setRoot(root);
         typeListView.setShowRoot(false);
         typeListView.setCellFactory(CheckBoxTreeCell.<TmpTreeItem>forTreeView());
-    }
-
-    public void itemStateChanged(ItemEvent e){//Sets UI listeners of the graph
-        Object subject = e.getItem();
-        if(subject != null && subject instanceof TreeNode) {
-            mon.setSelectedNode((TreeNode) subject);
-            attributeTabController.setAttributeList();
-        }
     }
 
     private class TmpTreeItem implements Comparable<TmpTreeItem>{

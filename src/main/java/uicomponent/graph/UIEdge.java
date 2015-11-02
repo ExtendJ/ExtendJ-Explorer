@@ -5,6 +5,7 @@ package uicomponent.graph;
  */
 public class UIEdge {
     private boolean realChild;
+    private boolean reference;
     private String label;
 
     public UIEdge(boolean realChild) {
@@ -15,6 +16,10 @@ public class UIEdge {
         this.label = label;
         this.realChild = realChild;
     }
+
+    public UIEdge(){ reference = true; }
+
+    public boolean isReference(){ return reference; }
 
     public boolean isRealChild(){ return realChild; }
 

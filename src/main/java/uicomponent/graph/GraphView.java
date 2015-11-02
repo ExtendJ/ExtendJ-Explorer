@@ -29,13 +29,13 @@ import java.awt.geom.RoundRectangle2D;
 /**
  * Created by gda10jli on 10/15/15.
  */
-public class GraphView extends SwingNode {
+public class GraphView extends SwingNode implements ItemListener {
 
     private int id;
     private UIMonitor mon;
     private Controller con;
     private VisualizationViewer vs;
-    private Forest<GenericTreeNode, UIEdge> g;
+    private DelegateForest<GenericTreeNode, UIEdge> g;
     private UIEdge root;
 
     public GraphView(UIMonitor mon){
@@ -44,9 +44,7 @@ public class GraphView extends SwingNode {
         this.con = mon.getController();
         DirectedOrderedSparseMultigraph n = new DirectedOrderedSparseMultigraph();
         g = new DelegateForest<>(n);
-
         root = null;
-
         createTree(g, mon.getRootNode());
         createLayout(g);
         setListeners();
@@ -79,7 +77,25 @@ public class GraphView extends SwingNode {
         vs.repaint();
     }
 
-    public void repaint(){ vs.repaint(); }
+    public void setSelectedNode(GenericTreeNode node){
+        vs.getPickedVertexState().removeItemListener(this);
+        vs.getPickedVertexState().pick(node,true);
+        vs.getPickedVertexState().addItemListener(this);
+    }
+
+    public void setReferenceEdge(GenericTreeNode newRef, GenericTreeNode ref){
+        UIEdge edge = mon.getReferenceEdge();
+        if(edge != null)
+            g.removeEdge(edge, false);
+        if(newRef == null) {
+            vs.repaint();
+            return;
+        }
+        edge = new UIEdge();
+        g.addEdge(edge, ref, newRef.hasClusterReference() ? newRef.getClusterReference() : newRef);
+        mon.setReferenceEdge(edge);
+        vs.repaint();
+    }
 
     public void createLayout(Forest<GenericTreeNode, UIEdge> g ){//Creates UI specific stuff
 
@@ -96,12 +112,14 @@ public class GraphView extends SwingNode {
         };
 
         float dash[] = {5.0f};
-        final Stroke dashedStroke = new BasicStroke(0.2f, BasicStroke.CAP_BUTT,
-                BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
+        final Stroke refStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
+        final Stroke dashedStroke = new BasicStroke(0.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
         final Stroke normalStroke = new BasicStroke(1.0f);
         Transformer<UIEdge, Stroke> edgeStrokeTransformer = edge -> {
             if(edge.isRealChild())
                 return normalStroke;
+            if(edge.isReference())
+                return refStroke;
             return dashedStroke;
         };
 
@@ -109,6 +127,12 @@ public class GraphView extends SwingNode {
             if(!item.isNode())
                 return dashedStroke;
             return normalStroke;
+        };
+
+        Transformer<UIEdge, Paint> edgePaintTransformer = edge -> {
+            if(edge.isReference())
+                return new Color(80, 180 , 80);
+            return new Color(0, 0, 0);
         };
 
         ScalingControl visualizationViewerScalingControl = new CrossoverScalingControl();
@@ -119,30 +143,18 @@ public class GraphView extends SwingNode {
 
         vs.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
         vs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
-        vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<TreeNode, String>());
+        vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<>());
         vs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
         vs.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
         vs.getRenderContext().setVertexShapeTransformer(vertexShape);
         vs.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
+        vs.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
+
     }
 
     public void setListeners(){//Sets UI listeners of the graph
 
-        final PickedState<String> pickedState = vs.getPickedVertexState();
-        pickedState.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        Object subject = e.getItem();
-                        if(subject != null && subject instanceof TreeNode) {
-                            con.newNodeSelected((TreeNode) subject, true);
-                        }
-                    }
-                });
-            }
-        });
+        vs.getPickedVertexState().addItemListener(this);
         PluggableGraphMouse gm = new PluggableGraphMouse();
         gm.add(new TranslatingGraphMousePlugin(MouseEvent.BUTTON2_MASK));
         gm.add(new PickingGraphMousePlugin());
@@ -151,10 +163,25 @@ public class GraphView extends SwingNode {
         
     }
 
+    public void repaint(){vs.repaint();}
+
     public void newNodeSelected(GenericTreeNode node) {
         vs.getPickedVertexState().clear();
         vs.getPickedVertexState().pick(node, true);
         vs.repaint();
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Object subject = e.getItem();
+                if (subject != null && subject instanceof TreeNode) {
+                    con.newNodeSelected((TreeNode) subject, true);
+                }
+            }
+        });
     }
 
     private static class VertexPaintTransformer implements Transformer<GenericTreeNode,Paint> {
@@ -172,10 +199,10 @@ public class GraphView extends SwingNode {
         public Paint transform(GenericTreeNode fNode) {
             if(pi.isPicked(fNode))
                 return new Color(240, 240, 200);
+            if(fNode.isReferenceHighlight())
+                return new Color(80, 180, 80);
             if(!fNode.isNode())
                 return new Color(220,220, 220);
-            if(fNode.isRefrenceHighlight())
-                return new Color(80,180,80);
             if(((TreeNode)fNode).node.isList()) return new Color(200, 200, 200);
             return new Color(200, 240, 230);
         }

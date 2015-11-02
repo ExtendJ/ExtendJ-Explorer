@@ -20,9 +20,9 @@ public abstract class GenericTreeNode {
         children.add(child);
     }
 
-    public void setRefrenceHighlight(boolean highlight){ refrenceHighlight = highlight; }
+    public void setReferenceHighlight(boolean highlight){ refrenceHighlight = highlight; }
 
-    public boolean isRefrenceHighlight(){ return refrenceHighlight; }
+    public boolean isReferenceHighlight(){ return refrenceHighlight; }
 
     public abstract boolean isNode();
     public abstract boolean isCluster();
