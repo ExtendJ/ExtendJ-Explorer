@@ -6,11 +6,10 @@ import java.util.List;
 /**
  * Created by gda10jth on 10/21/15.
  */
-public class TreeClusterParent implements TreeItem {
-    private List<TreeItem> children;
+public class TreeClusterParent extends TreeItem {
     private List<TreeCluster> clusters;
     public TreeClusterParent(){
-        children = new ArrayList<>();
+        super();
         clusters = new ArrayList<>();
     }
 
@@ -29,18 +28,8 @@ public class TreeClusterParent implements TreeItem {
         return true;
     }
 
-    @Override
-    public void addChild(TreeItem child) {
-        children.add(child);
-    }
-
     public void addCluster(TreeCluster cluster){
         clusters.add(cluster);
-    }
-
-    @Override
-    public List<TreeItem> getChildren() {
-        return children;
     }
 
     public List<TreeCluster> getClusters(){
@@ -52,8 +41,4 @@ public class TreeClusterParent implements TreeItem {
         return false;
     }
 
-    @Override
-     public String toString(){
-        return "";
-    }
 }

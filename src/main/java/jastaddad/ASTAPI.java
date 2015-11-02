@@ -18,11 +18,11 @@ public class ASTAPI {
     private Config filterConfig;
     private HashMap<String, Integer> typeHash;
     private HashMap<String, List<TreeNode>> typeNodeHash;
-    private HashMap<Object, Node> nodeRefs;
+    private HashMap<Object, TreeItem> realNodeRefs;
 
     public ASTAPI(Object root){
-        nodeRefs = new HashMap();
-        tree = new Node(nodeRefs, root);
+        realNodeRefs = new HashMap();
+        tree = new Node(root);
         this.filteredTree = null;
         filterConfig = new Config();
         typeHash = new HashMap<>();
@@ -85,6 +85,7 @@ public class ASTAPI {
 
         TreeItem addToParent = null;
         TreeNode fNode = new TreeNode(node, filterConfig);
+        realNodeRefs.put(node.node, fNode);
         TreeCluster tmpCluster = cluster;
 
         if(firstTime) {
@@ -136,11 +137,11 @@ public class ASTAPI {
     public HashMap<String, Integer> getTypeHash(){ return typeHash; }
 
     public boolean isReferenceNode(Object node){
-        return nodeRefs.containsKey(node);
+        return realNodeRefs.containsKey(node);
     }
 
-    public Node getReference(Object node){
-        return nodeRefs.get(node);
+    public TreeItem getReferenceNode(Object node){
+        return realNodeRefs.get(node);
     }
 
     public TreeItem getFilteredTree(){
