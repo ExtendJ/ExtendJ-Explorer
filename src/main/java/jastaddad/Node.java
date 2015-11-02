@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Node{
-    private Object node;
+    public final Object node;
     public final int id;
     public final String name;
     public final String className;
@@ -21,19 +21,20 @@ public class Node{
     private int level;
     private NodeContent nodeContent;
 
-    public Node(HashMap<Object, Node> nodes, Object root){
+    public Node(Object root){
         this.children = new ArrayList<>();
         this.name = "";
         this.className = root.getClass().getSimpleName();
+        this.node = root;
         fullName = className;
         id = System.identityHashCode(this.toString());
-        init(nodes, root, false, false, 1);
+        init(root, false, false, 1);
     }
 
-    public Node(HashMap<Object, Node> nodes, Object root, String name, boolean isList, boolean isOpt, int level){
+    public Node(Object root, String name, boolean isList, boolean isOpt, int level){
         this.children = new ArrayList<>();
         this.className = root.getClass().getSimpleName();
-
+        this.node = root;
         if(name == className || name.length() == 0){
             this.name = "";
             fullName = className;
@@ -42,24 +43,22 @@ public class Node{
             fullName = className + ":" + name;
         }
         id = System.identityHashCode(this.toString());
-        init(nodes, root, isList, isOpt, level);
+        init(root, isList, isOpt, level);
     }
 
-    private void init(HashMap<Object, Node> nodes, Object root, boolean isList, boolean isOpt, int level){
-        node = root;
+    private void init(Object root, boolean isList, boolean isOpt, int level){
         this.isOpt = isOpt;
         this.isList = isList;
         this.nodeContent = new NodeContent();
         this.level = level;
 
-        nodes.put(root, this);
         if(isList) {
             for (Object child: (Iterable<?>) root) {
-                children.add(new Node(nodes, child, isOpt ? name : "", child instanceof List, false, 1));
-                traversDown(nodes, root);
+                children.add(new Node(child, isOpt ? name : "", child instanceof List, false, 1));
+                traversDown(root);
             }
         } else {
-            traversDown(nodes, root);
+            traversDown(root);
         }
     }
 
@@ -71,12 +70,12 @@ public class Node{
         return getNodeContent().containsAttribute(key) || getNodeContent().containsToken(key);
     }
 
-    private void traversDown(HashMap<Object, Node> nodes, Object root){
+    private void traversDown(Object root){
         try {
             for (Method m : root.getClass().getMethods()) {
                 for (Annotation a: m.getAnnotations()) {
                     if(ASTAnnotation.isChild(a)) {
-                        children.add(new Node(nodes,m.invoke(root, new Object[m.getParameterCount()]),
+                        children.add(new Node(m.invoke(root, new Object[m.getParameterCount()]),
                                 getName(a),
                                 !ASTAnnotation.isSingleChild(a),
                                 ASTAnnotation.isOptChild(a),

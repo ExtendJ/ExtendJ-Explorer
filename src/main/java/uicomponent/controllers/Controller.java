@@ -3,7 +3,6 @@ package uicomponent.controllers;
 import jastaddad.filteredtree.TreeNode;
 import jastaddad.objectinfo.NodeContent;
 import jastaddad.objectinfo.NodeInfo;
-import jastaddad.objectinfo.Token;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -12,7 +11,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.CheckBoxTreeCell;
-import javafx.scene.layout.VBox;
 import uicomponent.UIMonitor;
 import uicomponent.graph.GraphView;
 
@@ -123,8 +121,11 @@ public class Controller implements Initializable, ChangeListener<NodeInfo> {
 
     @Override
     public void changed(ObservableValue<? extends NodeInfo> observable, NodeInfo oldValue, NodeInfo newValue) {
-        if(newValue == null || !mon.getApi().isReferenceNode(newValue.getValue()))
-            return;
+        if (oldValue != null && mon.getApi().isReferenceNode(oldValue.getValue()))
+            mon.getApi().getReferenceNode(oldValue.getValue()).setRefrenceHighlight(false);
+        if(newValue != null && mon.getApi().isReferenceNode(newValue.getValue()))
+            mon.getApi().getReferenceNode(newValue.getValue()).setRefrenceHighlight(true);
+        graphView.repaint();
     }
 
     private void setAttributeList(){

@@ -78,7 +78,11 @@ public class GraphView extends SwingNode {
         createLayout(g);
         setListeners();
         setContent(vs);
+        vs.removeAll();
+
     }
+
+    public void repaint(){ vs.repaint(); }
 
     public void createLayout(Forest<TreeItem, UIEdge> g ){//Creates UI specific stuff
 
@@ -144,6 +148,7 @@ public class GraphView extends SwingNode {
         gm.add(new PickingGraphMousePlugin());
         gm.add(new ScalingGraphMousePlugin(new CrossoverScalingControl(), 0, 1.1f, 0.9f));
         vs.setGraphMouse(gm);
+        
     }
 
     private static class VertexPaintTransformer implements Transformer<TreeItem,Paint> {
@@ -160,6 +165,8 @@ public class GraphView extends SwingNode {
                 return new Color(240, 240, 200);
             if(!fNode.isNode())
                 return new Color(220,220, 220);
+            if(fNode.isRefrenceHighlight())
+                return new Color(80,180,80);
             if(((TreeNode)fNode).node.isList()) return new Color(200, 200, 200);
             return new Color(200, 240, 230);
         }

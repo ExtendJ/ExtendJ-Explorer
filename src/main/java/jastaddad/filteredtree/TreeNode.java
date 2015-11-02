@@ -8,15 +8,14 @@ import java.util.*;
 /**
  * Created by gda10jth on 10/16/15.
  */
-public class TreeNode implements TreeItem {
+public class TreeNode extends TreeItem {
     public final Node node;
     private boolean enabled;
-    private List<TreeItem> children;
     private LinkedHashMap<Integer, Boolean> realChildEdge;
 
     public TreeNode(Node data, Config filter){
+        super();
         node = data;
-        children = new ArrayList<>();
         realChildEdge = new LinkedHashMap<>();
         enabled = setEnabled(filter);
     }
@@ -39,16 +38,7 @@ public class TreeNode implements TreeItem {
     }
 
     public boolean isRealChild(TreeItem child){
-        //System.out.println(realChildEdge.get(child.node.id));
-        if(!child.isNode())
-            return false;
-
-        return realChildEdge.get(((TreeNode)child).node.id);
-    }
-
-    @Override
-    public List<TreeItem> getChildren(){
-        return children;
+        return !child.isNode() ? false : realChildEdge.get(((TreeNode)child).node.id);
     }
 
     public Iterator<TreeItem> iterator(){ return children.iterator(); }
