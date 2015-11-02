@@ -10,8 +10,9 @@ import uicomponent.graph.UIEdge;
  */
 public class UIMonitor {
     private GenericTreeNode selectedNode;
-    private ASTAPI api;
+    private GenericTreeNode refNode;
     private UIEdge refEdge;
+    private ASTAPI api;
 
     public UIMonitor(ASTAPI api){
         this.api = api;
@@ -25,10 +26,13 @@ public class UIMonitor {
 
     public GenericTreeNode getSelectedNode(){ return selectedNode; }
 
-    public void setSelectedNode(TreeNode selectedNode){ this.selectedNode = selectedNode; }
+    public void setSelectedNode(GenericTreeNode selectedNode){ this.selectedNode = selectedNode; }
 
     public void setReferenceEdge(UIEdge edge){ this.refEdge = edge; }
 
     public UIEdge getReferenceEdge(){ return refEdge; }
 
+    public void setReferenceNode(GenericTreeNode node){ this.refNode = node; }
+
+    public GenericTreeNode getReferenceNode(){ return refNode; }
 }

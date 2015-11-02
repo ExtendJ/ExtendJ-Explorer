@@ -1,6 +1,7 @@
 package uicomponent.controllers;
 
 import jastaddad.filteredtree.GenericTreeNode;
+import jastaddad.filteredtree.TreeCluster;
 import jastaddad.filteredtree.TreeNode;
 import jastaddad.objectinfo.NodeContent;
 import jastaddad.objectinfo.NodeInfo;
@@ -64,7 +65,7 @@ public class Controller implements Initializable, ChangeListener<NodeInfo> {
         saveNewFilterButton.setOnAction((event) -> {
             mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
             graphView.updateGraph();
-            listView.getItems().clear();
+            resetUI();
         });
         vBoxFilterTab.setVgrow(scrollPaneClassFilter, Priority.ALWAYS);
     }
@@ -88,6 +89,28 @@ public class Controller implements Initializable, ChangeListener<NodeInfo> {
         filteredConfigTextArea.setText(textContent);
         filteredConfigTextArea.setPrefColumnCount(lineCount);
 
+    }
+
+    private void resetUI(){
+        GenericTreeNode node = getNode(mon.getSelectedNode());
+        if(node == null)
+            return;
+        mon.setSelectedNode(node);
+        graphView.setSelectedNode(node);
+        node = getNode(mon.getReferenceNode());
+        if(node == null)
+            return;
+        mon.setReferenceNode(node);
+        node.setReferenceHighlight(true);
+        graphView.setReferenceEdge(mon.getReferenceNode(), mon.getSelectedNode());
+
+    }
+
+    private GenericTreeNode getNode(GenericTreeNode node){
+        if(node == null || !node.isNode())
+            return null;
+        TreeNode treeNode = ((TreeNode) node);
+        return mon.getApi().getReferenceNode(treeNode.node.node);
     }
 
     private void loadTreeView(){
@@ -137,6 +160,7 @@ public class Controller implements Initializable, ChangeListener<NodeInfo> {
         if(newValue != null && mon.getApi().isReferenceNode(newValue.getValue())) {
             refNode = mon.getApi().getReferenceNode(newValue.getValue());
             refNode.setReferenceHighlight(true);
+            mon.setReferenceNode(refNode);
         }
         graphView.setReferenceEdge(refNode, mon.getSelectedNode());
 
@@ -163,6 +187,7 @@ public class Controller implements Initializable, ChangeListener<NodeInfo> {
         Object subject = e.getItem();
         if(subject != null && subject instanceof TreeNode) {
             mon.setSelectedNode((TreeNode) subject);
+            mon.setReferenceNode(null);
             setAttributeList();
         }
     }

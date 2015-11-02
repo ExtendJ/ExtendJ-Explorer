@@ -33,7 +33,7 @@ import java.awt.geom.RoundRectangle2D;
 /**
  * Created by gda10jli on 10/15/15.
  */
-public class GraphView extends SwingNode {
+public class GraphView extends SwingNode implements ItemListener {
 
     private int id;
     private UIMonitor mon;
@@ -57,7 +57,7 @@ public class GraphView extends SwingNode {
 
     private void createTree(Forest<GenericTreeNode, UIEdge> g, GenericTreeNode parent){
         for (GenericTreeNode child : parent.getChildren()) {
-            UIEdge edge = null;
+            UIEdge edge;
             if(child.isNode()){
                 TreeNode n = (TreeNode) child;
                 if(parent.isNode() && !((TreeNode)parent).node.isOpt())
@@ -79,6 +79,12 @@ public class GraphView extends SwingNode {
         createTree(g, mon.getRootNode());
         vs.getGraphLayout().setGraph(g);
         vs.repaint();
+    }
+
+    public void setSelectedNode(GenericTreeNode node){
+        vs.getPickedVertexState().removeItemListener(this);
+        vs.getPickedVertexState().pick(node,true);
+        vs.getPickedVertexState().addItemListener(this);
     }
 
     public void setReferenceEdge(GenericTreeNode newRef, GenericTreeNode ref){
@@ -151,24 +157,23 @@ public class GraphView extends SwingNode {
 
     public void setListeners(){//Sets UI listeners of the graph
 
-        final PickedState<String> pickedState = vs.getPickedVertexState();
-        pickedState.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        con.itemStateChanged(e);
-                    }
-                });
-            }
-        });
+        vs.getPickedVertexState().addItemListener(this);
         PluggableGraphMouse gm = new PluggableGraphMouse();
         gm.add(new TranslatingGraphMousePlugin(MouseEvent.BUTTON2_MASK));
         gm.add(new PickingGraphMousePlugin());
         gm.add(new ScalingGraphMousePlugin(new CrossoverScalingControl(), 0, 1.1f, 0.9f));
         vs.setGraphMouse(gm);
         
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                con.itemStateChanged(e);
+            }
+        });
     }
 
     private static class VertexPaintTransformer implements Transformer<GenericTreeNode,Paint> {

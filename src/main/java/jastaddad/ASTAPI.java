@@ -70,7 +70,6 @@ public class ASTAPI {
                 }
             }
 
-            //System.out.println("BU:" + newCluster.getClusterContainer().size() + " " + newCluster.isClusterParent);
             if(clusterParent.getClusters().size() > 1) {
                 for(GenericTreeNode cChild : clusterParent.getClusters()) {
                     fNode.getChildren().remove(cChild);
@@ -93,7 +92,6 @@ public class ASTAPI {
             addToConfigs(fNode);
         }
 
-        //System.out.println("class: " + fNode.node.className + " name: " + fNode.node.name);
         // if the class is not filtered
         if(fNode.isEnabled()){
             // is this the root?

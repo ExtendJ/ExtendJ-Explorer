@@ -23,7 +23,6 @@ public abstract class GenericTreeNode {
 
     public void setReferenceHighlight(boolean highlight){
         referenceHighlight = highlight;
-        System.out.println(clusterRef);
         if(clusterRef != null){
             clusterRef.setReferenceHighlight(highlight);
         }
