@@ -1,15 +1,17 @@
 package uicomponent;
 
 import jastaddad.ASTAPI;
-import jastaddad.filteredtree.TreeItem;
+import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.filteredtree.TreeNode;
+import uicomponent.graph.UIEdge;
 
 /**
  * Created by gda10jli on 10/16/15.
  */
 public class UIMonitor {
-    private TreeItem selectedNode;
+    private GenericTreeNode selectedNode;
     private ASTAPI api;
+    private UIEdge refEdge;
 
     public UIMonitor(ASTAPI api){
         this.api = api;
@@ -19,8 +21,14 @@ public class UIMonitor {
         return api;
     }
 
-    public TreeItem getRootNode(){ return api.getFilteredTree(); }
+    public GenericTreeNode getRootNode(){ return api.getFilteredTree(); }
 
-    public TreeItem getSelectedNode(){ return selectedNode; }
+    public GenericTreeNode getSelectedNode(){ return selectedNode; }
+
     public void setSelectedNode(TreeNode selectedNode){ this.selectedNode = selectedNode; }
+
+    public void setReferenceEdge(UIEdge edge){ this.refEdge = edge; }
+
+    public UIEdge getReferenceEdge(){ return refEdge; }
+
 }

@@ -1,5 +1,6 @@
 package uicomponent.controllers;
 
+import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.filteredtree.TreeNode;
 import jastaddad.objectinfo.NodeContent;
 import jastaddad.objectinfo.NodeInfo;
@@ -55,6 +56,7 @@ public class Controller implements Initializable, ChangeListener<NodeInfo> {
         saveNewFilterButton.setOnAction((event) -> {
             mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
             graphView.updateGraph();
+            listView.getItems().clear();
         });
 
     }
@@ -121,11 +123,15 @@ public class Controller implements Initializable, ChangeListener<NodeInfo> {
 
     @Override
     public void changed(ObservableValue<? extends NodeInfo> observable, NodeInfo oldValue, NodeInfo newValue) {
+        GenericTreeNode refNode = null;
         if (oldValue != null && mon.getApi().isReferenceNode(oldValue.getValue()))
-            mon.getApi().getReferenceNode(oldValue.getValue()).setRefrenceHighlight(false);
-        if(newValue != null && mon.getApi().isReferenceNode(newValue.getValue()))
-            mon.getApi().getReferenceNode(newValue.getValue()).setRefrenceHighlight(true);
-        graphView.repaint();
+            mon.getApi().getReferenceNode(oldValue.getValue()).setReferenceHighlight(false);
+        if(newValue != null && mon.getApi().isReferenceNode(newValue.getValue())) {
+            refNode = mon.getApi().getReferenceNode(newValue.getValue());
+            refNode.setReferenceHighlight(true);
+        }
+        graphView.setReferenceEdge(refNode, mon.getSelectedNode());
+
     }
 
     private void setAttributeList(){

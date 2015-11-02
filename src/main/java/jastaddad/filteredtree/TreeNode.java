@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * Created by gda10jth on 10/16/15.
  */
-public class TreeNode extends TreeItem {
+public class TreeNode extends GenericTreeNode {
     public final Node node;
     private boolean enabled;
     private LinkedHashMap<Integer, Boolean> realChildEdge;
@@ -29,7 +29,7 @@ public class TreeNode extends TreeItem {
     public boolean isEnabled(){ return enabled; }
 
     @Override
-    public void addChild(TreeItem child){
+    public void addChild(GenericTreeNode child){
         if(child.isNode()) {
             TreeNode c = (TreeNode)child;
             realChildEdge.put(c.node.id, node.children.contains(c.node));
@@ -37,11 +37,11 @@ public class TreeNode extends TreeItem {
         children.add(child);
     }
 
-    public boolean isRealChild(TreeItem child){
+    public boolean isRealChild(GenericTreeNode child){
         return !child.isNode() ? false : realChildEdge.get(((TreeNode)child).node.id);
     }
 
-    public Iterator<TreeItem> iterator(){ return children.iterator(); }
+    public Iterator<GenericTreeNode> iterator(){ return children.iterator(); }
 
     public boolean isNode(){ return true; }
     public boolean isCluster(){return false;}
