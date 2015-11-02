@@ -8,7 +8,8 @@ import java.util.List;
  */
 public abstract class GenericTreeNode {
     protected List<GenericTreeNode> children;
-    protected boolean refrenceHighlight;
+    protected boolean referenceHighlight;
+    protected GenericTreeNode clusterRef;
 
     public GenericTreeNode(){
         children = new ArrayList();
@@ -20,18 +21,28 @@ public abstract class GenericTreeNode {
         children.add(child);
     }
 
-    public void setReferenceHighlight(boolean highlight){ refrenceHighlight = highlight; }
-
-    public boolean isReferenceHighlight(){ return refrenceHighlight; }
+    public void setReferenceHighlight(boolean highlight){
+        referenceHighlight = highlight;
+        if(clusterRef != null){
+            clusterRef.setReferenceHighlight(highlight);
+        }
+    }
+    public boolean isReferenceHighlight(){ return referenceHighlight; }
 
     public abstract boolean isNode();
     public abstract boolean isCluster();
     public abstract boolean isClusterParent();
     public abstract boolean isRealChild(GenericTreeNode child);
 
+
+    public boolean hasClusterReference(){ return clusterRef != null; }
+
+    public GenericTreeNode getClusterReference(){ return clusterRef.clusterRef == null ? clusterRef : clusterRef.clusterRef; }
+
+    public void setClusterReference(GenericTreeNode clusterRef){ this.clusterRef = clusterRef; }
+
     @Override
     public String toString(){
-        return "";
+        return this.getClass().toString();
     }
-
 }
