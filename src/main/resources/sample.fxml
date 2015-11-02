@@ -24,7 +24,9 @@
               </tabs>
           </TabPane>
          <VBox styleClass="paneParent">
-            <ScrollPane styleClass="graphView" fx:id="graphView"/>
+
+                        <ScrollPane styleClass="graphView" fx:id="graphView"/>
+
          </VBox>
           <VBox styleClass="paneParent">
               <SplitPane orientation="VERTICAL" dividerPositions="0.5">
@@ -37,8 +39,8 @@
                             </VBox>
                         </Tab>
                        <Tab text="Classes">
-                          <VBox styleClass="paneParent">
-                             <ScrollPane styleClass="typeListView">
+                          <VBox styleClass="paneParent" fx:id="vBoxFilterTab">
+                             <ScrollPane styleClass="typeListView" fx:id="scrollPaneClassFilter">
                                 <TreeView styleClass="typeTreeView" fx:id="typeListView"/>
                              </ScrollPane>
                           </VBox>

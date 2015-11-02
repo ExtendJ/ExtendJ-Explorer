@@ -12,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.CheckBoxTreeCell;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import uicomponent.UIMonitor;
 import uicomponent.graph.GraphView;
@@ -35,6 +36,9 @@ public class Controller implements Initializable, ChangeListener<NodeInfo> {
     private ListView listView;
 
     @FXML
+    private VBox vBoxFilterTab;
+
+    @FXML
     private TreeView<TmpTreeItem> typeListView;
 
     private UIMonitor mon;
@@ -42,6 +46,9 @@ public class Controller implements Initializable, ChangeListener<NodeInfo> {
 
     @FXML
     private TextArea filteredConfigTextArea;
+
+    @FXML
+    private ScrollPane scrollPaneClassFilter;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -58,7 +65,7 @@ public class Controller implements Initializable, ChangeListener<NodeInfo> {
             mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
             graphView.updateGraph();
         });
-
+        vBoxFilterTab.setVgrow(scrollPaneClassFilter, Priority.ALWAYS);
     }
 
     private void loadFilterFileText() {

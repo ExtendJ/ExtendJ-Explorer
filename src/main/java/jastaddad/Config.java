@@ -79,7 +79,7 @@ public class Config{
             String decl = entry.getKey() + "()";
             BinExpr be = entry.getValue();
 
-            System.out.println(decl);
+            //System.out.println(decl);
             if(!node.containsAttributeOrToken(decl)) {
                 return false;
             }

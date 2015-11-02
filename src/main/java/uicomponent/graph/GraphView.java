@@ -75,9 +75,11 @@ public class GraphView extends SwingNode {
         DirectedOrderedSparseMultigraph n = new DirectedOrderedSparseMultigraph();
         g = new DelegateForest<>(n);
         createTree(g, mon.getRootNode());
-        createLayout(g);
-        setListeners();
-        setContent(vs);
+        vs.getGraphLayout().setGraph(g);
+        vs.repaint();
+        //createLayout(g);
+        //setListeners();
+        //setContent(vs);
     }
 
     public void createLayout(Forest<TreeItem, UIEdge> g ){//Creates UI specific stuff
