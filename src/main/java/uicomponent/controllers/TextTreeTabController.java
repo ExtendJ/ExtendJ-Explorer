@@ -61,6 +61,7 @@ public class TextTreeTabController implements Initializable, ChangeListener {
             nodeToItemRef.put(child, childItem);
             if(child.isNode()){
                 TreeNode n = (TreeNode) child;
+
                 /*if(parentGNode.isNode() && !((TreeNode)parentGNode).node.isOpt())
                     edge = new UIEdge(parent.isRealChild(child), n.node.name);
                 else
@@ -77,10 +78,9 @@ public class TextTreeTabController implements Initializable, ChangeListener {
         graphTreeView.getSelectionModel().select(nodeToItemRef.get(node));
     }
 
-
-
     public void updateTree(){
         TreeItem<GenericTreeNode> root = new TreeItem<>(mon.getRootNode());
+        nodeToItemRef.clear();
         createTree(root);
         graphTreeView.setRoot(root);
     }

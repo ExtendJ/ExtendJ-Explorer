@@ -9,7 +9,6 @@ import edu.uci.ics.jung.visualization.control.*;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.picking.PickedInfo;
-import edu.uci.ics.jung.visualization.picking.PickedState;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.filteredtree.TreeNode;
@@ -111,6 +110,11 @@ public class GraphView extends SwingNode implements ItemListener {
             return new RoundRectangle2D.Double(-50, -20, 130, 40,40,40);
         };
 
+        Transformer <GenericTreeNode, String> toStringTransformer = fNode -> {
+            //CompositeShape shape = new CompositeShape();
+            return fNode.toGraphString();
+        };
+
         float dash[] = {5.0f};
         final Stroke refStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
         final Stroke dashedStroke = new BasicStroke(0.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
@@ -145,7 +149,7 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
         vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<>());
         vs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
-        vs.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
+        vs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
         vs.getRenderContext().setVertexShapeTransformer(vertexShape);
         vs.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
         vs.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
@@ -163,7 +167,10 @@ public class GraphView extends SwingNode implements ItemListener {
         
     }
 
-    public void repaint(){vs.repaint();}
+    public void repaint(){
+        vs.repaint();
+
+    }
 
     public void newNodeSelected(GenericTreeNode node) {
         vs.getPickedVertexState().clear();
@@ -177,8 +184,8 @@ public class GraphView extends SwingNode implements ItemListener {
             @Override
             public void run() {
                 Object subject = e.getItem();
-                if (subject != null && subject instanceof TreeNode) {
-                    con.newNodeSelected((TreeNode) subject, true);
+                if (subject != null && subject instanceof GenericTreeNode) {
+                    con.newNodeSelected((GenericTreeNode) subject, true);
                 }
             }
         });
