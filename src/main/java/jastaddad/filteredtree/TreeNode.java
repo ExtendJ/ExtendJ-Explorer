@@ -51,4 +51,6 @@ public class TreeNode extends GenericTreeNode {
     public String toString(){
         return node.toString();
     }
+
+    public String toGraphString(){return toString(); }
 }

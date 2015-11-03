@@ -4,6 +4,7 @@ import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.filteredtree.TreeNode;
 import jastaddad.objectinfo.NodeContent;
 import jastaddad.objectinfo.NodeInfo;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -16,6 +17,7 @@ import uicomponent.UIComponent;
 import uicomponent.UIMonitor;
 import uicomponent.graph.GraphView;
 
+import javax.swing.*;
 import java.awt.event.ItemEvent;
 import java.io.*;
 import java.net.URL;
@@ -67,18 +69,20 @@ public class Controller implements Initializable {
             mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
             graphView.updateGraph();
             textTreeTabController.updateTree();
+            if(mon.getSelectedNode() != null) {
+                Platform.runLater(() -> textTreeTabController.newNodeSelected(mon.getSelectedNode()));
+            }
             resetUI();
         });
 
         graphViewTabs.getSelectionModel().selectedItemProperty().addListener(
-                new ChangeListener<Tab>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Tab> ov, Tab t, Tab t1) {
-                        if(t1.getId().equals("graphViewTabNode")){
-                            graphView.repaint();
-                        } else if(t1.getId().equals("treeViewTabNode")){
+                (ov, t, t1) -> {
+                    if(t1.getId().equals("graphViewTabNode")){
+                        Platform.runLater(() -> {
+                            graphView.repaint(); graphView.requestFocus();
+                        });
+                    } else if(t1.getId().equals("treeViewTabNode")){
 
-                        }
                     }
                 }
         );

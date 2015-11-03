@@ -33,7 +33,7 @@ public abstract class GenericTreeNode {
     public abstract boolean isCluster();
     public abstract boolean isClusterParent();
     public abstract boolean isRealChild(GenericTreeNode child);
-
+    public abstract String toGraphString();
 
     public boolean hasClusterReference(){ return clusterRef != null; }
 
@@ -41,8 +41,4 @@ public abstract class GenericTreeNode {
 
     public void setClusterReference(GenericTreeNode clusterRef){ this.clusterRef = clusterRef; }
 
-    @Override
-    public String toString(){
-        return this.getClass().toString();
-    }
 }
