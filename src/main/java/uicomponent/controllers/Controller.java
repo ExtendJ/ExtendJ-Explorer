@@ -124,6 +124,8 @@ public class Controller implements Initializable {
 
         saveNewFilterButton.setOnAction((event) -> {
             addMessage("Update of filter: START");
+            addError("Update of filter: START");
+            addWarning("Update of filter: START");
             mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
             graphView.updateGraph();
             textTreeTabController.updateTree();
