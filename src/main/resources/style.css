@@ -1,8 +1,11 @@
 .topParent{
--fx-background-color: #606060;
+    -fx-background-color: #808080;
+    -fx-border-width:0 0 1 0;
+    -fx-border-color:#606060;
 }
 
 .paneParent{
+    -fx-alignment:top-right;
     -fx-background-color: #606060;
     -fx-fit-to-height:true;
     -fx-fit-to-width:true;
@@ -59,6 +62,7 @@
     -fx-text-fill: #ffffff ;
     -fx-background-insets: 0;
     -fx-focus-color: transparent;
+    -fx-background-color: #363636;
 }
 
 .textAreaConfig .content{
@@ -168,3 +172,49 @@
     -fx-alignment: CENTER;
     -fx-text-fill: #eeeeee;
 }
+
+.consoleTextFlow{
+    -fx-background-color:#363636;
+    -fx-padding:10 0 0 10;
+}
+
+.consoleTextWarning{
+    -fx-fill: yellow;
+    -fx-font-size:13;
+    -fx-font-family:sans-serif;
+}
+
+.consoleTextError{
+    -fx-fill: red;
+    -fx-font-size:13;
+}
+
+.consoleTextMessage{
+    -fx-fill: white;
+    -fx-font-size:13;
+}
+
+.consoleScrollPane{
+    -fx-fit-to-height:true;
+    -fx-fit-to-width:true;
+    -fx-background-color: #363636;
+}
+
+.minimizeButton{
+    -fx-background-color:#404040;
+    -fx-text-fill:white;
+    -fx-border-width:1px;
+    -fx-border-color:#404040;
+}
+
+.minimizeButton:hover{
+    -fx-background-color:#202020;
+}
+
+.split-pane{
+    -fx-background-color:transparent;
+    -fx-background:transparent;
+    -fx-padding:0;
+    -fx-background-insets: 0;
+}
+

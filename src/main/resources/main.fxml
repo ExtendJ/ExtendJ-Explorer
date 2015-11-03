@@ -2,6 +2,8 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.text.Text?>
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="uicomponent.controllers.Controller">
     <top>
@@ -10,34 +12,68 @@
         </HBox>
     </top>
     <center>
-        <SplitPane fx:id="centerSplitPane" orientation="HORIZONTAL" dividerPositions="0,1">
-            <TabPane tabClosingPolicy="UNAVAILABLE">
-                <tabs>
-                    <Tab text="Attributes">
-                        <fx:include fx:id="attributeTab" source="/attributeTab.fxml"/>
-                    </Tab>
-                </tabs>
-            </TabPane>
-            <VBox styleClass="paneParent" VBox.vgrow="ALWAYS">
-                <TabPane tabClosingPolicy="UNAVAILABLE" fx:id="graphViewTabs">
+        <SplitPane fx:id="centerSplitPane" orientation="HORIZONTAL" dividerPositions="0.2,0.8">
+            <VBox styleClass="paneParent">
+                <Button styleClass="minimizeButton" text="-" fx:id="minimizeLeftSide"/>
+                <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                     <tabs>
-                        <Tab text="Graph" fx:id="graphViewTabNode">
-                            <ScrollPane styleClass="graphView" fx:id="graphView"/>
-                        </Tab>
-                        <Tab text="Tree" fx:id="treeViewTabNode">
-                            <fx:include fx:id="textTreeTab" source="/textTreeTab.fxml"/>
+                        <Tab text="Attributes">
+                            <fx:include fx:id="attributeTab" source="/attributeTab.fxml"/>
                         </Tab>
                     </tabs>
                 </TabPane>
             </VBox>
+            <VBox styleClass="paneParent" VBox.vgrow="ALWAYS">
+                <SplitPane orientation="VERTICAL" dividerPositions="0.8" fx:id="consoleAndGraphSplitPane">
+                    <TabPane tabClosingPolicy="UNAVAILABLE" fx:id="graphViewTabs">
+                        <tabs>
+                            <Tab text="Graph" fx:id="graphViewTabNode">
+                                <ScrollPane styleClass="graphView" fx:id="graphView"/>
+                            </Tab>
+                            <Tab text="Tree" fx:id="treeViewTabNode">
+                                <fx:include fx:id="textTreeTab" source="/textTreeTab.fxml"/>
+                            </Tab>
+                        </tabs>
+                    </TabPane>
+                    <VBox styleClass="paneParent" VBox.vgrow="ALWAYS">
+                        <Button styleClass="minimizeButton" text="-" fx:id="minimizeConsole"/>
+                        <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+                            <tabs>
+                                <Tab text="All" fx:id="consoleTabAll">
+                                    <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneAll">
+                                        <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowAll"/>
+                                    </ScrollPane>
+                                </Tab>
+                                <Tab text="Warnings">
+                                    <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneWarning">
+                                        <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowWarning"/>
+                                    </ScrollPane>
+                                </Tab>
+                                <Tab text="Errors">
+                                    <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneError">
+                                        <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowError"/>
+                                    </ScrollPane>
+                                </Tab>
+                                <Tab text="Messages">
+                                    <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneMessage">
+                                        <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowMessage"/>
+                                    </ScrollPane>
+                                </Tab>
+                            </tabs>
+                        </TabPane>
+
+                    </VBox>
+                </SplitPane>
+            </VBox>
             <VBox styleClass="paneParent">
-                <SplitPane orientation="VERTICAL" dividerPositions="0.5">
+                <Button styleClass="minimizeButton" text="-" fx:id="minimizeRightSide"/>
+                <SplitPane styleClass="" orientation="VERTICAL" dividerPositions="0.5">
                     <TabPane tabClosingPolicy="UNAVAILABLE">
                         <tabs>
                             <Tab text="Filter">
                                 <VBox styleClass="paneParent">
                                     <TextArea styleClass="textAreaConfig" fx:id="filteredConfigTextArea"/>
-                                    <Button text="Update" fx:id="saveNewFilterButton"></Button>
+                                    <Button text="Filter" fx:id="saveNewFilterButton"></Button>
                                 </VBox>
                             </Tab>
                             <Tab text="Classes">

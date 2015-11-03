@@ -2,9 +2,9 @@ package uicomponent.controllers;
 
 import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.filteredtree.TreeNode;
-import jastaddad.objectinfo.NodeContent;
-import jastaddad.objectinfo.NodeInfo;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -13,12 +13,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import uicomponent.UIComponent;
 import uicomponent.UIMonitor;
 import uicomponent.graph.GraphView;
 
-import javax.swing.*;
-import java.awt.event.ItemEvent;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
@@ -37,20 +37,46 @@ public class Controller implements Initializable {
 
     @FXML
     private TabPane graphViewTabs;
-
     @FXML
     private Button saveNewFilterButton;
-
+    @FXML
+    private Button minimizeLeftSide;
+    @FXML
+    private Button minimizeRightSide;
+    @FXML
+    private Button minimizeConsole;
+    @FXML
+    private TextArea filteredConfigTextArea;
     @FXML
     private TreeView<TmpTreeItem> typeListView;
+
+    @FXML
+    private SplitPane centerSplitPane;
+    @FXML
+    private SplitPane consoleAndGraphSplitPane;
+
+    // Console stuff
+    @FXML private TextFlow consoleTextFlowAll;
+    @FXML private TextFlow consoleTextFlowWarning;
+    @FXML private TextFlow consoleTextFlowError;
+    @FXML private TextFlow consoleTextFlowMessage;
+
+    @FXML private ScrollPane consoleScrollPaneAll;
+    @FXML private ScrollPane consoleScrollPaneError;
+    @FXML private ScrollPane consoleScrollPaneMessage;
+    @FXML private ScrollPane consoleScrollPaneWarning;
+
+    private DoubleProperty consoleHeightAll;
+    private DoubleProperty consoleHeightError;
+    private DoubleProperty consoleHeightWarning;
+    private DoubleProperty consoleHeightMessage;
 
     private UIMonitor mon;
     private GraphView graphView;
 
-    @FXML
-    private TextArea filteredConfigTextArea;
-
-
+    private enum ConsoleFilter {
+        ALL, ERROR, WARNING, MESSAGE
+    }
     @Override
     public void initialize(URL url, ResourceBundle rb) {
     }
@@ -65,7 +91,39 @@ public class Controller implements Initializable {
         loadClassTreeView();
         loadFilterFileText();
 
+        consoleHeightAll = new SimpleDoubleProperty();
+        consoleHeightError = new SimpleDoubleProperty();
+        consoleHeightWarning = new SimpleDoubleProperty();
+        consoleHeightMessage = new SimpleDoubleProperty();
+
+        setConsoleScrollHeightListener(consoleHeightAll, consoleScrollPaneAll, consoleTextFlowAll);
+        setConsoleScrollHeightListener(consoleHeightError, consoleScrollPaneError, consoleTextFlowError);
+        setConsoleScrollHeightListener(consoleHeightWarning, consoleScrollPaneWarning, consoleTextFlowWarning);
+        setConsoleScrollHeightListener(consoleHeightMessage, consoleScrollPaneMessage, consoleTextFlowMessage);
+
+        minimizeLeftSide.setOnAction((event1 -> {
+            if(centerSplitPane.getDividers().get(0).getPosition() < 0.05)
+                centerSplitPane.setDividerPosition(0,0.2);
+            else
+                centerSplitPane.setDividerPosition(0,0);
+        }));
+        minimizeRightSide.setOnAction((event1 -> {
+            if(centerSplitPane.getDividers().get(1).getPosition() > 0.95)
+                centerSplitPane.setDividerPosition(1,0.8);
+            else
+                centerSplitPane.setDividerPosition(1,1);
+
+        }));
+        minimizeConsole.setOnAction((event1 -> {
+            if(consoleAndGraphSplitPane.getDividers().get(0).getPosition() > 0.95)
+                consoleAndGraphSplitPane.setDividerPosition(0,0.8);
+            else
+                consoleAndGraphSplitPane.setDividerPosition(0,1);
+
+        }));
+
         saveNewFilterButton.setOnAction((event) -> {
+            addMessage("Update of filter: START");
             mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
             graphView.updateGraph();
             textTreeTabController.updateTree();
@@ -73,7 +131,7 @@ public class Controller implements Initializable {
             if(mon.getSelectedNode() != null) {
                 Platform.runLater(() -> textTreeTabController.newNodeSelected(mon.getSelectedNode()));
             }
-
+            addMessage("Update of filter: DONE");
         });
 
         graphViewTabs.getSelectionModel().selectedItemProperty().addListener(
@@ -87,6 +145,52 @@ public class Controller implements Initializable {
                     }
                 }
         );
+
+        //centerSplitPane.setDividerPosition(1,0.5);
+    }
+
+    private void setConsoleScrollHeightListener(DoubleProperty consoleHeight, ScrollPane consoleScrollPane, TextFlow textFlow){
+        consoleHeight.bind(textFlow.heightProperty());
+        consoleHeight.addListener((ov, t, t1) -> {
+            consoleScrollPane.setVvalue(consoleScrollPane.getVmax());
+        }) ;
+    }
+
+    public void addMessage(String message){
+        addConsoleText(message, "consoleTextMessage", ConsoleFilter.MESSAGE);
+    }
+
+    public void addError(String message){
+        addConsoleText(message, "consoleTextError", ConsoleFilter.ERROR);
+    }
+
+    public void addWarning(String message){
+        addConsoleText(message, "consoleTextWarning", ConsoleFilter.WARNING);
+    }
+
+    private void addConsoleText(String message, String style, ConsoleFilter filterType){
+        Text text1 = new Text(message + "\n");
+        Text text2 = new Text(message + "\n");
+        text1.getStyleClass().add(style);
+        text2.getStyleClass().add(style);
+        getConsoleArray(filterType).getChildren().add(text1);
+        if(filterType != ConsoleFilter.ALL)
+            consoleTextFlowAll.getChildren().add(text2);
+
+        consoleScrollPaneAll.setVvalue(1.0);
+    }
+
+    private TextFlow getConsoleArray(ConsoleFilter filterType){
+        switch (filterType) {
+            case MESSAGE:
+                return consoleTextFlowMessage;
+            case ERROR:
+                return consoleTextFlowError;
+            case WARNING:
+                return consoleTextFlowWarning;
+            default:
+                return consoleTextFlowAll;
+        }
     }
 
     public void newNodeSelected(GenericTreeNode node, boolean fromGraph){
