@@ -69,10 +69,11 @@ public class Controller implements Initializable {
             mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
             graphView.updateGraph();
             textTreeTabController.updateTree();
+            resetUI();
             if(mon.getSelectedNode() != null) {
                 Platform.runLater(() -> textTreeTabController.newNodeSelected(mon.getSelectedNode()));
             }
-            resetUI();
+
         });
 
         graphViewTabs.getSelectionModel().selectedItemProperty().addListener(
@@ -96,6 +97,16 @@ public class Controller implements Initializable {
             textTreeTabController.newNodeSelected(node);
         else
             graphView.newNodeSelected(node);
+    }
+
+    public void nodeDeselected(boolean fromGraph){
+        mon.setSelectedNode(null);
+        mon.setReferenceNode(null);
+        if(fromGraph)
+            textTreeTabController.deselectNode();
+        else
+            graphView.deselectNode();
+        attributeTabController.setAttributes();
     }
 
     private void loadFilterFileText() {
@@ -123,6 +134,7 @@ public class Controller implements Initializable {
         GenericTreeNode node = getNode(mon.getSelectedNode());
         if(node == null)
             return;
+        node = node.hasClusterReference() ? node.getClusterReference() : node;
         mon.setSelectedNode(node);
         graphView.setSelectedNode(node);
         node = getNode(mon.getReferenceNode());
@@ -135,7 +147,7 @@ public class Controller implements Initializable {
     }
 
     private GenericTreeNode getNode(GenericTreeNode node){
-        if(node == null || !node.isNode())
+        if(node == null)
             return null;
         TreeNode treeNode = ((TreeNode) node);
         return mon.getApi().getReferenceNode(treeNode.node.node);

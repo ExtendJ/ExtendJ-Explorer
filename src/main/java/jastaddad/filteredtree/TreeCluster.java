@@ -1,5 +1,7 @@
 package jastaddad.filteredtree;
 
+import jastaddad.Node;
+
 /**
  * Created by gda10jth on 10/21/15.
  */
@@ -37,4 +39,5 @@ public class TreeCluster extends GenericTreeNode {
     public String toString(){ return "..."; }
 
     public String toGraphString(){return ""; }
+
 }

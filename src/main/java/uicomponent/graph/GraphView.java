@@ -34,7 +34,7 @@ public class GraphView extends SwingNode implements ItemListener {
     private UIMonitor mon;
     private Controller con;
     private VisualizationViewer vs;
-    private DelegateForest<GenericTreeNode, UIEdge> g;
+    private DelegateForest<GenericTreeNode, UIEdge> graph;
     private UIEdge root;
 
     public GraphView(UIMonitor mon){
@@ -42,10 +42,10 @@ public class GraphView extends SwingNode implements ItemListener {
         this.mon = mon;
         this.con = mon.getController();
         DirectedOrderedSparseMultigraph n = new DirectedOrderedSparseMultigraph();
-        g = new DelegateForest<>(n);
+        graph = new DelegateForest<>(n);
         root = null;
-        createTree(g, mon.getRootNode());
-        createLayout(g);
+        createTree(graph, mon.getRootNode());
+        createLayout(graph);
         setListeners();
         setContent(vs);
     }
@@ -70,9 +70,9 @@ public class GraphView extends SwingNode implements ItemListener {
 
     public void updateGraph(){
         DirectedOrderedSparseMultigraph n = new DirectedOrderedSparseMultigraph();
-        g = new DelegateForest<>(n);
-        createTree(g, mon.getRootNode());
-        vs.getGraphLayout().setGraph(g);
+        graph = new DelegateForest<>(n);
+        createTree(graph, mon.getRootNode());
+        vs.getGraphLayout().setGraph(graph);
         vs.repaint();
     }
 
@@ -85,13 +85,13 @@ public class GraphView extends SwingNode implements ItemListener {
     public void setReferenceEdge(GenericTreeNode newRef, GenericTreeNode ref){
         UIEdge edge = mon.getReferenceEdge();
         if(edge != null)
-            g.removeEdge(edge, false);
+            graph.removeEdge(edge, false);
         if(newRef == null) {
             vs.repaint();
             return;
         }
         edge = new UIEdge();
-        g.addEdge(edge, ref.hasClusterReference() ? ref.getClusterReference() : ref, newRef.hasClusterReference() ? newRef.getClusterReference() : newRef);
+        graph.addEdge(edge, ref.hasClusterReference() ? ref.getClusterReference() : ref, newRef.hasClusterReference() ? newRef.getClusterReference() : newRef);
         mon.setReferenceEdge(edge);
         vs.repaint();
     }
@@ -178,6 +178,10 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.repaint();
     }
 
+    public void deselectNode(){
+        vs.getPickedVertexState().clear();
+    }
+
     @Override
     public void itemStateChanged(ItemEvent e) {
         Platform.runLater(new Runnable() {
@@ -185,7 +189,11 @@ public class GraphView extends SwingNode implements ItemListener {
             public void run() {
                 Object subject = e.getItem();
                 if (subject != null && subject instanceof GenericTreeNode) {
-                    con.newNodeSelected((GenericTreeNode) subject, true);
+
+                    if(e.getStateChange() == ItemEvent.SELECTED)
+                        con.newNodeSelected((GenericTreeNode) subject, true);
+                    else
+                        con.nodeDeselected(true);
                 }
             }
         });

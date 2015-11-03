@@ -1,5 +1,6 @@
 package jastaddad.objectinfo;
 
+import AST.ASTNodeAnnotation;
 import jastaddad.ASTAnnotation;
 
 import java.lang.annotation.Annotation;
@@ -37,13 +38,12 @@ public class NodeContent {
         return ret;
     }
 
-    public ArrayList<NodeInfo> toArray(){
-        ArrayList<NodeInfo> temp = new ArrayList<>();
-        if(attributes != null)
-            temp.addAll(attributes.values());
-        if(tokens != null)
-            temp.addAll(tokens.values());
-        Collections.sort(temp);
+    public ArrayList<NodeInfoHolder> toArray(){
+        ArrayList<NodeInfoHolder> temp = new ArrayList<>();
+        for (Map.Entry<String, NodeInfo> e : attributes.entrySet())
+            temp.add(new NodeInfoHolder(e.getKey(), e.getValue().getValue(), e.getValue()));
+        for (Map.Entry<String, NodeInfo> e : tokens.entrySet())
+            temp.add(new NodeInfoHolder(e.getKey(), e.getValue().getValue(), e.getValue()));
         return temp;
     }
 
@@ -71,20 +71,11 @@ public class NodeContent {
         return false;
     }
 
-    private String getName(Method m){
-        String name = m.getName() + "(";
-        if (m.getParameterCount() > 0){
-            for(int i = 0; i < m.getParameterCount(); i++)
-                name += m.getParameterTypes()[i] + (i + 1 < m.getParameterCount() ? ", " : "");
-        }
-        return name + ")";
-    }
-
     //Todo might move these methods to their specific classes
     private boolean addAttribute(Object obj, Method m){
-        String name = getName(m);
+        String name = m.getName();
         try{
-            attributes.put(name, new Attribute(name, m.invoke(obj, new Object[m.getParameterCount()]), m, ""));
+            attributes.put(name, new Attribute(name, m.invoke(obj, new Object[0]), m, ""));
         } catch (Throwable e) {
             //e.printStackTrace();
             attributes.put(name, new Attribute(name, e.getCause().toString(), m, ""));
@@ -93,9 +84,9 @@ public class NodeContent {
     }
 
     private boolean addToken(Object obj, Method m, Annotation a){
-        String name = getName(m);
+        String name = m.getName();
         try{
-            tokens.put(name, new Token(name, m.invoke(obj, new Object[m.getParameterCount()]), m));
+            tokens.put(name, new Token(name, m.invoke(obj, new Object[0]), m));
         } catch (Throwable e) {
             e.printStackTrace();
             tokens.put(name, new Token(name, e.getCause().toString(), m));
@@ -104,19 +95,20 @@ public class NodeContent {
     }
 
     private boolean addParameterizedAttributes(Object obj, Method m){
-        String name = getName(m);
+        String name = m.getName();
         try{
-            HashMap<Object, Object> map = getCachedMapValues(obj, m); //tries to find cached values
-            if(map != null){
-                for(Map.Entry<Object, Object> e : map.entrySet())
-                    attributes.put(name + e.getKey(), new Attribute(name, e.getKey() + " : " + e.getValue(), m, ""));
-            }else
-                attributes.put(name, new Attribute(name, "Need input from user", m, ""));
+            attributes.put(name, new Attribute(name, "Need input from user", m, ""));
         } catch (Throwable e) {
             e.printStackTrace();
             attributes.put(name, new Attribute(name, e.getCause()+ "", m, ""));
         }
         return true;
+
+        /*HashMap<Object, Object> map = getCachedMapValues(obj, m); //tries to find cached values
+            if(map != null){
+                for(Map.Entry<Object, Object> e : map.entrySet())
+                    attributes.put(name + e.getKey(), new Attribute(name, e.getKey() + " : " + e.getValue(), m, ""));
+        }else*/
     }
 
     private HashMap<Object, Object> getCachedMapValues(Object obj, Method m) throws IllegalAccessException, InstantiationException {

@@ -1,6 +1,10 @@
 package jastaddad.objectinfo;
 
+import javafx.util.Pair;
+
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by gda10jli on 10/20/15.
@@ -29,5 +33,27 @@ public abstract class NodeInfo implements Comparable<NodeInfo> {
     @Override
     public int compareTo(NodeInfo o) {
         return name.compareTo(o.name);
+    }
+
+    protected abstract void setChildInfo(ArrayList<NodeInfoHolder> al);
+
+    protected String getName(Method m){
+        String name = m.getName() + "(";
+        if (m.getParameterCount() > 0){
+            for(int i = 0; i < m.getParameterCount(); i++)
+                name += m.getParameterTypes()[i] + (i + 1 < m.getParameterCount() ? ", " : "");
+        }
+        return name + ")";
+    }
+
+    public ArrayList<NodeInfoHolder> getInfo(){
+        ArrayList<NodeInfoHolder> al = new ArrayList();
+        al.add(new NodeInfoHolder("Name", name));
+        al.add(new NodeInfoHolder("Value", value));
+        al.add(new NodeInfoHolder("Return type", method.getReturnType()));
+        for(int i = 0; i < method.getParameterCount(); i++)
+            al.add(new NodeInfoHolder("Parameter type: " + i, method.getParameterTypes()[i]));
+        setChildInfo(al);
+        return al;
     }
 }

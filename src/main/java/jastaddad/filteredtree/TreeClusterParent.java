@@ -1,5 +1,7 @@
 package jastaddad.filteredtree;
 
+import jastaddad.Node;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,4 +44,5 @@ public class TreeClusterParent extends GenericTreeNode {
     @Override
     public String toString(){ return "..."; }
     public String toGraphString(){return ""; }
+
 }

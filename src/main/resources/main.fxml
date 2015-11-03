@@ -42,8 +42,7 @@
                             </Tab>
                             <Tab text="Classes">
                                 <VBox styleClass="paneParent" VBox.vgrow="ALWAYS">
-                                    <ScrollPane styleClass="typeListView" fx:id="scrollPaneClassFilter"
-                                                prefHeight="1000">
+                                    <ScrollPane styleClass="typeListView" fx:id="scrollPaneClassFilter" prefHeight="1000">
                                         <TreeView styleClass="typeTreeView" fx:id="typeListView"/>
                                     </ScrollPane>
                                 </VBox>
