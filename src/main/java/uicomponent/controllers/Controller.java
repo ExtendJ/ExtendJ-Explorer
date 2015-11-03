@@ -87,7 +87,7 @@ public class Controller implements Initializable {
     public void newNodeSelected(GenericTreeNode node, boolean fromGraph){
         mon.setSelectedNode(node);
         mon.setReferenceNode(null);
-        attributeTabController.setAttributeList();
+        attributeTabController.setAttributes();
         if(fromGraph)
             textTreeTabController.newNodeSelected(node);
         else

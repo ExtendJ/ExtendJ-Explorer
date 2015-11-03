@@ -92,7 +92,7 @@ public class GraphView extends SwingNode implements ItemListener {
             return;
         }
         edge = new UIEdge();
-        g.addEdge(edge, ref, newRef.hasClusterReference() ? newRef.getClusterReference() : newRef);
+        g.addEdge(edge, ref.hasClusterReference() ? ref.getClusterReference() : ref, newRef.hasClusterReference() ? newRef.getClusterReference() : newRef);
         mon.setReferenceEdge(edge);
         vs.repaint();
     }
@@ -177,8 +177,8 @@ public class GraphView extends SwingNode implements ItemListener {
             @Override
             public void run() {
                 Object subject = e.getItem();
-                if (subject != null && subject instanceof TreeNode) {
-                    con.newNodeSelected((TreeNode) subject, true);
+                if (subject != null && subject instanceof GenericTreeNode) {
+                    con.newNodeSelected((GenericTreeNode) subject, true);
                 }
             }
         });

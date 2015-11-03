@@ -12,7 +12,7 @@ public class Attribute extends NodeInfo {
     { super(name, value, m); this.type = type; }
 
     @Override
-    public String print(){ return type + "" + name + " : " + value ; }
+    public String print(){ return name; }
 
     public String getType(){ return type; }
 

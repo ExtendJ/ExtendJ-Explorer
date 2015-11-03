@@ -9,8 +9,10 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.cell.ComboBoxListCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import uicomponent.UIMonitor;
 import uicomponent.graph.GraphView;
 
@@ -25,8 +27,14 @@ public class AttributeTabController implements Initializable, ChangeListener<Nod
     private UIMonitor mon;
     private GraphView graphView;
 
+    @FXML private TableView<NodeInfo> attributeInfo;
+    @FXML private TableColumn<NodeInfo, String> attributeNameCol;
+    @FXML private TableColumn<NodeInfo, String> attributeValueCol;
+
     @FXML
-    private ListView listView;
+    private Label nodeNameLabel;
+    @FXML
+    private ListView attributeList;
 
     public void init(UIMonitor mon, GraphView graphView){
         this.mon = mon;
@@ -36,27 +44,40 @@ public class AttributeTabController implements Initializable, ChangeListener<Nod
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         //Attribute Listener
-        listView.getSelectionModel().selectedItemProperty().addListener(this);
+        attributeList.getSelectionModel().selectedItemProperty().addListener(this);
     }
 
-    public void setAttributeList(){
-        if(!mon.getSelectedNode().isNode())
+    public void setAttributes(){
+        GenericTreeNode node = mon.getSelectedNode();
+        if(node == null)
             return;
-        TreeNode fNode = ((TreeNode)mon.getSelectedNode());
-        NodeContent a = fNode.node.getNodeContent();
-        ArrayList<NodeInfo> al = a.toArray();  //Todo remove this when we change the UI, ie we add a proper node name label
-        al.add(0, new NodeInfo(fNode.node.nodeName(), "", null) {
-            @Override
-            public String print() {
-                return "Node name: " + name;
-            }
-        });
-        listView.getSelectionModel().clearSelection();
-        listView.setItems(FXCollections.observableList(al));
+        nodeNameLabel.setText(node.toString());
+        if(!mon.getSelectedNode().isNode()) {
+            attributeList.getItems().clear();
+            return;
+        }
+        setAttributeList((TreeNode) node);
+    }
+
+    public void setAttributeList(TreeNode node){
+        NodeContent a = node.node.getNodeContent();
+        ArrayList<NodeInfo> al = a.toArray();
+        attributeList.getSelectionModel().clearSelection();
+        attributeList.setItems(FXCollections.observableList(al));
     }
 
     @Override
     public void changed(ObservableValue<? extends NodeInfo> observable, NodeInfo oldValue, NodeInfo newValue) {
+        setAttributeInfo(newValue);
+        setReference(oldValue, newValue);
+    }
+
+    private void setAttributeInfo(NodeInfo info){
+        if(info == null)
+            return;
+    }
+
+    private void setReference(NodeInfo oldValue, NodeInfo newValue){
         GenericTreeNode refNode = null;
         if (oldValue != null && mon.getApi().isReferenceNode(oldValue.getValue()))
             mon.getApi().getReferenceNode(oldValue.getValue()).setReferenceHighlight(false);

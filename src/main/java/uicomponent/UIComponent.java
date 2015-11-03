@@ -32,7 +32,7 @@ public class UIComponent extends Application {
         //URL location=getClass().getResource("/sample.fxml");
         FXMLLoader loader = new FXMLLoader();
         //loader.setLocation(location);
-        Parent a = loader.load(getClass().getResource("/sample.fxml").openStream());
+        Parent a = loader.load(getClass().getResource("/main.fxml").openStream());
         con = loader.<Controller>getController();
         mon.setController(con);
         GraphView graphview = new GraphView(mon);

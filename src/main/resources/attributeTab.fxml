@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 <VBox styleClass="paneParent" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="uicomponent.controllers.AttributeTabController">
-    <ScrollPane styleClass="attributeScrollView" fx:id="typeView">
-        <content>
-            <ListView styleClass="attributeListView" fx:id="listView" />
-        </content>
-    </ScrollPane>
+   <children>
+       <Label fx:id="nodeNameLabel" minHeight="30" text="" />
+       <ScrollPane fx:id="typeView" styleClass="attributeScrollView" VBox.vgrow="ALWAYS">
+           <content>
+               <ListView fx:id="attributeList" styleClass="attributeListView" />
+           </content>
+       </ScrollPane>
+       <TableView fx:id="attributeInfo" VBox.vgrow="ALWAYS">
+           <columns>
+               <TableColumn fx:id="attributeNameCol" text="Name" />
+               <TableColumn fx:id="attributeValueCol"  text="Value" />
+           </columns>
+       </TableView>
+   </children>
 </VBox>
