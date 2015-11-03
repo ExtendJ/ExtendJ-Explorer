@@ -3,9 +3,11 @@ package uicomponent;
 import jastaddad.ASTAPI;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import uicomponent.controllers.Controller;
 import uicomponent.graph.GraphView;
@@ -38,9 +40,9 @@ public class UIComponent extends Application {
         GraphView graphview = new GraphView(mon);
         con.init(mon, graphview, this);
 
-
+        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         stage.setTitle("JastAddDebugger");
-        stage.setScene(new Scene(a, 1000, 1000));
+        stage.setScene(new Scene(a, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
         stage.setMaximized(true);
         stage.show();
 
