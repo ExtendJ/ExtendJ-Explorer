@@ -7,11 +7,14 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.CheckBoxTreeCell;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -100,6 +103,25 @@ public class Controller implements Initializable {
         setConsoleScrollHeightListener(consoleHeightError, consoleScrollPaneError, consoleTextFlowError);
         setConsoleScrollHeightListener(consoleHeightWarning, consoleScrollPaneWarning, consoleTextFlowWarning);
         setConsoleScrollHeightListener(consoleHeightMessage, consoleScrollPaneMessage, consoleTextFlowMessage);
+
+        centerSplitPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.F)){
+                    if(centerSplitPane.getDividers().get(0).getPosition() < 0.05 &&
+                            centerSplitPane.getDividers().get(1).getPosition() > 0.95 &&
+                            consoleAndGraphSplitPane.getDividers().get(0).getPosition() > 0.95){
+                        centerSplitPane.setDividerPosition(0, 0.2);
+                        centerSplitPane.setDividerPosition(1, 0.8);
+                        consoleAndGraphSplitPane.setDividerPosition(0, 0.8);
+                    }else {
+                        centerSplitPane.setDividerPosition(0, 0);
+                        centerSplitPane.setDividerPosition(1, 1);
+                        consoleAndGraphSplitPane.setDividerPosition(0, 1);
+                    }
+                }
+
+            }
+        });
 
         minimizeLeftSide.setOnAction((event1 -> {
             if(centerSplitPane.getDividers().get(0).getPosition() < 0.05)
