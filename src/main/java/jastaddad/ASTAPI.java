@@ -19,12 +19,16 @@ public class ASTAPI {
     private HashMap<String, Integer> typeHash;
     private HashMap<String, List<TreeNode>> typeNodeHash;
     private HashMap<Object, GenericTreeNode> realNodeRefs;
+    private HashMap<String, ArrayList<String>> errors;
 
     public ASTAPI(Object root){
+        errors = new HashMap<>();
+        errors.put("filter", new ArrayList<>());
+
         realNodeRefs = new HashMap();
         tree = new Node(root);
         this.filteredTree = null;
-        filterConfig = new Config();
+        filterConfig = new Config(errors);
         typeHash = new HashMap<>();
         typeNodeHash = new HashMap<>();
         traversTree(this.tree, null, null, true);
@@ -37,6 +41,15 @@ public class ASTAPI {
         }
         traversTree(this.tree, null, null, true);
         return true;
+    }
+
+    public ArrayList<String> getErrors(String errorType){
+        if(errors.containsKey(errorType)) {
+            ArrayList<String> ret = errors.get(errorType);
+            errors.put(errorType, new ArrayList<>());
+            return ret;
+        }
+        return new ArrayList<>();
     }
 
     private void addToTypes(TreeNode fNode){
@@ -63,6 +76,7 @@ public class ASTAPI {
         if(fNode.isNode()) {
             //FilteredTreeNode n = (FilteredTreeNode) fNode;
             TreeClusterParent clusterParent = new TreeClusterParent();
+            clusterParent.setStyles(filterConfig);
             // get all children cluster children that have no children
             for (GenericTreeNode fChild : fNode.getChildren()) {
                 if (fChild.isCluster() && fChild.getChildren().size() == 0) {
@@ -84,6 +98,7 @@ public class ASTAPI {
 
         GenericTreeNode addToParent = null;
         TreeNode fNode = new TreeNode(node, filterConfig);
+        fNode.setStyles(filterConfig);
         realNodeRefs.put(node.node, fNode);
         TreeCluster tmpCluster = cluster;
 
@@ -110,7 +125,7 @@ public class ASTAPI {
             // first node in this cluster?
             if(tmpCluster == null){
                 tmpCluster = new TreeCluster(fNode);
-
+                tmpCluster.setStyles(filterConfig);
                 // is this cluster the root of the tree?
                 if(parent != null)
                     addToParent = tmpCluster;

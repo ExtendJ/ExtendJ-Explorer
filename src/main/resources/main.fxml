@@ -14,7 +14,9 @@
     <center>
         <SplitPane fx:id="centerSplitPane" orientation="HORIZONTAL" dividerPositions="0.2,0.8">
             <VBox styleClass="paneParent">
-                <Button styleClass="minimizeButton" text="-" fx:id="minimizeLeftSide"/>
+                <VBox styleClass="topRigthAlign">
+                    <Button styleClass="minimizeButton" text="|-" fx:id="minimizeLeftSide"/>
+                </VBox>
                 <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                     <tabs>
                         <Tab text="Attributes">
@@ -36,7 +38,9 @@
                         </tabs>
                     </TabPane>
                     <VBox styleClass="paneParent" VBox.vgrow="ALWAYS">
-                        <Button styleClass="minimizeButton" text="-" fx:id="minimizeConsole"/>
+                        <VBox styleClass="topRigthAlign">
+                            <Button styleClass="minimizeButton" text="-" fx:id="minimizeConsole"/>
+                        </VBox>
                         <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                             <tabs>
                                 <Tab text="All" fx:id="consoleTabAll">
@@ -66,7 +70,7 @@
                 </SplitPane>
             </VBox>
             <VBox styleClass="paneParent">
-                <Button styleClass="minimizeButton" text="-" fx:id="minimizeRightSide"/>
+                    <Button styleClass="minimizeButton" text="-|" fx:id="minimizeRightSide"/>
                 <SplitPane styleClass="" orientation="VERTICAL" dividerPositions="0.5">
                     <TabPane tabClosingPolicy="UNAVAILABLE">
                         <tabs>

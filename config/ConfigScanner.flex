@@ -30,10 +30,10 @@ import AST.ConfigParser.SyntaxError;
 // macros
 WhiteSpace = [ ] | \t | \f | \n | \r
 Bool = (false|true)
-ID = [a-zA-Z][a-zA-Z0-9]*
+ID = [a-zA-Z\-][\-a-zA-Z0-9]*
 Numeral = [0-9]+
 Color = #[0-9a-fA-F]{6}
-String = \"[^]*\"
+String = \"[^\"]*\"
 Comment = \/\*[^]*\*\/
 %%
 

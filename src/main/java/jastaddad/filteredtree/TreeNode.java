@@ -1,5 +1,6 @@
 package jastaddad.filteredtree;
 
+import AST.*;
 import jastaddad.Config;
 import jastaddad.Node;
 
@@ -55,4 +56,24 @@ public class TreeNode extends GenericTreeNode {
     @Override
     public String toGraphString(){return toString(); }
 
+    @Override
+    public void setStyles(Config filter) {
+        if(node.isList() || node.isOpt()) {
+            styles.put("node-color", new Color("#C8C8C8"));
+            styles.put("node-shape", new Str("\"rectangle\""));
+        }
+        else {
+            styles.put("node-color", new Color("#C8F0E6"));
+            styles.put("node-shape", new Str("\"rounded_rectangle\""));
+        }
+        styles.put("border-style", new Str("\"line\""));
+
+        HashMap<String, Value> userStyle = filter.getNodeStyle(node);
+        //System.out.println(userStyle.size());
+        Iterator it = userStyle.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, Value> pair = (Map.Entry)it.next();
+            styles.put(pair.getKey(), pair.getValue());
+        }
+    }
 }

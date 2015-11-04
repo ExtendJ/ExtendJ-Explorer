@@ -123,15 +123,23 @@ public class Controller implements Initializable {
         }));
 
         saveNewFilterButton.setOnAction((event) -> {
-            addMessage("Update of filter: START");
-            mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
-            graphView.updateGraph();
-            textTreeTabController.updateTree();
-            resetUI();
-            if(mon.getSelectedNode() != null) {
-                Platform.runLater(() -> textTreeTabController.newNodeSelected(mon.getSelectedNode()));
+            addMessage("Filter update starts...");
+            boolean noError = mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
+            if(noError) {
+                graphView.updateGraph();
+                textTreeTabController.updateTree();
+                resetUI();
+                if (mon.getSelectedNode() != null) {
+                    Platform.runLater(() -> textTreeTabController.newNodeSelected(mon.getSelectedNode()));
+                }
+                addMessage("... and done!");
+            }else{
+                addError("Could not update graph: ");
+                mon.getApi().getErrors("");
+                mon.getApi().getErrors("filter").forEach(this::addError);
+                addMessage("... and done, but something is wrong!");
             }
-            addMessage("Update of filter: DONE");
+
         });
 
         graphViewTabs.getSelectionModel().selectedItemProperty().addListener(
@@ -284,6 +292,7 @@ public class Controller implements Initializable {
                 public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                     mon.getApi().newTypeFiltered(treeItem.getValue().fullName, newValue);
                     graphView.updateGraph();
+                    addMessage("Type list view called update");
                 }
             });
 
@@ -298,7 +307,7 @@ public class Controller implements Initializable {
 
         typeListView.setRoot(root);
         typeListView.setShowRoot(false);
-        typeListView.setCellFactory(CheckBoxTreeCell.<TmpTreeItem>forTreeView());
+        //typeListView.setCellFactory(CheckBoxTreeCell.<TmpTreeItem>forTreeView());
     }
 
     private class TmpTreeItem implements Comparable<TmpTreeItem>{
