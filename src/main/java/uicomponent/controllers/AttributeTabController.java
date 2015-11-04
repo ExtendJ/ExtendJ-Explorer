@@ -78,10 +78,10 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
             if(mon.getLastRealNode() != null)
                 obj = attr.invokeMethod(((TreeNode) mon.getSelectedNode()).node, result.get());
             if(obj != null){
-                mon.getController().addMessage("Invoke successful, result: " + obj);
+                mon.getController().addMessage("Invocation successful, result: " + obj);
                 setAttributeInfo(attributeTableView.getSelectionModel().getSelectedItem());
             }else
-                mon.getController().addMessage("Invoke unsuccessful, result: " + obj);
+                mon.getController().addMessage("Invocation unsuccessful, result: " + obj);
         });
         mouseMenu.getItems().add(cmItem1);
     }
@@ -115,7 +115,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
     private void setAttributeInfo(AttributeInfo info){
         if(info == null || info.getNodeInfo() == null)
             return;
-        mon.getController().addError("" + (info.getValue() instanceof Collection<?>  || info.getValue() instanceof Map<?,?>));
+        //mon.getController().addError("" + (info.getValue() instanceof Collection<?>  || info.getValue() instanceof Map<?,?>));
         attributeInfoLabel.setText(info.getNodeInfo().print());
         attributeInfoTableView.setItems(FXCollections.observableArrayList(AttributeInfo.toArray(info.getNodeInfo().getInfo())));
     }
