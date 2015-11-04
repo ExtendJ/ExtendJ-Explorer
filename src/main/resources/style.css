@@ -152,7 +152,6 @@
 }
 
 .list-cell{
-
     -fx-text-fill: white;
 }
 
@@ -242,5 +241,10 @@
     -fx-background:transparent;
     -fx-padding:0;
     -fx-background-insets: 0;
+}
+
+.context-menu {
+  -fx-background-color: #808080;
+  -fx-text-fill: white;
 }
 

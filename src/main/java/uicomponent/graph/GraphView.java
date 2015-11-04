@@ -151,7 +151,7 @@ public class GraphView extends SwingNode implements ItemListener {
 
         vs.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
         vs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
-        vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<>());
+        vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.QuadCurve<>());
         vs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
         vs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
         vs.getRenderContext().setVertexShapeTransformer(vertexShape);
@@ -188,17 +188,13 @@ public class GraphView extends SwingNode implements ItemListener {
 
     @Override
     public void itemStateChanged(ItemEvent e) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                Object subject = e.getItem();
-                if (subject != null && subject instanceof GenericTreeNode) {
-
-                    if(e.getStateChange() == ItemEvent.SELECTED)
-                        con.newNodeSelected((GenericTreeNode) subject, true);
-                    else
-                        con.nodeDeselected(true);
-                }
+        Platform.runLater(() -> {
+            Object subject = e.getItem();
+            if (subject != null && subject instanceof GenericTreeNode) {
+                if(e.getStateChange() == ItemEvent.SELECTED)
+                    con.newNodeSelected((GenericTreeNode) subject, true);
+                else
+                    con.nodeDeselected(true);
             }
         });
     }
@@ -226,11 +222,6 @@ public class GraphView extends SwingNode implements ItemListener {
             }catch (NumberFormatException e){
                 return new Color(200, 240, 230);
             }
-            /*if(!fNode.isNode())
-                return new Color(220,220, 220);
-            if(((TreeNode)fNode).node.isList()) return new Color(200, 200, 200);
-            return new Color(200, 240, 230);*/
         }
     }
-
 }

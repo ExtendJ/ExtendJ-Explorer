@@ -48,6 +48,7 @@ public class TreeClusterParent extends GenericTreeNode {
 
     @Override
     public String toString(){ return "..."; }
+    @Override
     public String toGraphString(){return ""; }
 
     @Override

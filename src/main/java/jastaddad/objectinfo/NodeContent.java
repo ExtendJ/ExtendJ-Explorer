@@ -1,7 +1,7 @@
 package jastaddad.objectinfo;
 
-import AST.ASTNodeAnnotation;
 import jastaddad.ASTAnnotation;
+import jastaddad.Node;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -9,12 +9,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by gda10jli on 10/14/15.
  */
 public class NodeContent {
+
+    public static final String USER_INPUT = "Need input from user";
+
     private HashMap<String, NodeInfo> attributes;
     private HashMap<String, NodeInfo> tokens;
 
@@ -40,10 +42,11 @@ public class NodeContent {
 
     public ArrayList<NodeInfoHolder> toArray(){
         ArrayList<NodeInfoHolder> temp = new ArrayList<>();
-        for (Map.Entry<String, NodeInfo> e : attributes.entrySet())
-            temp.add(new NodeInfoHolder(e.getKey(), e.getValue().getValue(), e.getValue()));
-        for (Map.Entry<String, NodeInfo> e : tokens.entrySet())
-            temp.add(new NodeInfoHolder(e.getKey(), e.getValue().getValue(), e.getValue()));
+        for (NodeInfo a : attributes.values())
+            temp.add(new NodeInfoHolder(a.print(), a.getValue(), a));
+        for (NodeInfo t : tokens.values())
+            temp.add(new NodeInfoHolder(t.print(), t.getValue(), t));
+        Collections.sort(temp);
         return temp;
     }
 
@@ -64,10 +67,10 @@ public class NodeContent {
             if(m.getParameterCount() == 0)
                 return addAttribute(obj, m);
             else
-                return addParameterizedAttributes(obj, m);
+                return addParamAttributes(m);
         }
         if(ASTAnnotation.isToken(a))
-            return addToken(obj, m, a);
+            return addToken(obj, m);
         return false;
     }
 
@@ -75,40 +78,34 @@ public class NodeContent {
     private boolean addAttribute(Object obj, Method m){
         String name = m.getName();
         try{
-            attributes.put(name, new Attribute(name, m.invoke(obj, new Object[0]), m, ""));
+            attributes.put(NodeInfo.getName(m), new Attribute(name, m.invoke(obj, new Object[0]), m, ""));
         } catch (Throwable e) {
             e.printStackTrace();
-            attributes.put(name, new Attribute(name, e.getCause().toString(), m, ""));
+            attributes.put(NodeInfo.getName(m), new Attribute(name, e.getCause().toString(), m, ""));
         }
         return true;
     }
 
-    private boolean addToken(Object obj, Method m, Annotation a){
+    private boolean addToken(Object obj, Method m){
         String name = m.getName();
         try{
-            tokens.put(name, new Token(name, m.invoke(obj, new Object[0]), m));
+            tokens.put(NodeInfo.getName(m), new Token(name, m.invoke(obj, new Object[0]), m));
         } catch (Throwable e) {
             e.printStackTrace();
-            tokens.put(name, new Token(name, e.getCause().toString(), m));
+            tokens.put(NodeInfo.getName(m), new Token(name, e.getCause().toString(), m));
         }
         return true;
     }
 
-    private boolean addParameterizedAttributes(Object obj, Method m){
+    private boolean addParamAttributes(Method m){
         String name = m.getName();
         try{
-            attributes.put(name, new Attribute(name, "Need input from user", m, ""));
+            attributes.put(NodeInfo.getName(m), new Attribute(name, USER_INPUT, m, "", true));
         } catch (Throwable e) {
             e.printStackTrace();
-            attributes.put(name, new Attribute(name, e.getCause()+ "", m, ""));
+            attributes.put(NodeInfo.getName(m), new Attribute(name, e.getCause()+ "", m, "", true));
         }
         return true;
-
-        /*HashMap<Object, Object> map = getCachedMapValues(obj, m); //tries to find cached values
-            if(map != null){
-                for(Map.Entry<Object, Object> e : map.entrySet())
-                    attributes.put(name + e.getKey(), new Attribute(name, e.getKey() + " : " + e.getValue(), m, ""));
-        }else*/
     }
 
     private HashMap<Object, Object> getCachedMapValues(Object obj, Method m) throws IllegalAccessException, InstantiationException {
@@ -119,7 +116,7 @@ public class NodeContent {
             f.setAccessible(true);
             Object map = f.get(obj);
             return map != null ? (HashMap<Object, Object>) map : null;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             return null;
         }

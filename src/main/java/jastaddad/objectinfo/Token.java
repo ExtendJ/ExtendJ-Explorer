@@ -18,4 +18,7 @@ public class Token extends NodeInfo {
         al.add(new NodeInfoHolder("Type", "token"));
     }
 
+    @Override
+    public boolean isParametrized() { return false; }
+
 }

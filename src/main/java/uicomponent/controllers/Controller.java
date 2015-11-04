@@ -265,13 +265,15 @@ public class Controller implements Initializable {
     }
 
     private void resetUI(){
-        GenericTreeNode node = getNode(mon.getSelectedNode());
+        GenericTreeNode node = getNode(mon.getSelectedNode(), true);
+        mon.getController().addError("REAL : " + node);
         if(node == null)
             return;
         node = node.hasClusterReference() ? node.getClusterReference() : node;
         mon.setSelectedNode(node);
         graphView.setSelectedNode(node);
-        node = getNode(mon.getReferenceNode());
+        node = getNode(mon.getReferenceNode(), false);
+        mon.getController().addError("REF: " + node );
         if(node == null)
             return;
         mon.setReferenceNode(node);
@@ -280,10 +282,14 @@ public class Controller implements Initializable {
 
     }
 
-    private GenericTreeNode getNode(GenericTreeNode node){
-        if(node == null)
+    private GenericTreeNode getNode(GenericTreeNode node, boolean real){
+        TreeNode treeNode;
+        if(mon.getLastRealNode() != null && real)
+            treeNode = (TreeNode) mon.getLastRealNode();
+        else if(node != null)
+            treeNode = (TreeNode) node;
+        else
             return null;
-        TreeNode treeNode = ((TreeNode) node);
         return mon.getApi().getReferenceNode(treeNode.node.node);
     }
 
