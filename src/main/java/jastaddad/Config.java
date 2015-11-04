@@ -4,41 +4,62 @@ import AST.*;
 import jastaddad.objectinfo.NodeInfo;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Config{
     private DebuggerConfig configs;
     private boolean noError;
+    private HashMap<String, ArrayList<String>> errors;
 
-    public Config(){
-        noError = readFilter();
+    private final String filterFileName = "filter.cfg";
+    private final String filterTmpFileName = "filter-tmp.cfg";
+
+    public Config( HashMap<String, ArrayList<String>> errors){
+        this.errors = errors;
+        noError = readFilter(filterFileName);
     }
 
-    private boolean readFilter(){
+    private boolean readFilter(String fileName){
         DebuggerConfig tmpFilter;
-        try{
-            String filename = "filter.cfg";
-            ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
-            ConfigParser parser = new ConfigParser();
-            tmpFilter = (DebuggerConfig) parser.parse(scanner);
-            if (!tmpFilter.errors().isEmpty()) {
-                System.err.println();
-                System.err.println("Errors: ");
-                for (ErrorMessage e: tmpFilter.errors()) {
-                    System.err.println("- " + e);
-                }
-                return false;
-            }
 
-        } catch (FileNotFoundException e) {
+        ConfigScanner scanner;
+        try {
+            scanner = new ConfigScanner(new FileReader(fileName));
+        }catch (FileNotFoundException e) {
+            errors.get("filter").add("Filter file not found!");
             System.out.println("File not found!");
             return false;
+        }
+
+        try{
+            ConfigParser parser = new ConfigParser();
+
+            tmpFilter = (DebuggerConfig) parser.parse(scanner);
+
+            if (!tmpFilter.errors().isEmpty()) {
+                String error = "\n";
+                error += "Errors: ";
+                for (ErrorMessage e: tmpFilter.errors()) {
+                    error += "- " + e;
+                }
+                System.err.println(error);
+                errors.get("filter").add(error);
+                return false;
+            }
         } catch (IOException e) {
+            errors.get("filter").add("IOException when reading filter file");
             e.printStackTrace(System.err);
             return false;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ConfigParser.SyntaxError e) {
+            errors.get("filter").add(e.getMessage());
+            return false;
+        }catch (Exception e) {
+            errors.get("filter").add("Exception when reading filter file: " + e.toString());
+            //e.printStackTrace();
             return false;
         }
         configs = tmpFilter;
@@ -57,7 +78,7 @@ public class Config{
         if(!tellingName && !className)
             return false;
 
-        // Add all class and telling bin expressions to one hashmap. this will öet the telling expressions to override
+        // Add all class and telling bin expressions to one hashmap. this will let the telling expressions to override
         HashMap<String, BinExpr> binExprs = new HashMap<>();
         NodeConfig cNode = configs.getNodes().get(node.className);
         if(className && cNode.hasFilter()) {
@@ -106,25 +127,67 @@ public class Config{
         if(className){
 
         }
-
         return true;
+    }
+
+    public HashMap<String, Value> getNodeStyle(Node node){
+
+        boolean className = configs.getNodes().containsKey(node.className); // Div;
+        boolean tellingName = configs.getNodes().containsKey(node.fullName); // Div:Left
+
+        if(!tellingName && !className)
+            return new HashMap<>();
+
+        // Add all class and telling bin expressions to one hashmap. this will let the telling expressions to override
+        HashMap<String, Value> map = new HashMap<>();
+
+
+        NodeConfig cNode = configs.getNodes().get(node.className);
+        if(className && cNode.hasStyle()) {
+            for(Binding b : cNode.getStyle().getBindingList().getBindingList()){
+                map.put(b.getName().print(), b.getValue());
+            }
+        }
+        NodeConfig tNode = configs.getNodes().get(node.fullName);
+        if(tellingName && tNode.hasStyle()) {
+            for(Binding b : tNode.getStyle().getBindingList().getBindingList()){
+                map.put(b.getName().print(), b.getValue());
+            }
+        }
+        return map;
     }
 
     public boolean saveAndUpdateFilter(String text){
         System.out.println("SAVE");
         PrintWriter writer = null;
         try {
-            writer = new PrintWriter("filter.cfg", "UTF-8");
+            writer = new PrintWriter("filter-tmp.cfg", "UTF-8");
             writer.print(text);
             writer.close();
         } catch (FileNotFoundException e) {
+            errors.get("filter").add("File not found when writing to filter file");
             e.printStackTrace();
             noError = false;
         } catch (UnsupportedEncodingException e) {
+            errors.get("filter").add("Unsupported encoding exception");
             e.printStackTrace();
             noError = false;
         }
-        noError = readFilter();
+        noError = readFilter(filterTmpFileName);
+        try {
+            if (noError) {
+                File oldFilter = new File(filterFileName);
+                File newFilter = new File(filterTmpFileName);
+                oldFilter.delete();
+                newFilter.renameTo(oldFilter);
+            } else {
+                File newFilter = new File(filterTmpFileName);
+                newFilter.delete();
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            errors.get("filter").add("Could not delete or remove new or old filter file. Permission problem?");
+        }
         return noError;
     }
 }

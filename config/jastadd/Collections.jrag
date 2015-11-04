@@ -27,5 +27,20 @@ aspect Collections {
 			map.put(node.getNodeName().print(), node);
 		return map;
 	}
+
+	syn lazy Configs NodeConfig.getStyle(){
+		if(hasConfigList()){
+			for(Configs configs : getConfigList().getConfigsList()){
+				if(configs.getName().print().equals("styles")){
+					return configs;
+				}
+			}
+		}
+		return null;
+	}
+
+	syn boolean NodeConfig.hasStyle(){
+		return getStyle() != null;
+	}
 }
 

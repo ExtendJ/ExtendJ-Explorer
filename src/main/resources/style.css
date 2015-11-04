@@ -5,11 +5,14 @@
 }
 
 .paneParent{
-    -fx-alignment:top-right;
     -fx-background-color: #606060;
     -fx-fit-to-height:true;
     -fx-fit-to-width:true;
     -fx-background-insets: 0
+}
+
+.topRigthAlign{
+    -fx-alignment:top-right;
 }
 
 .typeListView {

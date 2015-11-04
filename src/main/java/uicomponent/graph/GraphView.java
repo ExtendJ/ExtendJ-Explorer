@@ -29,7 +29,6 @@ import java.awt.geom.RoundRectangle2D;
  * Created by gda10jli on 10/15/15.
  */
 public class GraphView extends SwingNode implements ItemListener {
-
     private int id;
     private UIMonitor mon;
     private Controller con;
@@ -103,10 +102,14 @@ public class GraphView extends SwingNode implements ItemListener {
 
         Transformer <GenericTreeNode, Shape> vertexShape = fNode -> {
             //CompositeShape shape = new CompositeShape();
-            if(!fNode.isNode())
+            String shape = fNode.getStyles().get("node-shape").getStr();
+            //System.out.println("Node: " + "asdasd" + " shape: " + shape);
+            if (shape.equals("rounded_rectangle"))
+                return new RoundRectangle2D.Double(-50, -20, 130, 40, 40, 40);
+            if (shape.equals("small_circle"))
                 return new Ellipse2D.Float(-20, -20, 40, 40);
-            if(((TreeNode)fNode).node.isList())
-                return new RoundRectangle2D.Double(-50, -20, 130, 40,10,10);
+            if (shape.equals("rectangle"))
+                return new RoundRectangle2D.Double(-50, -20, 130, 40, 10, 10);
             return new RoundRectangle2D.Double(-50, -20, 130, 40,40,40);
         };
 
@@ -128,7 +131,8 @@ public class GraphView extends SwingNode implements ItemListener {
         };
 
         Transformer<GenericTreeNode, Stroke> vertexStrokeTransformer = item -> {
-            if(!item.isNode())
+            String border = item.getStyles().get("border-style").getStr();
+            if(border.equals("dashed"))
                 return dashedStroke;
             return normalStroke;
         };
@@ -212,14 +216,20 @@ public class GraphView extends SwingNode implements ItemListener {
         }
         @Override
         public Paint transform(GenericTreeNode fNode) {
+            String color = fNode.getStyles().get("node-color").getColor();
             if(pi.isPicked(fNode))
                 return new Color(240, 240, 200);
             if(fNode.isReferenceHighlight())
                 return new Color(80, 180, 80);
-            if(!fNode.isNode())
+            try{
+                return Color.decode(color);
+            }catch (NumberFormatException e){
+                return new Color(200, 240, 230);
+            }
+            /*if(!fNode.isNode())
                 return new Color(220,220, 220);
             if(((TreeNode)fNode).node.isList()) return new Color(200, 200, 200);
-            return new Color(200, 240, 230);
+            return new Color(200, 240, 230);*/
         }
     }
 

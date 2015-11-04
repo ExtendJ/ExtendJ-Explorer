@@ -1,8 +1,13 @@
 package jastaddad.filteredtree;
 
+import AST.Color;
+import AST.Str;
+import AST.Value;
+import jastaddad.Config;
 import jastaddad.Node;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -45,4 +50,10 @@ public class TreeClusterParent extends GenericTreeNode {
     public String toString(){ return "..."; }
     public String toGraphString(){return ""; }
 
+    @Override
+    public void setStyles(Config filter) {
+        styles.put("node-color", new Color("#DCDCDC"));
+        styles.put("node-shape", new Str("\"small_circle\""));
+        styles.put("border-style", new Str("\"dashed\""));
+    }
 }

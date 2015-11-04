@@ -84,13 +84,18 @@ include{
       ...
     }
     style{
-      background = #ff0000;
-      stroke = "dotted";
+      node-color = #ff0000;
+      border-style = "dashed";
     }
   }
 }
 
-Stmt nodes will now have red nodes with dotted strokes around them. 
+Stmt nodes will now have red nodes with dashed borders around them.
+
+Supported styles so far
+node-color    =     #<6 digit color code>;
+node-shape    =     "small_circle" | "rounded_rectangle" | "rectangle";
+border-style  =     "dashed" | "line";
 
 ------------ Big Example:
 Here is just a big example that you should be able to understand after reading the above:
@@ -115,8 +120,8 @@ include{
   }
   BinExpr {
     style{ 
-      background = #00ff00;
-      stroke = "line";
+      node-color = #ff0000;
+      border-style = "dashed";
     }
   }
   Add:Child;

@@ -6,7 +6,27 @@
 	static public class SyntaxError extends RuntimeException { public SyntaxError(String msg) {super(msg);}}
 	// Disable syntax error recovery
 	protected void recoverFromError(Symbol token, TokenStream in) {
-		throw new SyntaxError("Cannot recover from the syntax error");
+		String error = "";
+		error += Symbol.getLine(token.getStart());
+		error += ',';
+		error += Symbol.getColumn(token.getStart());
+		error += '-';
+		error += Symbol.getLine(token.getEnd());
+		error += ',';
+		error += Symbol.getColumn(token.getEnd());
+		error += ": Syntax Error: unexpected token ";
+		if (token.value != null)
+		{
+			error += '"';
+			error += token.value;
+			error += '"';
+		}
+		else
+		{
+			error += '#';
+			error += token.getId();
+		}
+		throw new SyntaxError(error);
 	}
 :};
 

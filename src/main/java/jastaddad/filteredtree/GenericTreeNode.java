@@ -1,6 +1,12 @@
 package jastaddad.filteredtree;
 
+import AST.Color;
+import AST.Str;
+import AST.Value;
+import jastaddad.Config;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -10,9 +16,14 @@ public abstract class GenericTreeNode {
     protected List<GenericTreeNode> children;
     protected boolean referenceHighlight;
     protected GenericTreeNode clusterRef;
+    protected HashMap<String, Value> styles;
 
     public GenericTreeNode(){
         children = new ArrayList();
+        styles = new HashMap<>();
+        styles.put("node-color", new Color("\"\""));
+        styles.put("node-shape", new Str("\"\""));
+        styles.put("border-style", new Str("\"\""));
     }
 
     public List<GenericTreeNode> getChildren(){ return children; }
@@ -34,6 +45,8 @@ public abstract class GenericTreeNode {
     public abstract boolean isClusterParent();
     public abstract boolean isRealChild(GenericTreeNode child);
     public abstract String toGraphString();
+    public abstract void setStyles(Config filter);
+    public HashMap<String, Value> getStyles(){ return styles;};
 
     public boolean hasClusterReference(){ return clusterRef != null; }
 

@@ -77,7 +77,7 @@ public class NodeContent {
         try{
             attributes.put(name, new Attribute(name, m.invoke(obj, new Object[0]), m, ""));
         } catch (Throwable e) {
-            //e.printStackTrace();
+            e.printStackTrace();
             attributes.put(name, new Attribute(name, e.getCause().toString(), m, ""));
         }
         return true;
