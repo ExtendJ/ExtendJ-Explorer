@@ -56,11 +56,9 @@ public class Node{
         if(isList) {
             for (Object child: (Iterable<?>) root) {
                 children.add(new Node(child, isOpt ? name : "", child instanceof List, false, 1));
-                traversDown(root);
             }
-        } else {
-            traversDown(root);
         }
+        traversDown(root);
     }
 
     public boolean containsAttributeOrToken(String key){

@@ -147,7 +147,7 @@ public class GraphView extends SwingNode implements ItemListener {
 
         vs.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
         vs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
-        vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<>());
+        vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.QuadCurve<>());
         vs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
         vs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
         vs.getRenderContext().setVertexShapeTransformer(vertexShape);
@@ -218,9 +218,9 @@ public class GraphView extends SwingNode implements ItemListener {
                 return new Color(80, 180, 80);
             if(!fNode.isNode())
                 return new Color(220,220, 220);
-            if(((TreeNode)fNode).node.isList()) return new Color(200, 200, 200);
+            if(((TreeNode)fNode).node.isList())
+                return new Color(200, 200, 200);
             return new Color(200, 240, 230);
         }
     }
-
 }

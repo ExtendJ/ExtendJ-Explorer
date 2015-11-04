@@ -2,7 +2,6 @@ package uicomponent;
 
 import jastaddad.ASTAPI;
 import jastaddad.filteredtree.GenericTreeNode;
-import jastaddad.filteredtree.TreeNode;
 
 import uicomponent.controllers.Controller;
 
@@ -13,6 +12,8 @@ import uicomponent.graph.UIEdge;
  * Created by gda10jli on 10/16/15.
  */
 public class UIMonitor {
+
+    private GenericTreeNode lastRealNode;
     private GenericTreeNode selectedNode;
     private GenericTreeNode refNode;
     private UIEdge refEdge;
@@ -34,8 +35,15 @@ public class UIMonitor {
         this.controller = controller;
     }
 
-    public void setSelectedNode(GenericTreeNode node){ selectedNode = node;}
+    public void setSelectedNode(GenericTreeNode node){
+        selectedNode = node;
+        if(node!= null && node.isNode())
+            lastRealNode = node;
+    }
+
     public GenericTreeNode getSelectedNode(){ return selectedNode;}
+
+    public GenericTreeNode getLastRealNode(){ return lastRealNode;}
 
     public void setReferenceEdge(UIEdge edge){ this.refEdge = edge; }
 

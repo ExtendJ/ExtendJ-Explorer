@@ -34,10 +34,10 @@ public class TreeCluster extends GenericTreeNode {
         return false;
     }
 
-
     @Override
     public String toString(){ return "..."; }
 
+    @Override
     public String toGraphString(){return ""; }
 
 }

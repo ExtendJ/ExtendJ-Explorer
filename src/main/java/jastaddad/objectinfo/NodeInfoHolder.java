@@ -3,39 +3,37 @@ package jastaddad.objectinfo;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+import java.util.ArrayList;
+
 /**
  * Created by gda10jli on 11/3/15.
  */
-public class NodeInfoHolder {
+public class NodeInfoHolder implements Comparable<NodeInfoHolder>{
 
-    private final SimpleStringProperty name;
-    private final SimpleObjectProperty value;
-    public final NodeInfo nodeInfo;
+    private final String name;
+    private final Object value;
+    private final NodeInfo nodeInfo;
 
     public NodeInfoHolder(String name, Object value){
-        this.name = new SimpleStringProperty(name);
-        this.value = new SimpleObjectProperty(value);
+        this.name = name;
+        this.value = value;
         nodeInfo = null;
     }
 
     public NodeInfoHolder(String name, Object value, NodeInfo nodeInfo){
-        this.name = new SimpleStringProperty(name);
-        this.value = new SimpleObjectProperty(value);
+        this.name = name;
+        this.value = value;
         this.nodeInfo = nodeInfo;
     }
 
-    public String getName() {
-        return name.get();
-    }
-    public void setName(String name) {
-        this.name.set(name);
-    }
-
+    public NodeInfo getNodeInfo(){ return nodeInfo; }
+    public String getName() { return name; }
     public Object getValue() {
-        return value.get();
-    }
-    public void setValue(Object value) {
-        this.value.set(value);
+        return value;
     }
 
+    @Override
+    public int compareTo(NodeInfoHolder node) {
+        return name.compareTo(node.name);
+    }
 }
