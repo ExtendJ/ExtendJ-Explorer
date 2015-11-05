@@ -3,10 +3,8 @@ package uicomponent.controllers;
 import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.filteredtree.TreeNode;
 import jastaddad.objectinfo.Attribute;
-import jastaddad.objectinfo.NodeInfo;
 import uicomponent.AttributeInfo;
 import uicomponent.AttributeInputDialog;
-import jastaddad.objectinfo.NodeInfoHolder;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -81,7 +79,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
                 mon.getController().addMessage("Invocation successful, result: " + obj);
                 setAttributeInfo(attributeTableView.getSelectionModel().getSelectedItem());
             }else
-                mon.getController().addMessage("Invocation unsuccessful, result: " + obj);
+                mon.getController().addMessage("Invocation unsuccessful, result: " + null);
         });
         mouseMenu.getItems().add(cmItem1);
     }
@@ -109,28 +107,29 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
     @Override
     public void changed(ObservableValue<? extends AttributeInfo> observable, AttributeInfo oldValue, AttributeInfo newValue) {
         setAttributeInfo(newValue);
-        setReference(oldValue, newValue);
+        mon.setSelectedInfo(newValue);
+        if(oldValue != null)
+            mon.getApi().getReferenceNodes(oldValue.getNodeInfo(), false);
+        setReference(newValue);
     }
 
     private void setAttributeInfo(AttributeInfo info){
         if(info == null || info.getNodeInfo() == null)
             return;
-        //mon.getController().addError("" + (info.getValue() instanceof Collection<?>  || info.getValue() instanceof Map<?,?>));
         attributeInfoLabel.setText(info.getNodeInfo().print());
         attributeInfoTableView.setItems(FXCollections.observableArrayList(AttributeInfo.toArray(info.getNodeInfo().getInfo())));
     }
 
-    private void setReference(AttributeInfo oldValue, AttributeInfo newValue){
-        GenericTreeNode refNode = null;
-        if (oldValue != null && mon.getApi().isReferenceNode(oldValue.getValue()))
-            mon.getApi().getReferenceNode(oldValue.getValue()).setReferenceHighlight(false);
-        if(newValue != null && mon.getApi().isReferenceNode(newValue.getValue())) {
-            refNode = mon.getApi().getReferenceNode(newValue.getValue());
-            refNode.setReferenceHighlight(true);
-            mon.setReferenceNode(refNode);
+    public void setReference(AttributeInfo info){
+        ArrayList<GenericTreeNode> newRefs = null;
+        if(info != null)
+            newRefs = mon.getApi().getReferenceNodes(info.getNodeInfo(), true);
+        if(newRefs != null && newRefs.size() > 0) {
+            mon.clearReferenceNodes();
+            mon.addAllReferenceNode(newRefs);
         }else
-            mon.setReferenceNode(null);
-        graphView.setReferenceEdge(refNode, mon.getSelectedNode());
+            mon.clearReferenceNodes();
+        graphView.setReferenceEdges(newRefs, mon.getSelectedNode());
     }
 
     private class AttributeValueCell extends TableCell<AttributeInfo, Object>{

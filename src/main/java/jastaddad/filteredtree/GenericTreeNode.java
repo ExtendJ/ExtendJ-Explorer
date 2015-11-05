@@ -32,11 +32,12 @@ public abstract class GenericTreeNode {
         children.add(child);
     }
 
-    public void setReferenceHighlight(boolean highlight){
+    public GenericTreeNode setReferenceHighlight(boolean highlight){
         referenceHighlight = highlight;
         if(clusterRef != null){
-            clusterRef.setReferenceHighlight(highlight);
+            return clusterRef.setReferenceHighlight(highlight);
         }
+        return this;
     }
     public boolean isReferenceHighlight(){ return referenceHighlight; }
 

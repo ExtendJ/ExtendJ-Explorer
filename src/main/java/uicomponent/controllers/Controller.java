@@ -11,7 +11,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -128,7 +127,7 @@ public class Controller implements Initializable {
             if(noError) {
                 graphView.updateGraph();
                 textTreeTabController.updateTree();
-                resetUI();
+                resetReferences();
                 if (mon.getSelectedNode() != null) {
                     Platform.runLater(() -> textTreeTabController.newNodeSelected(mon.getSelectedNode()));
                 }
@@ -201,9 +200,9 @@ public class Controller implements Initializable {
         }
     }
 
-    public void newNodeSelected(GenericTreeNode node, boolean fromGraph){
+    public void nodeSelected(GenericTreeNode node, boolean fromGraph){
         mon.setSelectedNode(node);
-        mon.setReferenceNode(null);
+        mon.clearReferenceNodes();
         attributeTabController.setAttributes();
         if(fromGraph)
             textTreeTabController.newNodeSelected(node);
@@ -213,7 +212,7 @@ public class Controller implements Initializable {
 
     public void nodeDeselected(boolean fromGraph){
         mon.setSelectedNode(null);
-        mon.setReferenceNode(null);
+        mon.clearReferenceNodes();
         if(fromGraph)
             textTreeTabController.deselectNode();
         else
@@ -242,33 +241,15 @@ public class Controller implements Initializable {
 
     }
 
-    private void resetUI(){
-        GenericTreeNode node = getNode(mon.getSelectedNode(), true);
-        mon.getController().addError("REAL : " + node);
+    private void resetReferences(){
+        GenericTreeNode node = mon.getLastRealNode() != null ? mon.getLastRealNode() : mon.getSelectedNode();
         if(node == null)
             return;
-        node = node.hasClusterReference() ? node.getClusterReference() : node;
+        node = mon.getApi().getReferenceNode(((TreeNode) node).node.node);
         mon.setSelectedNode(node);
-        graphView.setSelectedNode(node);
-        node = getNode(mon.getReferenceNode(), false);
-        mon.getController().addError("REF: " + node );
-        if(node == null)
-            return;
-        mon.setReferenceNode(node);
-        node.setReferenceHighlight(true);
-        graphView.setReferenceEdge(mon.getReferenceNode(), mon.getSelectedNode());
-
-    }
-
-    private GenericTreeNode getNode(GenericTreeNode node, boolean real){
-        TreeNode treeNode;
-        if(mon.getLastRealNode() != null && real)
-            treeNode = (TreeNode) mon.getLastRealNode();
-        else if(node != null)
-            treeNode = (TreeNode) node;
-        else
-            return null;
-        return mon.getApi().getReferenceNode(treeNode.node.node);
+        graphView.setSelectedNode(node.hasClusterReference() ? node.getClusterReference() : node);
+        if(mon.getSelectedInfo() != null)
+            attributeTabController.setReference(mon.getSelectedInfo());
     }
 
     private void loadClassTreeView(){
