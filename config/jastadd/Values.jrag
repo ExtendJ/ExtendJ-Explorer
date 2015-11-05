@@ -1,5 +1,27 @@
 aspect Values{
 
+    syn lazy Include DebuggerConfig.getInclude(){
+        for(Block block : getBlockList()){
+            if(block.isInclude())
+                return (Include)block;
+        }
+        return null;
+    }
+
+    syn lazy Global DebuggerConfig.getGlobal(){
+        for(Block block : getBlockList()){
+            if(block.isGlobal())
+                return (Global)block;
+        }
+        return null;
+    }
+
+    syn boolean Block.isInclude() = false;
+    syn boolean Block.isGlobal() = false;
+    eq Include.isInclude() = true;
+    eq Global.isGlobal() = true;
+
+
     syn boolean BinExpr.isDoubleDecl() = getLeft().isIdDecl() && getRight().isIdDecl();
     syn IdDecl BinExpr.getDecl(){
         if(getLeft().isIdDecl())

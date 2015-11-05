@@ -37,7 +37,7 @@ DebuggerConfig debuggerconfig = configs.a block_list.b {: return new DebuggerCon
 
 List block_list =
     block.a {: return new List(a); :}
-    | block_list.c block.b {: return a.add(b); :};
+    | block_list.a block.b {: return a.add(b); :};
 
 Block block =
     include
@@ -55,14 +55,16 @@ List binding_tmp =
 Binding binding = iddecl.a ASSIGNMENT value.b {: return new Binding(a,b); :};
 
 Include include =
-	INCLUDE.n LBRACKET RBRACKET {: return new Include(new ConfigDecl(n), new List()); :}
-	| INCLUDE.n LBRACKET node_list.a RBRACKET {: return new Include(new ConfigDecl(n), a); :};
+	INCLUDE.n LBRACKET RBRACKET {: return new Include(new ConfigDecl(n), new Opt()); :}
+	| INCLUDE.n LBRACKET node_config_list.a RBRACKET {: return new Include(new ConfigDecl(n), new Opt(a)); :};
 
 Global global =
-    GLOBAL LBRACKET RBRACKET {: return new Global(new Opt(), new Opt()); :}
-    | GLOBAL LBRACKET filter.a RBRACKET {: return new Global(new Opt(a), new Opt()); :}
-    | GLOBAL LBRACKET configList.a RBRACKET {: return new Global(new Opt(), new Opt(a)); :}
-    | GLOBAL LBRACKET filter.a configList.b RBRACKET {: return new Global(new Opt(a), new Opt(b)); :};
+    GLOBAL.n LBRACKET RBRACKET {: return new Global(new ConfigDecl(n), new Opt(), new Opt()); :}
+    | GLOBAL.n LBRACKET filter.a RBRACKET {: return new Global(new ConfigDecl(n), new Opt(a), new Opt()); :}
+    | GLOBAL.n LBRACKET configList.a RBRACKET {: return new Global(new ConfigDecl(n), new Opt(), new Opt(a)); :}
+    | GLOBAL.n LBRACKET filter.a configList.b RBRACKET {: return new Global(new ConfigDecl(n), new Opt(a), new Opt(b)); :};
+
+NodeConfigList node_config_list = node_list.a {: return new NodeConfigList(a); :};
 
 List node_list =
 	node.e {: return new List().add(e); :}
