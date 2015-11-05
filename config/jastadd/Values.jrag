@@ -141,4 +141,6 @@ aspect Values{
     eq GEQ.validateExpression(int attr, int attr2) = attr >= attr2;
     eq LT.validateExpression(int attr, int attr2) = attr < attr2;
     eq GT.validateExpression(int attr, int attr2) = attr > attr2;
+
+    syn int ASTNode.aValue(){ return 5;}
 }

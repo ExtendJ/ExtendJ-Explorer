@@ -1,5 +1,5 @@
 %header {: // this code is inlined before the generated parser
- package AST;
+ package configAST;
 :};
 
 %embed {:
@@ -46,9 +46,17 @@ List binding_tmp =
 
 Binding binding = iddecl.a ASSIGNMENT value.b {: return new Binding(a,b); :};
 
-List include =
-	INCLUDE LBRACKET RBRACKET {: return new List(); :}
-	| INCLUDE LBRACKET node_list.a RBRACKET {: return a; :} ;
+Include include =
+	INCLUDE LBRACKET RBRACKET {: return new Include(new Opt(), new List()); :}
+	| INCLUDE LBRACKET node_list.a RBRACKET {: return new Include(new Opt(),a); :}
+	| INCLUDE LBRACKET global.a RBRACKET {: return new Include(new Opt(a), new List()); :}
+	| INCLUDE LBRACKET global.a node_list.b RBRACKET {: return new Include(new Opt(a), b); :};
+
+Global global =
+    GLOBAL LBRACKET RBRACKET {: return new Global(new Opt(), new Opt()); :}
+    | GLOBAL LBRACKET filter.a RBRACKET {: return new Global(new Opt(a), new Opt()); :}
+    | GLOBAL LBRACKET configList.a RBRACKET {: return new Global(new Opt(), new Opt(a)); :}
+    | GLOBAL LBRACKET filter.a configList.b RBRACKET {: return new Global(new Opt(a), new Opt(b)); :};
 
 List node_list =
 	node.e {: return new List().add(e); :}
@@ -72,7 +80,7 @@ List configList_list  =
 	| configList_list.a configs.b {: return a.add(b); :};
 
 Configs configs =
-	iddecl.a LBRACKET binding_list.h RBRACKET {: return new Configs(a, new Opt(h)); :};
+	configdecl.a LBRACKET binding_list.h RBRACKET {: return new Configs(a, new Opt(h)); :};
 
 Filter filter =
 	FILTER LBRACKET filter_list.c RBRACKET {: return new Filter(c); :};
@@ -117,4 +125,5 @@ List num_list =
 Num num =  NUMERAL.a {: return new Num(a); :};
 Str str = STRING.a {: return new Str(a); :};
 IdDecl iddecl = ID.a {: return new IdDecl(a); :};
+ConfigDecl configdecl = IDCONFIG.a {: return new ConfigDecl(a); :};
 Color color = COLOR.a {: return new Color(a); :};

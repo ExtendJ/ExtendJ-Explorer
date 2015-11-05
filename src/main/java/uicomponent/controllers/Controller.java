@@ -7,10 +7,12 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -18,7 +20,9 @@ import uicomponent.UIComponent;
 import uicomponent.UIMonitor;
 import uicomponent.graph.GraphView;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -100,6 +104,27 @@ public class Controller implements Initializable {
         setConsoleScrollHeightListener(consoleHeightWarning, consoleScrollPaneWarning, consoleTextFlowWarning);
         setConsoleScrollHeightListener(consoleHeightMessage, consoleScrollPaneMessage, consoleTextFlowMessage);
 
+        // hide/show sidebars
+        centerSplitPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.F)){
+                    if(centerSplitPane.getDividers().get(0).getPosition() < 0.05 &&
+                            centerSplitPane.getDividers().get(1).getPosition() > 0.95 &&
+                            consoleAndGraphSplitPane.getDividers().get(0).getPosition() > 0.95){
+                        centerSplitPane.setDividerPosition(0, 0.2);
+                        centerSplitPane.setDividerPosition(1, 0.8);
+                        consoleAndGraphSplitPane.setDividerPosition(0, 0.8);
+                    }else {
+                        centerSplitPane.setDividerPosition(0, 0);
+                        centerSplitPane.setDividerPosition(1, 1);
+                        consoleAndGraphSplitPane.setDividerPosition(0, 1);
+                    }
+                }
+
+            }
+        });
+
+        // minimize buttons for each side bar
         minimizeLeftSide.setOnAction((event1 -> {
             if(centerSplitPane.getDividers().get(0).getPosition() < 0.05)
                 centerSplitPane.setDividerPosition(0,0.2);
@@ -121,6 +146,7 @@ public class Controller implements Initializable {
 
         }));
 
+        // update the new filter. This is done in the API
         saveNewFilterButton.setOnAction((event) -> {
             addMessage("Filter update starts...");
             boolean noError = mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
@@ -141,6 +167,7 @@ public class Controller implements Initializable {
 
         });
 
+        // not working right now. The graph does not repaint when moving between the tabs
         graphViewTabs.getSelectionModel().selectedItemProperty().addListener(
                 (ov, t, t1) -> {
                     if(t1.getId().equals("graphViewTabNode")){

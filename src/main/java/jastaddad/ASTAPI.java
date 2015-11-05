@@ -1,11 +1,10 @@
 package jastaddad;
 
+import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.filteredtree.TreeCluster;
 import jastaddad.filteredtree.TreeClusterParent;
-import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.filteredtree.TreeNode;
 import jastaddad.objectinfo.NodeInfo;
-import uicomponent.AttributeInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;

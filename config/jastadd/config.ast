@@ -1,11 +1,16 @@
-DebuggerConfig ::= [Configs] Include:NodeConfig*;
+DebuggerConfig ::= [Configs] Include;
+
+Include ::= [Global] NodeConfig*;
+
+Global ::= [Filter] [ConfigList];
 
 NodeConfig ::= NodeName [Filter] [ConfigList];
 
 NodeName ::= ClassName:IdDecl [Name:IdDecl];
 
 ConfigList ::= Configs*;
-Configs ::= Name:IdDecl [BindingList];
+Configs ::= Name:ConfigDecl [BindingList];
+
 BindingList ::= Binding*;
 Binding ::= Name:IdDecl Value;
 
@@ -28,3 +33,4 @@ StrArray : Value ::= Str*;
 NumArray : Value ::= Num*;
 EmptyArray : Value;
 IdDecl : Value ::= <ID:String>;
+ConfigDecl : Value ::= <ID:String>;

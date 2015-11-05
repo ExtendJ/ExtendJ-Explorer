@@ -110,12 +110,14 @@ public class GraphView extends SwingNode implements ItemListener {
             //CompositeShape shape = new CompositeShape();
             String shape = fNode.getStyles().get("node-shape").getStr();
             //System.out.println("Node: " + "asdasd" + " shape: " + shape);
-            if (shape.equals("rounded_rectangle"))
-                return new RoundRectangle2D.Double(-50, -20, 130, 40, 40, 40);
-            if (shape.equals("small_circle"))
-                return new Ellipse2D.Float(-20, -20, 40, 40);
-            if (shape.equals("rectangle"))
-                return new RoundRectangle2D.Double(-50, -20, 130, 40, 10, 10);
+            if(shape != null) {
+                if (shape.equals("rounded_rectangle"))
+                    return new RoundRectangle2D.Double(-50, -20, 130, 40, 40, 40);
+                if (shape.equals("small_circle"))
+                    return new Ellipse2D.Float(-20, -20, 40, 40);
+                if (shape.equals("rectangle"))
+                    return new RoundRectangle2D.Double(-50, -20, 130, 40, 10, 10);
+            }
             return new RoundRectangle2D.Double(-50, -20, 130, 40,40,40);
         };
 

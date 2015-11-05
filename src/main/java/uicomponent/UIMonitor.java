@@ -2,10 +2,7 @@ package uicomponent;
 
 import jastaddad.ASTAPI;
 import jastaddad.filteredtree.GenericTreeNode;
-
-import jastaddad.objectinfo.NodeInfo;
 import uicomponent.controllers.Controller;
-
 import uicomponent.graph.UIEdge;
 
 import java.util.ArrayList;

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.lang.reflect.Method;
 import java.lang.annotation.Annotation;
-import AST.*;
+import configAST.*;
 
 import java.io.FileReader;
 import java.io.IOException;

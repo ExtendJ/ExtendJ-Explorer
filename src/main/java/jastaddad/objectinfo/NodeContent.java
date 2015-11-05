@@ -1,7 +1,6 @@
 package jastaddad.objectinfo;
 
 import jastaddad.ASTAnnotation;
-import jastaddad.Node;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

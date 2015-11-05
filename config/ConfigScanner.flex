@@ -1,7 +1,7 @@
-package AST; // The generated parser will belong to package AST
+package configAST; // The generated parser will belong to package configAST
 
-import AST.ConfigParser.Terminals;
-import AST.ConfigParser.SyntaxError;
+import configAST.ConfigParser.Terminals;
+import configAST.ConfigParser.SyntaxError;
 
 %%
 
@@ -30,7 +30,8 @@ import AST.ConfigParser.SyntaxError;
 // macros
 WhiteSpace = [ ] | \t | \f | \n | \r
 Bool = (false|true)
-ID = [a-zA-Z\-][\-a-zA-Z0-9]*
+ID = [a-zA-Z][\-a-zA-Z0-9]*
+IDCONFIG = \-[a-zA-Z\-][\-a-zA-Z0-9]*
 Numeral = [0-9]+
 Color = #[0-9a-fA-F]{6}
 String = \"[^\"]*\"
@@ -41,8 +42,9 @@ Comment = \/\*[^]*\*\/
 {WhiteSpace}  { }
 {Comment} {   }
 //token definitions
-"filter"        { return sym(Terminals.FILTER); }
-"include"       { return sym(Terminals.INCLUDE); }
+"-filter"        { return sym(Terminals.FILTER); }
+"-include"       { return sym(Terminals.INCLUDE); }
+"-global"       { return sym(Terminals.GLOBAL); }
 "="        		{ return sym(Terminals.ASSIGNMENT); }
 "<"        		{ return sym(Terminals.LT); }
 ">"             { return sym(Terminals.GT); }
@@ -60,6 +62,7 @@ Comment = \/\*[^]*\*\/
 {Color}  	    { return sym(Terminals.COLOR); }
 {Bool}  	    { return sym(Terminals.BOOL); }
 {ID}        	{ return sym(Terminals.ID); }
+{IDCONFIG}      { return sym(Terminals.IDCONFIG); }
 {Numeral}  	    { return sym(Terminals.NUMERAL); }
 {String}  	    { return sym(Terminals.STRING); }
 <<EOF>>     	{ return sym(Terminals.EOF); }

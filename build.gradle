@@ -25,11 +25,11 @@ apply plugin: 'jastadd'
 jastadd {
 	modules "."
 	module = "config"
-	astPackage = "AST"
+	astPackage = "configAST"
 	genDir = "src/gen"
-	scanner.genDir = "src/gen/AST"
+	scanner.genDir = "src/gen/configAST"
 	parser.name = "ConfigParser"
-	parser.genDir = "src/gen/AST"
+	parser.genDir = "src/gen/configAST"
 }
 
 dependencies {

@@ -1,10 +1,15 @@
 package jastaddad.filteredtree;
 
-import AST.*;
+import configAST.Color;
+import configAST.Str;
+import configAST.Value;
 import jastaddad.Config;
 import jastaddad.Node;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by gda10jth on 10/16/15.

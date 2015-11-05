@@ -1,8 +1,8 @@
 package jastaddad.filteredtree;
 
-import AST.Color;
-import AST.Str;
-import AST.Value;
+import configAST.Color;
+import configAST.Str;
+import configAST.Value;
 import jastaddad.Config;
 
 import java.util.ArrayList;

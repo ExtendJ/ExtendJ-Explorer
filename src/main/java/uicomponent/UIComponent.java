@@ -13,7 +13,6 @@ import uicomponent.controllers.Controller;
 import uicomponent.graph.GraphView;
 
 import java.io.IOException;
-import java.net.URL;
 
 public class UIComponent extends Application {
 
@@ -44,6 +43,7 @@ public class UIComponent extends Application {
         stage.setTitle("JastAddDebugger");
         stage.setScene(new Scene(a, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
         stage.setMaximized(true);
+
         stage.show();
 
         ScrollPane center = (ScrollPane) a.lookup("#graphView");

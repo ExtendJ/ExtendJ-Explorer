@@ -1,10 +1,5 @@
 package jastaddad.objectinfo;
 
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-
-import java.util.ArrayList;
-
 /**
  * Created by gda10jli on 11/3/15.
  */

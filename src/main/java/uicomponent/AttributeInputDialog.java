@@ -1,15 +1,11 @@
 package uicomponent;
 
 import jastaddad.objectinfo.Attribute;
-import jastaddad.objectinfo.NodeInfo;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.util.Callback;
 
-import javax.xml.soap.Text;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Optional;
 
 /**
  * Created by gda10jli on 11/4/15.

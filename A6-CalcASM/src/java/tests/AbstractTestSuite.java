@@ -1,19 +1,14 @@
 package tests;
 
-import static org.junit.Assert.fail;
-import static org.junit.Assert.assertEquals;
+import lang.ast.LangParser;
+import lang.ast.LangScanner;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.Scanner;
 
-import lang.ast.LangParser;
-import lang.ast.LangScanner;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Utility methods for running tests

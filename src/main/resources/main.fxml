@@ -3,7 +3,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.TextFlow?>
-<?import javafx.scene.text.Text?>
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="uicomponent.controllers.Controller">
     <top>
@@ -25,7 +24,7 @@
                     </tabs>
                 </TabPane>
             </VBox>
-            <VBox styleClass="paneParent" VBox.vgrow="ALWAYS">
+            <VBox VBox.vgrow="ALWAYS">
                 <SplitPane orientation="VERTICAL" dividerPositions="0.8" fx:id="consoleAndGraphSplitPane">
                     <TabPane tabClosingPolicy="UNAVAILABLE" fx:id="graphViewTabs">
                         <tabs>
@@ -70,7 +69,9 @@
                 </SplitPane>
             </VBox>
             <VBox styleClass="paneParent">
-                    <Button styleClass="minimizeButton" text="-|" fx:id="minimizeRightSide"/>
+                    <VBox styleClass="topLeftAlign">
+                        <Button styleClass="minimizeButton" text="-|" fx:id="minimizeRightSide"/>
+                    </VBox>
                 <SplitPane styleClass="" orientation="VERTICAL" dividerPositions="0.5">
                     <TabPane tabClosingPolicy="UNAVAILABLE">
                         <tabs>
