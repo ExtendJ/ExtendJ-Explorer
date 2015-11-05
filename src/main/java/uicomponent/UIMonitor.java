@@ -2,10 +2,10 @@ package uicomponent;
 
 import jastaddad.ASTAPI;
 import jastaddad.filteredtree.GenericTreeNode;
-
 import uicomponent.controllers.Controller;
-
 import uicomponent.graph.UIEdge;
+
+import java.util.ArrayList;
 
 
 /**
@@ -15,13 +15,15 @@ public class UIMonitor {
 
     private GenericTreeNode lastRealNode;
     private GenericTreeNode selectedNode;
-    private GenericTreeNode refNode;
-    private UIEdge refEdge;
+    private AttributeInfo selectedInfo;
+    private ArrayList<GenericTreeNode> refNodes;
+    private ArrayList<UIEdge> refEdges;
     private ASTAPI api;
     private Controller controller;
 
     public UIMonitor(ASTAPI api){
         this.api = api;
+        this.refNodes = new ArrayList();
     }
 
     public ASTAPI getApi(){
@@ -39,17 +41,25 @@ public class UIMonitor {
         selectedNode = node;
         if(node!= null && node.isNode())
             lastRealNode = node;
+        if(node == null)
+            lastRealNode = null;
     }
+
+    public AttributeInfo getSelectedInfo(){ return selectedInfo;}
+
+    public void setSelectedInfo(AttributeInfo info){ this.selectedInfo = info; }
 
     public GenericTreeNode getSelectedNode(){ return selectedNode;}
 
     public GenericTreeNode getLastRealNode(){ return lastRealNode;}
 
-    public void setReferenceEdge(UIEdge edge){ this.refEdge = edge; }
+    public void setReferenceEdges(ArrayList<UIEdge> edges){ this.refEdges = edges; }
 
-    public UIEdge getReferenceEdge(){ return refEdge; }
+    public ArrayList<UIEdge> getReferenceEdges(){ return refEdges; }
 
-    public void setReferenceNode(GenericTreeNode node){ this.refNode = node; }
+    public void clearReferenceNodes(){ refNodes.clear(); }
+    public void addAllReferenceNode(ArrayList<GenericTreeNode> nodes){ this.refNodes.addAll(nodes); }
+    public void addReferenceNode(GenericTreeNode node){ this.refNodes.add(node); }
 
-    public GenericTreeNode getReferenceNode(){ return refNode; }
+    public ArrayList<GenericTreeNode> getReferenceNodes(){ return refNodes; }
 }

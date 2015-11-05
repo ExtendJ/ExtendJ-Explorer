@@ -1,8 +1,8 @@
 package jastaddad.filteredtree;
 
-import AST.Color;
-import AST.Str;
-import AST.Value;
+import configAST.Color;
+import configAST.Str;
+import configAST.Value;
 import jastaddad.Config;
 
 import java.util.ArrayList;
@@ -32,11 +32,12 @@ public abstract class GenericTreeNode {
         children.add(child);
     }
 
-    public void setReferenceHighlight(boolean highlight){
+    public GenericTreeNode setReferenceHighlight(boolean highlight){
         referenceHighlight = highlight;
         if(clusterRef != null){
-            clusterRef.setReferenceHighlight(highlight);
+            return clusterRef.setReferenceHighlight(highlight);
         }
+        return this;
     }
     public boolean isReferenceHighlight(){ return referenceHighlight; }
 

@@ -1,7 +1,7 @@
-package AST; // The generated parser will belong to package AST
+package configAST; // The generated parser will belong to package configAST
 
-import AST.ConfigParser.Terminals;
-import AST.ConfigParser.SyntaxError;
+import configAST.ConfigParser.Terminals;
+import configAST.ConfigParser.SyntaxError;
 
 %%
 

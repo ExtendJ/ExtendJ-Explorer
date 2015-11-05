@@ -1,7 +1,6 @@
 package uicomponent.controllers;
 
 import jastaddad.filteredtree.GenericTreeNode;
-import jastaddad.filteredtree.TreeNode;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -40,7 +39,7 @@ public class TextTreeTabController implements Initializable, ChangeListener {
 
         TreeItem<GenericTreeNode> selectedItem = (TreeItem<GenericTreeNode>) newValue;
         if(selectedItem != null && !ignoreChange)
-            mon.getController().newNodeSelected(selectedItem.getValue(), false);
+            mon.getController().nodeSelected(selectedItem.getValue(), false);
         ignoreChange = false;
         // do what ever you want
     }

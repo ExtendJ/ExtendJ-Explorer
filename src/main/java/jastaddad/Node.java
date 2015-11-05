@@ -1,6 +1,5 @@
 package jastaddad;
 
-import AST.List;
 import jastaddad.objectinfo.NodeContent;
 import jastaddad.objectinfo.NodeInfo;
 
@@ -8,7 +7,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 
 public class Node{
     public final Object node;
@@ -55,7 +54,7 @@ public class Node{
 
         if(isList) {
             for (Object child: (Iterable<?>) root) {
-                children.add(new Node(child, isOpt ? name : "", child instanceof List, false, 1));
+                children.add(new Node(child, isOpt ? name : "", child instanceof Collection, false, 1));
             }
         }
         traversDown(root);

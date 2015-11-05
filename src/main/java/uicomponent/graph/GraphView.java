@@ -24,6 +24,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.RoundRectangle2D;
+import java.util.ArrayList;
 
 /**
  * Created by gda10jli on 10/15/15.
@@ -81,17 +82,22 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.getPickedVertexState().addItemListener(this);
     }
 
-    public void setReferenceEdge(GenericTreeNode newRef, GenericTreeNode ref){
-        UIEdge edge = mon.getReferenceEdge();
-        if(edge != null)
-            graph.removeEdge(edge, false);
-        if(newRef == null) {
+    public void setReferenceEdges(ArrayList<GenericTreeNode> newRefs, GenericTreeNode ref){
+        if(mon.getReferenceEdges() != null) {
+            for (UIEdge e : mon.getReferenceEdges())
+                graph.removeEdge(e, false);
+        }
+        if(newRefs == null || newRefs.size() == 0) {
             vs.repaint();
             return;
         }
-        edge = new UIEdge();
-        graph.addEdge(edge, ref.hasClusterReference() ? ref.getClusterReference() : ref, newRef.hasClusterReference() ? newRef.getClusterReference() : newRef);
-        mon.setReferenceEdge(edge);
+        ArrayList<UIEdge> edges = new ArrayList();
+        for(GenericTreeNode newRef : newRefs) {
+            UIEdge edge = new UIEdge();
+            graph.addEdge(edge, ref.hasClusterReference() ? ref.getClusterReference() : ref, newRef.hasClusterReference() ? newRef.getClusterReference() : newRef);
+            edges.add(edge);
+        }
+        mon.setReferenceEdges(edges);
         vs.repaint();
     }
 
@@ -194,7 +200,7 @@ public class GraphView extends SwingNode implements ItemListener {
             Object subject = e.getItem();
             if (subject != null && subject instanceof GenericTreeNode) {
                 if(e.getStateChange() == ItemEvent.SELECTED)
-                    con.newNodeSelected((GenericTreeNode) subject, true);
+                    con.nodeSelected((GenericTreeNode) subject, true);
                 else
                     con.nodeDeselected(true);
             }

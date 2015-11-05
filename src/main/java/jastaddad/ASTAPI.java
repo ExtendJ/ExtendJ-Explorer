@@ -1,11 +1,13 @@
 package jastaddad;
 
+import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.filteredtree.TreeCluster;
 import jastaddad.filteredtree.TreeClusterParent;
-import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.filteredtree.TreeNode;
+import jastaddad.objectinfo.NodeInfo;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -171,5 +173,21 @@ public class ASTAPI {
             traversTree(this.tree, null, null, false);
         }
         return res;
+    }
+
+    public ArrayList<GenericTreeNode> getReferenceNodes(NodeInfo info, boolean highlight){
+        ArrayList<GenericTreeNode> nodes = new ArrayList();
+        if(info == null)
+            return nodes;
+        if(info.getValue() instanceof Collection<?>) {
+            for (Object n : (Iterable<Object>) info.getValue()) {
+                if (isReferenceNode(n)){
+                    nodes.add(getReferenceNode(n).setReferenceHighlight(highlight));
+                }
+            }
+        }else
+        if (isReferenceNode(info.getValue()))
+            nodes.add(getReferenceNode(info.getValue()).setReferenceHighlight(highlight));
+        return nodes;
     }
 }

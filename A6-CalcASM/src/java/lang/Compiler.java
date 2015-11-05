@@ -1,17 +1,15 @@
 package lang;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-
 import beaver.Parser.Exception;
-
-import lang.ast.Program;
+import jastaddad.JastAddAd;
+import lang.ast.ErrorMessage;
 import lang.ast.LangParser;
 import lang.ast.LangScanner;
-import lang.ast.ErrorMessage;
-import jastaddad.JastAddAd;
-import javafx.application.Application;
+import lang.ast.Program;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * Computes the maximum statement nesting depth for a Calc program.

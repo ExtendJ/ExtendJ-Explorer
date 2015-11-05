@@ -1,5 +1,6 @@
 import abstractpackage.*;
 import ownpackage.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 public class NpClass2{

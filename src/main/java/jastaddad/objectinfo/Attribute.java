@@ -2,10 +2,8 @@ package jastaddad.objectinfo;
 
 import jastaddad.Node;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by gda10jli on 10/20/15.
