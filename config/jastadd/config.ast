@@ -1,9 +1,10 @@
-DebuggerConfig ::= [Configs] Include;
+DebuggerConfig ::= [Configs] Block*;
 
-Include ::= [Global] NodeConfig*;
+abstract Block;
+Include : Block ::= ConfigDecl [NodeConfigList];
+Global : Block ::= ConfigDecl [Filter] [ConfigList];
 
-Global ::= [Filter] [ConfigList];
-
+NodeConfigList ::= NodeConfig*;
 NodeConfig ::= NodeName [Filter] [ConfigList];
 
 NodeName ::= ClassName:IdDecl [Name:IdDecl];

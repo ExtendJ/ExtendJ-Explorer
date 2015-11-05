@@ -76,8 +76,8 @@ public class Config{
         HashMap<String, BinExpr> binExprs = new HashMap<>();
 
         // If there a global filter add it to the hashmap
-        if(configs.getInclude().hasGlobal() && configs.getInclude().getGlobal().hasFilter()){
-            for (BinExpr be : configs.getInclude().getGlobal().getFilter().getBinExprList()) {
+        if(configs.getGlobal() != null && configs.getGlobal().hasFilter()){
+            for (BinExpr be : configs.getGlobal().getFilter().getBinExprList()) {
                 binExprs.put(be.getDecl().getID(), be);
             }
         }
