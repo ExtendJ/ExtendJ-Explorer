@@ -104,6 +104,7 @@ public class Controller implements Initializable {
         setConsoleScrollHeightListener(consoleHeightWarning, consoleScrollPaneWarning, consoleTextFlowWarning);
         setConsoleScrollHeightListener(consoleHeightMessage, consoleScrollPaneMessage, consoleTextFlowMessage);
 
+        // hide/show sidebars
         centerSplitPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
                 if (ke.getCode().equals(KeyCode.F)){
@@ -123,6 +124,7 @@ public class Controller implements Initializable {
             }
         });
 
+        // minimize buttons for each side bar
         minimizeLeftSide.setOnAction((event1 -> {
             if(centerSplitPane.getDividers().get(0).getPosition() < 0.05)
                 centerSplitPane.setDividerPosition(0,0.2);
@@ -144,6 +146,7 @@ public class Controller implements Initializable {
 
         }));
 
+        // update the new filter. This is done in the API
         saveNewFilterButton.setOnAction((event) -> {
             addMessage("Filter update starts...");
             boolean noError = mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
@@ -164,6 +167,7 @@ public class Controller implements Initializable {
 
         });
 
+        // not working right now. The graph does not repaint when moving between the tabs
         graphViewTabs.getSelectionModel().selectedItemProperty().addListener(
                 (ov, t, t1) -> {
                     if(t1.getId().equals("graphViewTabNode")){

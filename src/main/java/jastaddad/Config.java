@@ -69,32 +69,49 @@ public class Config{
     public boolean isEnabled(Node node){
         if(!noError)
             return false;
-        if(configs.configs().get("showAll").getBool())
+
+        HashMap<String, Value> global = configs.configs();
+        if(global.containsKey("show-all") && global.get("show-all").getBool())
             return true;
 
-        boolean className = configs.getNodes().containsKey(node.className); // Div;
-        boolean tellingName = configs.getNodes().containsKey(node.fullName); // Div:Left
-
-        if(!tellingName && !className)
-            return false;
-
-        // Add all class and telling bin expressions to one hashmap. this will let the telling expressions to override
+        // Add all bin expressions to one hashmap. This will allow expressions to override each other
         HashMap<String, BinExpr> binExprs = new HashMap<>();
-        NodeConfig cNode = configs.getNodes().get(node.className);
-        if(className && cNode.hasFilter()) {
-            for (BinExpr be : cNode.getFilter().getBinExprList()) {
+
+        // If there a global filter add it to the hashmap
+        if(configs.getInclude().hasGlobal() && configs.getInclude().getGlobal().hasFilter()){
+            for (BinExpr be : configs.getInclude().getGlobal().getFilter().getBinExprList()) {
                 binExprs.put(be.getDecl().getID(), be);
             }
         }
 
-        NodeConfig tNode = configs.getNodes().get(node.fullName);
-        if(tellingName && tNode.hasFilter()) {
-            for (BinExpr be : tNode.getFilter().getBinExprList()) {
-                binExprs.put(be.getDecl().getID(), be);
+        // don't do this if the only-global is set to true
+        if(!global.containsKey("only-global") || !(global.get("only-global").getBool())) {
+            // try to find the node in the Include.
+            boolean className = configs.getNodes().containsKey(node.className); // Div;
+            boolean tellingName = configs.getNodes().containsKey(node.fullName); // Div:Left
+
+            // not found
+            if(!tellingName && !className)
+                return false;
+
+            // First add class specific bin expressions
+            NodeConfig cNode = configs.getNodes().get(node.className);
+            if (className && cNode.hasFilter()) {
+                for (BinExpr be : cNode.getFilter().getBinExprList()) {
+                    binExprs.put(be.getDecl().getID(), be);
+                }
+            }
+
+            // then add class name specific bin expressions, eventual overriding of class expressions
+            NodeConfig tNode = configs.getNodes().get(node.fullName);
+            if (tellingName && tNode.hasFilter()) {
+                for (BinExpr be : tNode.getFilter().getBinExprList()) {
+                    binExprs.put(be.getDecl().getID(), be);
+                }
             }
         }
 
-
+        // Loop through the whole map to see if the node is enabled
         for(Map.Entry<String, BinExpr> entry : binExprs.entrySet()){
 
             String decl = entry.getKey() + "()";
@@ -123,9 +140,6 @@ public class Config{
                     return false;
                 }
             }
-        }
-        if(className){
-
         }
         return true;
     }

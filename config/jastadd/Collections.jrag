@@ -31,7 +31,7 @@ aspect Collections {
 	syn lazy Configs NodeConfig.getStyle(){
 		if(hasConfigList()){
 			for(Configs configs : getConfigList().getConfigsList()){
-				if(configs.getName().print().equals("styles")){
+				if(configs.getName().print().equals("-style")){
 					return configs;
 				}
 			}

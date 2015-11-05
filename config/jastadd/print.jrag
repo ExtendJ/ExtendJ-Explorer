@@ -42,6 +42,7 @@ aspect Print{
     eq Color.print() = getColor();
     eq Bool.print() = getBOOL();
     eq IdDecl.print() = getID();
+    eq ConfigDecl.print() = getID();
 
     syn String Binding.print() = getName().getID() + " = " + getValue().print();
 
