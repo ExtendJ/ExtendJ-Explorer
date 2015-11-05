@@ -23,7 +23,7 @@ aspect Errors {
 		return new ErrorMessage(message, getLine(getStart()));
 	}
 
-	coll Set<ErrorMessage> DebuggerConfig.errors() [new TreeSet<ErrorMessage>()] with add;
+	coll Set<ErrorMessage> DebuggerConfig.errors() [new TreeSet<ErrorMessage>()] with add root DebuggerConfig;
 
 	inh DebuggerConfig ASTNode.debuggerConfig();
 	syn DebuggerConfig DebuggerConfig.debuggerConfig() = this;

@@ -1,11 +1,13 @@
 aspect NameAnalysis {
-
     // is alone
-    eq DebuggerConfig.getInclude().isDeclared(NodeConfig node) = exists(node, getInclude().getNumNodeConfig()-1);
+    eq DebuggerConfig.getBlockList(int i).isDeclared(NodeConfig node){
+        return getBlock(i).exists(node, getBlock(i).getNumConfigList()-1);
+    }
 
-    syn boolean DebuggerConfig.exists(NodeConfig node, int until) {
+    syn boolean Block.exists(NodeConfig node, int until) = true;
+    eq Include.exists(NodeConfig node, int until){
         for (int i = 0; i < until; i++) {
-            NodeConfig child = getInclude().getNodeConfig(i);
+            NodeConfig child = getNodeConfigList().getNodeConfig(i);
             if(child != node){
                 String childName = child.getNodeName().getClassName().getID();
                 if(child.getNodeName().hasName())
@@ -21,7 +23,6 @@ aspect NameAnalysis {
         }
         return true;
     }
-
     syn boolean NodeConfig.multipleDeclared() = !isDeclared(this);
     inh boolean NodeConfig.isDeclared(NodeConfig node);
 

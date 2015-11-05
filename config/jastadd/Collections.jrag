@@ -12,13 +12,13 @@ aspect Collections {
 		return map;
 	}
 
-    coll ArrayList<IdDecl> DebuggerConfig.IdDecls() [new ArrayList<IdDecl> ()] with add;
+    coll ArrayList<IdDecl> DebuggerConfig.IdDecls() [new ArrayList<IdDecl> ()] with add root DebuggerConfig;
 
 	IdDecl contributes this
 		to DebuggerConfig.IdDecls()
 		for debuggerConfig ();
 
-	coll HashSet DebuggerConfig.nodes() [new HashSet()] with add;
+	coll HashSet DebuggerConfig.nodes() [new HashSet()] with add root DebuggerConfig;
 	NodeConfig contributes this to DebuggerConfig.nodes() for debuggerConfig();
 
 	syn HashMap<String, NodeConfig> DebuggerConfig.getNodes(){
