@@ -112,7 +112,7 @@ public class Config{
         // Loop through the whole map to see if the node is enabled
         for(Map.Entry<String, BinExpr> entry : binExprs.entrySet()){
 
-            String decl = entry.getKey();
+            String decl = entry.getKey()  + "()";
             BinExpr be = entry.getValue();
 
             //System.out.println(decl);
@@ -120,7 +120,7 @@ public class Config{
                 return false;
             }
             if(be.isDoubleDecl()){
-                String decl2 = ((IdDecl)be.getValue()).getID();
+                String decl2 = ((IdDecl)be.getValue()).getID() + "()";
                 if(!node.containsAttributeOrToken(decl2))
                     return false;
                 NodeInfo a = node.getAttributeOrTokenValue(decl);
