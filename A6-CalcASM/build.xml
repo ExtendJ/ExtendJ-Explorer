@@ -19,7 +19,6 @@
 
 	<target name="build" depends="gen">
 		<mkdir dir="${bin.dir}" />
-		<javac srcdir="../src/main/java" destdir="${bin.dir}"  classpath="${cp.lib}" source="1.8" debug="true" />
 		<javac srcdir="." destdir="${bin.dir}" includeantruntime="true" classpath="${cp.lib}" source="1.8" debug="true" />
 	</target>
 
@@ -76,9 +75,7 @@
 			<fileset dir="${bin.dir}" includes="**/*.class" excludes="tests/*" />
 			<fileset dir="${bin.dir}" includes="**/*.class" excludes="tests/*" />
 			<zipfileset includes="**/*.class" src="${lib.dir}/beaver-rt.jar"/>
-			<zipfileset includes="**/*.class" src="../jastadddebugger-exjobb.jar"/>
-			<!--<zipfileset includes="**/*.fxml" src="../jastadddebugger-exjobb.jar"/>-->
-			<!--<zipfileset includes="**/*.css" src="../jastadddebugger-exjobb.jar"/> -->
+			<zipfileset includes="**/*.*" src="../jastadddebugger-exjobb.jar"/>
 			<manifest>
 				<attribute name="Main-Class" value="${main.class}"/>
 			</manifest>

@@ -24,7 +24,7 @@ public class JastAddAd{
   }
   
   public static void main(String[] args) {
-	  try{
+	  /*try{
 		String filename = "testInput.cfg";
 		ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
 		ConfigParser parser = new ConfigParser();
@@ -47,6 +47,6 @@ public class JastAddAd{
 	  e.printStackTrace(System.err);
     } catch (Exception e) {
 	  e.printStackTrace();
-    }
+    }*/
   }
 }
