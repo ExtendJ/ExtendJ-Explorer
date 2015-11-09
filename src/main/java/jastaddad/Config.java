@@ -68,8 +68,8 @@ public class Config{
         if(!noError)
             return false;
 
-        HashMap<String, Value> global = configs.configs();
-        if(global.containsKey("show-all") && global.get("show-all").getBool())
+        HashMap<String, Value> filterConfigs = configs.configs();
+        if(filterConfigs.containsKey("ignore-filter") && filterConfigs.get("ignore-filter").getBool())
             return true;
 
         // Add all bin expressions to one hashmap. This will allow expressions to override each other
@@ -83,7 +83,7 @@ public class Config{
         }
 
         // don't do this if the only-global is set to true
-        if(!global.containsKey("only-global") || !(global.get("only-global").getBool())) {
+        if(!filterConfigs.containsKey("only-global") || !(filterConfigs.get("only-global").getBool())) {
             // try to find the node in the Include.
             boolean className = configs.getNodes().containsKey(node.className); // Div;
             boolean tellingName = configs.getNodes().containsKey(node.fullName); // Div:Left
@@ -142,27 +142,36 @@ public class Config{
     }
 
     public HashMap<String, Value> getNodeStyle(Node node){
-
-        boolean className = configs.getNodes().containsKey(node.className); // Div;
-        boolean tellingName = configs.getNodes().containsKey(node.fullName); // Div:Left
-
-        if(!tellingName && !className)
-            return new HashMap<>();
-
-        // Add all class and telling bin expressions to one hashmap. this will let the telling expressions to override
+        HashMap<String, Value> filterConfigs = configs.configs();
         HashMap<String, Value> map = new HashMap<>();
-
-
-        NodeConfig cNode = configs.getNodes().get(node.className);
-        if(className && cNode.hasStyle()) {
+/*
+        // If there a global style add it to the hashmap
+        if(configs.getGlobal() != null && configs.getGlobal().hasConfigList()){
             for(Binding b : cNode.getStyle().getBindingList().getBindingList()){
                 map.put(b.getName().print(), b.getValue());
             }
         }
-        NodeConfig tNode = configs.getNodes().get(node.fullName);
-        if(tellingName && tNode.hasStyle()) {
-            for(Binding b : tNode.getStyle().getBindingList().getBindingList()){
-                map.put(b.getName().print(), b.getValue());
+*/
+        if(!filterConfigs.containsKey("only-global") || !(filterConfigs.get("only-global").getBool())) {
+            boolean className = configs.getNodes().containsKey(node.className); // Div;
+            boolean tellingName = configs.getNodes().containsKey(node.fullName); // Div:Left
+
+            if(!tellingName && !className)
+                return new HashMap<>();
+
+            // Add all class and telling bin expressions to one hashmap. this will let the telling expressions to override
+
+            NodeConfig cNode = configs.getNodes().get(node.className);
+            if(className && cNode.hasStyle()) {
+                for(Binding b : cNode.getStyle().getBindingList().getBindingList()){
+                    map.put(b.getName().print(), b.getValue());
+                }
+            }
+            NodeConfig tNode = configs.getNodes().get(node.fullName);
+            if(tellingName && tNode.hasStyle()) {
+                for(Binding b : tNode.getStyle().getBindingList().getBindingList()){
+                    map.put(b.getName().print(), b.getValue());
+                }
             }
         }
         return map;
