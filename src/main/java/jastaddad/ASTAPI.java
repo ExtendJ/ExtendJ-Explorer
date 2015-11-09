@@ -73,27 +73,6 @@ public class ASTAPI {
         typeHash.put(fNode.node.className, fNode.isEnabled() ? 1:0);
     }
 
-    private void clusterClusters(TreeNode fNode){
-        // put child clusters together in a parent cluster if they have no children in the filtered tree
-        if(fNode.isNode()) {
-            //FilteredTreeNode n = (FilteredTreeNode) fNode;
-            TreeClusterParent clusterParent = new TreeClusterParent();
-            clusterParent.setStyles(filterConfig);
-            // get all children cluster children that have no children
-            for (GenericTreeNode fChild : fNode.getChildren()) {
-                if (fChild.isCluster() && fChild.getChildren().size() == 0) {
-                    clusterParent.addCluster((TreeCluster)fChild);
-                }
-            }
-
-            if(clusterParent.getClusters().size() > 1) {
-                for(GenericTreeNode cChild : clusterParent.getClusters()) {
-                    fNode.getChildren().remove(cChild);
-                }
-                fNode.addChild(clusterParent);
-            }
-        }
-    }
     private void traversTree(Node node, GenericTreeNode parent, TreeCluster cluster, boolean firstTime){
         if(node == null)
             return;
@@ -144,12 +123,33 @@ public class ASTAPI {
         for(Node child : node.children){
             traversTree(child, fNode, tmpCluster, firstTime);
         }
-
         fNode.setClusterReference(tmpCluster);
         clusterClusters(fNode);
 
         if(addToParent != null)
             parent.addChild(addToParent);
+    }
+
+    private void clusterClusters(TreeNode fNode){
+        // put child clusters together in a parent cluster if they have no children in the filtered tree
+        if(fNode.isNode()) {
+            //FilteredTreeNode n = (FilteredTreeNode) fNode;
+            TreeClusterParent clusterParent = new TreeClusterParent();
+            clusterParent.setStyles(filterConfig);
+            // get all children cluster children that have no children
+            for (GenericTreeNode fChild : fNode.getChildren()) {
+                if (fChild.isCluster() && fChild.getChildren().size() == 0) {
+                    clusterParent.addCluster((TreeCluster)fChild);
+                }
+            }
+
+            if(clusterParent.getClusters().size() > 0) {
+                for(GenericTreeNode cChild : clusterParent.getClusters()) {
+                    fNode.getChildren().remove(cChild);
+                }
+                fNode.addChild(clusterParent);
+            }
+        }
     }
 
     public HashMap<String, Integer> getTypeHash(){ return typeHash; }
@@ -185,8 +185,7 @@ public class ASTAPI {
                     nodes.add(getReferenceNode(n).setReferenceHighlight(highlight));
                 }
             }
-        }else
-        if (isReferenceNode(info.getValue()))
+        }else if (isReferenceNode(info.getValue()))
             nodes.add(getReferenceNode(info.getValue()).setReferenceHighlight(highlight));
         return nodes;
     }

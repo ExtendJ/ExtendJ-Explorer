@@ -51,7 +51,11 @@ public abstract class GenericTreeNode {
 
     public boolean hasClusterReference(){ return clusterRef != null; }
 
-    public GenericTreeNode getClusterReference(){ return clusterRef.clusterRef == null ? clusterRef : clusterRef.clusterRef; }
+    public GenericTreeNode getClusterReference(){
+        if(clusterRef == null)
+            return this;
+        return clusterRef.clusterRef != null ? clusterRef.clusterRef : clusterRef;
+    }
 
     public void setClusterReference(GenericTreeNode clusterRef){ this.clusterRef = clusterRef; }
 

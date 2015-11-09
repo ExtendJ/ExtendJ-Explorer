@@ -269,12 +269,12 @@ public class Controller implements Initializable {
     }
 
     private void resetReferences(){
-        GenericTreeNode node = mon.getLastRealNode() != null ? mon.getLastRealNode() : mon.getSelectedNode();
+        GenericTreeNode node = mon.getLastRealNode();
         if(node == null)
             return;
         node = mon.getApi().getReferenceNode(((TreeNode) node).node.node);
         mon.setSelectedNode(node);
-        graphView.setSelectedNode(node.hasClusterReference() ? node.getClusterReference() : node);
+        graphView.setSelectedNode(node.getClusterReference());
         if(mon.getSelectedInfo() != null)
             attributeTabController.setReference(mon.getSelectedInfo());
     }

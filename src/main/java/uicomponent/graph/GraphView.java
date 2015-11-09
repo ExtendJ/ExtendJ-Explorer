@@ -82,20 +82,23 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.getPickedVertexState().addItemListener(this);
     }
 
-    public void setReferenceEdges(ArrayList<GenericTreeNode> newRefs, GenericTreeNode ref){
+    public void setReferenceEdges(ArrayList<GenericTreeNode> newRefs, GenericTreeNode from){
         if(mon.getReferenceEdges() != null) {
-            for (UIEdge e : mon.getReferenceEdges())
+            for (UIEdge e : mon.getReferenceEdges()){
+                mon.getController().addError("EDGE: " + e);
                 graph.removeEdge(e, false);
+            }
         }
         if(newRefs == null || newRefs.size() == 0) {
             vs.repaint();
             return;
         }
         ArrayList<UIEdge> edges = new ArrayList();
-        for(GenericTreeNode newRef : newRefs) {
+        for(GenericTreeNode ref : newRefs) {
             UIEdge edge = new UIEdge();
-            graph.addEdge(edge, ref.hasClusterReference() ? ref.getClusterReference() : ref, newRef.hasClusterReference() ? newRef.getClusterReference() : newRef);
+            mon.getController().addError("" + ref.getClusterReference());
             edges.add(edge);
+            graph.addEdge(edge, ref.getClusterReference(), from.getClusterReference());
         }
         mon.setReferenceEdges(edges);
         vs.repaint();

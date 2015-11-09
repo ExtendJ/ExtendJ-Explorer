@@ -128,7 +128,6 @@ public class Config{
                 if(!a.getReturnType().equals(b.getReturnType()))
                     return false;
                 if (!be.validateExpr(a.getValue(), b.getValue(), a.getReturnType(), decl)) {
-
                     return false;
                 }
 
