@@ -17,7 +17,6 @@ aspect Collections {
 	IdDecl contributes this
 		to DebuggerConfig.IdDecls()
 		for debuggerConfig ();
-
 	coll HashSet DebuggerConfig.nodes() [new HashSet()] with add root DebuggerConfig;
 	NodeConfig contributes this to DebuggerConfig.nodes() for debuggerConfig();
 
