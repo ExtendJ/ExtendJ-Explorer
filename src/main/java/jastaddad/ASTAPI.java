@@ -176,6 +176,8 @@ public class ASTAPI {
         return res;
     }
 
+    public Config getfilterConfig(){ return filterConfig; }
+
     public ArrayList<GenericTreeNode> getReferenceNodes(NodeInfo info, boolean highlight){
         ArrayList<GenericTreeNode> nodes = new ArrayList();
         if(info == null)
