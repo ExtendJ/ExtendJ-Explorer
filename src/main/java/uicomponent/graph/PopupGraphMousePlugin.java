@@ -26,7 +26,6 @@ import javax.swing.*;
 class PopupVertexEdgeMenuMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
     private JPopupMenu edgePopup;
     private JPopupMenu vertexPopup;
-    private TreeCollapser collapser;
     private VisualizationViewer<GenericTreeNode, UIEdge> vs;
     private GenericTreeNode lastClicked;
     private UIMonitor mon;
@@ -100,7 +99,6 @@ class PopupVertexEdgeMenuMousePlugin<V, E> extends AbstractPopupGraphMousePlugin
      * Setter for the vertex popup.
      */
     public void setVertexPopup() {
-        collapser = new TreeCollapser();
         vertexPopup = new JPopupMenu();
         JMenuItem item;
         vertexPopup.add(item = new JMenuItem("Toggle collapse"));
@@ -117,14 +115,38 @@ class PopupVertexEdgeMenuMousePlugin<V, E> extends AbstractPopupGraphMousePlugin
     }
 
     private void expand(){
-        System.out.println("coming soon!");
+        if(lastClicked.isCluster()){
+            Forest inGraph = (Forest) vs.getGraphLayout().getGraph();
+            TreeCluster cluster = (TreeCluster) lastClicked;
+            GenericTreeNode node = cluster.getClusterRoot();
+
+            Object parent = null;
+            Object edge = null;
+            if(inGraph.getPredecessorCount(lastClicked) > 0) {
+                parent = inGraph.getPredecessors(lastClicked).iterator().next();
+                edge = inGraph.getInEdges(lastClicked).iterator().next();
+            }
+            Point2D d = (Point2D) vs.getGraphLayout().transform(lastClicked);
+            inGraph.removeVertex(lastClicked);
+
+            createTree(inGraph, node);
+
+            if (parent != null) {
+                inGraph.addEdge(edge, parent, node);
+            }else{
+                System.out.println("asdasd");
+            }
+            setClusterRef(null, node);
+            mon.getController().resetReferences();
+            vs.getGraphLayout().setLocation(node, d);
+            vs.repaint();
+        }
     }
 
     private void collapse(){
-        Forest inGraph = (Forest) vs.getGraphLayout().getGraph();
-        //collapser.collapse(vs.getGraphLayout(), inGraph, lastClicked);
         // get a sub tree from subRoot
         if(lastClicked.isNode()) {
+            Forest inGraph = (Forest) vs.getGraphLayout().getGraph();
             TreeCluster newCluster = new TreeCluster(lastClicked);
             newCluster.setStyles(mon.getApi().getfilterConfig());
 
@@ -158,5 +180,21 @@ class PopupVertexEdgeMenuMousePlugin<V, E> extends AbstractPopupGraphMousePlugin
             setClusterRef(cluster, child);
     }
 
+    private void createTree(Forest<GenericTreeNode, UIEdge> g, GenericTreeNode parent){
+        for (GenericTreeNode child : parent.getChildren()) {
+            UIEdge edge = null;
+            if(child.isNode()){
+                TreeNode n = (TreeNode) child;
+                if(parent.isNode() && !((TreeNode)parent).node.isOpt())
+                    edge = new UIEdge(parent.isRealChild(child), n.node.name);
+                else
+                    edge = new UIEdge(parent.isRealChild(child));
+            }else {
+                edge = new UIEdge(parent.isRealChild(child));
+            }
+            g.addEdge(edge, parent, child);
+            createTree(g, child);
+        }
+    }
 }
 
