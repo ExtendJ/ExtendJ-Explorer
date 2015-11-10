@@ -80,6 +80,7 @@ public class ASTAPI {
         GenericTreeNode addToParent = null;
         TreeNode fNode = new TreeNode(node, filterConfig);
         fNode.setStyles(filterConfig);
+        fNode.setDisplayedAttributes(filterConfig);
         realNodeRefs.put(node.node, fNode);
         TreeCluster tmpCluster = cluster;
 

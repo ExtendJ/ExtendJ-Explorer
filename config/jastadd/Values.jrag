@@ -1,7 +1,5 @@
 aspect Values{
 
-
-
     syn lazy Include DebuggerConfig.getInclude(){
         for(Block block : getBlockList()){
             if(block.isInclude())
@@ -23,6 +21,44 @@ aspect Values{
     eq Include.isInclude() = true;
     eq Global.isGlobal() = true;
 
+    syn lazy Filter NodeConfig.getFilter() { return hasConfigBlocks() ? getConfigBlocks().getFilter() : null;}
+    syn lazy ConfigList NodeConfig.getConfigList() { return hasConfigBlocks() ? getConfigBlocks().getConfigList(): null;}
+    syn lazy DisplayedAttributes NodeConfig.getDisplayedAttributes()  { return hasConfigBlocks() ? getConfigBlocks().getDisplayedAttributes() : null;}
+
+    syn lazy Filter Global.getFilter(){ return hasConfigBlocks() ? getConfigBlocks().getFilter() : null;}
+    syn lazy ConfigList Global.getConfigList(){ return hasConfigBlocks() ? getConfigBlocks().getConfigList() : null;}
+    syn lazy DisplayedAttributes Global.getDisplayedAttributes(){ return hasConfigBlocks() ? getConfigBlocks().getDisplayedAttributes() : null;}
+
+    syn lazy Filter ConfigBlocks.getFilter(){
+        for(ConfigBlock block : getConfigBlockList()){
+            if(block.isFilter())
+                return (Filter) block;
+        }
+        return null;
+    }
+
+    syn lazy ConfigList ConfigBlocks.getConfigList(){
+        for(ConfigBlock block : getConfigBlockList()){
+            if(block.isConfigList())
+                return (ConfigList) block;
+        }
+        return null;
+    }
+
+    syn lazy DisplayedAttributes ConfigBlocks.getDisplayedAttributes(){
+        for(ConfigBlock block : getConfigBlockList()){
+            if(block.isDisplayedAttributes())
+                return (DisplayedAttributes) block;
+        }
+        return null;
+    }
+
+    syn boolean ConfigBlock.isFilter() = false;
+    syn boolean ConfigBlock.isConfigList() = false;
+    syn boolean ConfigBlock.isDisplayedAttributes() = false;
+    eq Filter.isFilter() = true;
+    eq ConfigList.isConfigList() = true;
+    eq DisplayedAttributes.isDisplayedAttributes() = true;
 
     syn boolean BinExpr.isDoubleDecl() = getLeft().isIdDecl() && getRight().isIdDecl();
     syn IdDecl BinExpr.getDecl(){

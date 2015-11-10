@@ -25,6 +25,9 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
  * Created by gda10jli on 10/15/15.
@@ -85,7 +88,6 @@ public class GraphView extends SwingNode implements ItemListener {
     public void setReferenceEdges(ArrayList<GenericTreeNode> newRefs, GenericTreeNode from){
         if(mon.getReferenceEdges() != null) {
             for (UIEdge e : mon.getReferenceEdges()){
-                mon.getController().addError("EDGE: " + e);
                 graph.removeEdge(e, false);
             }
         }
@@ -98,7 +100,7 @@ public class GraphView extends SwingNode implements ItemListener {
             UIEdge edge = new UIEdge();
             mon.getController().addError("" + ref.getClusterReference());
             edges.add(edge);
-            graph.addEdge(edge, ref.getClusterReference(), from.getClusterReference());
+            graph.addEdge(edge, from.getClusterReference(), ref.getClusterReference());
         }
         mon.setReferenceEdges(edges);
         vs.repaint();
@@ -124,10 +126,7 @@ public class GraphView extends SwingNode implements ItemListener {
             return new RoundRectangle2D.Double(-50, -20, 130, 40,40,40);
         };
 
-        Transformer <GenericTreeNode, String> toStringTransformer = fNode -> {
-            //CompositeShape shape = new CompositeShape();
-            return fNode.toGraphString();
-        };
+        Transformer <GenericTreeNode, String> toStringTransformer = fNode -> fNode.toGraphString();
 
         float dash[] = {5.0f};
         final Stroke refStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
