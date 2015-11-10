@@ -9,11 +9,15 @@ import jastaddad.Config;
  */
 public class TreeCluster extends GenericTreeNode {
 
-    private TreeNode node;
+    private GenericTreeNode node;
 
-    public TreeCluster(TreeNode node){
+    public TreeCluster(GenericTreeNode node){
         super();
         this.node = node;
+    }
+
+    public GenericTreeNode getClusterRoot(){
+        return node;
     }
 
     @Override

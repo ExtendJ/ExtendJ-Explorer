@@ -32,6 +32,10 @@ public class NodeContent {
         return attributes.containsKey(key);
     }
 
+    public boolean contains(String key){
+        return attributes.containsKey(key) || tokens.containsKey(key);
+    }
+
     public NodeInfo get(String key){
         NodeInfo ret = attributes.get(key);
         if(ret == null)

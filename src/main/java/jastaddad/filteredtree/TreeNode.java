@@ -6,10 +6,7 @@ import configAST.Value;
 import jastaddad.Config;
 import jastaddad.Node;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by gda10jth on 10/16/15.
@@ -59,7 +56,14 @@ public class TreeNode extends GenericTreeNode {
     }
 
     @Override
-    public String toGraphString(){return toString(); }
+    public String toGraphString(){
+        String name = "<html>"  + toString();
+        if(displayedAttributes == null)
+            return name + "</html>";
+        for(Map.Entry<String, Object> s: displayedAttributes.entrySet())
+            name += String.format("<br>%s : %s </br>", s.getKey(), s.getValue());
+        return name + "</html>";
+    }
 
     @Override
     public void setStyles(Config filter) {
@@ -79,6 +83,18 @@ public class TreeNode extends GenericTreeNode {
         while (it.hasNext()) {
             Map.Entry<String, Value> pair = (Map.Entry)it.next();
             styles.put(pair.getKey(), pair.getValue());
+        }
+    }
+
+    public void setDisplayedAttributes(Config config){
+        HashSet<String> set = config.getDisplayedAttributes(node);
+        if(set.size() == 0)
+            return;
+        displayedAttributes = new HashMap<>();
+        for (String s : set){
+            if(!node.getNodeContent().contains(s))
+                continue;
+            displayedAttributes.put(s, node.getAttributeOrTokenValue(s).getValue());
         }
     }
 }

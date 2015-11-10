@@ -7,6 +7,7 @@ import jastaddad.Config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -17,6 +18,7 @@ public abstract class GenericTreeNode {
     protected boolean referenceHighlight;
     protected GenericTreeNode clusterRef;
     protected HashMap<String, Value> styles;
+    protected HashMap<String, Object> displayedAttributes;
 
     public GenericTreeNode(){
         children = new ArrayList();
@@ -49,9 +51,15 @@ public abstract class GenericTreeNode {
     public abstract void setStyles(Config filter);
     public HashMap<String, Value> getStyles(){ return styles;};
 
-    public boolean hasClusterReference(){ return clusterRef != null; }
+    public boolean hasDisplayedAttributes(){ return displayedAttributes != null && displayedAttributes.size() > 0; }
+    public HashMap<String, Object> getDisplayedAttributes(){ return displayedAttributes; }
 
-    public GenericTreeNode getClusterReference(){ return clusterRef.clusterRef == null ? clusterRef : clusterRef.clusterRef; }
+    public boolean hasClusterReference(){ return clusterRef != null; }
+    public GenericTreeNode getClusterReference(){
+        if(clusterRef == null)
+            return this;
+        return clusterRef.clusterRef != null ? clusterRef.clusterRef : clusterRef;
+    }
 
     public void setClusterReference(GenericTreeNode clusterRef){ this.clusterRef = clusterRef; }
 

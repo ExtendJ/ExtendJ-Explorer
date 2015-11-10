@@ -25,6 +25,9 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
  * Created by gda10jli on 10/15/15.
@@ -82,20 +85,22 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.getPickedVertexState().addItemListener(this);
     }
 
-    public void setReferenceEdges(ArrayList<GenericTreeNode> newRefs, GenericTreeNode ref){
+    public void setReferenceEdges(ArrayList<GenericTreeNode> newRefs, GenericTreeNode from){
         if(mon.getReferenceEdges() != null) {
-            for (UIEdge e : mon.getReferenceEdges())
+            for (UIEdge e : mon.getReferenceEdges()){
                 graph.removeEdge(e, false);
+            }
         }
         if(newRefs == null || newRefs.size() == 0) {
             vs.repaint();
             return;
         }
         ArrayList<UIEdge> edges = new ArrayList();
-        for(GenericTreeNode newRef : newRefs) {
+        for(GenericTreeNode ref : newRefs) {
             UIEdge edge = new UIEdge();
-            graph.addEdge(edge, ref.hasClusterReference() ? ref.getClusterReference() : ref, newRef.hasClusterReference() ? newRef.getClusterReference() : newRef);
+            mon.getController().addError("" + ref.getClusterReference());
             edges.add(edge);
+            graph.addEdge(edge, from.getClusterReference(), ref.getClusterReference());
         }
         mon.setReferenceEdges(edges);
         vs.repaint();
@@ -121,10 +126,7 @@ public class GraphView extends SwingNode implements ItemListener {
             return new RoundRectangle2D.Double(-50, -20, 130, 40,40,40);
         };
 
-        Transformer <GenericTreeNode, String> toStringTransformer = fNode -> {
-            //CompositeShape shape = new CompositeShape();
-            return fNode.toGraphString();
-        };
+        Transformer <GenericTreeNode, String> toStringTransformer = fNode -> fNode.toGraphString();
 
         float dash[] = {5.0f};
         final Stroke refStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
@@ -173,6 +175,7 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.getPickedVertexState().addItemListener(this);
         PluggableGraphMouse gm = new PluggableGraphMouse();
         gm.add(new TranslatingGraphMousePlugin(MouseEvent.BUTTON2_MASK));
+        gm.add(new PopupVertexEdgeMenuMousePlugin(vs, mon));
         gm.add(new PickingGraphMousePlugin());
         gm.add(new ScalingGraphMousePlugin(new CrossoverScalingControl(), 0, 1.1f, 0.9f));
         vs.setGraphMouse(gm);
@@ -228,6 +231,7 @@ public class GraphView extends SwingNode implements ItemListener {
             try{
                 return Color.decode(color);
             }catch (NumberFormatException e){
+                e.printStackTrace();
                 return new Color(200, 240, 230);
             }
         }

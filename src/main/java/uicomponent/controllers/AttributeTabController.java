@@ -126,11 +126,9 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
         ArrayList<GenericTreeNode> newRefs = null;
         if(info != null)
             newRefs = mon.getApi().getReferenceNodes(info.getNodeInfo(), true);
-        if(newRefs != null && newRefs.size() > 0) {
-            mon.clearReferenceNodes();
+        mon.clearReferenceNodes();
+        if(newRefs != null)
             mon.addAllReferenceNode(newRefs);
-        }else
-            mon.clearReferenceNodes();
         graphView.setReferenceEdges(newRefs, mon.getSelectedNode());
     }
 

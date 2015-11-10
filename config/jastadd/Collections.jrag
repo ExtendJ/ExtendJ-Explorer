@@ -27,10 +27,10 @@ aspect Collections {
 		return map;
 	}
 
-	syn lazy Configs NodeConfig.getStyle(){
-		if(hasConfigList()){
+	syn Configs Global.getConfigList(String name){
+		if(getConfigList() != null){
 			for(Configs configs : getConfigList().getConfigsList()){
-				if(configs.getName().print().equals("-style")){
+				if(configs.getName().print().equals(name)){
 					return configs;
 				}
 			}
@@ -38,8 +38,23 @@ aspect Collections {
 		return null;
 	}
 
-	syn boolean NodeConfig.hasStyle(){
-		return getStyle() != null;
+	syn Configs NodeConfig.getConfigList(String name){
+     		if(getConfigList() != null){
+     			for(Configs configs : getConfigList().getConfigsList()){
+     				if(configs.getName().print().equals(name)){
+     					return configs;
+     				}
+     			}
+     		}
+     		return null;
+    }
+
+	syn boolean NodeConfig.hasConfigList(String name){
+		return getConfigList() != null && getConfigList(name) != null;
+	}
+
+	syn boolean Global.hasConfigList(String name){
+		return getConfigList() != null && getConfigList(name) != null;
 	}
 }
 
