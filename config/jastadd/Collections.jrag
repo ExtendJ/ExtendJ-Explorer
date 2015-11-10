@@ -6,7 +6,9 @@ aspect Collections {
 
 	syn HashMap<String, Value> DebuggerConfig.configs(){
 		HashMap<String, Value> map = new HashMap();
-		for(Binding b : getConfigs().getBindingList().getBindingList()){
+		if(!hasConfig() || !getConfig().hasConfigBlock() || !getConfig().getConfigBlock().isBindingList())
+			return map;
+		for(Binding b : ((BindingList) getConfig().getConfigBlock()).getBindingList()){
 			map.put(b.getName().print(), b.getValue());
 		}
 		return map;
@@ -28,34 +30,5 @@ aspect Collections {
 		return map;
 	}
 
-	syn Configs Global.getConfigList(String name){
-		if(getConfigList() != null){
-			for(Configs configs : getConfigList().getConfigsList()){
-				if(configs.getName().print().equals(name)){
-					return configs;
-				}
-			}
-		}
-		return null;
-	}
-
-	syn Configs NodeConfig.getConfigList(String name){
-     		if(getConfigList() != null){
-     			for(Configs configs : getConfigList().getConfigsList()){
-     				if(configs.getName().print().equals(name)){
-     					return configs;
-     				}
-     			}
-     		}
-     		return null;
-    }
-
-	syn boolean NodeConfig.hasConfigList(String name){
-		return getConfigList() != null && getConfigList(name) != null;
-	}
-
-	syn boolean Global.hasConfigList(String name){
-		return getConfigList() != null && getConfigList(name) != null;
-	}
 }
 

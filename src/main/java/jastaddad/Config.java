@@ -23,7 +23,9 @@ public class Config{
     private static final String IGNORE_INCLUDE = "ignore-include";
 
     private static final String FILTER = "filter";
+    private static final String FILTER_LIST = "-filter";
     private static final String STYLE_LIST = "-style";
+    private static final String DISPLAYED_ATTRIBUTES_LIST = "-displayed-attributes";
 
     public Config( HashMap<String, ArrayList<String>> errors){
         this.errors = errors;
@@ -128,8 +130,8 @@ public class Config{
         HashMap<String, BinExpr> binExprs = new HashMap<>();
 
         // If there a global filter add it to the hashmap
-        if(isNotIgnored(IGNORE_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getFilter() != null) {
-            for (BinExpr be : configs.getGlobal().getFilter().getBinExprList()) {
+        if(isNotIgnored(IGNORE_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBinExprList(FILTER_LIST) != null) {
+            for (BinExpr be : configs.getGlobal().getBinExprList(FILTER_LIST).getBinExprList()) {
                 binExprs.put(be.getDecl().getID(), be);
             }
         }
@@ -146,16 +148,16 @@ public class Config{
 
             // First add class specific bin expressions
             NodeConfig cNode = configs.getNodes().get(node.className);
-            if (className && cNode.getFilter() != null) {
-                for (BinExpr be : cNode.getFilter().getBinExprList()) {
+            if (className && cNode.getBinExprList(FILTER_LIST) != null) {
+                for (BinExpr be : cNode.getBinExprList(FILTER_LIST).getBinExprList()) {
                     binExprs.put(be.getDecl().getID(), be);
                 }
             }
 
             // then add class name specific bin expressions, eventual overriding of class expressions
             NodeConfig tNode = configs.getNodes().get(node.fullName);
-            if (tellingName && tNode.getFilter() != null) {
-                for (BinExpr be : tNode.getFilter().getBinExprList()) {
+            if (tellingName && tNode.getBinExprList(FILTER_LIST) != null) {
+                for (BinExpr be : tNode.getBinExprList(FILTER_LIST).getBinExprList()) {
                     binExprs.put(be.getDecl().getID(), be);
                 }
             }
@@ -197,8 +199,8 @@ public class Config{
         HashMap<String, Value> map = new HashMap<>();
 
         // If there a global style add it to the hashmap if -ignore-global == false;
-        if(isNotIgnored(IGNORE_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().hasConfigList(STYLE_LIST)) {
-            for(Binding b : configs.getGlobal().getConfigList(STYLE_LIST).getBindingList().getBindingList()){
+        if(isNotIgnored(IGNORE_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBindingList(STYLE_LIST) != null) {
+            for(Binding b : configs.getGlobal().getBindingList(STYLE_LIST).getBindingList()){
               map.put(b.getName().print(), b.getValue());
             }
         }
@@ -215,14 +217,14 @@ public class Config{
         // Add all class and telling bin expressions to one hashmap. this will let the telling expressions to override
 
         NodeConfig cNode = configs.getNodes().get(node.className);
-        if(className && cNode.hasConfigList(STYLE_LIST)) {
-            for(Binding b : cNode.getConfigList(STYLE_LIST).getBindingList().getBindingList()){
+        if(className && cNode.getBindingList(STYLE_LIST) != null) {
+            for(Binding b : cNode.getBindingList(STYLE_LIST).getBindingList()){
                 map.put(b.getName().print(), b.getValue());
             }
         }
         cNode = configs.getNodes().get(node.fullName);
-        if(tellingName && cNode.hasConfigList(STYLE_LIST)) {
-            for(Binding b : cNode.getConfigList(STYLE_LIST).getBindingList().getBindingList()){
+        if(tellingName && cNode.getBindingList(STYLE_LIST) != null) {
+            for(Binding b : cNode.getBindingList(STYLE_LIST).getBindingList()){
                 map.put(b.getName().print(), b.getValue());
             }
         }
@@ -234,8 +236,8 @@ public class Config{
         HashSet<String> set = new HashSet();
 
 
-        if(isNotIgnored(IGNORE_GLOBAL) && configs.getGlobal().getDisplayedAttributes() != null){
-            for (IdDecl decl : configs.getGlobal().getDisplayedAttributes().getIdDeclList()){
+        if(isNotIgnored(IGNORE_GLOBAL) && configs.getGlobal().getIdDeclList(DISPLAYED_ATTRIBUTES_LIST) != null){
+            for (IdDecl decl : configs.getGlobal().getIdDeclList(DISPLAYED_ATTRIBUTES_LIST).getIdDeclList()){
                 set.add(decl.getID() + "()");
             }
         }
@@ -250,14 +252,14 @@ public class Config{
             return set;
 
         NodeConfig cNode = configs.getNodes().get(node.className);
-        if(className && cNode.getDisplayedAttributes() != null) {
-            for(IdDecl decl : cNode.getDisplayedAttributes().getIdDeclList()){
+        if(className && cNode.getIdDeclList(DISPLAYED_ATTRIBUTES_LIST) != null) {
+            for(IdDecl decl : cNode.getIdDeclList(DISPLAYED_ATTRIBUTES_LIST).getIdDeclList()){
                 set.add(decl.getID() + "()");
             }
         }
         cNode = configs.getNodes().get(node.fullName);
-        if(tellingName && cNode.getDisplayedAttributes() != null) {
-            for(IdDecl decl : cNode.getDisplayedAttributes().getIdDeclList()){
+        if(tellingName && cNode.getIdDeclList(DISPLAYED_ATTRIBUTES_LIST) != null) {
+            for(IdDecl decl : cNode.getIdDeclList(DISPLAYED_ATTRIBUTES_LIST).getIdDeclList()){
                 set.add(decl.getID() + "()");
             }
         }

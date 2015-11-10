@@ -21,44 +21,46 @@ aspect Values{
     eq Include.isInclude() = true;
     eq Global.isGlobal() = true;
 
-    syn lazy Filter NodeConfig.getFilter() { return hasConfigBlocks() ? getConfigBlocks().getFilter() : null;}
-    syn lazy ConfigList NodeConfig.getConfigList() { return hasConfigBlocks() ? getConfigBlocks().getConfigList(): null;}
-    syn lazy DisplayedAttributes NodeConfig.getDisplayedAttributes()  { return hasConfigBlocks() ? getConfigBlocks().getDisplayedAttributes() : null;}
+    syn BinExprList NodeConfig.getBinExprList(String name) { return hasConfigList() ? getConfigList().getBinExprList(name) : null;}
+    syn BindingList NodeConfig.getBindingList(String name) { return hasConfigList() ? getConfigList().getBindingList(name) : null;}
+    syn IdDeclList NodeConfig.getIdDeclList(String name)  { return hasConfigList() ? getConfigList().getIdDeclList(name) : null;}
 
-    syn lazy Filter Global.getFilter(){ return hasConfigBlocks() ? getConfigBlocks().getFilter() : null;}
-    syn lazy ConfigList Global.getConfigList(){ return hasConfigBlocks() ? getConfigBlocks().getConfigList() : null;}
-    syn lazy DisplayedAttributes Global.getDisplayedAttributes(){ return hasConfigBlocks() ? getConfigBlocks().getDisplayedAttributes() : null;}
+    syn BinExprList Global.getBinExprList(String name){ return hasConfigList() ? getConfigList().getBinExprList(name) : null;}
+    syn BindingList Global.getBindingList(String name){ return hasConfigList() ? getConfigList().getBindingList(name) : null;}
+    syn IdDeclList Global.getIdDeclList(String name){ return hasConfigList() ? getConfigList().getIdDeclList(name) : null;}
 
-    syn lazy Filter ConfigBlocks.getFilter(){
-        for(ConfigBlock block : getConfigBlockList()){
-            if(block.isFilter())
-                return (Filter) block;
+    syn BinExprList ConfigList.getBinExprList(String name){
+        for(Config config : getConfigList()){
+            if(config.isConfigBlock(name) && config.getConfigBlock().isBinExprList())
+                return (BinExprList) config.getConfigBlock();
         }
         return null;
     }
 
-    syn lazy ConfigList ConfigBlocks.getConfigList(){
-        for(ConfigBlock block : getConfigBlockList()){
-            if(block.isConfigList())
-                return (ConfigList) block;
+    syn BindingList ConfigList.getBindingList(String name){
+        for(Config config : getConfigList()){
+            if(config.isConfigBlock(name) && config.getConfigBlock().isBindingList() )
+                return (BindingList) config.getConfigBlock();
         }
         return null;
     }
 
-    syn lazy DisplayedAttributes ConfigBlocks.getDisplayedAttributes(){
-        for(ConfigBlock block : getConfigBlockList()){
-            if(block.isDisplayedAttributes())
-                return (DisplayedAttributes) block;
+    syn IdDeclList ConfigList.getIdDeclList(String name){
+        for(Config config : getConfigList()){
+            if(config.isConfigBlock(name) && config.getConfigBlock().isIdDeclList())
+                return (IdDeclList) config.getConfigBlock();
         }
         return null;
     }
 
-    syn boolean ConfigBlock.isFilter() = false;
-    syn boolean ConfigBlock.isConfigList() = false;
-    syn boolean ConfigBlock.isDisplayedAttributes() = false;
-    eq Filter.isFilter() = true;
-    eq ConfigList.isConfigList() = true;
-    eq DisplayedAttributes.isDisplayedAttributes() = true;
+    syn boolean Config.isConfigBlock(String name){ return getName().getID().equals(name) && hasConfigBlock();}
+
+    syn boolean ConfigBlock.isBinExprList() = false;
+    syn boolean ConfigBlock.isBindingList() = false;
+    syn boolean ConfigBlock.isIdDeclList() = false;
+    eq BinExprList.isBinExprList() = true;
+    eq BindingList.isBindingList() = true;
+    eq IdDeclList.isIdDeclList() = true;
 
     syn boolean BinExpr.isDoubleDecl() = getLeft().isIdDecl() && getRight().isIdDecl();
     syn IdDecl BinExpr.getDecl(){

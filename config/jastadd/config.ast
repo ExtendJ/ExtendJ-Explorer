@@ -1,25 +1,22 @@
-DebuggerConfig ::= [Configs] Block*;
+DebuggerConfig ::= [Config] Block*;
 
 abstract Block;
 Include : Block ::= ConfigDecl [NodeConfigList];
-Global : Block ::= ConfigDecl [ConfigBlocks];
+Global : Block ::= ConfigDecl [ConfigList];
 
 NodeConfigList ::= NodeConfig*;
-NodeConfig ::= NodeName [ConfigBlocks];
-
+NodeConfig ::= NodeName [ConfigList];
 NodeName ::= ClassName:IdDecl [Name:IdDecl];
 
-ConfigBlocks ::= ConfigBlock*;
+ConfigList ::= Config*;
+Config ::= Name:ConfigDecl [ConfigBlock];
 
 abstract ConfigBlock;
-ConfigList : ConfigBlock ::= Configs*;
-Filter : ConfigBlock ::= BinExpr*;
-DisplayedAttributes : ConfigBlock ::= IdDecl*;
+BinExprList : ConfigBlock ::= BinExpr*;
+BindingList : ConfigBlock ::= Binding*;
+IdDeclList : ConfigBlock ::= IdDecl*;
 
-Configs ::= Name:ConfigDecl [BindingList];
-BindingList ::= Binding*;
 Binding ::= Name:IdDecl Value;
-
 
 abstract BinExpr ::= Left:Value Right:Value;
 EQ : BinExpr;

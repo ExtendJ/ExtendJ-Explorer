@@ -19,6 +19,7 @@ public abstract class GenericTreeNode {
     protected GenericTreeNode clusterRef;
     protected HashMap<String, Value> styles;
     protected HashMap<String, Object> displayedAttributes;
+    protected HashMap<String, Object> ref;
 
     public GenericTreeNode(){
         children = new ArrayList();

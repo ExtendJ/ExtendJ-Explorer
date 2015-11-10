@@ -33,7 +33,7 @@
 %goal debuggerconfig
 
 DebuggerConfig debuggerconfig =
-	configs.a block_list.b {: return new DebuggerConfig(new Opt(a), b); :}
+	config.a block_list.b {: return new DebuggerConfig(new Opt(a), b); :}
 	| block_list.a {: return new DebuggerConfig(new Opt(), a); :};
 
 List block_list =
@@ -44,9 +44,52 @@ Block block =
     include
     | global;
 
-BindingList binding_list =
-	/*EmptyList*/ {: return new BindingList(new List()); :}
-	| binding_tmp.a SEMI {: return new BindingList(a); :};
+Include include =
+	INCLUDE.n LBRACKET node_config_list.a RBRACKET {: return new Include(new ConfigDecl(n), new Opt(a)); :};
+
+Global global =
+	GLOBAL.a LBRACKET config_list.b RBRACKET {: return new Global(new ConfigDecl(a), new Opt(b)); :};
+
+NodeConfigList node_config_list =
+	/*EmptyList*/ {: return new NodeConfigList(); :}
+	| node_list.a {: return new NodeConfigList(a); :};
+
+List node_list =
+	node.e {: return new List().add(e); :}
+	| node_list.f node.g {: return f.add(g); :};
+
+NodeConfig node =
+	node_name.a SEMI {: return new NodeConfig(a, new Opt()); :}
+	| node_name.a LBRACKET config_list.b RBRACKET {: return new NodeConfig(a, new Opt(b)); :};
+
+NodeName node_name =
+	iddecl.a  {: return new NodeName(a, new Opt()); :}
+	| iddecl.a COL iddecl.b {: return new NodeName(a, new Opt(b)); :};
+
+ConfigList config_list =
+	/*EmptyList*/ {: return new ConfigList(); :}
+ 	| config_list_list.a {: return new ConfigList(a); :};
+
+List config_list_list =
+	 config.a {: return new List(a); :}
+	| config_list_list.a config.b {: return a.add(b); :};
+
+Config config =
+	configdecl.a LBRACKET RBRACKET {: return new Config(a, new Opt()); :}
+	| configdecl.a LBRACKET config_block.b RBRACKET {: return new Config(a, new Opt(b)); :};
+
+ConfigBlock config_block =
+	filter_list.a
+	| binding_list
+	| decl_list.a {: return new IdDeclList(a); :};
+
+BinExprList filter_list = filter_tmp.a SEMI {: return new BinExprList(a); :};
+
+List filter_tmp =
+	binexpr.a {: return new List(a); :}
+	| filter_tmp.a SEMI binexpr.b {: return a.add(b); :};
+
+BindingList binding_list = binding_tmp.a SEMI {: return new BindingList(a); :};
 
 List binding_tmp =
  	binding.d {: return new List().add(d); :}
@@ -55,63 +98,11 @@ List binding_tmp =
 Binding binding =
 	iddecl.a ASSIGNMENT value.b {: return new Binding(a, b); :};
 
-Include include =
-	INCLUDE.n LBRACKET RBRACKET {: return new Include(new ConfigDecl(n), new Opt()); :}
-	| INCLUDE.n LBRACKET node_config_list.a RBRACKET {: return new Include(new ConfigDecl(n), new Opt(a)); :};
+List decl_list =
+	decl_tmp.a {: return new List(a); :}
+	| decl_list.a decl_tmp.b {: return a.add(b); :};
 
-Global global =
-    GLOBAL.a LBRACKET RBRACKET {: return new Global(new ConfigDecl(a), new Opt()); :}
-    | GLOBAL.a LBRACKET configBlocks.b RBRACKET {: return new Global(new ConfigDecl(a), new Opt(b)); :};
-
-NodeConfigList node_config_list = node_list.a {: return new NodeConfigList(a); :};
-
-List node_list =
-	node.e {: return new List().add(e); :}
-	| node_list.f node.g {: return f.add(g); :};
-
-NodeConfig node =
-	node_name.a SEMI {: return new NodeConfig(a, new Opt()); :}
-	| node_name.a LBRACKET configBlocks.b RBRACKET {: return new NodeConfig(a, new Opt(b)); :};
-
-ConfigBlocks configBlocks =  configBlock_list.a {: return new ConfigBlocks(a); :};
-
-List configBlock_list =
-	/*EmptyList*/ {: return new List(); :}
-	| configBlock.a {: return new List(a); :}
-	| configBlock_list.a configBlock.b {: return a.add(b); :};
-
-ConfigBlock configBlock =
-	filter
-	| configList
-	| displayedAttributes;
-
-DisplayedAttributes displayedAttributes =
-	DISPLAYEDATTRIBUTES LBRACKET decl_list.a RBRACKET {: return new DisplayedAttributes(a); :};
-
-NodeName node_name =
-	iddecl.a  {: return new NodeName(a, new Opt()); :}
-	| iddecl.a COL iddecl.b {: return new NodeName(a, new Opt(b)); :};
-
-ConfigList configList =
-	configList_list.a {: return new ConfigList(a); :};
-
-List configList_list  =
-	configs.a {: return new List().add(a); :}
-	| configList_list.a configs.b {: return a.add(b); :};
-
-Configs configs =
-	configdecl.a LBRACKET binding_list.b RBRACKET {: return new Configs(a, new Opt(b)); :};
-
-Filter filter =
-	FILTER LBRACKET filter_list.a RBRACKET {: return new Filter(a); :};
-
-List filter_list =
-	/*Empty*/{: return new List(); :}
-	| filter_tmp.a SEMI {: return a; :};
-
-List filter_tmp =
-	binexpr.a {: return new List(a); :}
-	| filter_tmp.a SEMI binexpr.b {: return a.add(b); :};
+IdDecl decl_tmp = iddecl.a SEMI {: return a; :};
 
 BinExpr binexpr =
 	 value.a EQ value.b {:return new EQ(a,b); :}
@@ -141,13 +132,6 @@ List str_list =
 List num_list =
 	 num.a {: return new List(a); :}
 	| num_list.a COMMA num.b {: return a.add(b); :};
-
-List decl_list =
-	/*EmptyList*/ {: return new List(); :}
-	| decl_tmp.a {: return new List(a); :}
-	| decl_list.a decl_tmp.b {: return a.add(b); :};
-
-IdDecl decl_tmp = iddecl.a SEMI {: return a; :};
 
 Num num =  NUMERAL.a {: return new Num(a); :};
 Str str = STRING.a {: return new Str(a); :};

@@ -98,7 +98,6 @@ public class GraphView extends SwingNode implements ItemListener {
         ArrayList<UIEdge> edges = new ArrayList();
         for(GenericTreeNode ref : newRefs) {
             UIEdge edge = new UIEdge();
-            mon.getController().addError("" + ref.getClusterReference());
             edges.add(edge);
             graph.addEdge(edge, from.getClusterReference(), ref.getClusterReference());
         }
@@ -178,7 +177,7 @@ public class GraphView extends SwingNode implements ItemListener {
         gm.add(new PickingGraphMousePlugin());
         gm.add(new ScalingGraphMousePlugin(new CrossoverScalingControl(), 0, 1.1f, 0.9f));
         vs.setGraphMouse(gm);
-        
+
     }
 
     public void repaint(){
