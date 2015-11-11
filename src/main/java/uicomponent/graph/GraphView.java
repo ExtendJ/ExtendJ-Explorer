@@ -118,7 +118,7 @@ public class GraphView extends SwingNode implements ItemListener {
             if(!from.getClusterReference().isNode())
                 continue;
             for(GenericTreeNode to : ref.getReferences()){
-                graph.addEdge(new UIEdge(UIEdge.DISPLAYED_REF), from.getClusterReference(), to.getClusterReference());
+                graph.addEdge(new UIEdge(UIEdge.DISPLAYED_REF).setLabel(ref.getLabel()), from.getClusterReference(), to.getClusterReference());
             }
         }
         vs.repaint();

@@ -28,6 +28,8 @@ public class UIEdge {
 
     public UIEdge(int reftype){ this.reftype = reftype; reference = true; }
 
+    public UIEdge setLabel(String label){ this.label = label; return this; }
+
     public boolean isReference(){ return reference; }
 
     public int getReferenceType(){ return reftype; }
