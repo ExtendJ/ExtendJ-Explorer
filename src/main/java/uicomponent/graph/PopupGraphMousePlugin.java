@@ -58,7 +58,7 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             lastClicked = pickSupport.getVertex(vs.getGraphLayout(), p.getX(), p.getY());
             if(lastClicked != null) {
                 //System.out.println("Vertex " + v + " was right clicked");
-                if(!(lastClicked.isCluster() && !((TreeCluster)lastClicked).isExpandable()))
+                if(lastClicked.isExpandable())
                     vertexPopup.show(vs, e.getX(), e.getY());
             } else {
                 /*
