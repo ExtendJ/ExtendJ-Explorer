@@ -18,6 +18,7 @@ public class TreeNode extends GenericTreeNode {
     private boolean enabled;
     private String graphName;
     private LinkedHashMap<Integer, Boolean> realChildEdge;
+    private ArrayList<NodeReference> nodeReferences;
 
     public TreeNode(Node data, GenericTreeNode parent, Config filter){
         super(parent);
@@ -84,21 +85,29 @@ public class TreeNode extends GenericTreeNode {
         }
     }
 
-    public void setDisplayedAttributes(Config config, ArrayList<NodeReference> references, ASTAPI api){
+    public void setDisplayedAttributes(Config config, ArrayList<NodeReference> allReferences, ASTAPI api){
         HashSet<String> set = config.getDisplayedAttributes(node);
         if(set.size() == 0)
             return;
         graphName = "<html>" + toString();
+        if(nodeReferences == null)
+            nodeReferences = new ArrayList<>();
         for (String s : set){
             if(!node.getNodeContent().contains(s))
                 continue;
             NodeInfo info = node.getAttributeOrTokenValue(s);
             ArrayList<GenericTreeNode> refs = api.getReferenceNodes(info, false);
-            if(refs != null && refs.size() > 0)
-                references.add(new NodeReference(s, this, refs));
+            if(refs != null && refs.size() > 0) {
+                NodeReference reference = new NodeReference(s, this, refs);
+                nodeReferences.add(reference);
+                allReferences.add(reference);
+            }
             else
                 graphName += String.format("<br>%s : %s </br>", s, info.getValue());
         }
         graphName += "</html>";
     }
+
+    @Override
+    public ArrayList<NodeReference> getNodeReferences(){ return nodeReferences;}
 }

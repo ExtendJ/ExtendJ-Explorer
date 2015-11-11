@@ -6,6 +6,7 @@ import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
 import jastaddad.filteredtree.GenericTreeNode;
+import jastaddad.filteredtree.NodeReference;
 import jastaddad.filteredtree.TreeCluster;
 import jastaddad.filteredtree.TreeNode;
 import uicomponent.UIMonitor;
@@ -13,6 +14,7 @@ import uicomponent.UIMonitor;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import javax.swing.*;
 
 /**
@@ -29,20 +31,22 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
     private VisualizationViewer<GenericTreeNode, UIEdge> vs;
     private GenericTreeNode lastClicked;
     private UIMonitor mon;
+    private GraphView graphView;
 
     /** Creates a new instance of PopupVertexEdgeMenuMousePlugin */
-    public PopupGraphMousePlugin(VisualizationViewer<GenericTreeNode, UIEdge> vs, UIMonitor mon) {
-        this(MouseEvent.BUTTON3_MASK, vs, mon);
+    public PopupGraphMousePlugin(VisualizationViewer<GenericTreeNode, UIEdge> vs, UIMonitor mon, GraphView graphView) {
+        this(MouseEvent.BUTTON3_MASK, vs, mon, graphView);
     }
 
     /**
      * Creates a new instance of PopupVertexEdgeMenuMousePlugin
      * @param modifiers mouse event modifiers see the jung visualization Event class.
      */
-    public PopupGraphMousePlugin(int modifiers, VisualizationViewer<GenericTreeNode, UIEdge> vs, UIMonitor mon) {
+    public PopupGraphMousePlugin(int modifiers, VisualizationViewer<GenericTreeNode, UIEdge> vs, UIMonitor mon, GraphView graphView) {
         super(modifiers);
         this.vs = vs;
         this.mon = mon;
+        this.graphView = graphView;
         setVertexPopup();
     }
 
@@ -138,8 +142,10 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
                     inGraph.removeEdge(e, false);
                 }
             }
+            ArrayList<NodeReference> nodeRef = new ArrayList<>();
+            createTree(inGraph, node, nodeRef);
 
-            createTree(inGraph, node);
+            graphView.addDisplayedReferences(nodeRef);
 
             inGraph.removeVertex(lastClicked, false);
 
@@ -148,7 +154,8 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             }else{
                 System.out.println("Top node");
             }
-            setClusterRef(null, node);
+
+
 
             mon.getController().resetReferences();
 
@@ -219,7 +226,11 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             setClusterRef(cluster, child);
     }
 
-    private void createTree(Forest<GenericTreeNode, UIEdge> g, GenericTreeNode parent){
+    private void createTree(Forest<GenericTreeNode, UIEdge> g, GenericTreeNode parent, ArrayList<NodeReference> nodeRef){
+        parent.setClusterReference(null);
+        System.out.println("parent: " + parent.getNodeReferences());
+        if(parent.getNodeReferences() != null)
+            nodeRef.addAll(parent.getNodeReferences());
         for (GenericTreeNode child : parent.getChildren()) {
             UIEdge edge = null;
             if(child.isNode()){
@@ -232,7 +243,7 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
                 edge = new UIEdge(parent.isRealChild(child));
             }
             g.addEdge(edge, parent, child);
-            createTree(g, child);
+            createTree(g, child, nodeRef);
         }
     }
 }
