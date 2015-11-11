@@ -183,7 +183,7 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
                 mon.getController().resetReferences();
             //});
 
-            inGraph.removeVertex(lastClicked);
+            inGraph.removeVertex(lastClicked, false);
             if (parent != null) {
                 inGraph.addEdge(edge, parent, newCluster);
             } else {

@@ -4,12 +4,14 @@ import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.DirectedOrderedSparseMultigraph;
 import edu.uci.ics.jung.graph.Forest;
+import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.*;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.picking.PickedInfo;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
+import edu.uci.ics.jung.visualization.renderers.VertexLabelAsShapeRenderer;
 import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.filteredtree.NodeReference;
 import jastaddad.filteredtree.TreeNode;
@@ -177,7 +179,7 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.QuadCurve<>());
         vs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
         vs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
-        vs.getRenderContext().setVertexShapeTransformer(vertexShape);
+        vs.getRenderContext().setVertexShapeTransformer(new VertexShapeTransformer(mon, vs.getRenderContext()));
         vs.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
         vs.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
 
@@ -247,6 +249,52 @@ public class GraphView extends SwingNode implements ItemListener {
                 e.printStackTrace();
                 return new Color(200, 240, 230);
             }
+        }
+    }
+
+    private class VertexShapeTransformer extends VertexLabelAsShapeRenderer<GenericTreeNode, UIEdge> {
+        private final UIMonitor mon;
+
+        VertexShapeTransformer ( UIMonitor mon , RenderContext<GenericTreeNode, UIEdge> rc) {
+            super(rc);
+            this.mon = mon;
+
+        }
+
+        @Override
+        public Shape transform(GenericTreeNode fNode) {
+            Component component = prepareRenderer(rc, rc.getVertexLabelRenderer(), rc.getVertexLabelTransformer().transform(fNode),
+                    rc.getPickedVertexState().isPicked(fNode), fNode);
+            Dimension size = component.getPreferredSize();
+
+            int centerX = -size.width/2 -10;
+            int centerY = -size.height/2 -10;
+            int height = size.height+20;
+            int width = size.width+20;
+
+            if(fNode.isNode() && width < 130){
+                width = 130;
+                centerX = -65;
+            }
+            if(!fNode.isNode()){
+                width = 40;
+                height = 40;
+                centerX = -20;
+                centerY = -20;
+            }
+
+            //Rectangle bounds = new Rectangle(-size.width/2 -2, -size.height/2 -2, size.width+4, size.height);
+
+            String shape = fNode.getStyles().get("node-shape").getStr();
+            if(shape != null) {
+                if (shape.equals("rounded_rectangle"))
+                    return new RoundRectangle2D.Double(centerX, centerY, width, height, 40, 40);
+                if (shape.equals("small_circle"))
+                    return new Ellipse2D.Float(centerX, centerY, width, height);
+                if (shape.equals("rectangle"))
+                    return new RoundRectangle2D.Double(centerX, centerY, width, height, 10, 10);
+            }
+            return new RoundRectangle2D.Double(-50, -20, 130, 40,40,40);
         }
     }
 }
