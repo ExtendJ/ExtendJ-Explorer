@@ -9,15 +9,20 @@ public class NodeReference {
     private String label;
     private GenericTreeNode from;
     private GenericTreeNode to;
-    private ArrayList<GenericTreeNode> toList;
+    private ArrayList<GenericTreeNode> refList;
+    private ArrayList<Object> futureRefList;
 
-    public NodeReference(String label, GenericTreeNode from, ArrayList<GenericTreeNode> toList){
+    public NodeReference(String label, GenericTreeNode from, ArrayList<Object> futureRefList){
         this.label = label;
         this.from =from;
-        this.toList = toList;
+        this.futureRefList = futureRefList;
     }
 
-    public ArrayList<GenericTreeNode> getReferences(){ return toList; }
+    public void setReferences(ArrayList<GenericTreeNode> treeNodes){ this.refList = treeNodes; }
+
+    public ArrayList<Object> getFutureReferences(){ return futureRefList; }
+
+    public ArrayList<GenericTreeNode> getReferences(){ return refList; }
     public GenericTreeNode getReferenceFrom(){ return from; }
     public String getLabel(){ return label; }
 

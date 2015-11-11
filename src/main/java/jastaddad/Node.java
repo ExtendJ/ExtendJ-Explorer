@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 public class Node{
     public final Object node;
@@ -21,17 +22,17 @@ public class Node{
     private int level;
     private NodeContent nodeContent;
 
-    public Node(Object root){
+    public Node(Object root, HashMap<Object, Object> futureReferences){
         this.children = new ArrayList<>();
         this.name = "";
         this.className = root.getClass().getSimpleName();
         this.node = root;
         fullName = className;
         id = System.identityHashCode(this.toString());
-        init(root, false, false, 1);
+        init(root, false, false, 1, futureReferences);
     }
 
-    public Node(Object root, String name, boolean isList, boolean isOpt, int level){
+    public Node(Object root, String name, boolean isList, boolean isOpt, int level, HashMap<Object, Object> futureReferences){
         this.children = new ArrayList<>();
         this.className = root.getClass().getSimpleName();
         this.node = root;
@@ -43,21 +44,21 @@ public class Node{
             fullName = className + ":" + name;
         }
         id = System.identityHashCode(this.toString());
-        init(root, isList, isOpt, level);
+        init(root, isList, isOpt, level, futureReferences);
     }
 
-    private void init(Object root, boolean isList, boolean isOpt, int level){
+    private void init(Object root, boolean isList, boolean isOpt, int level, HashMap<Object, Object> futureReferences){
         this.isOpt = isOpt;
         this.isList = isList;
         this.nodeContent = new NodeContent();
         this.level = level;
-
+        futureReferences.put(node, node);
         if(isList) {
             for (Object child: (Iterable<?>) root) {
-                children.add(new Node(child, isOpt ? name : "", child instanceof Collection, false, 1));
+                children.add(new Node(child, isOpt ? name : "", child instanceof Collection, false, 1, futureReferences));
             }
         }
-        traversDown(root);
+        traversDown(root, futureReferences);
     }
 
     public boolean containsAttributeOrToken(String key){
@@ -68,7 +69,7 @@ public class Node{
         return getNodeContent().get(key);
     }
 
-    private void traversDown(Object root){
+    private void traversDown(Object root, HashMap<Object, Object> futureReferences){
         try {
             for (Method m : root.getClass().getMethods()) {
                 for (Annotation a: m.getAnnotations()) {
@@ -77,7 +78,8 @@ public class Node{
                                 getName(a),
                                 !ASTAnnotation.isSingleChild(a),
                                 ASTAnnotation.isOptChild(a),
-                                level + 1));
+                                level + 1,
+                                futureReferences));
                     }
                     nodeContent.add(root, m, a);
                 }

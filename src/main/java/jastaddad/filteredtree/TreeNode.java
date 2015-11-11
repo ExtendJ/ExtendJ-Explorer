@@ -96,7 +96,7 @@ public class TreeNode extends GenericTreeNode {
             if(!node.getNodeContent().contains(s))
                 continue;
             NodeInfo info = node.getAttributeOrTokenValue(s);
-            ArrayList<GenericTreeNode> refs = api.getReferenceNodes(info, false);
+            ArrayList<Object> refs = api.getReferenceNodes(info);
             if(refs != null && refs.size() > 0) {
                 NodeReference reference = new NodeReference(s, this, refs);
                 nodeReferences.add(reference);

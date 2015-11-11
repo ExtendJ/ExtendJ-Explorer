@@ -116,6 +116,7 @@ public class GraphView extends SwingNode implements ItemListener {
                 continue;
             from = from.getClusterReference();
             for(GenericTreeNode to : ref.getReferences()) {
+                System.out.println("BAJS: " + to);
                 UIEdge edge = new UIEdge(UIEdge.DISPLAYED_REF).setLabel(ref.getLabel());
                 graph.addEdge(edge, from, to.getClusterReference());
                 if(!displayedRefs.containsKey(from))
