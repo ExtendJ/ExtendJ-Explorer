@@ -1,9 +1,6 @@
 package jastaddad;
 
-import jastaddad.filteredtree.GenericTreeNode;
-import jastaddad.filteredtree.TreeCluster;
-import jastaddad.filteredtree.TreeClusterParent;
-import jastaddad.filteredtree.TreeNode;
+import jastaddad.filteredtree.*;
 import jastaddad.objectinfo.NodeInfo;
 
 import java.util.ArrayList;
@@ -22,17 +19,20 @@ public class ASTAPI {
     private HashMap<String, List<TreeNode>> typeNodeHash;
     private HashMap<Object, GenericTreeNode> realNodeRefs;
     private HashMap<String, ArrayList<String>> errors;
+    private ArrayList<NodeReference> displayedReferences;
 
     public ASTAPI(Object root){
-        errors = new HashMap<>();
-        errors.put("filter", new ArrayList<>());
 
+        displayedReferences = new ArrayList<>();
         realNodeRefs = new HashMap();
+        typeHash = new HashMap<>();
+        typeNodeHash = new HashMap<>();
+        errors = new HashMap<>();
+
+        errors.put("filter", new ArrayList<>());
         tree = new Node(root);
         this.filteredTree = null;
         filterConfig = new Config(errors);
-        typeHash = new HashMap<>();
-        typeNodeHash = new HashMap<>();
         traversTree(this.tree, null, null, true);
     }
 
@@ -80,7 +80,6 @@ public class ASTAPI {
         GenericTreeNode addToParent = null;
         TreeNode fNode = new TreeNode(node, filterConfig);
         fNode.setStyles(filterConfig);
-        fNode.setDisplayedAttributes(filterConfig);
         realNodeRefs.put(node.node, fNode);
         TreeCluster tmpCluster = cluster;
 
@@ -129,6 +128,8 @@ public class ASTAPI {
 
         if(addToParent != null)
             parent.addChild(addToParent);
+
+        fNode.setDisplayedAttributes(filterConfig, displayedReferences , this);
     }
 
     private void clusterClusters(TreeNode fNode){
@@ -159,9 +160,11 @@ public class ASTAPI {
         return realNodeRefs.containsKey(node);
     }
 
-    public GenericTreeNode getReferenceNode(Object node){
-        return realNodeRefs.get(node);
-    }
+    public GenericTreeNode getReferenceNode(Object node){ return realNodeRefs.get(node); }
+
+    public void clearDisplayedReferences(){ displayedReferences.clear(); }
+
+    public ArrayList<NodeReference> getDisplayedReferences(){ return displayedReferences; }
 
     public GenericTreeNode getFilteredTree(){
         return filteredTree;
@@ -170,6 +173,7 @@ public class ASTAPI {
     public boolean saveNewFilter(String text){
         boolean res = filterConfig.saveAndUpdateFilter(text);
         if(res) {
+            clearDisplayedReferences();
             filteredTree = null;
             traversTree(this.tree, null, null, false);
         }

@@ -231,7 +231,6 @@ public class Controller implements Initializable {
 
     public void nodeSelected(GenericTreeNode node, boolean fromGraph){
         mon.setSelectedNode(node);
-        mon.clearReferenceNodes();
         attributeTabController.setAttributes();
         if(fromGraph)
             textTreeTabController.newNodeSelected(node);
@@ -241,7 +240,6 @@ public class Controller implements Initializable {
 
     public void nodeDeselected(boolean fromGraph){
         mon.setSelectedNode(null);
-        mon.clearReferenceNodes();
         if(fromGraph)
             textTreeTabController.deselectNode();
         else
@@ -317,7 +315,6 @@ public class Controller implements Initializable {
 
         typeListView.setRoot(root);
         typeListView.setShowRoot(false);
-        //typeListView.setCellFactory(CheckBoxTreeCell.<TmpTreeItem>forTreeView());
     }
 
     private class TmpTreeItem implements Comparable<TmpTreeItem>{

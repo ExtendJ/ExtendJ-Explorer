@@ -18,8 +18,6 @@ public abstract class GenericTreeNode {
     protected boolean referenceHighlight;
     protected GenericTreeNode clusterRef;
     protected HashMap<String, Value> styles;
-    protected HashMap<String, Object> displayedAttributes;
-    protected HashMap<String, Object> ref;
 
     public GenericTreeNode(){
         children = new ArrayList();
@@ -52,14 +50,11 @@ public abstract class GenericTreeNode {
     public abstract void setStyles(Config filter);
     public HashMap<String, Value> getStyles(){ return styles;};
 
-    public boolean hasDisplayedAttributes(){ return displayedAttributes != null && displayedAttributes.size() > 0; }
-    public HashMap<String, Object> getDisplayedAttributes(){ return displayedAttributes; }
-
     public boolean hasClusterReference(){ return clusterRef != null; }
     public GenericTreeNode getClusterReference(){
         if(clusterRef == null)
             return this;
-        return clusterRef.clusterRef != null ? clusterRef.clusterRef : clusterRef;
+        return clusterRef.hasClusterReference() ? clusterRef.getClusterReference() : clusterRef;
     }
 
     public void setClusterReference(GenericTreeNode clusterRef){ this.clusterRef = clusterRef; }

@@ -11,6 +11,7 @@ import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.picking.PickedInfo;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 import jastaddad.filteredtree.GenericTreeNode;
+import jastaddad.filteredtree.NodeReference;
 import jastaddad.filteredtree.TreeNode;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
@@ -50,6 +51,7 @@ public class GraphView extends SwingNode implements ItemListener {
         createTree(graph, mon.getRootNode());
         createLayout(graph);
         setListeners();
+        setDisplayedReferences();
         setContent(vs);
     }
 
@@ -76,6 +78,7 @@ public class GraphView extends SwingNode implements ItemListener {
         graph = new DelegateForest<>(n);
         createTree(graph, mon.getRootNode());
         vs.getGraphLayout().setGraph(graph);
+        setDisplayedReferences();
         vs.repaint();
     }
 
@@ -95,13 +98,29 @@ public class GraphView extends SwingNode implements ItemListener {
             vs.repaint();
             return;
         }
-        ArrayList<UIEdge> edges = new ArrayList();
+        ArrayList<UIEdge> edges = new ArrayList<>();
         for(GenericTreeNode ref : newRefs) {
-            UIEdge edge = new UIEdge();
+            UIEdge edge = new UIEdge(UIEdge.ATTRIBUTE_REF);
             edges.add(edge);
             graph.addEdge(edge, from.getClusterReference(), ref.getClusterReference());
         }
         mon.setReferenceEdges(edges);
+        vs.repaint();
+    }
+
+    public void setDisplayedReferences(){
+        ArrayList<NodeReference> refs = mon.getApi().getDisplayedReferences();
+        if(refs == null || refs.size() == 0)
+            return;
+
+        for(NodeReference ref : refs) {
+            GenericTreeNode from  = ref.getReferenceFrom();
+            if(!from.getClusterReference().isNode())
+                continue;
+            for(GenericTreeNode to : ref.getReferences()){
+                graph.addEdge(new UIEdge(UIEdge.DISPLAYED_REF), from.getClusterReference(), to.getClusterReference());
+            }
+        }
         vs.repaint();
     }
 
@@ -127,6 +146,8 @@ public class GraphView extends SwingNode implements ItemListener {
 
         Transformer <GenericTreeNode, String> toStringTransformer = fNode -> fNode.toGraphString();
 
+        Transformer<UIEdge, Paint> edgePaintTransformer = edge -> edge.getColor();
+
         float dash[] = {5.0f};
         final Stroke refStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
         final Stroke dashedStroke = new BasicStroke(0.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
@@ -145,13 +166,6 @@ public class GraphView extends SwingNode implements ItemListener {
                 return dashedStroke;
             return normalStroke;
         };
-
-        Transformer<UIEdge, Paint> edgePaintTransformer = edge -> {
-            if(edge.isReference())
-                return new Color(80, 180 , 80);
-            return new Color(0, 0, 0);
-        };
-
         ScalingControl visualizationViewerScalingControl = new CrossoverScalingControl();
 
         vs = new VisualizationViewer<>(layout, screenSize);

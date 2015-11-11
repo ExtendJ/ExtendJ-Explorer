@@ -16,14 +16,12 @@ public class UIMonitor {
     private GenericTreeNode lastRealNode;
     private GenericTreeNode selectedNode;
     private AttributeInfo selectedInfo;
-    private ArrayList<GenericTreeNode> refNodes;
     private ArrayList<UIEdge> refEdges;
     private ASTAPI api;
     private Controller controller;
 
     public UIMonitor(ASTAPI api){
         this.api = api;
-        this.refNodes = new ArrayList();
     }
 
     public ASTAPI getApi(){
@@ -57,9 +55,4 @@ public class UIMonitor {
 
     public ArrayList<UIEdge> getReferenceEdges(){ return refEdges; }
 
-    public void clearReferenceNodes(){ refNodes.clear(); }
-    public void addAllReferenceNode(ArrayList<GenericTreeNode> nodes){ this.refNodes.addAll(nodes); }
-    public void addReferenceNode(GenericTreeNode node){ this.refNodes.add(node); }
-
-    public ArrayList<GenericTreeNode> getReferenceNodes(){ return refNodes; }
 }

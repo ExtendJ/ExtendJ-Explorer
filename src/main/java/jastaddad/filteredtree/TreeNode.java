@@ -3,8 +3,10 @@ package jastaddad.filteredtree;
 import configAST.Color;
 import configAST.Str;
 import configAST.Value;
+import jastaddad.ASTAPI;
 import jastaddad.Config;
 import jastaddad.Node;
+import jastaddad.objectinfo.NodeInfo;
 
 import java.util.*;
 
@@ -14,6 +16,7 @@ import java.util.*;
 public class TreeNode extends GenericTreeNode {
     public final Node node;
     private boolean enabled;
+    private String graphName;
     private LinkedHashMap<Integer, Boolean> realChildEdge;
 
     public TreeNode(Node data, Config filter){
@@ -56,14 +59,8 @@ public class TreeNode extends GenericTreeNode {
     }
 
     @Override
-    public String toGraphString(){
-        String name = "<html>"  + toString();
-        if(displayedAttributes == null)
-            return name + "</html>";
-        for(Map.Entry<String, Object> s: displayedAttributes.entrySet())
-            name += String.format("<br>%s : %s </br>", s.getKey(), s.getValue());
-        return name + "</html>";
-    }
+    public String toGraphString(){ return graphName != null ? graphName : "<html>" + toString() + "</html>"; }
+
 
     @Override
     public void setStyles(Config filter) {
@@ -86,15 +83,20 @@ public class TreeNode extends GenericTreeNode {
         }
     }
 
-    public void setDisplayedAttributes(Config config){
+    public void setDisplayedAttributes(Config config, ArrayList<NodeReference> references, ASTAPI api){
         HashSet<String> set = config.getDisplayedAttributes(node);
         if(set.size() == 0)
             return;
-        displayedAttributes = new HashMap<>();
+        graphName = "<html>" + toString();
         for (String s : set){
             if(!node.getNodeContent().contains(s))
                 continue;
-            displayedAttributes.put(s, node.getAttributeOrTokenValue(s).getValue());
+            NodeInfo info = node.getAttributeOrTokenValue(s);
+            if(api.isReferenceNode(info.getValue()))
+                references.add(new NodeReference(s, this, api.getReferenceNodes(info, false)));
+            else
+                graphName += String.format("<br>%s : %s </br>", s, info.getValue());
         }
+        graphName += "</html>";
     }
 }
