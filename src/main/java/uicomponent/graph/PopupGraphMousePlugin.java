@@ -228,11 +228,10 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
 
     private void createTree(Forest<GenericTreeNode, UIEdge> g, GenericTreeNode parent, ArrayList<NodeReference> nodeRef){
         parent.setClusterReference(null);
-        System.out.println("parent: " + parent.getNodeReferences());
-        if(parent.getNodeReferences() != null)
-            nodeRef.addAll(parent.getNodeReferences());
+        if(parent.getInwardNodeReferences() != null)
+            nodeRef.addAll(parent.getInwardNodeReferences().values());
         for (GenericTreeNode child : parent.getChildren()) {
-            UIEdge edge = null;
+            UIEdge edge;
             if(child.isNode()){
                 TreeNode n = (TreeNode) child;
                 if(parent.isNode() && !((TreeNode)parent).node.isOpt())

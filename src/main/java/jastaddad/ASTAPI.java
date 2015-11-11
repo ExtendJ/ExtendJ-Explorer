@@ -3,6 +3,7 @@ package jastaddad;
 import jastaddad.filteredtree.*;
 import jastaddad.objectinfo.NodeInfo;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,19 +19,20 @@ public class ASTAPI {
     private HashMap<String, Integer> typeHash;
     private HashMap<String, List<TreeNode>> typeNodeHash;
     private HashMap<Object, GenericTreeNode> realNodeRefs;
+    private HashMap<Object, Object> realReferences;
     private HashMap<String, ArrayList<String>> errors;
     private ArrayList<NodeReference> displayedReferences;
 
     public ASTAPI(Object root){
-
         displayedReferences = new ArrayList<>();
         realNodeRefs = new HashMap();
+        realReferences = new HashMap<>();
         typeHash = new HashMap<>();
         typeNodeHash = new HashMap<>();
         errors = new HashMap<>();
 
         errors.put("filter", new ArrayList<>());
-        tree = new Node(root);
+        tree = new Node(root, realReferences);
         this.filteredTree = null;
         filterConfig = new Config(errors);
         traversTree(this.tree, null, null, true);
@@ -74,9 +76,26 @@ public class ASTAPI {
     }
 
     private void traversTree(Node node, GenericTreeNode parent, TreeCluster cluster, boolean firstTime){
+        ArrayList<NodeReference> futureReferences = new ArrayList<>();
+        traversTree(node, parent, cluster, firstTime, futureReferences);
+        for (NodeReference ref : futureReferences){
+            ArrayList<GenericTreeNode> nodeRefs = new ArrayList<>();
+            GenericTreeNode to;
+            for (Object obj : ref.getFutureReferences()){
+                if(isReferenceNode(obj)){
+                    to = getReferenceNode(obj);
+                    nodeRefs.add(to);
+                    to.addInWardNodeReference(ref);
+                }
+            }
+            ref.setReferences(nodeRefs);
+        }
+        displayedReferences = futureReferences;
+    }
+
+    private void traversTree(Node node, GenericTreeNode parent, TreeCluster cluster, boolean firstTime, ArrayList<NodeReference> futureReferences){
         if(node == null)
             return;
-
         GenericTreeNode addToParent = null;
         TreeNode fNode = new TreeNode(node, parent, filterConfig);
         fNode.setStyles(filterConfig);
@@ -121,7 +140,7 @@ public class ASTAPI {
 
         // travers down the tree
         for(Node child : node.children){
-            traversTree(child, fNode, tmpCluster, firstTime);
+            traversTree(child, fNode, tmpCluster, firstTime, futureReferences);
         }
         fNode.setClusterReference(tmpCluster);
         clusterClusters(fNode);
@@ -129,7 +148,7 @@ public class ASTAPI {
         if(addToParent != null)
             parent.addChild(addToParent);
 
-        fNode.setDisplayedAttributes(filterConfig, displayedReferences , this);
+        fNode.setDisplayedAttributes(filterConfig, futureReferences , this);
     }
 
     private void clusterClusters(TreeNode fNode){
@@ -156,11 +175,9 @@ public class ASTAPI {
 
     public HashMap<String, Integer> getTypeHash(){ return typeHash; }
 
-    public boolean isReferenceNode(Object node){
-        return realNodeRefs.containsKey(node);
-    }
-
     public GenericTreeNode getReferenceNode(Object node){ return realNodeRefs.get(node); }
+    public boolean isReferenceNode(Object node){ return realNodeRefs.containsKey(node); }
+    public boolean isRealReferenceNode(Object node){ return realReferences.containsKey(node); }
 
     public void clearDisplayedReferences(){ displayedReferences.clear(); }
 
@@ -184,16 +201,23 @@ public class ASTAPI {
 
     public ArrayList<GenericTreeNode> getReferenceNodes(NodeInfo info, boolean highlight){
         ArrayList<GenericTreeNode> nodes = new ArrayList();
+        for(Object o : getReferenceNodes(info)){
+            nodes.add(getReferenceNode(o).setReferenceHighlight(highlight));
+        }
+        return nodes;
+    }
+
+    public ArrayList<Object> getReferenceNodes(NodeInfo info){
+        ArrayList<Object> nodes = new ArrayList();
         if(info == null)
             return nodes;
         if(info.getValue() instanceof Collection<?>) {
             for (Object n : (Iterable<Object>) info.getValue()) {
-                if (isReferenceNode(n)){
-                    nodes.add(getReferenceNode(n).setReferenceHighlight(highlight));
-                }
+                if (isRealReferenceNode(n))
+                    nodes.add(n);
             }
-        }else if (isReferenceNode(info.getValue()))
-            nodes.add(getReferenceNode(info.getValue()).setReferenceHighlight(highlight));
+        }else if (isRealReferenceNode(info.getValue()))
+            nodes.add(info.getValue());
         return nodes;
     }
 }
