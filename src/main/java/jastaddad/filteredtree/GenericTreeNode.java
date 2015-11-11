@@ -53,6 +53,7 @@ public abstract class GenericTreeNode {
     public abstract boolean isRealChild(GenericTreeNode child);
     public abstract String toGraphString();
     public abstract void setStyles(Config filter);
+    public abstract ArrayList<NodeReference> getNodeReferences();
     public HashMap<String, Value> getStyles(){ return styles;};
 
     public boolean hasClusterReference(){ return clusterRef != null; }

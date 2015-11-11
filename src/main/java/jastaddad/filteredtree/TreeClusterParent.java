@@ -54,4 +54,7 @@ public class TreeClusterParent extends GenericTreeNode {
         styles.put("node-shape", new Str("\"small_circle\""));
         styles.put("border-style", new Str("\"dashed\""));
     }
+
+    @Override
+    public ArrayList<NodeReference> getNodeReferences(){ return null;}
 }

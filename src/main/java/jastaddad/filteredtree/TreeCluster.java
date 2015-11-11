@@ -4,6 +4,8 @@ import configAST.Color;
 import configAST.Str;
 import jastaddad.Config;
 
+import java.util.ArrayList;
+
 /**
  * Created by gda10jth on 10/21/15.
  */
@@ -55,4 +57,6 @@ public class TreeCluster extends GenericTreeNode {
         styles.put("border-style", new Str("\"dashed\""));
     }
 
+    @Override
+    public ArrayList<NodeReference> getNodeReferences(){ return null;}
 }

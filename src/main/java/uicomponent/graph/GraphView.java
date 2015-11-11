@@ -34,24 +34,20 @@ import java.util.Map;
  * Created by gda10jli on 10/15/15.
  */
 public class GraphView extends SwingNode implements ItemListener {
-    private int id;
     private UIMonitor mon;
     private Controller con;
     private VisualizationViewer vs;
     private DelegateForest<GenericTreeNode, UIEdge> graph;
-    private UIEdge root;
 
     public GraphView(UIMonitor mon){
-        this.id = 0;
         this.mon = mon;
         this.con = mon.getController();
         DirectedOrderedSparseMultigraph n = new DirectedOrderedSparseMultigraph();
         graph = new DelegateForest<>(n);
-        root = null;
         createTree(graph, mon.getRootNode());
         createLayout(graph);
         setListeners();
-        setDisplayedReferences();
+        addDisplayedReferences();
         setContent(vs);
     }
 
@@ -68,7 +64,6 @@ public class GraphView extends SwingNode implements ItemListener {
                 edge = new UIEdge(parent.isRealChild(child));
             }
             g.addEdge(edge, parent, child);
-            id++;
             createTree(g, child);
         }
     }
@@ -78,7 +73,7 @@ public class GraphView extends SwingNode implements ItemListener {
         graph = new DelegateForest<>(n);
         createTree(graph, mon.getRootNode());
         vs.getGraphLayout().setGraph(graph);
-        setDisplayedReferences();
+        addDisplayedReferences();
         vs.repaint();
     }
 
@@ -108,7 +103,7 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.repaint();
     }
 
-    public void setDisplayedReferences(){
+    public void addDisplayedReferences(){
         ArrayList<NodeReference> refs = mon.getApi().getDisplayedReferences();
         if(refs == null || refs.size() == 0)
             return;
@@ -117,9 +112,10 @@ public class GraphView extends SwingNode implements ItemListener {
             GenericTreeNode from  = ref.getReferenceFrom();
             if(!from.getClusterReference().isNode())
                 continue;
+            from = from.getClusterReference();
             for(GenericTreeNode to : ref.getReferences()) {
                 UIEdge edge = new UIEdge(UIEdge.DISPLAYED_REF).setLabel(ref.getLabel());
-                graph.addEdge(edge, from.getClusterReference(), to.getClusterReference());
+                graph.addEdge(edge, from, to.getClusterReference());
                 if(!displayedRefs.containsKey(from))
                     displayedRefs.put(from, new ArrayList<>());
                 displayedRefs.get(from).add(edge);
@@ -127,6 +123,25 @@ public class GraphView extends SwingNode implements ItemListener {
         }
         mon.setDisplayedReferenceEdges(displayedRefs);
         vs.repaint();
+    }
+
+    public void addDisplayedReferences(GenericTreeNode node, boolean repaint){
+        ArrayList<NodeReference> refs = node.getNodeReferences();
+        if(refs == null || refs.size() == 0 || !node.getClusterReference().isNode())
+            return;
+        HashMap<GenericTreeNode, ArrayList<UIEdge>> displayedRefs = mon.getDisplayedReferenceEdges();
+        GenericTreeNode from = node.getClusterReference();
+        for(NodeReference ref : refs) {
+            for(GenericTreeNode to : ref.getReferences()) {
+                UIEdge edge = new UIEdge(UIEdge.DISPLAYED_REF).setLabel(ref.getLabel());
+                graph.addEdge(edge, from, to.getClusterReference());
+                if (!displayedRefs.containsKey(from))
+                    displayedRefs.put(from, new ArrayList<>());
+                displayedRefs.get(from).add(edge);
+            }
+        }
+        if(repaint)
+            vs.repaint();
     }
 
     public void createLayout(Forest<GenericTreeNode, UIEdge> g ){//Creates UI specific stuff
