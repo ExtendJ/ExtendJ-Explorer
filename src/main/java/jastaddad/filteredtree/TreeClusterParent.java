@@ -12,8 +12,8 @@ import java.util.List;
  */
 public class TreeClusterParent extends GenericTreeNode {
     private List<TreeCluster> clusters;
-    public TreeClusterParent(){
-        super();
+    public TreeClusterParent(GenericTreeNode parent){
+        super(parent);
         clusters = new ArrayList<>();
     }
 
