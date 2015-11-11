@@ -93,7 +93,7 @@ public class ASTAPI {
         if(node == null)
             return;
         GenericTreeNode addToParent = null;
-        TreeNode fNode = new TreeNode(node, filterConfig);
+        TreeNode fNode = new TreeNode(node, parent, filterConfig);
         fNode.setStyles(filterConfig);
         realNodeRefs.put(node.node, fNode);
         TreeCluster tmpCluster = cluster;
@@ -120,7 +120,7 @@ public class ASTAPI {
         }else{
             // first node in this cluster?
             if(tmpCluster == null){
-                tmpCluster = new TreeCluster(fNode);
+                tmpCluster = new TreeCluster(fNode, parent);
                 tmpCluster.setStyles(filterConfig);
                 // is this cluster the root of the tree?
                 if(parent != null)
@@ -151,7 +151,7 @@ public class ASTAPI {
         // put child clusters together in a parent cluster if they have no children in the filtered tree
         if(fNode.isNode()) {
             //FilteredTreeNode n = (FilteredTreeNode) fNode;
-            TreeClusterParent clusterParent = new TreeClusterParent();
+            TreeClusterParent clusterParent = new TreeClusterParent(fNode);
             clusterParent.setStyles(filterConfig);
             // get all children cluster children that have no children
             for (GenericTreeNode fChild : fNode.getChildren()) {

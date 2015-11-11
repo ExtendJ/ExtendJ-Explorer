@@ -81,7 +81,7 @@ public class GraphView extends SwingNode implements ItemListener {
 
     public void setSelectedNode(GenericTreeNode node){
         vs.getPickedVertexState().removeItemListener(this);
-        vs.getPickedVertexState().pick(node,true);
+        vs.getPickedVertexState().pick(node, true);
         vs.getPickedVertexState().addItemListener(this);
     }
 
@@ -110,7 +110,10 @@ public class GraphView extends SwingNode implements ItemListener {
         if(refs == null || refs.size() == 0)
             return;
         HashMap<GenericTreeNode, ArrayList<UIEdge>> displayedRefs = new HashMap<>();
-        for(NodeReference ref : refs) {
+        addReferences(refs, displayedRefs);
+        mon.setDisplayedReferenceEdges(displayedRefs);
+        vs.repaint();
+        /* for(NodeReference ref : refs) {
             GenericTreeNode from  = ref.getReferenceFrom();
             if(!from.getClusterReference().isNode())
                 continue;
@@ -123,28 +126,32 @@ public class GraphView extends SwingNode implements ItemListener {
                     displayedRefs.put(from, new ArrayList<>());
                 displayedRefs.get(from).add(edge);
             }
-        }
-        mon.setDisplayedReferenceEdges(displayedRefs);
+        }*/
+    }
+
+    public void addDisplayedReferences(ArrayList<NodeReference> nodeReferences){
+        System.out.println("1: " + nodeReferences);
+        if(nodeReferences == null || nodeReferences.size() == 0)
+            return;
+        HashMap<GenericTreeNode, ArrayList<UIEdge>> displayedRefs = mon.getDisplayedReferenceEdges();
+        addReferences(nodeReferences, displayedRefs);
         vs.repaint();
     }
 
-    public void addDisplayedReferences(GenericTreeNode node, boolean repaint){
-        ArrayList<NodeReference> refs = node.getNodeReferences();
-        if(refs == null || refs.size() == 0 || !node.getClusterReference().isNode())
-            return;
-        HashMap<GenericTreeNode, ArrayList<UIEdge>> displayedRefs = mon.getDisplayedReferenceEdges();
-        GenericTreeNode from = node.getClusterReference();
+    private void addReferences(ArrayList<NodeReference> refs, HashMap<GenericTreeNode, ArrayList<UIEdge>> displayedRefs){
         for(NodeReference ref : refs) {
+            GenericTreeNode from  = ref.getReferenceFrom();
+            if(!from.getClusterReference().isNode())
+                continue;
+            from = from.getClusterReference();
             for(GenericTreeNode to : ref.getReferences()) {
                 UIEdge edge = new UIEdge(UIEdge.DISPLAYED_REF).setLabel(ref.getLabel());
                 graph.addEdge(edge, from, to.getClusterReference());
-                if (!displayedRefs.containsKey(from))
+                if(!displayedRefs.containsKey(from))
                     displayedRefs.put(from, new ArrayList<>());
                 displayedRefs.get(from).add(edge);
             }
         }
-        if(repaint)
-            vs.repaint();
     }
 
     public void createLayout(Forest<GenericTreeNode, UIEdge> g ){//Creates UI specific stuff
@@ -211,7 +218,7 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.getPickedVertexState().addItemListener(this);
         PluggableGraphMouse gm = new PluggableGraphMouse();
         gm.add(new TranslatingGraphMousePlugin(MouseEvent.BUTTON2_MASK));
-        gm.add(new PopupGraphMousePlugin(vs, mon));
+        gm.add(new PopupGraphMousePlugin(vs, mon, this));
         gm.add(new PickingGraphMousePlugin());
         gm.add(new ScalingGraphMousePlugin(new CrossoverScalingControl(), 0, 1.1f, 0.9f));
         vs.setGraphMouse(gm);

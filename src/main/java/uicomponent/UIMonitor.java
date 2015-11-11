@@ -13,7 +13,6 @@ import java.util.HashMap;
  * Created by gda10jli on 10/16/15.
  */
 public class UIMonitor {
-
     private GenericTreeNode lastRealNode;
     private GenericTreeNode selectedNode;
     private AttributeInfo selectedInfo;

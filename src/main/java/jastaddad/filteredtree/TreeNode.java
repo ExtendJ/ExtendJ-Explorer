@@ -20,8 +20,8 @@ public class TreeNode extends GenericTreeNode {
     private LinkedHashMap<Integer, Boolean> realChildEdge;
     private ArrayList<NodeReference> nodeReferences;
 
-    public TreeNode(Node data, Config filter){
-        super();
+    public TreeNode(Node data, GenericTreeNode parent, Config filter){
+        super(parent);
         node = data;
         realChildEdge = new LinkedHashMap<>();
         enabled = setEnabled(filter);

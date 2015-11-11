@@ -4,6 +4,7 @@ import configAST.Color;
 import configAST.Str;
 import configAST.Value;
 import jastaddad.Config;
+import javafx.scene.Parent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,10 +18,12 @@ public abstract class GenericTreeNode {
     protected List<GenericTreeNode> children;
     protected boolean referenceHighlight;
     protected GenericTreeNode clusterRef;
+    protected GenericTreeNode parent;
     protected HashMap<String, Value> styles;
     private boolean isExpandable;
 
-    public GenericTreeNode(){
+    public GenericTreeNode(GenericTreeNode parent){
+        this.parent = parent;
         children = new ArrayList();
         styles = new HashMap<>();
         isExpandable = false;
@@ -28,6 +31,8 @@ public abstract class GenericTreeNode {
         styles.put("node-shape", new Str("\"\""));
         styles.put("border-style", new Str("\"\""));
     }
+
+    public GenericTreeNode getParent(){return parent;}
 
     public void setExpandable(boolean expandable){ isExpandable = expandable;}
     public boolean isExpandable(){return isExpandable;}
