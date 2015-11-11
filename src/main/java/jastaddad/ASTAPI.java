@@ -80,9 +80,13 @@ public class ASTAPI {
         traversTree(node, parent, cluster, firstTime, futureReferences);
         for (NodeReference ref : futureReferences){
             ArrayList<GenericTreeNode> nodeRefs = new ArrayList<>();
-            for (Object o : ref.getFutureReferences()){
-                if(isReferenceNode(o))
-                    nodeRefs.add(getReferenceNode(o));
+            GenericTreeNode to;
+            for (Object obj : ref.getFutureReferences()){
+                if(isReferenceNode(obj)){
+                    to = getReferenceNode(obj);
+                    nodeRefs.add(to);
+                    to.addInWardNodeReference(ref);
+                }
             }
             ref.setReferences(nodeRefs);
         }

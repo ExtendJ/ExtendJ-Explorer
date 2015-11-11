@@ -18,8 +18,14 @@ public class NodeReference {
         this.futureRefList = futureRefList;
     }
 
-    public void setReferences(ArrayList<GenericTreeNode> treeNodes){ this.refList = treeNodes; }
+    public NodeReference(String label, GenericTreeNode from){
+        this.label  = label;
+        this.from = from;
+        this.refList = new ArrayList<>();
+    }
 
+    public void setReferences(ArrayList<GenericTreeNode> treeNodes){ this.refList = treeNodes; }
+    public boolean addReference(GenericTreeNode treeNode){ return refList.add(treeNode); }
     public ArrayList<Object> getFutureReferences(){ return futureRefList; }
 
     public ArrayList<GenericTreeNode> getReferences(){ return refList; }

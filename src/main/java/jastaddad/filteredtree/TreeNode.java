@@ -18,7 +18,8 @@ public class TreeNode extends GenericTreeNode {
     private boolean enabled;
     private String graphName;
     private LinkedHashMap<Integer, Boolean> realChildEdge;
-    private ArrayList<NodeReference> nodeReferences;
+    private ArrayList<NodeReference> outwardReferences;
+    private HashMap<NodeReference, NodeReference> inwardReferences;
 
     public TreeNode(Node data, GenericTreeNode parent, Config filter){
         super(parent);
@@ -90,8 +91,8 @@ public class TreeNode extends GenericTreeNode {
         if(set.size() == 0)
             return;
         graphName = "<html>" + toString();
-        if(nodeReferences == null)
-            nodeReferences = new ArrayList<>();
+        if(outwardReferences == null)
+            outwardReferences = new ArrayList<>();
         for (String s : set){
             if(!node.getNodeContent().contains(s))
                 continue;
@@ -99,7 +100,7 @@ public class TreeNode extends GenericTreeNode {
             ArrayList<Object> refs = api.getReferenceNodes(info);
             if(refs != null && refs.size() > 0) {
                 NodeReference reference = new NodeReference(s, this, refs);
-                nodeReferences.add(reference);
+                outwardReferences.add(reference);
                 allReferences.add(reference);
             }
             else
@@ -109,5 +110,18 @@ public class TreeNode extends GenericTreeNode {
     }
 
     @Override
-    public ArrayList<NodeReference> getNodeReferences(){ return nodeReferences;}
+    public ArrayList<NodeReference> getOutwardNodeReferences(){ return outwardReferences;}
+
+    @Override
+    public HashMap<NodeReference, NodeReference> getInwardNodeReferences(){ return inwardReferences;}
+
+    @Override
+    public boolean addInWardNodeReference(NodeReference ref){
+        if(inwardReferences == null)
+            inwardReferences = new HashMap<>();
+        if(!inwardReferences.containsKey(ref))
+            inwardReferences.put(ref, new NodeReference(ref.getLabel(), ref.getReferenceFrom()));
+        return inwardReferences.get(ref).addReference(this);
+    }
+
 }

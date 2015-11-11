@@ -10,16 +10,12 @@ import java.util.List;
 /**
  * Created by gda10jth on 10/21/15.
  */
-public class TreeClusterParent extends GenericTreeNode {
+public class TreeClusterParent extends GenericTreeCluster {
+
     private List<TreeCluster> clusters;
     public TreeClusterParent(GenericTreeNode parent){
         super(parent);
         clusters = new ArrayList<>();
-    }
-
-    @Override
-    public boolean isNode() {
-        return false;
     }
 
     @Override
@@ -38,23 +34,5 @@ public class TreeClusterParent extends GenericTreeNode {
         return clusters;
     }
 
-    @Override
-    public boolean isRealChild(GenericTreeNode child) {
-        return false;
-    }
 
-    @Override
-    public String toString(){ return "..."; }
-    @Override
-    public String toGraphString(){return ""; }
-
-    @Override
-    public void setStyles(Config filter) {
-        styles.put("node-color", new Color("#DCDCDC"));
-        styles.put("node-shape", new Str("\"small_circle\""));
-        styles.put("border-style", new Str("\"dashed\""));
-    }
-
-    @Override
-    public ArrayList<NodeReference> getNodeReferences(){ return null;}
 }
