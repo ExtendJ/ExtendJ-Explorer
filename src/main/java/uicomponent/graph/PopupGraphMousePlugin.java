@@ -127,7 +127,7 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
 
             GenericTreeNode parent = null;
             UIEdge edge = null;
-            if(inGraph.getPredecessorCount(lastClicked) > 0) {
+            if(lastClicked.getParent() != null) {
                 parent = inGraph.getPredecessors(lastClicked).iterator().next();
                 for(UIEdge e : inGraph.getInEdges(lastClicked)) {
                     if (!e.isReference())
@@ -183,7 +183,7 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
 
             GenericTreeNode parent = null;
             UIEdge edge = null;
-            if(inGraph.getPredecessorCount(lastClicked) > 0) {
+            if(lastClicked.getParent() != null) {
                 parent = inGraph.getPredecessors(lastClicked).iterator().next();
                 for(UIEdge e : inGraph.getInEdges(lastClicked)) {
                     if (!e.isReference())

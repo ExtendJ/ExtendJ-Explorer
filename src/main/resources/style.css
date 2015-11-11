@@ -4,6 +4,27 @@
     -fx-border-color:#606060;
 }
 
+.our_button{
+    -fx-background-color:#404040;
+    -fx-text-fill:white;
+    -fx-border-width:0px;
+    -fx-border-color:#404040;
+    -fx-border-radius: 0 0 0 0;
+    -fx-background-radius: 0 0 0 0;
+}
+
+.our_button:hover{
+    -fx-background-color:#202020;
+}
+
+.our_button:pressed{
+    -fx-background-color:#808080;
+    -fx-text-fill:#000000;
+}
+
+.updateFilterButton{
+}
+
 .VBoxParent{
     -fx-background-color: #606060;
     -fx-fit-to-height:true;

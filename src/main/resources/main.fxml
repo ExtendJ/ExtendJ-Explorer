@@ -14,7 +14,11 @@
         <SplitPane fx:id="centerSplitPane" orientation="HORIZONTAL" dividerPositions="0.2,0.8">
             <VBox styleClass="paneParent">
                 <VBox styleClass="topRigthAlign">
-                    <Button styleClass="minimizeButton" text="|-" fx:id="minimizeLeftSide"/>
+                    <Button styleClass="minimizeButton" text="|-" fx:id="minimizeLeftSide">
+                        <tooltip>
+                            <Tooltip text="Minimize"/>
+                        </tooltip>
+                    </Button>
                 </VBox>
                 <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                     <tabs>
@@ -38,7 +42,11 @@
                     </TabPane>
                     <VBox styleClass="paneParent" VBox.vgrow="ALWAYS">
                         <VBox styleClass="topRigthAlign">
-                            <Button styleClass="minimizeButton" text="-" fx:id="minimizeConsole"/>
+                            <Button styleClass="minimizeButton" text="-" fx:id="minimizeConsole">
+                                <tooltip>
+                                    <Tooltip text="Minimize"/>
+                                </tooltip>
+                            </Button>
                         </VBox>
                         <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                             <tabs>
@@ -70,7 +78,11 @@
             </VBox>
             <VBox styleClass="paneParent">
                     <VBox styleClass="topLeftAlign">
-                        <Button styleClass="minimizeButton" text="-|" fx:id="minimizeRightSide"/>
+                        <Button styleClass="minimizeButton" text="-|" fx:id="minimizeRightSide">
+                            <tooltip>
+                                <Tooltip text="Minimize"/>
+                            </tooltip>
+                        </Button>
                     </VBox>
                 <SplitPane styleClass="" orientation="VERTICAL" dividerPositions="0.5">
                     <TabPane tabClosingPolicy="UNAVAILABLE">
@@ -78,7 +90,11 @@
                             <Tab text="Filter">
                                 <VBox styleClass="paneParent">
                                     <TextArea styleClass="textAreaConfig" fx:id="filteredConfigTextArea"/>
-                                    <Button text="Filter" fx:id="saveNewFilterButton"></Button>
+                                    <Button text="Filter" StyleClass="updateFilterButton, our_button" fx:id="saveNewFilterButton">
+                                        <tooltip>
+                                            <Tooltip text="Update the graph with the new filter."/>
+                                        </tooltip>
+                                    </Button>
                                 </VBox>
                             </Tab>
                             <Tab text="Classes">

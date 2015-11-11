@@ -1,4 +1,19 @@
 =======================================
+Getting started
+=======================================
+> Warning: These instructions may not be the best and up to date
+1. Clone the project to you machine.
+2. Open your terminal.
+3. Go to the directory where you cloned the project.
+4. write ./gradlew build.
+5. Add created Jar to your projects Library path.
+6. In your compilers Java code, add the following code after the parsing is done and the AST tree is generated:
+     new JastAddAd(topNode);
+   Where topNode is the Object to the top node of your AST.
+7. Happy debugging!
+
+
+=======================================
 Lib deps
 =======================================
 libgtk+-x11-2.0_0 - X11 backend of The GIMP ToolKit (GTK+)​ ﻿     

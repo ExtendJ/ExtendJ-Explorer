@@ -1,18 +1,23 @@
 package uicomponent;
 
 import jastaddad.ASTAPI;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import uicomponent.controllers.Controller;
 import uicomponent.graph.GraphView;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 public class UIComponent extends Application {
 
@@ -49,7 +54,4 @@ public class UIComponent extends Application {
         ScrollPane center = (ScrollPane) a.lookup("#graphView");
         center.setContent(graphview);
     }
-
-
-
 }
