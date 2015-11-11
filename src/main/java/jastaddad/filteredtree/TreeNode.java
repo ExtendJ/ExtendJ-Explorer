@@ -24,6 +24,7 @@ public class TreeNode extends GenericTreeNode {
         node = data;
         realChildEdge = new LinkedHashMap<>();
         enabled = setEnabled(filter);
+        setExpandable(true);
     }
 
     public void setEnabled(boolean enabled){ this.enabled = enabled; }

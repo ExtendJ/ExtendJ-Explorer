@@ -10,7 +10,6 @@ import jastaddad.Config;
 public class TreeCluster extends GenericTreeNode {
 
     private GenericTreeNode node;
-
     public TreeCluster(GenericTreeNode node){
         super();
         this.node = node;
@@ -48,7 +47,10 @@ public class TreeCluster extends GenericTreeNode {
 
     @Override
     public void setStyles(Config filter) {
-        styles.put("node-color", new Color("#DCDCDC"));
+        if(isExpandable())
+            styles.put("node-color", new Color("#DCDCaa"));
+        else
+            styles.put("node-color", new Color("#DCDCDC"));
         styles.put("node-shape", new Str("\"small_circle\""));
         styles.put("border-style", new Str("\"dashed\""));
     }

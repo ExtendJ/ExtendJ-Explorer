@@ -18,14 +18,19 @@ public abstract class GenericTreeNode {
     protected boolean referenceHighlight;
     protected GenericTreeNode clusterRef;
     protected HashMap<String, Value> styles;
+    private boolean isExpandable;
 
     public GenericTreeNode(){
         children = new ArrayList();
         styles = new HashMap<>();
+        isExpandable = false;
         styles.put("node-color", new Color("\"\""));
         styles.put("node-shape", new Str("\"\""));
         styles.put("border-style", new Str("\"\""));
     }
+
+    public void setExpandable(boolean expandable){ isExpandable = expandable;}
+    public boolean isExpandable(){return isExpandable;}
 
     public List<GenericTreeNode> getChildren(){ return children; }
 
