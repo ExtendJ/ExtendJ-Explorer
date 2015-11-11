@@ -10,11 +10,15 @@ import jastaddad.Config;
 public class TreeCluster extends GenericTreeNode {
 
     private GenericTreeNode node;
-
+    private boolean isExpandable;
     public TreeCluster(GenericTreeNode node){
         super();
+        isExpandable = false;
         this.node = node;
     }
+
+    public void setExpandable(boolean expandable){ isExpandable = expandable;}
+    public boolean isExpandable(){return isExpandable;}
 
     public GenericTreeNode getClusterRoot(){
         return node;
@@ -48,7 +52,10 @@ public class TreeCluster extends GenericTreeNode {
 
     @Override
     public void setStyles(Config filter) {
-        styles.put("node-color", new Color("#DCDCDC"));
+        if(isExpandable())
+            styles.put("node-color", new Color("#DCDCaa"));
+        else
+            styles.put("node-color", new Color("#DCDCDC"));
         styles.put("node-shape", new Str("\"small_circle\""));
         styles.put("border-style", new Str("\"dashed\""));
     }

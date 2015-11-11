@@ -174,7 +174,7 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.getPickedVertexState().addItemListener(this);
         PluggableGraphMouse gm = new PluggableGraphMouse();
         gm.add(new TranslatingGraphMousePlugin(MouseEvent.BUTTON2_MASK));
-        gm.add(new PopupVertexEdgeMenuMousePlugin(vs, mon));
+        gm.add(new PopupGraphMousePlugin(vs, mon));
         gm.add(new PickingGraphMousePlugin());
         gm.add(new ScalingGraphMousePlugin(new CrossoverScalingControl(), 0, 1.1f, 0.9f));
         vs.setGraphMouse(gm);
