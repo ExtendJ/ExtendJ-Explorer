@@ -93,8 +93,9 @@ public class TreeNode extends GenericTreeNode {
             if(!node.getNodeContent().contains(s))
                 continue;
             NodeInfo info = node.getAttributeOrTokenValue(s);
-            if(api.isReferenceNode(info.getValue()))
-                references.add(new NodeReference(s, this, api.getReferenceNodes(info, false)));
+            ArrayList<GenericTreeNode> refs = api.getReferenceNodes(info, false);
+            if(refs != null && refs.size() > 0)
+                references.add(new NodeReference(s, this, refs));
             else
                 graphName += String.format("<br>%s : %s </br>", s, info.getValue());
         }

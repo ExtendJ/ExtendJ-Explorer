@@ -112,15 +112,20 @@ public class GraphView extends SwingNode implements ItemListener {
         ArrayList<NodeReference> refs = mon.getApi().getDisplayedReferences();
         if(refs == null || refs.size() == 0)
             return;
-
+        HashMap<GenericTreeNode, ArrayList<UIEdge>> displayedRefs = new HashMap<>();
         for(NodeReference ref : refs) {
             GenericTreeNode from  = ref.getReferenceFrom();
             if(!from.getClusterReference().isNode())
                 continue;
-            for(GenericTreeNode to : ref.getReferences()){
-                graph.addEdge(new UIEdge(UIEdge.DISPLAYED_REF).setLabel(ref.getLabel()), from.getClusterReference(), to.getClusterReference());
+            for(GenericTreeNode to : ref.getReferences()) {
+                UIEdge edge = new UIEdge(UIEdge.DISPLAYED_REF).setLabel(ref.getLabel());
+                graph.addEdge(edge, from.getClusterReference(), to.getClusterReference());
+                if(!displayedRefs.containsKey(from))
+                    displayedRefs.put(from, new ArrayList<>());
+                displayedRefs.get(from).add(edge);
             }
         }
+        mon.setDisplayedReferenceEdges(displayedRefs);
         vs.repaint();
     }
 

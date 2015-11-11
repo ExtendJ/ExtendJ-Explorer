@@ -6,6 +6,7 @@ import uicomponent.controllers.Controller;
 import uicomponent.graph.UIEdge;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -17,6 +18,7 @@ public class UIMonitor {
     private GenericTreeNode selectedNode;
     private AttributeInfo selectedInfo;
     private ArrayList<UIEdge> refEdges;
+    private HashMap<GenericTreeNode,ArrayList<UIEdge>> displayedRefEdges;
     private ASTAPI api;
     private Controller controller;
 
@@ -54,5 +56,9 @@ public class UIMonitor {
     public void setReferenceEdges(ArrayList<UIEdge> edges){ this.refEdges = edges; }
 
     public ArrayList<UIEdge> getReferenceEdges(){ return refEdges; }
+
+    public void setDisplayedReferenceEdges(HashMap<GenericTreeNode,ArrayList<UIEdge>>  edges){ this.displayedRefEdges = edges; }
+
+    public HashMap<GenericTreeNode,ArrayList<UIEdge>> getDisplayedReferenceEdges(){ return displayedRefEdges; }
 
 }
