@@ -35,9 +35,7 @@ public class UIComponent extends Application {
 
     @Override
     public void start (Stage stage) throws IOException {
-        //URL location=getClass().getResource("/sample.fxml");
         FXMLLoader loader = new FXMLLoader();
-        //loader.setLocation(location);
         Parent a = loader.load(getClass().getResource("/main.fxml").openStream());
         con = loader.<Controller>getController();
         mon.setController(con);

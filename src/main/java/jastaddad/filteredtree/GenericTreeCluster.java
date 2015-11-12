@@ -6,6 +6,7 @@ import jastaddad.Config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Created by gda10jli on 11/11/15.
@@ -43,10 +44,13 @@ public abstract  class GenericTreeCluster extends  GenericTreeNode{
     }
 
     @Override
-    public ArrayList<NodeReference> getOutwardNodeReferences(){ return null;}
+    public HashSet<NodeReference> getOutwardNodeReferences(){ return null;}
 
     @Override
     public HashMap<NodeReference, NodeReference> getInwardNodeReferences(){ return null;}
+
+    @Override
+    public HashSet<NodeReference> getAllNodeReferences(){ return null;}
 
     @Override
     public boolean addInWardNodeReference(NodeReference ref){ return false; }
