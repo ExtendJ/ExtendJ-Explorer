@@ -37,41 +37,61 @@ public class Config{
 
         ConfigScanner scanner;
         try {
+            // check if file exists
+            File f = new File(fileName);
+            PrintWriter writer = null;
+            if(!f.exists()) {
+                writer = new PrintWriter(fileName, "UTF-8");
+                writer.print("-configs{\n\tignore-filter = true;\n\tignore-global = false;\n\tignore-include = false;\n}" +
+                        "\n-global{\n\t-filter{}\n\t-style{}\n\t-display-attributes{}\n}\n" +
+                        "-include{\n\n}\n");
+                writer.close();
+            }
+            // create the scanner
             scanner = new ConfigScanner(new FileReader(fileName));
-        }catch (FileNotFoundException e) {
-            errors.get(FILTER).add("Filter file not found!");
-            System.out.println("File not found!");
-            return false;
-        }
+            try{
 
-        try{
-            ConfigParser parser = new ConfigParser();
+                ConfigParser parser = new ConfigParser();
+                // parse the config file
+                tmpFilter = (DebuggerConfig) parser.parse(scanner);
 
-            tmpFilter = (DebuggerConfig) parser.parse(scanner);
-
-            if (!tmpFilter.errors().isEmpty()) {
-                String error = "\n";
-                error += "Errors: ";
-                for (ErrorMessage e: tmpFilter.errors()) {
-                    error += "- " + e;
+                if (!tmpFilter.errors().isEmpty()) {
+                    // something went wrong, tell the user the error.
+                    String error = "\n";
+                    error += "Errors: ";
+                    for (ErrorMessage e: tmpFilter.errors()) {
+                        error += "- " + e;
+                    }
+                    System.err.println(error);
+                    errors.get(FILTER).add(error);
+                    return false;
                 }
-                System.err.println(error);
-                errors.get(FILTER).add(error);
+
+                configs = tmpFilter;
+            } catch (IOException e) {
+                errors.get(FILTER).add("IOException when reading filter file");
+                e.printStackTrace(System.err);
+                return false;
+            } catch (ConfigParser.SyntaxError e) {
+                errors.get(FILTER).add(e.getMessage());
+                return false;
+            }catch (Exception e) {
+                errors.get(FILTER).add("Exception when reading filter file: " + e.toString());
+                //e.printStackTrace();
                 return false;
             }
-        } catch (IOException e) {
-            errors.get(FILTER).add("IOException when reading filter file");
-            e.printStackTrace(System.err);
+        }catch (FileNotFoundException e) {
+            String errorText = "Filter file not found! Maybe the program does not have the rights to create the file for you?" +
+                    "\n Create a file called filter.cfg and add -include{} inside it to get started";
+            errors.get(FILTER).add(errorText);
+            System.out.println(errorText);
             return false;
-        } catch (ConfigParser.SyntaxError e) {
-            errors.get(FILTER).add(e.getMessage());
-            return false;
-        }catch (Exception e) {
-            errors.get(FILTER).add("Exception when reading filter file: " + e.toString());
-            //e.printStackTrace();
-            return false;
+        }catch (UnsupportedEncodingException e) {
+            String errorText = "Filter file not found! Maybe the program does not have the rights to create the file for you?" +
+                    "\n Create a file called filter.cfg and add -include{} inside it to get started";
+            e.printStackTrace();
+            errors.get(FILTER).add(errorText);
         }
-        configs = tmpFilter;
         return true;
     }
 

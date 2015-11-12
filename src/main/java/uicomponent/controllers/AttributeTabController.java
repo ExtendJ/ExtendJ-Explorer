@@ -100,10 +100,10 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
     public void setAttributeList(TreeNode node){
         attributeTableView.getSelectionModel().clearSelection();
         attributeTableView.setItems(FXCollections.observableList(AttributeInfo.toArray(node.node.getNodeContent().toArray())));
-        if(attributeTableView.getItems().size() > 0)
-            attributeTableView.getSelectionModel().select(0);
-        else
+        if(attributeTableView.getItems().size() <= 0) {
             attributeInfoTableView.getItems().clear();
+        }
+
     }
 
     @Override
