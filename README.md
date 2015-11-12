@@ -9,7 +9,9 @@ Getting started
   For example if you are using an ant build script add something like this
   <zipfileset includes="**/*.*" src="/[path to debugger .jar]"/> to the build scripts jar target.
 5. To run the debugger with your compiler, add the following code after the parsing is done and the AST tree is generated:
+```
   new JastAddAd(topNode);
+```
   Where topNode is the Object of the top node of your AST. Don't forget to import jastaddad.JastAddAd;
 6. Now run your compiler on some source file!
 
@@ -156,7 +158,8 @@ block, but is applied on every node.
     -filter{ ... }
     -style{ ... }
     -displayed-attributes{ ... }
-}
+}MENTED CONFIGS:
+  
 -include{
   ...
 }
