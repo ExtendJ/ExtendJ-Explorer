@@ -133,9 +133,8 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
                     if (!e.isReference())
                         edge = e;
                 }
-                //edge = inGraph.getInEdges(lastClicked).iterator().next();
             }
-            Point2D d = (Point2D) vs.getGraphLayout().transform(lastClicked);
+            Point2D d =  vs.getGraphLayout().transform(lastClicked);
 
             if(mon.getReferenceEdges() != null) {
                 for (UIEdge e : mon.getReferenceEdges()) {
@@ -144,7 +143,6 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             }
             ArrayList<NodeReference> nodeRef = new ArrayList<>();
             createTree(inGraph, node, nodeRef);
-
             graphView.addDisplayedReferences(nodeRef);
 
             inGraph.removeVertex(lastClicked, false);
@@ -191,13 +189,15 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
                 }
             }
 
-            Point2D d = (Point2D) vs.getGraphLayout().transform(lastClicked);
+            Point2D d = vs.getGraphLayout().transform(lastClicked);
             setClusterRef(newCluster, newCluster.getClusterRoot());
-            //Platform.runLater(() -> {
-                mon.getController().resetReferences();
-            //});
 
-            removeVertexes(lastClicked, inGraph);
+            mon.getController().resetReferences();
+
+            ArrayList<NodeReference> nodeRef = new ArrayList<>();
+            removeVertexes(lastClicked, inGraph, nodeRef);
+            graphView.addDisplayedReferences(nodeRef);
+
             if (parent != null) {
                 inGraph.addEdge(edge, parent, newCluster);
             } else {
@@ -209,7 +209,9 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
         }
     }
 
-    private void removeVertexes(GenericTreeNode node, DelegateForest<GenericTreeNode, UIEdge> inGraph){
+    private void removeVertexes(GenericTreeNode node, DelegateForest<GenericTreeNode, UIEdge> inGraph, ArrayList<NodeReference> nodeRef){
+        if(node.getInwardNodeReferences() != null)
+            nodeRef.addAll(node.getInwardNodeReferences().values());
         if(mon.getDisplayedReferenceEdges() != null && mon.getDisplayedReferenceEdges().get(node) != null) {
             for (UIEdge e : mon.getDisplayedReferenceEdges().get(node)) {
                 inGraph.removeEdge(e, false);
@@ -217,7 +219,7 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
         }
         inGraph.removeVertex(node, false);
         for(GenericTreeNode child : node.getChildren())
-            removeVertexes(child, inGraph);
+            removeVertexes(child, inGraph, nodeRef);
     }
 
     private void setClusterRef(GenericTreeNode cluster, GenericTreeNode node){
