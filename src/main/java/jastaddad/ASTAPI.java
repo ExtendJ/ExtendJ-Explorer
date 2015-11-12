@@ -13,6 +13,9 @@ import java.util.List;
  * Created by gda10jth on 10/16/15.
  */
 public class ASTAPI {
+
+    public static final String VERSION = "alphabuild-0.1.0";
+
     private Node tree;
     private GenericTreeNode filteredTree;
     private Config filterConfig;

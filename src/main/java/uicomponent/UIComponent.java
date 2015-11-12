@@ -45,7 +45,7 @@ public class UIComponent extends Application {
         con.init(mon, graphview, this);
 
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-        stage.setTitle("JastAddDebugger");
+        stage.setTitle("JastAddDebugger " + ASTAPI.VERSION);
         stage.setScene(new Scene(a, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
         stage.setMaximized(true);
 
