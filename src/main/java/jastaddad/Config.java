@@ -43,7 +43,7 @@ public class Config{
             if(!f.exists()) {
                 writer = new PrintWriter(fileName, "UTF-8");
                 writer.print("-configs{\n\tignore-filter = true;\n\tignore-global = false;\n\tignore-include = false;\n}" +
-                        "\n-global{\n\t-filter{}\n\t-style{}\n\t-display-attributes{}\n}\n" +
+                        "\n-global{\n\t-filter{}\n\t-style{}\n\t-displayed-attributes{}\n}\n" +
                         "-include{\n\n}\n");
                 writer.close();
             }
