@@ -4,10 +4,7 @@ import jastaddad.filteredtree.*;
 import jastaddad.objectinfo.NodeInfo;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by gda10jth on 10/16/15.
@@ -22,14 +19,14 @@ public class ASTAPI {
     private HashMap<String, Integer> typeHash;
     private HashMap<String, List<TreeNode>> typeNodeHash;
     private HashMap<Object, GenericTreeNode> realNodeRefs;
-    private HashMap<Object, Object> realReferences;
+    private HashSet<Object> realReferences;
     private HashMap<String, ArrayList<String>> errors;
     private ArrayList<NodeReference> displayedReferences;
 
     public ASTAPI(Object root){
         displayedReferences = new ArrayList<>();
         realNodeRefs = new HashMap();
-        realReferences = new HashMap<>();
+        realReferences = new HashSet<>();
         typeHash = new HashMap<>();
         typeNodeHash = new HashMap<>();
         errors = new HashMap<>();
@@ -180,7 +177,7 @@ public class ASTAPI {
 
     public GenericTreeNode getReferenceNode(Object node){ return realNodeRefs.get(node); }
     public boolean isReferenceNode(Object node){ return realNodeRefs.containsKey(node); }
-    public boolean isRealReferenceNode(Object node){ return realReferences.containsKey(node); }
+    public boolean isRealReferenceNode(Object node){ return realReferences.contains(node); }
 
     public void clearDisplayedReferences(){ displayedReferences.clear(); }
 

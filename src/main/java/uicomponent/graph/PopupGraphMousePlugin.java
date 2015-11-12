@@ -15,6 +15,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.HashSet;
 import javax.swing.*;
 
 /**
@@ -128,7 +129,7 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             GenericTreeNode parent = null;
             UIEdge edge = null;
             if(lastClicked.getParent() != null) {
-                parent = node.getParent();
+                parent = node.getParent().getClusterReference();
                 for(UIEdge e : inGraph.getInEdges(lastClicked)) {
                     if (!e.isReference()) {
                         edge = e;
@@ -142,9 +143,9 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
                     inGraph.removeEdge(e, false);
                 }
             }
-            ArrayList<NodeReference> nodeRef = new ArrayList<>();
+            HashSet<NodeReference> nodeRef = new HashSet<>();
             createTree(inGraph, node, nodeRef);
-            graphView.addDisplayedReferences(nodeRef);
+            graphView.addDisplayedReferences(new ArrayList<>(nodeRef));
 
             inGraph.removeVertex(lastClicked, false);
 
@@ -183,7 +184,7 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             GenericTreeNode parent = null;
             UIEdge edge = null;
             if(lastClicked.getParent() != null) {
-                parent = lastClicked.getParent();
+                parent = lastClicked.getParent().getClusterReference();
                 for(UIEdge e : inGraph.getInEdges(lastClicked)) {
                     if (!e.isReference())
                         edge = e;
@@ -195,9 +196,9 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
 
             mon.getController().resetReferences();
 
-            ArrayList<NodeReference> nodeRef = new ArrayList<>();
+            HashSet<NodeReference> nodeRef = new HashSet<>();
             removeVertexes(lastClicked, inGraph, nodeRef);
-            graphView.addDisplayedReferences(nodeRef);
+            graphView.addDisplayedReferences(new ArrayList<>(nodeRef));
 
             if (parent != null) {
                 inGraph.addEdge(edge, parent, newCluster);
@@ -210,16 +211,16 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
         }
     }
 
-    private void removeVertexes(GenericTreeNode node, DelegateForest<GenericTreeNode, UIEdge> inGraph, ArrayList<NodeReference> nodeRef){
-        if(node.getInwardNodeReferences() != null)
-            nodeRef.addAll(node.getInwardNodeReferences().values());
-        if(mon.getDisplayedReferenceEdges() != null && mon.getDisplayedReferenceEdges().get(node) != null) {
-            for (UIEdge e : mon.getDisplayedReferenceEdges().get(node)) {
+    private void removeVertexes(GenericTreeNode parent, DelegateForest<GenericTreeNode, UIEdge> inGraph, HashSet<NodeReference> nodeRef){
+        if(parent.getInwardNodeReferences() != null)
+            nodeRef.addAll(parent.getAllNodeReferences());
+        if(mon.getDisplayedReferenceEdges() != null && mon.getDisplayedReferenceEdges().get(parent) != null) {
+            for (UIEdge e : mon.getDisplayedReferenceEdges().get(parent)) {
                 inGraph.removeEdge(e, false);
             }
         }
-        inGraph.removeVertex(node, false);
-        for(GenericTreeNode child : node.getChildren())
+        inGraph.removeVertex(parent, false);
+        for(GenericTreeNode child : parent.getChildren())
             removeVertexes(child, inGraph, nodeRef);
     }
 
@@ -229,10 +230,10 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             setClusterRef(cluster, child);
     }
 
-    private void createTree(Forest<GenericTreeNode, UIEdge> g, GenericTreeNode parent, ArrayList<NodeReference> nodeRef){
+    private void createTree(Forest<GenericTreeNode, UIEdge> g, GenericTreeNode parent, HashSet<NodeReference> nodeRef){
         parent.setClusterReference(null);
         if(parent.getInwardNodeReferences() != null)
-            nodeRef.addAll(parent.getInwardNodeReferences().values());
+            nodeRef.addAll(parent.getAllNodeReferences());
         for (GenericTreeNode child : parent.getChildren()) {
             UIEdge edge;
             if(child.isNode()){

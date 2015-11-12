@@ -18,14 +18,16 @@ public class TreeNode extends GenericTreeNode {
     private boolean enabled;
     private String graphName;
     private LinkedHashMap<Integer, Boolean> realChildEdge;
-    private ArrayList<NodeReference> outwardReferences;
+    private HashSet<NodeReference> outwardReferences;
     private HashMap<NodeReference, NodeReference> inwardReferences;
+    private HashSet<NodeReference> allRefs;
 
     public TreeNode(Node data, GenericTreeNode parent, Config filter){
         super(parent);
         node = data;
         realChildEdge = new LinkedHashMap<>();
         enabled = setEnabled(filter);
+        allRefs = new HashSet<>();
         setExpandable(true);
     }
 
@@ -92,7 +94,7 @@ public class TreeNode extends GenericTreeNode {
             return;
         graphName = "<html>" + toString();
         if(outwardReferences == null)
-            outwardReferences = new ArrayList<>();
+            outwardReferences = new HashSet<>();
         for (String s : set){
             if(!node.getNodeContent().contains(s))
                 continue;
@@ -102,6 +104,7 @@ public class TreeNode extends GenericTreeNode {
                 NodeReference reference = new NodeReference(s, this, refs);
                 outwardReferences.add(reference);
                 allReferences.add(reference);
+                allRefs.add(reference);
             }
             else
                 graphName += String.format("<br>%s : %s </br>", s, info.getValue());
@@ -110,7 +113,7 @@ public class TreeNode extends GenericTreeNode {
     }
 
     @Override
-    public ArrayList<NodeReference> getOutwardNodeReferences(){ return outwardReferences;}
+    public HashSet<NodeReference> getOutwardNodeReferences(){ return outwardReferences;}
 
     @Override
     public HashMap<NodeReference, NodeReference> getInwardNodeReferences(){ return inwardReferences;}
@@ -121,7 +124,11 @@ public class TreeNode extends GenericTreeNode {
             inwardReferences = new HashMap<>();
         if(!inwardReferences.containsKey(ref))
             inwardReferences.put(ref, new NodeReference(ref.getLabel(), ref.getReferenceFrom()));
+        allRefs.add(inwardReferences.get(ref));
         return inwardReferences.get(ref).addReference(this);
     }
+
+    @Override
+    public HashSet<NodeReference> getAllNodeReferences(){ return allRefs; }
 
 }

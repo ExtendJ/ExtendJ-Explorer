@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Node{
     public final Object node;
@@ -22,7 +23,7 @@ public class Node{
     private int level;
     private NodeContent nodeContent;
 
-    public Node(Object root, HashMap<Object, Object> futureReferences){
+    public Node(Object root, HashSet<Object> futureReferences){
         this.children = new ArrayList<>();
         this.name = "";
         this.className = root.getClass().getSimpleName();
@@ -32,7 +33,7 @@ public class Node{
         init(root, false, false, 1, futureReferences);
     }
 
-    public Node(Object root, String name, boolean isList, boolean isOpt, int level, HashMap<Object, Object> futureReferences){
+    public Node(Object root, String name, boolean isList, boolean isOpt, int level, HashSet<Object> futureReferences){
         this.children = new ArrayList<>();
         this.className = root.getClass().getSimpleName();
         this.node = root;
@@ -47,12 +48,12 @@ public class Node{
         init(root, isList, isOpt, level, futureReferences);
     }
 
-    private void init(Object root, boolean isList, boolean isOpt, int level, HashMap<Object, Object> futureReferences){
+    private void init(Object root, boolean isList, boolean isOpt, int level, HashSet<Object> futureReferences){
         this.isOpt = isOpt;
         this.isList = isList;
         this.nodeContent = new NodeContent();
         this.level = level;
-        futureReferences.put(node, node);
+        futureReferences.add(node);
         if(isList) {
             for (Object child: (Iterable<?>) root) {
                 children.add(new Node(child, isOpt ? name : "", child instanceof Collection, false, 1, futureReferences));
@@ -69,7 +70,7 @@ public class Node{
         return getNodeContent().get(key);
     }
 
-    private void traversDown(Object root, HashMap<Object, Object> futureReferences){
+    private void traversDown(Object root, HashSet<Object> futureReferences){
         try {
             for (Method m : root.getClass().getMethods()) {
                 for (Annotation a: m.getAnnotations()) {

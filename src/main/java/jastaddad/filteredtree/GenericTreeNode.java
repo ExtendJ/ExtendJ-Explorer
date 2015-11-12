@@ -59,8 +59,10 @@ public abstract class GenericTreeNode {
     public abstract String toGraphString();
     public abstract void setStyles(Config filter);
     public abstract HashMap<NodeReference, NodeReference> getInwardNodeReferences();
-    public abstract ArrayList<NodeReference> getOutwardNodeReferences();
+    public abstract HashSet<NodeReference> getOutwardNodeReferences();
+    public abstract HashSet<NodeReference> getAllNodeReferences();
     public abstract boolean addInWardNodeReference(NodeReference ref);
+
 
 
     public HashMap<String, Value> getStyles(){ return styles; }
