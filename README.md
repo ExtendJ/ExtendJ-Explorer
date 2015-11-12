@@ -12,6 +12,7 @@ Getting started
 Lib dependencies for Linux
 ------------ 
 Add these if ToolKit errors are thrown when running the debugger.
+
 - libgtk+-x11-2.0_0 - X11 backend of The GIMP ToolKit (GTK+).
 - libgtk+2.0_0 - The GIMP ToolKit (GTK+), a library for creating GUIs.
 
