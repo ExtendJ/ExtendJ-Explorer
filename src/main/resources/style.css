@@ -31,7 +31,7 @@
     -fx-fit-to-width:true;
     -fx-background-insets: 0;
     -fx-border-width:1 0 1 0;
-    -fx-border-color:#AAAAAA black #404040 black;
+    -fx-border-color:#AAAAAA #AAAAAA #404040 black;
 }
 
 .paneParent{
@@ -39,8 +39,8 @@
     -fx-fit-to-height:true;
     -fx-fit-to-width:true;
     -fx-background-insets: 0;
-    -fx-border-width:1 1 1 1;
-    -fx-border-color:#AAAAAA black #404040 black;
+    -fx-border-width:1 0 1 0;
+    -fx-border-color:#AAAAAA #AAAAAA #404040 black;
 }
 
 .topLeftAlign{
@@ -132,6 +132,7 @@
 .tab-pane
 {
     -fx-tab-min-width:90px;
+    -fx-border-width:0;
 }
 
 .tab{
@@ -195,7 +196,7 @@
     -fx-base: #606060;
     -fx-control-inner-background: #606060;
     -fx-background-color: #606060;
-    -fx-padding: 5;
+    -fx-padding: 0;
 }
 
 .info-table-view .info-column-header-background {
@@ -256,12 +257,19 @@
 .minimizeButton:hover{
     -fx-background-color:#202020;
 }
-
 .split-pane{
     -fx-background-color:transparent;
     -fx-background:transparent;
     -fx-padding:0;
     -fx-background-insets: 0;
+}
+
+.split-pane .split-pane-divider {
+   -fx-border-width:1;
+   -fx-padding: 1;
+   -fx-border-color: transparent black transparent black;
+   -fx-background-color: #202020;
+   -fx-background-insets: 0;
 }
 
 .context-menu {
