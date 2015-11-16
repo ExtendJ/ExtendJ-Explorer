@@ -16,12 +16,6 @@ public class AttributeInfo {
     private final SimpleObjectProperty value;
     private final NodeInfo nodeInfo;
 
-    public AttributeInfo(String name, Object value){
-        this.name = new SimpleStringProperty(name);
-        this.value = new SimpleObjectProperty(value);
-        nodeInfo = null;
-    }
-
     public AttributeInfo(String name, Object value, NodeInfo nodeInfo){
         this.name = new SimpleStringProperty(name);
         this.value = new SimpleObjectProperty(value);

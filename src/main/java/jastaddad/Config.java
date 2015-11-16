@@ -1,7 +1,6 @@
 package jastaddad;
 
 import configAST.*;
-import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.objectinfo.NodeInfo;
 
 import java.io.*;
@@ -13,22 +12,21 @@ import java.util.Map;
 public class Config{
     private DebuggerConfig configs;
     private boolean noError;
-    private HashMap<String, ArrayList<String>> errors;
+    private ASTAPI api;
 
     private final String filterFileName = "filter.cfg";
     private final String filterTmpFileName = "filter-tmp.cfg";
 
-    private static final String IGNORE_FILTER = "ignore-filter";
-    private static final String IGNORE_GLOBAL = "ignore-global";
-    private static final String IGNORE_INCLUDE = "ignore-include";
+    private static final String CONFIG_FILTER = "filter";
+    private static final String CONFIG_GLOBAL = "global";
+    private static final String CONFIG_INCLUDE = "include";
 
-    private static final String FILTER = "filter";
     private static final String FILTER_LIST = "-filter";
     private static final String STYLE_LIST = "-style";
-    private static final String DISPLAYED_ATTRIBUTES_LIST = "-displayed-attributes";
+    private static final String DISPLAY_ATTRIBUTES_LIST = "-display-attributes";
 
-    public Config( HashMap<String, ArrayList<String>> errors){
-        this.errors = errors;
+    public Config(ASTAPI api){
+        this.api = api;
         noError = readFilter(filterFileName);
     }
 
@@ -42,8 +40,8 @@ public class Config{
             PrintWriter writer = null;
             if(!f.exists()) {
                 writer = new PrintWriter(fileName, "UTF-8");
-                writer.print("-configs{\n\tignore-filter = true;\n\tignore-global = false;\n\tignore-include = false;\n}" +
-                        "\n-global{\n\t-filter{}\n\t-style{}\n\t-displayed-attributes{}\n}\n" +
+                writer.print("-configs{\n\tfilter = true;\n\tglobal = false;\n\tinclude = false;\n}" +
+                        "\n-global{\n\t-filter{}\n\t-style{}\n\t-display-attributes{}\n}\n" +
                         "-include{\n\n}\n");
                 writer.close();
             }
@@ -63,34 +61,34 @@ public class Config{
                         error += "- " + e;
                     }
                     System.err.println(error);
-                    errors.get(FILTER).add(error);
+                    api.getErrors(ASTAPI.FILTER_ERROR).add(error);
                     return false;
                 }
 
                 configs = tmpFilter;
             } catch (IOException e) {
-                errors.get(FILTER).add("IOException when reading filter file");
+                api.getErrors(ASTAPI.FILTER_ERROR).add("IOException when reading filter file");
                 e.printStackTrace(System.err);
                 return false;
             } catch (ConfigParser.SyntaxError e) {
-                errors.get(FILTER).add(e.getMessage());
+                api.getErrors(ASTAPI.FILTER_ERROR).add(e.getMessage());
                 return false;
             }catch (Exception e) {
-                errors.get(FILTER).add("Exception when reading filter file: " + e.toString());
+                api.getErrors(ASTAPI.FILTER_ERROR).add("Exception when reading filter file: " + e.toString());
                 //e.printStackTrace();
                 return false;
             }
         }catch (FileNotFoundException e) {
             String errorText = "Filter file not found! Maybe the program does not have the rights to create the file for you?" +
                     "\n Create a file called filter.cfg and add -include{} inside it to get started";
-            errors.get(FILTER).add(errorText);
+            api.getErrors(ASTAPI.FILTER_ERROR).add(errorText);
             System.out.println(errorText);
             return false;
         }catch (UnsupportedEncodingException e) {
             String errorText = "Filter file not found! Maybe the program does not have the rights to create the file for you?" +
                     "\n Create a file called filter.cfg and add -include{} inside it to get started";
             e.printStackTrace();
-            errors.get(FILTER).add(errorText);
+            api.getErrors(ASTAPI.FILTER_ERROR).add(errorText);
         }
         return true;
     }
@@ -103,11 +101,11 @@ public class Config{
             writer.print(text);
             writer.close();
         } catch (FileNotFoundException e) {
-            errors.get(FILTER).add("File not found when writing to filter file");
+            api.getErrors(ASTAPI.FILTER_ERROR).add("File not found when writing to filter file");
             e.printStackTrace();
             noError = false;
         } catch (UnsupportedEncodingException e) {
-            errors.get(FILTER).add("Unsupported encoding exception");
+            api.getErrors(ASTAPI.FILTER_ERROR).add("Unsupported encoding exception");
             e.printStackTrace();
             noError = false;
         }
@@ -124,40 +122,40 @@ public class Config{
             }
         }catch(Exception e){
             e.printStackTrace();
-            errors.get(FILTER).add("Could not delete or remove new or old filter file. Permission problem?");
+            api.getErrors(ASTAPI.FILTER_ERROR).add("Could not delete or remove new or old filter file. Permission problem?");
         }
         return noError;
     }
 
-    private boolean isIgnored(String name){
+    private boolean isSet(String name){
         HashMap<String, Value> filterConfigs = configs.configs();
         return filterConfigs.containsKey(name) && filterConfigs.get(name).getBool();
     }
 
-    private boolean isNotIgnored(String name){
+    private boolean isSetOrExist(String name){
         HashMap<String, Value> filterConfigs = configs.configs();
-        return !filterConfigs.containsKey(name) || !filterConfigs.get(name).getBool();
+        return !filterConfigs.containsKey(name) || filterConfigs.get(name).getBool();
     }
 
     public boolean isEnabled(Node node){
         if(!noError)
             return false;
 
-        if(isIgnored(IGNORE_FILTER))
+        if(isSet(CONFIG_FILTER))
             return true;
 
         // Add all bin expressions to one hashmap. This will allow expressions to override each other
         HashMap<String, BinExpr> binExprs = new HashMap<>();
 
         // If there a global filter add it to the hashmap
-        if(isNotIgnored(IGNORE_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBinExprList(FILTER_LIST) != null) {
+        if(isSetOrExist(CONFIG_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBinExprList(FILTER_LIST) != null) {
             for (BinExpr be : configs.getGlobal().getBinExprList(FILTER_LIST).getBinExprList()) {
                 binExprs.put(be.getDecl().getID(), be);
             }
         }
 
-        // don't do this if the -ignore-include is set to true
-        if(isNotIgnored(IGNORE_INCLUDE)) {
+        // don't do this if the -include is set to false
+        if(isSetOrExist(CONFIG_INCLUDE)) {
             // try to find the node in the Include.
             boolean className = configs.getNodes().containsKey(node.className); // Div;
             boolean tellingName = configs.getNodes().containsKey(node.fullName); // Div:Left
@@ -189,12 +187,12 @@ public class Config{
             String decl = entry.getKey();
             BinExpr be = entry.getValue();
 
-            NodeInfo a = node.getNodeContent().compute(node.node, decl);
+            NodeInfo a = node.getNodeContent().compute(decl);
             if(a == null)
                 return false;
             if(be.isDoubleDecl()){
                 String decl2 = ((IdDecl)be.getValue()).getID();
-                NodeInfo b = node.getNodeContent().compute(node.node, decl2);
+                NodeInfo b = node.getNodeContent().compute(decl2);
                 if(b == null)
                     return false;
                 return a.getReturnType().equals(b.getReturnType()) && be.validateExpr(a.getValue(), b.getValue(), a.getReturnType(), decl);
@@ -208,13 +206,13 @@ public class Config{
         HashMap<String, Value> map = new HashMap<>();
 
         // If there a global style add it to the hashmap if -ignore-global == false;
-        if(isNotIgnored(IGNORE_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBindingList(STYLE_LIST) != null) {
+        if(isSetOrExist(CONFIG_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBindingList(STYLE_LIST) != null) {
             for(Binding b : configs.getGlobal().getBindingList(STYLE_LIST).getBindingList()){
               map.put(b.getName().print(), b.getValue());
             }
         }
 
-        if(!isNotIgnored(IGNORE_INCLUDE))
+        if(!isSetOrExist(CONFIG_INCLUDE))
             return map;
 
         boolean className = configs.getNodes().containsKey(node.className); // Div;
@@ -243,13 +241,13 @@ public class Config{
     public HashSet<String> getDisplayedAttributes(Node node){
         HashSet<String> set = new HashSet();
 
-        if(isNotIgnored(IGNORE_GLOBAL) && configs.getGlobal().getIdDeclList(DISPLAYED_ATTRIBUTES_LIST) != null){
-            for (IdDecl decl : configs.getGlobal().getIdDeclList(DISPLAYED_ATTRIBUTES_LIST).getIdDeclList()){
+        if(isSetOrExist(CONFIG_GLOBAL) && configs.getGlobal().getIdDeclList(DISPLAY_ATTRIBUTES_LIST) != null){
+            for (IdDecl decl : configs.getGlobal().getIdDeclList(DISPLAY_ATTRIBUTES_LIST).getIdDeclList()){
                 set.add(decl.getID());
             }
         }
 
-        if(!isNotIgnored(IGNORE_INCLUDE))
+        if(!isSetOrExist(CONFIG_INCLUDE))
             return set;
 
         boolean className = configs.getNodes().containsKey(node.className); // Div;
@@ -259,14 +257,14 @@ public class Config{
             return set;
 
         NodeConfig cNode = configs.getNodes().get(node.className);
-        if(className && cNode.getIdDeclList(DISPLAYED_ATTRIBUTES_LIST) != null) {
-            for(IdDecl decl : cNode.getIdDeclList(DISPLAYED_ATTRIBUTES_LIST).getIdDeclList()){
+        if(className && cNode.getIdDeclList(DISPLAY_ATTRIBUTES_LIST) != null) {
+            for(IdDecl decl : cNode.getIdDeclList(DISPLAY_ATTRIBUTES_LIST).getIdDeclList()){
                 set.add(decl.getID());
             }
         }
         cNode = configs.getNodes().get(node.fullName);
-        if(tellingName && cNode.getIdDeclList(DISPLAYED_ATTRIBUTES_LIST) != null) {
-            for(IdDecl decl : cNode.getIdDeclList(DISPLAYED_ATTRIBUTES_LIST).getIdDeclList()){
+        if(tellingName && cNode.getIdDeclList(DISPLAY_ATTRIBUTES_LIST) != null) {
+            for(IdDecl decl : cNode.getIdDeclList(DISPLAY_ATTRIBUTES_LIST).getIdDeclList()){
                 set.add(decl.getID());
             }
         }

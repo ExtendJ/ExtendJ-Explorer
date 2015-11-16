@@ -82,7 +82,6 @@ public class TreeNode extends GenericTreeNode {
         styles.put("border-style", new Str("\"line\""));
 
         HashMap<String, Value> userStyle = filter.getNodeStyle(node);
-        //System.out.println(userStyle.size());
         Iterator it = userStyle.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, Value> pair = (Map.Entry)it.next();
@@ -98,10 +97,10 @@ public class TreeNode extends GenericTreeNode {
         if(outwardReferences == null)
             outwardReferences = new HashSet<>();
         for (String s : set){
-            NodeInfo info = node.getNodeContent().compute(node.node, s);
+            NodeInfo info = node.getNodeContent().compute(s);
             if(info == null)
                 continue;
-            ArrayList<Object> refs = api.getReferenceNodes(info);
+            ArrayList<Object> refs = api.getNodeReferences(info);
             if(refs != null && refs.size() > 0) {
                 NodeReference reference = new NodeReference(s, this, refs);
                 outwardReferences.add(reference);

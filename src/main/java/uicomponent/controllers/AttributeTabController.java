@@ -3,7 +3,7 @@ package uicomponent.controllers;
 import jastaddad.Node;
 import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.filteredtree.TreeNode;
-import jastaddad.objectinfo.Attribute;
+import jastaddad.objectinfo.NodeInfo;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -70,19 +70,23 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
         mouseMenu = new ContextMenu();
         MenuItem cmItem1 = new MenuItem("Invoke with parameters");
         cmItem1.setOnAction(e -> {
-            Attribute attr = (Attribute) attributeTableView.getSelectionModel().getSelectedItem().getNodeInfo();
-            AttributeInputDialog dialog = new AttributeInputDialog(attr);
+            NodeInfo info  = attributeTableView.getSelectionModel().getSelectedItem().getNodeInfo();
+            AttributeInputDialog dialog = new AttributeInputDialog(info);
             Optional<ArrayList<Object>> result = dialog.showAndWait();
             if(result == null || result.get() == null)
                 return;
             Object obj = null;
-            if(mon.getLastRealNode() != null)
-                obj = attr.invokeMethod(((TreeNode) mon.getSelectedNode()).getNode(), result.get());
-            if(obj != null){
-                mon.getController().addMessage("Invocation successful, result: " + obj);
-                setAttributeInfo(attributeTableView.getSelectionModel().getSelectedItem());
-            }else
-                mon.getController().addMessage("Invocation unsuccessful, result: " + null);
+            if(mon.getLastRealNode() != null){
+                TreeNode node = (TreeNode) mon.getSelectedNode();
+                obj = node.getNode().getNodeContent().compute(info, result.get());
+                if(node.getNode().getNodeContent().noErrors() && obj != null){
+                    mon.getController().addMessage("Invocation successful, result: " + obj);
+                }else{
+                    mon.getController().addMessage("Invocation unsuccessful, result: " + null);
+                    mon.getController().addErrors(node.getNode().getNodeContent().getInnvokationErrors());
+                }
+                setAttributeList(node, false);
+            }
         });
         mouseMenu.getItems().add(cmItem1);
     }
@@ -96,14 +100,15 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
             return;
         }
         nodeNameLabel.setText(node.toString());
-        setAttributeList((TreeNode) node);
+        setAttributeList((TreeNode) node, true);
     }
 
-    public void setAttributeList(TreeNode node){
-        attributeTableView.getSelectionModel().clearSelection();
+    public void setAttributeList(TreeNode node, boolean compute){
         Node n = node.getNode();
-        for(String s : n.getNodeContent().compute(n))
-            mon.getController().addError(s);
+        if(compute) {
+            mon.getController().addErrors(n.getNodeContent().compute());
+            attributeTableView.getSelectionModel().clearSelection();
+        }
         attributeTableView.setItems(FXCollections.observableList(AttributeInfo.toArray(n.getNodeContent().toArray())));
         if(attributeTableView.getItems().size() <= 0) {
             attributeInfoTableView.getItems().clear();
@@ -116,7 +121,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
         setAttributeInfo(newValue);
         mon.setSelectedInfo(newValue);
         if(oldValue != null)
-            mon.getApi().getReferenceNodes(oldValue.getNodeInfo(), false);
+            mon.getApi().getNodeReferences(oldValue.getNodeInfo(), false);
         setReference(newValue);
     }
 
@@ -132,7 +137,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
     public void setReference(AttributeInfo info){
         ArrayList<GenericTreeNode> newRefs = null;
         if(info != null)
-            newRefs = mon.getApi().getReferenceNodes(info.getNodeInfo(), true);
+            newRefs = mon.getApi().getNodeReferences(info.getNodeInfo(), true);
         graphView.setReferenceEdges(newRefs, mon.getSelectedNode());
     }
 
