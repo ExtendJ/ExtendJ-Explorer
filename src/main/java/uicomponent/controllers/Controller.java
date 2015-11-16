@@ -192,18 +192,16 @@ public class Controller implements Initializable {
         }) ;
     }
 
-    public void addMessage(String message){
-        addConsoleText(message, "consoleTextMessage", ConsoleFilter.MESSAGE);
+    public void addMessage(String message) {
+        Platform.runLater(() -> addConsoleText(message, "consoleTextMessage", ConsoleFilter.MESSAGE));
     }
-
     public void addError(String message){
-        addConsoleText(message, "consoleTextError", ConsoleFilter.ERROR);
+        Platform.runLater(() -> addConsoleText(message, "consoleTextError", ConsoleFilter.ERROR));
     }
 
-    public void addWarning(String message){
-        addConsoleText(message, "consoleTextWarning", ConsoleFilter.WARNING);
+    public void addWarning(String message) {
+        Platform.runLater(() -> addConsoleText(message, "consoleTextWarning", ConsoleFilter.WARNING));
     }
-
     private void addConsoleText(String message, String style, ConsoleFilter filterType){
         Text text1 = new Text(message + "\n");
         Text text2 = new Text(message + "\n");

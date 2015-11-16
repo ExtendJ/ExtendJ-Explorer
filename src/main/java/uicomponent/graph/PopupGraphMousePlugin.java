@@ -219,9 +219,10 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
                 inGraph.removeEdge(e, false);
             }
         }
-        inGraph.removeVertex(parent, false);
-        for(GenericTreeNode child : parent.getChildren())
+        for(GenericTreeNode child : inGraph.getChildren(parent))
             removeVertexes(child, inGraph, nodeRef);
+        inGraph.removeVertex(parent, false);
+
     }
 
     private void setClusterRef(GenericTreeNode cluster, GenericTreeNode node){

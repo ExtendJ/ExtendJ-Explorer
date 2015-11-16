@@ -90,6 +90,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
     public void setAttributes(){
         GenericTreeNode node = mon.getSelectedNode();
         if(node == null || !mon.getSelectedNode().isNode()) {
+            nodeNameLabel.setText("");
             attributeTableView.getItems().clear();
             attributeInfoTableView.getItems().clear();
             return;
@@ -120,8 +121,10 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
     }
 
     private void setAttributeInfo(AttributeInfo info){
-        if(info == null || info.getNodeInfo() == null)
+        if(info == null || info.getNodeInfo() == null) {
+            attributeInfoLabel.setText("");
             return;
+        }
         attributeInfoLabel.setText(info.getNodeInfo().print());
         attributeInfoTableView.setItems(FXCollections.observableArrayList(AttributeInfo.toArray(info.getNodeInfo().getInfo())));
     }
