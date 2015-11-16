@@ -54,6 +54,7 @@ public class GraphView extends SwingNode implements ItemListener {
     }
 
     private void createTree(Forest<GenericTreeNode, UIEdge> g, GenericTreeNode parent){
+
         for (GenericTreeNode child : parent.getChildren()) {
             UIEdge edge = null;
             if(child.isNode()){
@@ -253,8 +254,9 @@ public class GraphView extends SwingNode implements ItemListener {
         @Override
         public Paint transform(GenericTreeNode fNode) {
             String color = fNode.getStyles().get("node-color").getColor();
-            if(pi.isPicked(fNode))
+            if(pi.isPicked(fNode)) {
                 return new Color(240, 240, 200);
+            }
             if(fNode.isReferenceHighlight())
                 return new Color(80, 180, 80);
             try{
