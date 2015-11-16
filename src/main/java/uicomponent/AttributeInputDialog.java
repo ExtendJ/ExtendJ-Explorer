@@ -1,6 +1,7 @@
 package uicomponent;
 
 import jastaddad.objectinfo.Attribute;
+import jastaddad.objectinfo.NodeInfo;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
@@ -11,7 +12,7 @@ import java.util.ArrayList;
  * Created by gda10jli on 11/4/15.
  */
 public class AttributeInputDialog extends Dialog<ArrayList<Object>> {
-    public AttributeInputDialog(Attribute attribute){
+    public AttributeInputDialog(NodeInfo attribute){
         if(!attribute.isParametrized())
             return;
         setTitle("Choose Inputs");

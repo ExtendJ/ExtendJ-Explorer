@@ -20,6 +20,8 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
 
     public Object getValue(){ return value; }
 
+    public String getName(){ return name; }
+
     public Class getReturnType(){ return method.getReturnType(); }
 
     public Method getMethod(){ return method; }
@@ -37,11 +39,16 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
     public abstract boolean isParametrized();
     protected abstract void setChildInfo(ArrayList<NodeInfoHolder> al);
 
-    protected static String getName(Method m){
+    protected static String getName(Method m){ return getName(m, null); }
+
+    protected static String getName(Method m, Object[] params){
         String name = m.getName() + "(";
         if (m.getParameterCount() > 0){
-            for(int i = 0; i < m.getParameterCount(); i++)
-                name += m.getParameterTypes()[i] + (i + 1 < m.getParameterCount() ? ", " : "");
+            for(int i = 0; i < m.getParameterCount(); i++) {
+                name += params != null ? params[i].toString() : m.getParameterTypes()[i].toString();
+                if(i + 1 < m.getParameterCount())
+                    name += ",";
+            }
         }
         return name + ")";
     }

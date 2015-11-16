@@ -239,8 +239,8 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             UIEdge edge;
             if(child.isNode()){
                 TreeNode n = (TreeNode) child;
-                if(parent.isNode() && !((TreeNode)parent).node.isOpt())
-                    edge = new UIEdge(parent.isRealChild(child), n.node.name);
+                if(parent.isNode() && !((TreeNode)parent).getNode().isOpt())
+                    edge = new UIEdge(parent.isRealChild(child), n.getNode().name);
                 else
                     edge = new UIEdge(parent.isRealChild(child));
             }else {

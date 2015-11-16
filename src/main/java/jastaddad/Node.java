@@ -1,5 +1,6 @@
 package jastaddad;
 
+import jastaddad.objectinfo.Attribute;
 import jastaddad.objectinfo.NodeContent;
 import jastaddad.objectinfo.NodeInfo;
 
@@ -23,17 +24,17 @@ public class Node{
     private int level;
     private NodeContent nodeContent;
 
-    public Node(Object root, HashSet<Object> futureReferences){
+    public Node(Object root, ASTAPI api){
         this.children = new ArrayList<>();
         this.name = "";
         this.className = root.getClass().getSimpleName();
         this.node = root;
         fullName = className;
         id = System.identityHashCode(this.toString());
-        init(root, false, false, 1, futureReferences);
+        init(root, false, false, 1, api);
     }
 
-    public Node(Object root, String name, boolean isList, boolean isOpt, int level, HashSet<Object> futureReferences){
+    public Node(Object root, String name, boolean isList, boolean isOpt, int level, ASTAPI api){
         this.children = new ArrayList<>();
         this.className = root.getClass().getSimpleName();
         this.node = root;
@@ -45,49 +46,44 @@ public class Node{
             fullName = className + ":" + name;
         }
         id = System.identityHashCode(this.toString());
-        init(root, isList, isOpt, level, futureReferences);
+        init(root, isList, isOpt, level, api);
     }
 
-    private void init(Object root, boolean isList, boolean isOpt, int level, HashSet<Object> futureReferences){
+    private void init(Object root, boolean isList, boolean isOpt, int level, ASTAPI api){
         this.isOpt = isOpt;
         this.isList = isList;
-        this.nodeContent = new NodeContent();
+        this.nodeContent = new NodeContent(this);
         this.level = level;
-        futureReferences.add(node);
+        api.addObjectReference(node);
         if(isList) {
             for (Object child: (Iterable<?>) root) {
-                children.add(new Node(child, isOpt ? name : "", child instanceof Collection, false, 1, futureReferences));
+                if(child instanceof Collection && child.getClass().getSimpleName().equals("List") && isOpt)
+                    api.putWarning(ASTAPI.AST_STRUCTURE_WARNING, "A List is a direct child to a Opt parent, parent : " + root + ", -> child : " + child);
+                children.add(new Node(child, isOpt ? name : "", child instanceof Collection, false, 1, api));
             }
         }
-        traversDown(root, futureReferences);
+        traversDown(root, api);
     }
 
-    public boolean containsAttributeOrToken(String key){
-        return getNodeContent().containsAttribute(key) || getNodeContent().containsToken(key);
-    }
-
-    public NodeInfo getAttributeOrTokenValue(String key){
-        return getNodeContent().get(key);
-    }
-
-    private void traversDown(Object root, HashSet<Object> futureReferences){
+    private void traversDown(Object root, ASTAPI api) {
         try {
             for (Method m : root.getClass().getMethods()) {
                 for (Annotation a: m.getAnnotations()) {
                     if(ASTAnnotation.isChild(a)) {
-                        children.add(new Node(m.invoke(root, new Object[m.getParameterCount()]),
-                                getName(a),
-                                !ASTAnnotation.isSingleChild(a),
-                                ASTAnnotation.isOptChild(a),
-                                level + 1,
-                                futureReferences));
+                        Object obj = m.invoke(root, new Object[m.getParameterCount()]);
+                        if(obj != null) {
+                            children.add(new Node(obj, getName(a),
+                                    !ASTAnnotation.isSingleChild(a),
+                                    ASTAnnotation.isOptChild(a),
+                                    level + 1, api));
+                        }else{
+                            api.putError(ASTAPI.AST_STRUCTURE_ERROR, String.format("The child %s is null, can't continue the traversal of this path", getName(a)));
+                        }
                     }
-                    nodeContent.add(root, m, a);
                 }
             }
         } catch (Throwable e) {
             e.printStackTrace();
-            System.exit(0);
         }
     }
 
@@ -107,4 +103,5 @@ public class Node{
     public int getLevel(){ return level;}
 
     public NodeContent getNodeContent(){ return nodeContent;}
+
 }

@@ -1,5 +1,6 @@
 package uicomponent.controllers;
 
+import jastaddad.ASTAPI;
 import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.filteredtree.TreeNode;
 import javafx.application.Platform;
@@ -24,10 +25,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * Created by gda10jth on 10/16/15.
@@ -81,8 +79,7 @@ public class Controller implements Initializable {
         ALL, ERROR, WARNING, MESSAGE
     }
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-    }
+    public void initialize(URL url, ResourceBundle rb) { }
 
     public void init(UIMonitor mon, GraphView graphView, UIComponent uiComponent) throws IOException {
         this.mon = mon;
@@ -148,7 +145,8 @@ public class Controller implements Initializable {
 
         // update the new filter. This is done in the API
         saveNewFilterButton.setOnAction((event) -> {
-            addMessage("Filter update starts...");
+            addMessage("Filter update: starting");
+            long timeStart = System.currentTimeMillis();
             boolean noError = mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
             if(noError) {
                 graphView.updateGraph();
@@ -159,12 +157,11 @@ public class Controller implements Initializable {
                         textTreeTabController.newNodeSelected(mon.getSelectedNode());
                     });
                 }
-                addMessage("... and done!");
+                addMessage("Filter update: done after, " + (System.currentTimeMillis() - timeStart) + " ms");
             }else{
                 addError("Could not update graph: ");
-                mon.getApi().getErrors("");
-                mon.getApi().getErrors("filter").forEach(this::addError);
-                addMessage("... and done, but something is wrong!");
+                mon.getApi().getErrors(ASTAPI.FILTER_ERROR).forEach(this::addError);
+                addMessage("Filter update: something is wrong!");
             }
 
         });
@@ -182,7 +179,13 @@ public class Controller implements Initializable {
                 }
         );
 
-        //centerSplitPane.setDividerPosition(1,0.5);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                addWarnings(mon.getApi().getWarnings(ASTAPI.AST_STRUCTURE_WARNING));
+                addErrors(mon.getApi().getErrors(ASTAPI.AST_STRUCTURE_ERROR));
+            }
+        });
     }
 
     private void setConsoleScrollHeightListener(DoubleProperty consoleHeight, ScrollPane consoleScrollPane, TextFlow textFlow){
@@ -191,6 +194,17 @@ public class Controller implements Initializable {
             consoleScrollPane.setVvalue(consoleScrollPane.getVmax());
         }) ;
     }
+
+    public void addErrors(Collection<String> errors){
+        for (String s : errors)
+            addError(s);
+    }
+
+    public void addWarnings(Collection<String> warnings){
+        for (String s : warnings)
+            addWarning(s);
+    }
+
 
     public void addMessage(String message) {
         Platform.runLater(() -> addConsoleText(message, "consoleTextMessage", ConsoleFilter.MESSAGE));
@@ -202,6 +216,7 @@ public class Controller implements Initializable {
     public void addWarning(String message) {
         Platform.runLater(() -> addConsoleText(message, "consoleTextWarning", ConsoleFilter.WARNING));
     }
+
     private void addConsoleText(String message, String style, ConsoleFilter filterType){
         Text text1 = new Text(message + "\n");
         Text text2 = new Text(message + "\n");
@@ -270,7 +285,7 @@ public class Controller implements Initializable {
         GenericTreeNode node = mon.getLastRealNode();
         if(node == null)
             return;
-        node = mon.getApi().getReferenceNode(((TreeNode) node).node.node);
+        node = mon.getApi().getNodeReference(((TreeNode) node).getNode().node);
         mon.setSelectedNode(node);
         graphView.setSelectedNode(node.getClusterReference());
         if(mon.getSelectedInfo() != null)
