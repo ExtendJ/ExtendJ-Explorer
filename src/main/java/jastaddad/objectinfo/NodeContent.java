@@ -1,6 +1,7 @@
 package jastaddad.objectinfo;
 
 import jastaddad.ASTAnnotation;
+import jastaddad.Node;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -18,10 +19,12 @@ public class NodeContent {
 
     private HashMap<String, NodeInfo> attributes;
     private HashMap<String, NodeInfo> tokens;
+    private ArrayList<String> invokationErrors;
 
     public NodeContent(){
         attributes = new HashMap();
         tokens = new HashMap();
+        invokationErrors = new ArrayList<>();
     }
 
     public boolean containsToken(String key){
@@ -41,6 +44,14 @@ public class NodeContent {
         if(ret == null)
             ret = tokens.get(key);
         return ret;
+    }
+
+    public ArrayList<String> compute(Node node){
+        invokationErrors.clear();
+        attributes.clear();
+        tokens.clear();
+        add(node.node);
+        return invokationErrors;
     }
 
     public ArrayList<NodeInfoHolder> toArray(){
@@ -67,10 +78,7 @@ public class NodeContent {
 
     public boolean add(Object obj, Method m, Annotation a)  {
         if(ASTAnnotation.isAttribute(a)) {
-            if(m.getParameterCount() == 0)
-                return addAttribute(obj, m);
-            else
-                return addParamAttributes(m);
+            return addAttribute(obj, m);
         }
         if(ASTAnnotation.isToken(a))
             return addToken(obj, m);
@@ -80,11 +88,15 @@ public class NodeContent {
     //Todo might move these methods to their specific classes
     private boolean addAttribute(Object obj, Method m){
         String name = m.getName();
+        boolean parametrized = m.getParameterCount() > 0;
         try{
-            attributes.put(NodeInfo.getName(m), new Attribute(name, m.invoke(obj, new Object[0]), m, ""));
+            if(parametrized)
+                attributes.put(NodeInfo.getName(m), new Attribute(name, USER_INPUT, m, "", true));
+            else
+                attributes.put(NodeInfo.getName(m), new Attribute(name, m.invoke(obj, new Object[0]), m, ""));
         } catch (Throwable e) {
-            e.printStackTrace();
-            attributes.put(NodeInfo.getName(m), new Attribute(name, e.getCause().toString(), m, ""));
+            addInvocationErrors(e);
+            attributes.put(NodeInfo.getName(m), new Attribute(name, e.getCause().toString(), m, "", parametrized));
         }
         return true;
     }
@@ -94,21 +106,15 @@ public class NodeContent {
         try{
             tokens.put(NodeInfo.getName(m), new Token(name, m.invoke(obj, new Object[0]), m));
         } catch (Throwable e) {
-            e.printStackTrace();
+            addInvocationErrors(e);
             tokens.put(NodeInfo.getName(m), new Token(name, e.getCause().toString(), m));
         }
         return true;
     }
 
-    private boolean addParamAttributes(Method m){
-        String name = m.getName();
-        try{
-            attributes.put(NodeInfo.getName(m), new Attribute(name, USER_INPUT, m, "", true));
-        } catch (Throwable e) {
-            e.printStackTrace();
-            attributes.put(NodeInfo.getName(m), new Attribute(name, e.getCause()+ "", m, "", true));
-        }
-        return true;
+    private void addInvocationErrors(Throwable e){
+        invokationErrors.add(e.getCause().toString());
+        //e.printStackTrace();
     }
 
     private HashMap<Object, Object> getCachedMapValues(Object obj, Method m) throws IllegalAccessException, InstantiationException {

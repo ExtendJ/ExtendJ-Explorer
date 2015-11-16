@@ -14,7 +14,7 @@ import java.util.*;
  * Created by gda10jth on 10/16/15.
  */
 public class TreeNode extends GenericTreeNode {
-    public final Node node;
+    private final Node node;
     private boolean enabled;
     private String graphName;
     private LinkedHashMap<Integer, Boolean> realChildEdge;
@@ -30,6 +30,8 @@ public class TreeNode extends GenericTreeNode {
         allRefs = new HashSet<>();
         setExpandable(true);
     }
+
+    public Node getNode(){ return node; }
 
     public void setEnabled(boolean enabled){ this.enabled = enabled; }
 

@@ -1,5 +1,6 @@
 package uicomponent.controllers;
 
+import jastaddad.Node;
 import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.filteredtree.TreeNode;
 import jastaddad.objectinfo.Attribute;
@@ -76,7 +77,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
                 return;
             Object obj = null;
             if(mon.getLastRealNode() != null)
-                obj = attr.invokeMethod(((TreeNode) mon.getSelectedNode()).node, result.get());
+                obj = attr.invokeMethod(((TreeNode) mon.getSelectedNode()).getNode(), result.get());
             if(obj != null){
                 mon.getController().addMessage("Invocation successful, result: " + obj);
                 setAttributeInfo(attributeTableView.getSelectionModel().getSelectedItem());
@@ -99,7 +100,10 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
 
     public void setAttributeList(TreeNode node){
         attributeTableView.getSelectionModel().clearSelection();
-        attributeTableView.setItems(FXCollections.observableList(AttributeInfo.toArray(node.node.getNodeContent().toArray())));
+        Node n = node.getNode();
+        for(String s : n.getNodeContent().compute(n))
+            mon.getController().addError(s);
+        attributeTableView.setItems(FXCollections.observableList(AttributeInfo.toArray(n.getNodeContent().toArray())));
         if(attributeTableView.getItems().size() <= 0) {
             attributeInfoTableView.getItems().clear();
         }
