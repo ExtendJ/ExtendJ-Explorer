@@ -98,17 +98,16 @@ public class TreeNode extends GenericTreeNode {
         if(outwardReferences == null)
             outwardReferences = new HashSet<>();
         for (String s : set){
-            if(!node.getNodeContent().contains(s))
+            NodeInfo info = node.getNodeContent().compute(node.node, s);
+            if(info == null)
                 continue;
-            NodeInfo info = node.getAttributeOrTokenValue(s);
             ArrayList<Object> refs = api.getReferenceNodes(info);
             if(refs != null && refs.size() > 0) {
                 NodeReference reference = new NodeReference(s, this, refs);
                 outwardReferences.add(reference);
                 allReferences.add(reference);
                 allRefs.add(reference);
-            }
-            else
+            } else
                 graphName += String.format("<br>%s : %s </br>", s, info.getValue());
         }
         graphName += "</html>";

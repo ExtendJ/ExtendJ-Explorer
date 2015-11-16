@@ -186,31 +186,20 @@ public class Config{
         // Loop through the whole map to see if the node is enabled
         for(Map.Entry<String, BinExpr> entry : binExprs.entrySet()){
 
-            String decl = entry.getKey()  + "()";
+            String decl = entry.getKey();
             BinExpr be = entry.getValue();
 
-            //System.out.println(decl);
-            if(!node.containsAttributeOrToken(decl)) {
+            NodeInfo a = node.getNodeContent().compute(node.node, decl);
+            if(a == null)
                 return false;
-            }
             if(be.isDoubleDecl()){
-                String decl2 = ((IdDecl)be.getValue()).getID() + "()";
-                if(!node.containsAttributeOrToken(decl2))
+                String decl2 = ((IdDecl)be.getValue()).getID();
+                NodeInfo b = node.getNodeContent().compute(node.node, decl2);
+                if(b == null)
                     return false;
-                NodeInfo a = node.getAttributeOrTokenValue(decl);
-                NodeInfo b = node.getAttributeOrTokenValue(decl2);
-                if(!a.getReturnType().equals(b.getReturnType()))
-                    return false;
-                if (!be.validateExpr(a.getValue(), b.getValue(), a.getReturnType(), decl)) {
-                    return false;
-                }
-
-            }else{
-                if(!be.validateExpr(node.getAttributeOrTokenValue(decl).getValue())) {
-                    //System.out.println("END2: " + be.getValue().getStr());
-                    return false;
-                }
-            }
+                return a.getReturnType().equals(b.getReturnType()) && be.validateExpr(a.getValue(), b.getValue(), a.getReturnType(), decl);
+            }else
+                return be.validateExpr(a.getValue());
         }
         return true;
     }
@@ -248,17 +237,15 @@ public class Config{
                 map.put(b.getName().print(), b.getValue());
             }
         }
-
         return map;
     }
 
     public HashSet<String> getDisplayedAttributes(Node node){
         HashSet<String> set = new HashSet();
 
-
         if(isNotIgnored(IGNORE_GLOBAL) && configs.getGlobal().getIdDeclList(DISPLAYED_ATTRIBUTES_LIST) != null){
             for (IdDecl decl : configs.getGlobal().getIdDeclList(DISPLAYED_ATTRIBUTES_LIST).getIdDeclList()){
-                set.add(decl.getID() + "()");
+                set.add(decl.getID());
             }
         }
 
@@ -274,18 +261,15 @@ public class Config{
         NodeConfig cNode = configs.getNodes().get(node.className);
         if(className && cNode.getIdDeclList(DISPLAYED_ATTRIBUTES_LIST) != null) {
             for(IdDecl decl : cNode.getIdDeclList(DISPLAYED_ATTRIBUTES_LIST).getIdDeclList()){
-                set.add(decl.getID() + "()");
+                set.add(decl.getID());
             }
         }
         cNode = configs.getNodes().get(node.fullName);
         if(tellingName && cNode.getIdDeclList(DISPLAYED_ATTRIBUTES_LIST) != null) {
             for(IdDecl decl : cNode.getIdDeclList(DISPLAYED_ATTRIBUTES_LIST).getIdDeclList()){
-                set.add(decl.getID() + "()");
+                set.add(decl.getID());
             }
         }
         return set;
     }
-
-
-
 }

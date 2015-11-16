@@ -46,12 +46,28 @@ public class NodeContent {
         return ret;
     }
 
+    public ArrayList<String> getInvokationErrors(){ return invokationErrors; }
+
     public ArrayList<String> compute(Node node){
         invokationErrors.clear();
         attributes.clear();
         tokens.clear();
         add(node.node);
         return invokationErrors;
+    }
+
+    public NodeInfo compute(Object obj, String method){
+        try {
+            Method m = obj.getClass().getMethod(method);
+            for (Annotation a : m.getAnnotations()) {
+                if (ASTAnnotation.isAttribute(a))
+                    return getAttribute(obj, m);
+                if (ASTAnnotation.isToken(a))
+                    return getToken(obj, m);
+            }
+        }  catch (NoSuchMethodException e) {
+        }
+        return null;
     }
 
     public ArrayList<NodeInfoHolder> toArray(){
@@ -76,40 +92,38 @@ public class NodeContent {
         }
     }
 
-    public boolean add(Object obj, Method m, Annotation a)  {
+    public NodeInfo add(Object obj, Method m, Annotation a)  {
         if(ASTAnnotation.isAttribute(a)) {
-            return addAttribute(obj, m);
+            return attributes.put(NodeInfo.getName(m),getAttribute(obj, m));
         }
         if(ASTAnnotation.isToken(a))
-            return addToken(obj, m);
-        return false;
+            return tokens.put(NodeInfo.getName(m), getToken(obj, m));
+        return null;
     }
 
     //Todo might move these methods to their specific classes
-    private boolean addAttribute(Object obj, Method m){
+    private Attribute getAttribute(Object obj, Method m){
         String name = m.getName();
         boolean parametrized = m.getParameterCount() > 0;
         try{
             if(parametrized)
-                attributes.put(NodeInfo.getName(m), new Attribute(name, USER_INPUT, m, "", true));
+                return new Attribute(name, USER_INPUT, m, "", true);
             else
-                attributes.put(NodeInfo.getName(m), new Attribute(name, m.invoke(obj, new Object[0]), m, ""));
+                return new Attribute(name, m.invoke(obj, new Object[0]), m, "");
         } catch (Throwable e) {
             addInvocationErrors(e);
-            attributes.put(NodeInfo.getName(m), new Attribute(name, e.getCause().toString(), m, "", parametrized));
+            return new Attribute(name, e.getCause().toString(), m, "", parametrized);
         }
-        return true;
     }
 
-    private boolean addToken(Object obj, Method m){
+    private Token getToken(Object obj, Method m){
         String name = m.getName();
         try{
-            tokens.put(NodeInfo.getName(m), new Token(name, m.invoke(obj, new Object[0]), m));
+            return new Token(name, m.invoke(obj, new Object[0]), m);
         } catch (Throwable e) {
             addInvocationErrors(e);
-            tokens.put(NodeInfo.getName(m), new Token(name, e.getCause().toString(), m));
+            return new Token(name, e.getCause().toString(), m);
         }
-        return true;
     }
 
     private void addInvocationErrors(Throwable e){
