@@ -213,7 +213,6 @@ public class GraphView extends SwingNode implements ItemListener {
 
     public void repaint(){
         vs.repaint();
-
     }
 
     public void newNodeSelected(GenericTreeNode node) {
