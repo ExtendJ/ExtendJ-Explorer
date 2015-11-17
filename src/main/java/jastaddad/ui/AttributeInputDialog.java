@@ -8,9 +8,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 /**
- * Created by gda10jli on 11/4/15.
+ * Temporary class for the inputdialog, used when specifying the values for method that will be computed.
+ * ATM we can only use primitive types, and they will be cast to string.
+ * The values will be caught by the AttributeTabController
  */
-public class AttributeInputDialog extends Dialog<ArrayList<Object>> {
+public class AttributeInputDialog extends Dialog<ArrayList<Object>> { //Todo redesign this dialog
     public AttributeInputDialog(NodeInfo attribute){
         if(!attribute.isParametrized())
             return;

@@ -23,7 +23,6 @@ import javax.swing.*;
  * either the EdgeMenuListener or VertexMenuListener then the corresponding interface
  * methods will be called prior to the display of the menus (so that they can display
  * context sensitive information for the edge or vertex).
- * @author Dr. Greg M. Bernstein
  */
 class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
     private JPopupMenu edgePopup;

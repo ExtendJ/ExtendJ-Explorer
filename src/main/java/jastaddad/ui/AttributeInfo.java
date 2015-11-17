@@ -8,7 +8,9 @@ import javafx.beans.property.SimpleStringProperty;
 import java.util.ArrayList;
 
 /**
- * Created by gda10jli on 11/4/15.
+ * This is a factory class for the tableViews in the AttributeTabController
+ * It has basically the same fields as NodeInfoHolder, but other types.
+ * This is done to ease the work of the programmer, so the fields in the tableview:s will auto update on change.
  */
 public class AttributeInfo {
 
