@@ -9,6 +9,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * This class represents the Node in the AST, it holds all its terminal attributes and references to its children.
+ * This class should only be created once, due to that it will traverse the tree from the given Object.
+ */
 public class Node{
     public final Object node;
     public final int id;
@@ -21,6 +25,11 @@ public class Node{
     private int level;
     private NodeContent nodeContent;
 
+    /**
+     * This THE a constructor for the root node of the AST
+     * @param root
+     * @param api used for contributing errors and warnings, during the traversal of the AST.
+     */
     public Node(Object root, ASTAPI api){
         this.children = new ArrayList<>();
         this.name = "";
@@ -31,6 +40,15 @@ public class Node{
         init(root, false, false, 1, api);
     }
 
+    /**
+     * This is the constructor used during the traversal of the AST
+     * @param root
+     * @param name
+     * @param isList
+     * @param isOpt
+     * @param level
+     * @param api
+     */
     public Node(Object root, String name, boolean isList, boolean isOpt, int level, ASTAPI api){
         this.children = new ArrayList<>();
         this.className = root.getClass().getSimpleName();
@@ -46,6 +64,15 @@ public class Node{
         init(root, isList, isOpt, level, api);
     }
 
+    /**
+     * Continues the traversal.
+     * If the isList is true, this method will iterate over all the children in the "List"
+     * @param root
+     * @param isList
+     * @param isOpt
+     * @param level
+     * @param api
+     */
     private void init(Object root, boolean isList, boolean isOpt, int level, ASTAPI api){
         this.isOpt = isOpt;
         this.isList = isList;
@@ -62,6 +89,11 @@ public class Node{
         traversDown(root, api);
     }
 
+    /**
+     * Iterates through the methods of the root and fins the references to the children, for each child is traverses down
+     * @param root
+     * @param api
+     */
     private void traversDown(Object root, ASTAPI api) {
         try {
             for (Method m : root.getClass().getMethods()) {
@@ -84,6 +116,14 @@ public class Node{
         }
     }
 
+    /**
+     * Returns the name given by the parent node, by the annotations.
+     * @param a
+     * @return
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
     private String getName(Annotation a) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         if (a.getClass().getMethod("name") != null)
             return (String) a.getClass().getMethod("name").invoke(a, new Object[]{});

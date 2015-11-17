@@ -3,7 +3,8 @@ package jastaddad.ui.graph;
 import java.awt.*;
 
 /**
- * Created by gda10jth on 10/19/15.
+ * This class represents the edge between the nodes in the GraphView.
+ * It works as a holder for values which are then checked by the GraphView.
  */
 public class UIEdge {
 
@@ -39,7 +40,7 @@ public class UIEdge {
     }
 
     public Color getColor(){
-        if(reference) {
+        if(reference) { //Different color per reference type
             if (reftype == UIEdge.ATTRIBUTE_REF)
                 return new Color(80, 180, 80);
             if (reftype == UIEdge.DISPLAYED_REF)

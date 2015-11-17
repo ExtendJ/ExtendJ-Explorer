@@ -253,7 +253,7 @@ public class ASTAPI {
      * @return true if the filter was saved to file and a new filtered AST was successfully created, otherwise false
      */
     public boolean saveNewFilter(String text){
-        boolean res = filterConfig.saveAndUpdateFilter(text);
+        boolean res = filterConfig.saveAndUpdateConfig(text);
         if(res) {
             clearDisplayedReferences();
             filteredTree = null;

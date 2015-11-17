@@ -2,6 +2,9 @@ package jastaddad.api;
 
 import java.lang.annotation.Annotation;
 
+/**
+ * Util class that works as an intermediate for the annotations of the methods
+ */
 public class ASTAnnotation{
 
   private static final String AST_NODE_OPT_CHILD = "ASTNodeAnnotation.OptChild";
