@@ -29,8 +29,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 
 /**
  * Created by gda10jli on 10/15/15.
@@ -100,7 +98,7 @@ public class GraphView extends SwingNode implements ItemListener {
         for(GenericTreeNode ref : newRefs) {
             UIEdge edge = new UIEdge(UIEdge.ATTRIBUTE_REF);
             edges.add(edge);
-            graph.addEdge(edge, from.getClusterReference(), ref.getClusterReference());
+            graph.addEdge(edge, from.getClusterNode(), ref.getClusterNode());
         }
         mon.setReferenceEdges(edges);
         vs.repaint();
@@ -127,12 +125,12 @@ public class GraphView extends SwingNode implements ItemListener {
     private void addReferences(ArrayList<NodeReference> refs, HashMap<GenericTreeNode, ArrayList<UIEdge>> displayedRefs){
         for(NodeReference ref : refs) {
             GenericTreeNode from  = ref.getReferenceFrom();
-            if(!from.getClusterReference().isNode())
+            if(!from.getClusterNode().isNode())
                 continue;
-            from = from.getClusterReference();
+            from = from.getClusterNode();
             for(GenericTreeNode to : ref.getReferences()) {
                 UIEdge edge = new UIEdge(UIEdge.DISPLAYED_REF).setLabel(ref.getLabel());
-                graph.addEdge(edge, from, to.getClusterReference());
+                graph.addEdge(edge, from, to.getClusterNode());
                 if(!displayedRefs.containsKey(from))
                     displayedRefs.put(from, new ArrayList<>());
                 displayedRefs.get(from).add(edge);

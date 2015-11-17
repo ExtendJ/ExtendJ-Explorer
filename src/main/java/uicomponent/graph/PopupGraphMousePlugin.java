@@ -11,7 +11,6 @@ import jastaddad.filteredtree.TreeCluster;
 import jastaddad.filteredtree.TreeNode;
 import uicomponent.UIMonitor;
 
-import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -129,7 +128,7 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             GenericTreeNode parent = null;
             UIEdge edge = null;
             if(lastClicked.getParent() != null) {
-                parent = node.getParent().getClusterReference();
+                parent = node.getParent().getClusterNode();
                 for(UIEdge e : inGraph.getInEdges(lastClicked)) {
                     if (!e.isReference()) {
                         edge = e;
@@ -184,7 +183,7 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             GenericTreeNode parent = null;
             UIEdge edge = null;
             if(lastClicked.getParent() != null) {
-                parent = lastClicked.getParent().getClusterReference();
+                parent = lastClicked.getParent().getClusterNode();
                 for(UIEdge e : inGraph.getInEdges(lastClicked)) {
                     if (!e.isReference())
                         edge = e;
