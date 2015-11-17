@@ -35,7 +35,7 @@ public class Controller implements Initializable {
     @FXML private VBox attributeTab;
     @FXML private AttributeTabController attributeTabController;
     @FXML private ScrollPane textTreeTab;
-    @FXML private TextTreeTabController textTreeTabController;
+    @FXML private TreeViewTabController textTreeTabController;
 
     @FXML
     private TabPane graphViewTabs;

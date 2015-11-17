@@ -19,6 +19,13 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.lang.System;
 
+/**
+ * This is the main class for the JastAddAd system. This class will create an ASTAPI object that will generate the
+ * filtered AST.
+ *
+ * JastAddAd can be started by calling run() method on this class or JastAddAdUI.
+ *
+ */
 public class JastAddAdAPI {
 	public final static String FILE_NAME = "jastAddAd-result";
     public final static String CLUSTER_STRING = "cluster";
@@ -32,7 +39,11 @@ public class JastAddAdAPI {
         this.root = root;
         filterDir = "";
 	}
-	
+
+    /**
+     * Sets the directory of the projects
+     * @param dir
+     */
     public void setFilterDir(String dir){filterDir = dir;}
 
 	public void run(){
@@ -45,6 +56,13 @@ public class JastAddAdAPI {
 		return api.getFilteredTree();
 	}
 
+    /**
+     * Prints the generated Filtered AST as XML to a file in toDirecty with the file extension ext.
+     *
+     * @param toDirectory
+     * @param ext
+     * @return true if successful.
+     */
 	public boolean printToXML(String toDirectory, String ext){
 		try {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -78,6 +96,12 @@ public class JastAddAdAPI {
 		return true;
 	}
 
+    /**
+     * Used to generate the XML code.
+     *
+     * @param root
+     * @param doc
+     */
 	private void traversTreeXML(GenericTreeNode root, Document doc){
 		Element element = doc.createElement(root.toString());
 		doc.appendChild(element);
@@ -85,6 +109,13 @@ public class JastAddAdAPI {
 			traversTreeXML(child, element, doc);
 	}
 
+    /**
+     * Used to generate the XML code.
+     *
+     * @param parent
+     * @param parentElement
+     * @param doc
+     */
 	private void traversTreeXML(GenericTreeNode parent, Element parentElement, Document doc){
         Element element;
         if(!parent.isNode())
@@ -95,7 +126,11 @@ public class JastAddAdAPI {
 		for(GenericTreeNode child : parent.getChildren())
 			traversTreeXML(child, element, doc);
 	}
-  
+
+    /**
+     * main function for starting a JastAddAdAPI session.
+     * @param args
+     */
 	public static void main(String[] args) {
 		try{
 			String filename = "testInput.cfg";

@@ -14,9 +14,11 @@ import java.util.HashMap;
 import java.util.ResourceBundle;
 
 /**
+ * Controller for the tree view part of the UI.
+ *
  * Created by gda10jth on 11/2/15.
  */
-public class TextTreeTabController implements Initializable, ChangeListener {
+public class TreeViewTabController implements Initializable, ChangeListener {
     private UIMonitor mon;
     private HashMap<GenericTreeNode, TreeItem<GenericTreeNode>> nodeToItemRef;
     private boolean ignoreChange;
@@ -33,6 +35,13 @@ public class TextTreeTabController implements Initializable, ChangeListener {
         graphTreeView.getSelectionModel().selectedItemProperty().addListener(this);
     }
 
+    /**
+     * Called when something changes in the tree view, e.g. a node is selected.
+     * Calls the nodeSelected(...) in the main controller Controller.
+     * @param observable
+     * @param oldValue
+     * @param newValue
+     */
     @Override
      public void changed(ObservableValue observable, Object oldValue,
                          Object newValue) {
@@ -51,6 +60,10 @@ public class TextTreeTabController implements Initializable, ChangeListener {
         graphTreeView.setShowRoot(true);
     }
 
+    /**
+     * Recursively create all the ui TreeItems that will be used by the tree.
+     * @param parent
+     */
     private void createTree(TreeItem<GenericTreeNode> parent){
         GenericTreeNode parentGNode = parent.getValue();
         for (GenericTreeNode child : parentGNode.getChildren()) {

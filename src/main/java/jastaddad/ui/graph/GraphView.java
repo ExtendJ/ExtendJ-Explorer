@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
+ * This is the graph view in the UI. It uses the Jung2 library, and is therefore uses Swing. Every event that happens
+ * within the tree is handled here. 
+ *
  * Created by gda10jli on 10/15/15.
  */
 public class GraphView extends SwingNode implements ItemListener {
