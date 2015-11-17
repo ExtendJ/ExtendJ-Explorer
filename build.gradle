@@ -39,11 +39,15 @@ dependencies {
 	compile 'net.sf.jung:jung-api:2.0.1'
 	compile 'net.sf.jung:jung-visualization:2.0.1'
 	compile 'net.sf.jung:jung-algorithms:2.0.1'
-	testCompile 'junit:junit:4.+'
 	compile fileTree(dir: "${System.properties['java.home']}", include: '**/jfxrt.jar')
 	compile fileTree(dir: "${System.properties['java.home']}", include: '**/jfxswt.jar')
 	compile fileTree(dir: "${System.properties['java.home']}", include: '**/ant-javafx.jar')
-	runtime fileTree(dir: "${System.properties['java.home']}", include: '**/javafx-mx.jar')
+
+	testCompile 'junit:junit:4.+'
+	testCompile 'org.testfx:testfx-core:4.0.+'
+	testCompile 'org.testfx:testfx-legacy:4.0.+', {
+		exclude group: 'junit', module: 'junit'
+	}
 }
 
 task fatJar(type: Jar) {
