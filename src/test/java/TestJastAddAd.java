@@ -62,6 +62,8 @@ public class TestJastAddAd extends AbstractParameterizedTest {
 				} else {
 					// everything went well!
 					JastAddAd debugger = new JastAddAd(program, false);
+					debugger.setFilterDir(inDirectory);
+					debugger.run();
 					debugger.printToXML(inDirectory, OUT_EXTENSION);
 					checkOutput(debugger.getFilteredTree(), readXML(expectedFile), inDirectory);
 				}

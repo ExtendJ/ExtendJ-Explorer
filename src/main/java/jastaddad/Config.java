@@ -24,9 +24,11 @@ public class Config{
     private static final String FILTER_LIST = "-filter";
     private static final String STYLE_LIST = "-style";
     private static final String DISPLAY_ATTRIBUTES_LIST = "-display-attributes";
+    private String filterDir;
 
-    public Config(ASTAPI api){
+    public Config(ASTAPI api, String filterDir){
         this.api = api;
+        this.filterDir = filterDir;
         noError = readFilter(filterFileName);
     }
 
@@ -36,7 +38,7 @@ public class Config{
         ConfigScanner scanner;
         try {
             // check if file exists
-            File f = new File(fileName);
+            File f = new File(filterDir + "/" + fileName);
             PrintWriter writer = null;
             if(!f.exists()) {
                 writer = new PrintWriter(fileName, "UTF-8");

@@ -27,14 +27,26 @@ public class JastAddAd{
 	private ASTAPI api;
 	private UIComponent ui;
 
+	private boolean runUI;
+    private Object root;
+    private String filterDir;
+
 	public JastAddAd(Object root){
 		this(root, true);
 	}
 
 	public JastAddAd(Object root, boolean runUI){
-		api = new ASTAPI(root);
-		if(runUI)
-			ui = new UIComponent(api);
+        this.root = root;
+		this.runUI = runUI;
+        filterDir = "";
+	}
+
+    public void setFilterDir(String dir){filterDir = dir;}
+
+	public void run(){
+        api = new ASTAPI(root, filterDir);
+        if(runUI)
+            ui = new UIComponent(api);
 	}
 
 	public GenericTreeNode getFilteredTree(){
@@ -102,6 +114,7 @@ public class JastAddAd{
 				}
 			} else {
 				JastAddAd debugger = new JastAddAd(program);
+                debugger.run();
 				//program.genCode(System.out);
 			}
 		} catch (FileNotFoundException e) {
