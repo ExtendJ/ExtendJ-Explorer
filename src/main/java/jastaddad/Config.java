@@ -1,6 +1,7 @@
 package jastaddad;
 
 import configAST.*;
+import jastaddad.objectinfo.Attribute;
 import jastaddad.objectinfo.NodeInfo;
 
 import java.io.*;

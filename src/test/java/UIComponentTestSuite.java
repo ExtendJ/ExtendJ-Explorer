@@ -2,6 +2,8 @@ import configAST.ConfigParser;
 import configAST.ConfigScanner;
 import configAST.DebuggerConfig;
 import configAST.ErrorMessage;
+import jastaddad.ASTAPI;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import jastaddad.JastAddAd;
 import javafx.scene.Parent;
@@ -23,7 +25,7 @@ public class UIComponentTestSuite extends GuiTest {
         try {
             System.out.println("start UI tests");
             try{
-                ConfigScanner scanner = new ConfigScanner(new FileReader("tests/testInput.cfg"));
+                ConfigScanner scanner = new ConfigScanner(new FileReader("tests/allBlocks/testInput.cfg"));
                 ConfigParser parser = new ConfigParser();
                 DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);
                 if (!program.errors().isEmpty()) {
@@ -33,12 +35,8 @@ public class UIComponentTestSuite extends GuiTest {
                         System.err.println("- " + e);
                     }
                 } else {
-                    // everything went well!
-                    JastAddAd debugger = new JastAddAd(program, true);
-                    debugger.run();
-                    UIComponent ui = debugger.getUI();
                     FXMLLoader loader = new FXMLLoader();
-                    return loader.load(ui.getClass().getResource("/main.fxml").openStream());
+                    return loader.load(getClass().getResource("/main.fxml").openStream());
                 }
             } catch (FileNotFoundException e) {
                 System.out.println("File not found!");
@@ -52,6 +50,7 @@ public class UIComponentTestSuite extends GuiTest {
         }
         return null;
     }
+
 
     @Test
     public void TreeViewTest() {

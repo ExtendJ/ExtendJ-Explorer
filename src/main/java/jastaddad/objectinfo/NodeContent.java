@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 /**
+ * This class holds all information about the a node, all attribute values and invokedvalues. It h
  * Created by gda10jli on 10/14/15.
  */
 public class NodeContent {
