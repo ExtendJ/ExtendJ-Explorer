@@ -1,7 +1,7 @@
-package jastaddad;
+package jastaddad.api;
 
 import configAST.*;
-import jastaddad.nodeinfo.NodeInfo;
+import jastaddad.api.nodeinfo.NodeInfo;
 
 import java.io.*;
 import java.util.HashMap;

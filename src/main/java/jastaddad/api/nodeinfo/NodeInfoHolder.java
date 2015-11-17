@@ -1,4 +1,4 @@
-package jastaddad.nodeinfo;
+package jastaddad.api.nodeinfo;
 
 /**
  * A Holder for attribute informations, can hold a reference to a NodeInfo

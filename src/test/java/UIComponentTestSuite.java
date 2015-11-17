@@ -2,14 +2,10 @@ import configAST.ConfigParser;
 import configAST.ConfigScanner;
 import configAST.DebuggerConfig;
 import configAST.ErrorMessage;
-import jastaddad.ASTAPI;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import jastaddad.JastAddAd;
 import javafx.scene.Parent;
 import org.junit.Test;
 import org.loadui.testfx.GuiTest;
-import uicomponent.UIComponent;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

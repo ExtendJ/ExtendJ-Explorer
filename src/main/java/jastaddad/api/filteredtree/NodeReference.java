@@ -1,4 +1,4 @@
-package jastaddad.filteredtree;
+package jastaddad.api.filteredtree;
 
 import java.util.ArrayList;
 

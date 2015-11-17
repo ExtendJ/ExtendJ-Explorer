@@ -1,7 +1,7 @@
-package jastaddad.nodeinfo;
+package jastaddad.api.nodeinfo;
 
-import jastaddad.ASTAnnotation;
-import jastaddad.Node;
+import jastaddad.api.ASTAnnotation;
+import jastaddad.api.Node;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

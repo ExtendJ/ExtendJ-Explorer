@@ -1,6 +1,4 @@
-package uicomponent.graph;
-
-import jastaddad.filteredtree.NodeReference;
+package jastaddad.ui.graph;
 
 import java.awt.*;
 

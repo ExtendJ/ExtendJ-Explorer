@@ -1,12 +1,12 @@
-package jastaddad.filteredtree;
+package jastaddad.api.filteredtree;
 
 import configAST.Color;
 import configAST.Str;
 import configAST.Value;
-import jastaddad.ASTAPI;
-import jastaddad.Config;
-import jastaddad.Node;
-import jastaddad.nodeinfo.NodeInfo;
+import jastaddad.api.ASTAPI;
+import jastaddad.api.Config;
+import jastaddad.api.Node;
+import jastaddad.api.nodeinfo.NodeInfo;
 
 import java.util.*;
 

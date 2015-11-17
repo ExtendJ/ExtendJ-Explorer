@@ -1,9 +1,9 @@
-package jastaddad.filteredtree;
+package jastaddad.api.filteredtree;
 
 import configAST.Color;
 import configAST.Str;
 import configAST.Value;
-import jastaddad.Config;
+import jastaddad.api.Config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,13 +37,13 @@ public abstract class GenericTreeNode {
     public GenericTreeNode getParent(){return parent;}
 
     /**
-     * Set so the node can be manipulated by someone else than the configurations, and added to a cluster.
+     * Set so the node can be manipulated by someone else than the configurations
      * @param expandable
      */
     public void setExpandable(boolean expandable){ isExpandable = expandable;}
 
     /**
-     * Check if the node can be manipulated by someone else than the configurations, and added to a cluster.
+     * Check if the node can be manipulated by someone else than the configurations
      */
     public boolean isExpandable(){return isExpandable;}
 
@@ -97,7 +97,7 @@ public abstract class GenericTreeNode {
     public abstract boolean isRealChild(GenericTreeNode child);
 
     /**
-     * Creates the a string containing the nodes name and the displayed attributes
+     * Creates the string containing the nodes name and the displayed attributes
      * @return
      */
     public abstract String toGraphString();
@@ -131,7 +131,7 @@ public abstract class GenericTreeNode {
     public HashMap<String, Value> getStyles(){ return styles; }
 
     /**
-     * Returns the top cluster the node is a part of, if it a "real" node it will return itself
+     * Returns the top cluster that this node is a part of, if it a "real" node it will return itself
      * @return
      */
     public GenericTreeNode getClusterNode(){

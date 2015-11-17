@@ -1,10 +1,4 @@
-package jastaddad.filteredtree;
-
-import configAST.Color;
-import configAST.Str;
-import jastaddad.Config;
-
-import java.util.ArrayList;
+package jastaddad.api.filteredtree;
 
 /**
  * Class for the cluster, has a reference to its top node.

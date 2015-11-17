@@ -1,10 +1,9 @@
-package jastaddad.filteredtree;
+package jastaddad.api.filteredtree;
 
 import configAST.Color;
 import configAST.Str;
-import jastaddad.Config;
+import jastaddad.api.Config;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 

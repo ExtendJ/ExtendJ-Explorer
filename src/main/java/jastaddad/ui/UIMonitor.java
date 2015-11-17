@@ -1,9 +1,9 @@
-package uicomponent;
+package jastaddad.ui;
 
-import jastaddad.ASTAPI;
-import jastaddad.filteredtree.GenericTreeNode;
-import uicomponent.controllers.Controller;
-import uicomponent.graph.UIEdge;
+import jastaddad.api.ASTAPI;
+import jastaddad.api.filteredtree.GenericTreeNode;
+import jastaddad.ui.controllers.Controller;
+import jastaddad.ui.graph.UIEdge;
 
 import java.util.ArrayList;
 import java.util.HashMap;

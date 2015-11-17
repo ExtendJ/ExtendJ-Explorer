@@ -1,4 +1,4 @@
-package uicomponent.graph;
+package jastaddad.ui.graph;
 
 import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
@@ -12,14 +12,14 @@ import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.picking.PickedInfo;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 import edu.uci.ics.jung.visualization.renderers.VertexLabelAsShapeRenderer;
-import jastaddad.filteredtree.GenericTreeNode;
-import jastaddad.filteredtree.NodeReference;
-import jastaddad.filteredtree.TreeNode;
+import jastaddad.api.filteredtree.GenericTreeNode;
+import jastaddad.api.filteredtree.NodeReference;
+import jastaddad.api.filteredtree.TreeNode;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import org.apache.commons.collections15.Transformer;
-import uicomponent.UIMonitor;
-import uicomponent.controllers.Controller;
+import jastaddad.ui.UIMonitor;
+import jastaddad.ui.controllers.Controller;
 
 import java.awt.*;
 import java.awt.event.ItemEvent;
