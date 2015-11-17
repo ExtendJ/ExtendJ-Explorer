@@ -1,6 +1,7 @@
-package jastaddad.api.objectinfo;
+package jastaddad.api.nodeinfo;
 
 /**
+ * A Holder for attribute informations, can hold a reference to a NodeInfo
  * Created by gda10jli on 11/3/15.
  */
 public class NodeInfoHolder implements Comparable<NodeInfoHolder>{

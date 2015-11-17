@@ -1,6 +1,7 @@
 package jastaddad.api;
 
-import jastaddad.api.objectinfo.NodeContent;
+
+import jastaddad.api.nodeinfo.NodeContent;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;

@@ -1,9 +1,8 @@
 package jastaddad.ui.controllers;
-
 import jastaddad.api.Node;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.TreeNode;
-import jastaddad.api.objectinfo.NodeInfo;
+import jastaddad.api.nodeinfo.NodeInfo;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
