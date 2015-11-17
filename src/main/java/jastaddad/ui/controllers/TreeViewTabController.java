@@ -53,6 +53,9 @@ public class TreeViewTabController implements Initializable, ChangeListener {
         // do what ever you want
     }
 
+    /**
+     * Create the the Tree view tree.
+     */
     private void loadGraphTreeView(){
         TreeItem<GenericTreeNode> root = new TreeItem<>(mon.getRootNode());
         createTree(root);
@@ -75,11 +78,20 @@ public class TreeViewTabController implements Initializable, ChangeListener {
         }
     }
 
+    /**
+     * Sets the selected vertex if the tree. This method is used if the selected node is defined by some other part
+     * of the UI, e.g. the Graph view.
+     * @param node
+     */
     public void newNodeSelected(GenericTreeNode node){
         ignoreChange = true;
         graphTreeView.getSelectionModel().select(nodeToItemRef.get(node));
     }
 
+    /**
+     * Deselects all vertexes in the tree. This method is used if the selected node is defined by some other part
+     * of the UI, e.g. the Graph view.
+     */
     public void deselectNode(){
         graphTreeView.getSelectionModel().clearSelection();
     }

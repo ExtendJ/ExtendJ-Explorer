@@ -31,8 +31,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * This is the graph view in the UI. It uses the Jung2 library, and is therefore uses Swing. Every event that happens
- * within the tree is handled here. 
+ * This is the graph view in the UI. It uses the Jung2 library, and therefore is based on Swing. Every event that happens
+ * within the tree is handled here. Events that will have changes other parts of the UI will invoke methods in the class
+ * Controller reached by the field con.
+ *
+ * A Jung2 DelegateForest is used to present the tree. Vertexes in this tree are GenericTreeNodes and edges are
+ * represented by the class UIEdge defined in this package.
  *
  * Created by gda10jli on 10/15/15.
  */
@@ -45,8 +49,8 @@ public class GraphView extends SwingNode implements ItemListener {
     public GraphView(UIMonitor mon){
         this.mon = mon;
         this.con = mon.getController();
-        DirectedOrderedSparseMultigraph n = new DirectedOrderedSparseMultigraph();
-        graph = new DelegateForest<>(n);
+        DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge>();
+        graph = new DelegateForest<GenericTreeNode, UIEdge>(n);
         createTree(graph, mon.getRootNode());
         createLayout(graph);
         setListeners();
@@ -54,6 +58,11 @@ public class GraphView extends SwingNode implements ItemListener {
         setContent(vs);
     }
 
+    /**
+     * Recursively iterate through the Filtered AST to create Jung vertexes and edges.
+     * @param g
+     * @param parent
+     */
     private void createTree(Forest<GenericTreeNode, UIEdge> g, GenericTreeNode parent){
 
         for (GenericTreeNode child : parent.getChildren()) {
@@ -73,8 +82,8 @@ public class GraphView extends SwingNode implements ItemListener {
     }
 
     public void updateGraph(){
-        DirectedOrderedSparseMultigraph n = new DirectedOrderedSparseMultigraph();
-        graph = new DelegateForest<>(n);
+        DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge>();
+        graph = new DelegateForest<GenericTreeNode, UIEdge>(n);
         createTree(graph, mon.getRootNode());
         vs.getGraphLayout().setGraph(graph);
         addDisplayedReferences();
@@ -87,6 +96,12 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.getPickedVertexState().addItemListener(this);
     }
 
+    /**
+     * Add edges from the vertex from and to all vertexes in newRefs.
+     *
+     * @param newRefs
+     * @param from
+     */
     public void setReferenceEdges(ArrayList<GenericTreeNode> newRefs, GenericTreeNode from){
         if(mon.getReferenceEdges() != null) {
             for (UIEdge e : mon.getReferenceEdges()){
@@ -107,6 +122,9 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.repaint();
     }
 
+    /**
+     * Add edges based on attributes. This is defined in the filter language by the user.
+     */
     public void addDisplayedReferences(){
         ArrayList<NodeReference> refs = mon.getApi().getDisplayedReferences();
         if(refs == null || refs.size() == 0)
@@ -125,6 +143,12 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.repaint();
     }
 
+    /**
+     * private method to add edges based on attributes. Called from addDisplayedReferences(...).
+     *
+     * @param refs
+     * @param displayedRefs
+     */
     private void addReferences(ArrayList<NodeReference> refs, HashMap<GenericTreeNode, ArrayList<UIEdge>> displayedRefs){
         for(NodeReference ref : refs) {
             GenericTreeNode from  = ref.getReferenceFrom();
@@ -141,30 +165,26 @@ public class GraphView extends SwingNode implements ItemListener {
         }
     }
 
-    public void createLayout(Forest<GenericTreeNode, UIEdge> g ){//Creates UI specific stuff
+    /**
+     * This function creates the VisualizationViewer Object and defines all Transformers.
+     *
+     * Transformers in Jung2 are used to define the shape, size, color etc on vertexes and edges. A Transformer have two
+     * generics that defines what (the first generic) will be transformed to what (the second generic). An example:
+     * to define a color on a vertex, a Transformer<GenericTreeNode, Color> is used. it "transform" a GenericTreeNode to
+     * a Color.
+     * @param g
+     */
+    public void createLayout(Forest<GenericTreeNode, UIEdge> g ){
 
         TreeLayout<GenericTreeNode, UIEdge> layout = new TreeLayout<>(g, 150, 100);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        Transformer <GenericTreeNode, Shape> vertexShape = fNode -> {
-            //CompositeShape shape = new CompositeShape();
-            String shape = fNode.getStyles().get("node-shape").getStr();
-            //System.out.println("Node: " + "asdasd" + " shape: " + shape);
-            if(shape != null) {
-                if (shape.equals("rounded_rectangle"))
-                    return new RoundRectangle2D.Double(-50, -20, 130, 40, 40, 40);
-                if (shape.equals("small_circle"))
-                    return new Ellipse2D.Float(-20, -20, 40, 40);
-                if (shape.equals("rectangle"))
-                    return new RoundRectangle2D.Double(-50, -20, 130, 40, 10, 10);
-            }
-            return new RoundRectangle2D.Double(-50, -20, 130, 40,40,40);
-        };
-
+        // Vertex text transformer
         Transformer <GenericTreeNode, String> toStringTransformer = fNode -> fNode.toGraphString();
-
+        // Edge color transformer
         Transformer<UIEdge, Paint> edgePaintTransformer = edge -> edge.getColor();
 
+        // Edge stroke transformer
         float dash[] = {5.0f};
         final Stroke refStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
         final Stroke dashedStroke = new BasicStroke(0.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
@@ -177,12 +197,15 @@ public class GraphView extends SwingNode implements ItemListener {
             return dashedStroke;
         };
 
+        // Vertex border style transformer
         Transformer<GenericTreeNode, Stroke> vertexStrokeTransformer = item -> {
             String border = item.getStyles().get("border-style").getStr();
             if(border.equals("dashed"))
                 return dashedStroke;
             return normalStroke;
         };
+
+        // Build the VisualizationViewer that holds the graph and all transformers.
         ScalingControl visualizationViewerScalingControl = new CrossoverScalingControl();
 
         vs = new VisualizationViewer<>(layout, screenSize);
@@ -200,8 +223,10 @@ public class GraphView extends SwingNode implements ItemListener {
 
     }
 
-    public void setListeners(){//Sets UI listeners of the graph
-
+    /**
+     * Set listeners in the Graph.
+     */
+    public void setListeners(){
         vs.getPickedVertexState().addItemListener(this);
         PluggableGraphMouse gm = new PluggableGraphMouse();
         gm.add(new TranslatingGraphMousePlugin(MouseEvent.BUTTON2_MASK));
@@ -216,16 +241,29 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.repaint();
     }
 
+    /**
+     * Sets the selected vertex if the tree. This method is used if the selected vertex is defined by some other part
+     * of the UI, e.g. the Tree view.
+     * @param node
+     */
     public void newNodeSelected(GenericTreeNode node) {
         vs.getPickedVertexState().clear();
         vs.getPickedVertexState().pick(node, true);
         vs.repaint();
     }
 
+    /**
+     * Deselects all vertexes in the tree. This method is used if the selected node is defined by some other part
+     * of the UI, e.g. the Tree view.
+     */
     public void deselectNode(){
         vs.getPickedVertexState().clear();
     }
 
+    /**
+     * Listener event method when a vertex is selected in the graph.
+     * @param e
+     */
     @Override
     public void itemStateChanged(ItemEvent e) {
         Platform.runLater(() -> {
@@ -239,9 +277,13 @@ public class GraphView extends SwingNode implements ItemListener {
         });
     }
 
+    /**
+     * A transformer Class for setting the color of a vertex in the graph.
+     */
     private static class VertexPaintTransformer implements Transformer<GenericTreeNode,Paint> {
         private final PickedInfo<GenericTreeNode> pi;
         private final UIMonitor mon;
+
         VertexPaintTransformer ( PickedInfo<GenericTreeNode> pi, UIMonitor mon ) {
             super();
             this.mon = mon;
@@ -250,6 +292,12 @@ public class GraphView extends SwingNode implements ItemListener {
             this.pi = pi;
 
         }
+
+        /**
+         * Sets the color of the vertex fNode based on picked state, highlight or a vertex specific color.
+         * @param fNode
+         * @return
+         */
         @Override
         public Paint transform(GenericTreeNode fNode) {
             String color = fNode.getStyles().get("node-color").getColor();
@@ -267,6 +315,9 @@ public class GraphView extends SwingNode implements ItemListener {
         }
     }
 
+    /**
+     * A transformer Class for setting the shape of a vertex in the graph.
+     */
     private class VertexShapeTransformer extends VertexLabelAsShapeRenderer<GenericTreeNode, UIEdge> {
         private final UIMonitor mon;
 
@@ -276,6 +327,11 @@ public class GraphView extends SwingNode implements ItemListener {
 
         }
 
+        /**
+         * Sets the shape of the vertex fNode based on style or type of the vertex (cluster or whatever)
+         * @param fNode
+         * @return
+         */
         @Override
         public Shape transform(GenericTreeNode fNode) {
             Component component = prepareRenderer(rc, rc.getVertexLabelRenderer(), rc.getVertexLabelTransformer().transform(fNode),
@@ -287,6 +343,7 @@ public class GraphView extends SwingNode implements ItemListener {
             int height = size.height+20;
             int width = size.width+20;
 
+            // make sure nodes have a minimum width
             if(fNode.isNode() && width < 130){
                 width = 130;
                 centerX = -65;

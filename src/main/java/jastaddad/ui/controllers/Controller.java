@@ -82,6 +82,14 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) { }
 
+    /**
+     * Called by JastAddAdUI when the UI is created to initialize fields and event listeners in the UI.
+     *
+     * @param mon
+     * @param graphView
+     * @param uiComponent
+     * @throws IOException
+     */
     public void init(UIMonitor mon, GraphView graphView, JastAddAdUI uiComponent) throws IOException {
         this.mon = mon;
         this.graphView = graphView;

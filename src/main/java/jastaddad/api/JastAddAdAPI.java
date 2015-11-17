@@ -46,6 +46,9 @@ public class JastAddAdAPI {
      */
     public void setFilterDir(String dir){filterDir = dir;}
 
+    /**
+     * run() generates the AST
+     */
 	public void run(){
         api = new ASTAPI(root, filterDir);
 	}
