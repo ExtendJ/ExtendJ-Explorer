@@ -62,7 +62,7 @@ public class TestJastAddAd extends AbstractParameterizedTest {
 				} else {
 					// everything went well!
 					JastAddAd debugger = new JastAddAd(program, false);
-					debugger.setFilterDir(inDirectory);
+					debugger.setFilterDir(inDirectory + "/");
 					debugger.run();
 					debugger.printToXML(inDirectory, OUT_EXTENSION);
 					checkOutput(debugger.getFilteredTree(), readXML(expectedFile), inDirectory);
@@ -81,19 +81,27 @@ public class TestJastAddAd extends AbstractParameterizedTest {
 	}
 
 	protected void checkOutput(GenericTreeNode root, Tree expectedRoot, String inDirectory) {
-		//System.out.println("==================" + root.toString());
-		assertEquals("Output is not the same", root.toString(), expectedRoot.getName());
+
+        //System.out.println("==================" + nodeName(root);
+		assertEquals("Output is not the same", nodeName(root), expectedRoot.getName());
 		for(GenericTreeNode child : root.getChildren()){
-			boolean s = expectedRoot.containsChild(child.toString());
-			assertEquals("Test Failed: " + inDirectory + ". Extra child: " + child.toString() + " in parent: " + root.toString(),
+			boolean s = expectedRoot.containsChild(nodeName(child));
+			assertEquals("Test Failed: " + inDirectory + ". Extra child: " + nodeName(child) + " in parent: " + root.toString(),
 					s,
 					true);
 		}
 		assertEquals("Test Failed: " + inDirectory + ". Missing child in parent: " + root.toString(),
 				expectedRoot.isEveryChildChecked(), true);
 		for(GenericTreeNode child : root.getChildren())
-			checkOutput(child, expectedRoot.getChild(child.toString()), inDirectory);
+			checkOutput(child, expectedRoot.getChild(nodeName(child)), inDirectory);
 	}
+
+    private String nodeName(GenericTreeNode node){
+        String name = node.toString();
+        if(!node.isNode())
+            name = JastAddAd.CLUSTER_STRING;
+        return name;
+    }
 
 	private Tree readXML(String expected){
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

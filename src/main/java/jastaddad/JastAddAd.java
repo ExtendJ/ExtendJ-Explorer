@@ -24,6 +24,7 @@ import java.lang.System;
 
 public class JastAddAd{
 	public final static String FILE_NAME = "jastAddAd-result";
+    public final static String CLUSTER_STRING = "cluster";
 	private ASTAPI api;
 	private UIComponent ui;
 
@@ -94,7 +95,11 @@ public class JastAddAd{
 	}
 
 	private void traversTreeXML(GenericTreeNode parent, Element parentElement, Document doc){
-		Element element = doc.createElement(parent.toString());
+        Element element;
+        if(!parent.isNode())
+            element = doc.createElement(CLUSTER_STRING);
+        else
+            element = doc.createElement(parent.toString());
 		parentElement.appendChild(element);
 		for(GenericTreeNode child : parent.getChildren())
 			traversTreeXML(child, element, doc);
