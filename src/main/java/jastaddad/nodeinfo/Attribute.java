@@ -1,4 +1,4 @@
-package jastaddad.objectinfo;
+package jastaddad.nodeinfo;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

@@ -3,7 +3,7 @@ package uicomponent.controllers;
 import jastaddad.Node;
 import jastaddad.filteredtree.GenericTreeNode;
 import jastaddad.filteredtree.TreeNode;
-import jastaddad.objectinfo.NodeInfo;
+import jastaddad.nodeinfo.NodeInfo;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;

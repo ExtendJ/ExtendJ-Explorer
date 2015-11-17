@@ -1,4 +1,4 @@
-package jastaddad.objectinfo;
+package jastaddad.nodeinfo;
 
 import jastaddad.ASTAnnotation;
 import jastaddad.Node;
@@ -11,7 +11,8 @@ import java.util.Collections;
 import java.util.HashMap;
 
 /**
- * This class holds all information about the a node, all attribute values and invokedvalues. It h
+ * This class holds all information about the a node, all attribute values and invokedvalues.
+ * It can invoke methods with the compute methods.
  * Created by gda10jli on 10/14/15.
  */
 public class NodeContent {
@@ -20,9 +21,9 @@ public class NodeContent {
 
     private HashMap<String, NodeInfo> attributes;
     private HashMap<String, NodeInfo> tokens;
-    private ArrayList<String> innovationErrors;
-    private HashMap<String, NodeInfo> invokedValues;
-    private Node node;
+    private ArrayList<String> innovationErrors; //Error list for invoke calls
+    private HashMap<String, NodeInfo> invokedValues; //The cached values for invoked methods
+    private Node node; //The node the content is a part of
 
     public NodeContent(Node node){
         attributes = new HashMap();
@@ -31,21 +32,38 @@ public class NodeContent {
         this.node = node;
     }
 
-    public boolean contains(String key){
-        return attributes.containsKey(key) || tokens.containsKey(key);
+    /**
+     * Will return the errors that may have been cast during the invocation of a method or methods.
+     * NOTE: Will also clear the list.
+     * @return
+     */
+    public ArrayList<String> getInnvokationErrors(){
+        ArrayList<String> temp = innovationErrors;
+        innovationErrors.clear();
+        return temp;
     }
 
-    public ArrayList<String> getInnvokationErrors(){ return innovationErrors; }
-
+    /**
+     * Will check if any error have been cast during some invocation.
+     * @return
+     */
     public boolean noErrors(){ return innovationErrors.size() == 0; }
 
-
+    /**
+     * Add some invoked value to the cachedMap
+     * @param info
+     */
     public void addInvokedValue(NodeInfo info){
         if(invokedValues == null)
             invokedValues = new HashMap<>();
         invokedValues.put(info.getName(), info);
     }
 
+    /**
+     * Will return an Attribute or Token for the given key.
+     * @param key
+     * @return
+     */
     public NodeInfo get(String key){
         NodeInfo ret = attributes.get(key);
         if(ret == null)
@@ -53,6 +71,12 @@ public class NodeContent {
         return ret;
     }
 
+    /**
+     * Computes the method in the NodeInfo, with the given parameters.
+     * @param nodeInfo
+     * @param par
+     * @return the value of the computation.
+     */
     public Object compute(NodeInfo nodeInfo, ArrayList<Object> par){
         if(!nodeInfo.isParametrized())
             return null;
@@ -84,7 +108,12 @@ public class NodeContent {
         }
     }
 
-
+    /**
+     * Creates a object of the given class type, where the Object will be cast.
+     * @param obj
+     * @param c
+     * @return The newly created object.
+     */
     private Object getParam(Object obj, Class c){ //Todo expand this shit, and do something smarter with the parameters
         if(c == int.class || c == Integer.class)
             return new Integer(Integer.parseInt(obj.toString()));
@@ -95,14 +124,24 @@ public class NodeContent {
         return null;
     }
 
+    /**
+     * Computes all methods of the NodeContents node, this will clear the old values except the invoked ones.
+     * This is used for onDemand execution attributes values.
+     * @return
+     */
     public ArrayList<String> compute(){
         innovationErrors.clear();
         attributes.clear();
         tokens.clear();
-        add(node.node);
+        compute(node.node);
         return innovationErrors;
     }
 
+    /**
+     * Compute the attribute/token method with some given name.
+     * @param method
+     * @return
+     */
     public NodeInfo compute(String method){
         try {
             Method m = node.node.getClass().getMethod(method);
@@ -117,33 +156,34 @@ public class NodeContent {
         return null;
     }
 
-    public ArrayList<NodeInfoHolder> toArray(){
-        ArrayList<NodeInfoHolder> temp = new ArrayList<>();
-        for (NodeInfo a : attributes.values())
-            temp.add(new NodeInfoHolder(a.print(), a.getValue(), a));
-        for (NodeInfo t : tokens.values())
-            temp.add(new NodeInfoHolder(t.print(), t.getValue(), t));
-        if(invokedValues != null) {
-            for (NodeInfo i : invokedValues.values())
-                temp.add(new NodeInfoHolder(i.getName(), i.getValue(), i));
-        }
-        Collections.sort(temp);
-        return temp;
-    }
-
-    public void add(Object obj){
+    /**
+     * Computes all methods of the given object, the values will be added to NodeContents value Lists.
+     * NOTE: it will only compute the methods with annotations of the ASTAnnotation type.
+     * @param obj
+     */
+    public void compute(Object obj){
         for(Method m : obj.getClass().getMethods()){
-            add(obj, m);
+            compute(obj, m);
         }
     }
 
-    public void add(Object obj, Method m) {
+    /**
+     * Computes the method of the given object if it has an annotation of the ASTAnnotation type.
+     * The value will be added to a List in the NodeContent
+     * @param obj
+     */
+    public void compute(Object obj, Method m) {
         for(Annotation a : m.getAnnotations()) {
-            add(obj, m, a);
+            compute(obj, m, a);
         }
     }
 
-    public NodeInfo add(Object obj, Method m, Annotation a)  {
+    /**
+     * Computes the method of the given object with if the annotation is a ASTAnnotation.
+     * The value will be added to a List in the NodeContent
+     * @param obj
+     */
+    public NodeInfo compute(Object obj, Method m, Annotation a)  {
         if(ASTAnnotation.isAttribute(a)) {
             return attributes.put(NodeInfo.getName(m),getAttribute(obj, m));
         }
@@ -152,6 +192,12 @@ public class NodeContent {
         return null;
     }
 
+    /**
+     * Get the Attribute of the method in the obj.
+     * @param obj
+     * @param m
+     * @return
+     */
     //Todo might move these methods to their specific classes
     private Attribute getAttribute(Object obj, Method m){
         String name = m.getName();
@@ -167,6 +213,12 @@ public class NodeContent {
         }
     }
 
+    /**
+     * Get the Token of the method in the obj.
+     * @param obj
+     * @param m
+     * @return
+     */
     private Token getToken(Object obj, Method m){
         String name = m.getName();
         try{
@@ -177,10 +229,30 @@ public class NodeContent {
         }
     }
 
+
     private void addInvocationErrors(Throwable e){
         innovationErrors.add(e.getCause().toString());
         //e.printStackTrace();
     }
+
+    /**
+     * Creates a list of all attributes, tokens and invokedValues
+     * @return
+     */
+    public ArrayList<NodeInfoHolder> toArray(){
+        ArrayList<NodeInfoHolder> temp = new ArrayList<>();
+        for (NodeInfo a : attributes.values())
+            temp.add(new NodeInfoHolder(a.print(), a.getValue(), a));
+        for (NodeInfo t : tokens.values())
+            temp.add(new NodeInfoHolder(t.print(), t.getValue(), t));
+        if(invokedValues != null) {
+            for (NodeInfo i : invokedValues.values())
+                temp.add(new NodeInfoHolder(i.getName(), i.getValue(), i));
+        }
+        Collections.sort(temp);
+        return temp;
+    }
+
 
     private HashMap<Object, Object> getCachedMapValues(Object obj, Method m) throws IllegalAccessException, InstantiationException {
         try {

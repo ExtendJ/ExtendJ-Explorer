@@ -6,7 +6,7 @@ import configAST.Value;
 import jastaddad.ASTAPI;
 import jastaddad.Config;
 import jastaddad.Node;
-import jastaddad.objectinfo.NodeInfo;
+import jastaddad.nodeinfo.NodeInfo;
 
 import java.util.*;
 

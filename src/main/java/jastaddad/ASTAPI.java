@@ -1,7 +1,7 @@
 package jastaddad;
 
 import jastaddad.filteredtree.*;
-import jastaddad.objectinfo.NodeInfo;
+import jastaddad.nodeinfo.NodeInfo;
 
 import java.util.*;
 
