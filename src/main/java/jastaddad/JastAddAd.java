@@ -1,6 +1,5 @@
 package jastaddad;
 
-
 import jastaddad.filteredtree.GenericTreeNode;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
