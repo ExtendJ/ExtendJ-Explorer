@@ -6,7 +6,9 @@ import jastaddad.objectinfo.NodeInfo;
 import java.util.*;
 
 /**
- * Created by gda10jth on 10/16/15.
+ * ASTAPI is the api of the JastAddAd system. This file takes the root Object of the JastAdd AST and travers the tree.
+ * For each node Object a new object implementing the GenericTreeNode is created. These GenericTreeNode nodes are the
+ * nodes of the Filtered AST. 
  */
 public class ASTAPI {
 
@@ -26,7 +28,6 @@ public class ASTAPI {
     private HashMap<String, ArrayList<String>> errors;
     private HashMap<String, ArrayList<String>> warnings;
     private ArrayList<NodeReference> displayedReferences;
-    private String filterDir;
 
     public ASTAPI(Object root, String filterDir){
         displayedReferences = new ArrayList<>();
