@@ -32,6 +32,7 @@ public class JastAddAd{
     private Object root;
     private String filterDir;
 
+	
 	public JastAddAd(Object root){
 		this(root, true);
 	}
@@ -41,7 +42,11 @@ public class JastAddAd{
 		this.runUI = runUI;
         filterDir = "";
 	}
-
+      
+	public UIComponent getUI(){
+	    return ui;
+	}
+	
     public void setFilterDir(String dir){filterDir = dir;}
 
 	public void run(){

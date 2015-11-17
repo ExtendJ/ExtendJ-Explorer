@@ -3,9 +3,11 @@ import configAST.ConfigScanner;
 import configAST.DebuggerConfig;
 import configAST.ErrorMessage;
 import javafx.fxml.FXMLLoader;
+import jastaddad.JastAddAd;
 import javafx.scene.Parent;
 import org.junit.Test;
 import org.loadui.testfx.GuiTest;
+import uicomponent.UIComponent;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -15,10 +17,11 @@ import java.io.IOException;
  * Created by gda10jli on 11/17/15.
  */
 public class UIComponentTestSuite extends GuiTest {
+
     @Override
     protected Parent getRootNode() {
         try {
-            System.out.println("start UI tests/\");
+            System.out.println("start UI tests");
             try{
                 ConfigScanner scanner = new ConfigScanner(new FileReader("tests/testInput.cfg"));
                 ConfigParser parser = new ConfigParser();
@@ -31,9 +34,11 @@ public class UIComponentTestSuite extends GuiTest {
                     }
                 } else {
                     // everything went well!
-                    JastAddAd debugger = new JastAddAd(program, false);
-                    debugger.printToXML(inDirectory, OUT_EXTENSION);
-                    checkOutput(debugger.getFilteredTree(), readXML(expectedFile), inDirectory);
+                    JastAddAd debugger = new JastAddAd(program, true);
+                    debugger.run();
+                    UIComponent ui = debugger.getUI();
+                    FXMLLoader loader = new FXMLLoader();
+                    return loader.load(ui.getClass().getResource("/main.fxml").openStream());
                 }
             } catch (FileNotFoundException e) {
                 System.out.println("File not found!");
@@ -44,7 +49,6 @@ public class UIComponentTestSuite extends GuiTest {
                 e.printStackTrace();
             }
         } catch (Exception e) {
-            //fail(e.getMessage());
         }
         return null;
     }

@@ -41,12 +41,10 @@ public class UIComponent extends Application {
         mon.setController(con);
         GraphView graphview = new GraphView(mon);
         con.init(mon, graphview, this);
-
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         stage.setTitle("JastAddDebugger " + ASTAPI.VERSION);
         stage.setScene(new Scene(a, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
         stage.setMaximized(true);
-
         stage.show();
 
         ScrollPane center = (ScrollPane) a.lookup("#graphView");
