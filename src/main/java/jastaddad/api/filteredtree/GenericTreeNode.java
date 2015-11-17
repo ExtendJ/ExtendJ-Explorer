@@ -37,13 +37,13 @@ public abstract class GenericTreeNode {
     public GenericTreeNode getParent(){return parent;}
 
     /**
-     * Set so the node can be manipulated by someone else than the configurations
+     * Set if that node can be collapsed into a cluster by someone else than the configurations
      * @param expandable
      */
     public void setExpandable(boolean expandable){ isExpandable = expandable;}
 
     /**
-     * Check if the node can be manipulated by someone else than the configurations
+     * Check if the node can be collapsed into a cluster by someone else than the configurations
      */
     public boolean isExpandable(){return isExpandable;}
 

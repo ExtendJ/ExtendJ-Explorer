@@ -10,7 +10,8 @@ import java.util.HashMap;
 
 
 /**
- * Created by gda10jli on 10/16/15.
+ * Monitor class for the UI.
+ * It keeps track of the controllers, the GraphView and the ASTAPI etc.
  */
 public class UIMonitor {
     private GenericTreeNode lastRealNode;
@@ -36,6 +37,11 @@ public class UIMonitor {
         this.controller = controller;
     }
 
+    /**
+     * Sets the node to last selected node.
+     * If it is a "real" node it will also set the realnode. Otherwise that will be null, or keep its value
+     * @param node
+     */
     public void setSelectedNode(GenericTreeNode node){
         selectedNode = node;
         if(node!= null && node.isNode())
@@ -50,6 +56,10 @@ public class UIMonitor {
 
     public GenericTreeNode getSelectedNode(){ return selectedNode;}
 
+    /**
+     * The last non cluster node that was selected
+     * @return
+     */
     public GenericTreeNode getLastRealNode(){ return lastRealNode;}
 
     public void setReferenceEdges(ArrayList<UIEdge> edges){ this.refEdges = edges; }
