@@ -6,9 +6,11 @@ import jastaddad.objectinfo.NodeInfo;
 import java.util.*;
 
 /**
- * ASTAPI is the api of the JastAddAd system. This file takes the root Object of the JastAdd AST and travers the tree.
- * For each node Object a new object implementing the GenericTreeNode is created. These GenericTreeNode nodes are the
- * nodes of the Filtered AST. 
+ * ASTAPI is the API of the JastAddAd system. It traverse the AST and generate a filtered AST. After this the AST can be
+ * reached from the outside via this class.
+ *
+ * This file takes the root Object of the JastAdd AST and travers the tree.
+ * Each node in the filtered AST is a sub class of the GenericTreeNode.
  */
 public class ASTAPI {
 
@@ -22,19 +24,21 @@ public class ASTAPI {
     private GenericTreeNode filteredTree;
     private Config filterConfig;
     private HashMap<String, Integer> typeHash;
-    private HashMap<String, List<TreeNode>> typeNodeHash;
+    private HashMap<String, List<TreeNode>> typeNodeHash;  // will probably be removed
     private HashMap<Object, GenericTreeNode> nodeReferences;
     private HashSet<Object> objectReferences;
     private HashMap<String, ArrayList<String>> errors;
     private HashMap<String, ArrayList<String>> warnings;
     private ArrayList<NodeReference> displayedReferences;
+    private String directoryPath;
 
     public ASTAPI(Object root, String filterDir){
+        directoryPath = filterDir;
         displayedReferences = new ArrayList<>();
         nodeReferences = new HashMap();
         objectReferences = new HashSet<>();
         typeHash = new HashMap<>();
-        typeNodeHash = new HashMap<>();
+        typeNodeHash = new HashMap<>(); // will probably be removed
         errors = new HashMap<>();
         warnings = new HashMap<>();
 
@@ -44,6 +48,17 @@ public class ASTAPI {
         traversTree(this.tree, null, null, true);
     }
 
+    public String getFilterFilePath(){return directoryPath + "filter.cfg"; }
+    public String getDirectoryPath(){return directoryPath;}
+    /**
+     * Old function, will probably be removed.
+     *
+     * Changes the enabled bool in all nodes of a sertain type.
+     *
+     * @param type
+     * @param enabled
+     * @return
+     */
     public boolean newTypeFiltered(String type, boolean enabled){
         for(TreeNode fNode : typeNodeHash.get(type) ){
             fNode.setEnabled(enabled);
@@ -61,7 +76,13 @@ public class ASTAPI {
 
     public void putError(String type, String message){ putMessageLine(errors, type, message); }
 
-
+    /**
+     * Return all errors written under a certain catogory type.
+     * The errors will be removed and can not be fetched again through this method.
+     * @param map
+     * @param type
+     * @return
+     */
     private ArrayList<String> getMessageLine(HashMap<String, ArrayList<String>> map, String type){
         if(!map.containsKey(type)) {
             map.put(type, new ArrayList<>());
@@ -78,6 +99,10 @@ public class ASTAPI {
         map.get(type).add(message);
     }
 
+    /**
+     * Old function, will probably be removed.
+     * @param fNode
+     */
     private void addToTypes(TreeNode fNode){
         // add the node to the hashmap of types
         Node node = fNode.getNode();
@@ -91,6 +116,11 @@ public class ASTAPI {
         }
     }
 
+    /**
+     * Old function, will probably be removed.
+     *
+     * @param fNode
+     */
     private void addToConfigs(TreeNode fNode){
         // Add the node to the config hash
         Node node = fNode.getNode();
@@ -102,6 +132,8 @@ public class ASTAPI {
     private void traversTree(Node node, GenericTreeNode parent, TreeCluster cluster, boolean firstTime){
         ArrayList<NodeReference> futureReferences = new ArrayList<>();
         traversTree(node, parent, cluster, firstTime, futureReferences);
+
+        // Add reference edges that is defined in the filter language
         for (NodeReference ref : futureReferences){
             ArrayList<GenericTreeNode> nodeRefs = new ArrayList<>();
             GenericTreeNode to;
@@ -175,8 +207,12 @@ public class ASTAPI {
         fNode.setDisplayedAttributes(filterConfig, futureReferences , this);
     }
 
+    /**
+     * Put child clusters together in a parent cluster if they have no children in the filtered tree
+     *
+     * @param fNode
+     */
     private void clusterClusters(TreeNode fNode){
-        // put child clusters together in a parent cluster if they have no children in the filtered tree
         if(fNode.isNode()) {
             //FilteredTreeNode n = (FilteredTreeNode) fNode;
             TreeClusterParent clusterParent = new TreeClusterParent(fNode);
@@ -211,6 +247,11 @@ public class ASTAPI {
         return filteredTree;
     }
 
+    /**
+     * Write the new filter text to file and generate a new filtered AST
+     * @param text
+     * @return true if the filter was saved to file and a new filtered AST was successfully created, otherwise false
+     */
     public boolean saveNewFilter(String text){
         boolean res = filterConfig.saveAndUpdateFilter(text);
         if(res) {

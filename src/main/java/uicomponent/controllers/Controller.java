@@ -28,7 +28,8 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * Created by gda10jth on 10/16/15.
+ * This is the main controller of the UI. It holds references to all sub controllers. If some part of the UI does
+ * not have its own controller, its events will be handled here.
  */
 public class Controller implements Initializable {
     @FXML private VBox attributeTab;
@@ -217,6 +218,13 @@ public class Controller implements Initializable {
         Platform.runLater(() -> addConsoleText(message, "consoleTextWarning", ConsoleFilter.WARNING));
     }
 
+    /**
+     * used by the public methods addMessage, addError, addWarning
+     *
+     * @param message
+     * @param style
+     * @param filterType
+     */
     private void addConsoleText(String message, String style, ConsoleFilter filterType){
         Text text1 = new Text(message + "\n");
         Text text2 = new Text(message + "\n");
@@ -242,6 +250,12 @@ public class Controller implements Initializable {
         }
     }
 
+    /**
+     * Method for selecting a node in the graph or tree. Used for example by other controllers.
+     *
+     * @param node
+     * @param fromGraph
+     */
     public void nodeSelected(GenericTreeNode node, boolean fromGraph){
         mon.setSelectedNode(node);
         attributeTabController.setAttributes();
@@ -251,6 +265,11 @@ public class Controller implements Initializable {
             graphView.newNodeSelected(node);
     }
 
+    /**
+     * Method for deselecting a node in the graph or tree. Used for example by other controllers.
+     *
+     * @param fromGraph
+     */
     public void nodeDeselected(boolean fromGraph){
         mon.setSelectedNode(null);
         if(fromGraph)
@@ -260,12 +279,15 @@ public class Controller implements Initializable {
         attributeTabController.setAttributes();
     }
 
+    /**
+     * Load and print the filter text in the textarea for filter text
+     */
     private void loadFilterFileText() {
         String line;
         String textContent = "";
         int lineCount = 0;
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("filter.cfg"));
+            BufferedReader reader = new BufferedReader(new FileReader(mon.getApi().getFilterFilePath()));
             while ((line = reader.readLine()) != null) {
                 textContent += line + "\n";
                 lineCount++;
@@ -281,6 +303,9 @@ public class Controller implements Initializable {
 
     }
 
+    /**
+     * Compute node references again.
+     */
     public void resetReferences(){
         GenericTreeNode node = mon.getLastRealNode();
         if(node == null)
@@ -311,8 +336,8 @@ public class Controller implements Initializable {
 
             treeItem.selectedProperty().addListener(new ChangeListener<Boolean>() {
                 public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    mon.getApi().newTypeFiltered(treeItem.getValue().fullName, newValue);
-                    graphView.updateGraph();
+                    //mon.getApi().newTypeFiltered(treeItem.getValue().fullName, newValue);
+                    //graphView.updateGraph();
                     addMessage("Type list view called update");
                 }
             });
@@ -330,6 +355,7 @@ public class Controller implements Initializable {
         typeListView.setShowRoot(false);
     }
 
+    // a holder AST node in the tree view
     private class TmpTreeItem implements Comparable<TmpTreeItem>{
         public final String name;
         public final String className;
