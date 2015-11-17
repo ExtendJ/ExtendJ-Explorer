@@ -5,7 +5,6 @@
 !gradlew
 !build.gradle
 !modules
-!uicomponent-config.cfg
 !/gradle/
 !/samples/
 !/src
