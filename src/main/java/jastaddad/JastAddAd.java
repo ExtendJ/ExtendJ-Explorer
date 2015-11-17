@@ -1,52 +1,116 @@
 package jastaddad;
 
 
+import jastaddad.filteredtree.GenericTreeNode;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import uicomponent.UIComponent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.lang.reflect.Method;
-import java.lang.annotation.Annotation;
 import configAST.*;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.lang.System;
 
 public class JastAddAd{
+	public final static String FILE_NAME = "jastAddAd-result";
+	private ASTAPI api;
+	private UIComponent ui;
 
-  public JastAddAd(Object root){
-    ASTAPI api = new ASTAPI(root);
-    //System.out.println("asdasd");
-    UIComponent ui = new UIComponent(api);
-    //javafx.application.Application.launch(JastAddAdUi.class);
-  }
-  
-  public static void main(String[] args) {
-	  try{
-		String filename = "testInput.cfg";
-		ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
-		ConfigParser parser = new ConfigParser();
-		DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);
-		if (!program.errors().isEmpty()) {
-			  System.err.println();
-			  System.err.println("Errors: ");
-			  for (ErrorMessage e: program.errors()) {
-				  System.err.println("- " + e);
-			  }
-		} else {
-			  JastAddAd debugger = new JastAddAd(program);
-			  //program.genCode(System.out);
+	public JastAddAd(Object root){
+		this(root, true);
+	}
+
+	public JastAddAd(Object root, boolean runUI){
+		api = new ASTAPI(root);
+		if(runUI)
+			ui = new UIComponent(api);
+	}
+
+	public GenericTreeNode getFilteredTree(){
+		return api.getFilteredTree();
+	}
+
+	public boolean printToXML(String toDirectory, String ext){
+		try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+			// root elements
+			Document doc = docBuilder.newDocument();
+
+			traversTreeXML(api.getFilteredTree(), doc);
+
+			// write the content into xml file
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(toDirectory + "/" + FILE_NAME + ext);
+
+			// Output to console for testing
+			// StreamResult result = new StreamResult(System.out);
+
+			transformer.transform(source, result);
+
+			System.out.println("File saved!");
+
+		} catch (ParserConfigurationException pce) {
+			pce.printStackTrace();
+			return false;
+		} catch (TransformerException tfe) {
+			tfe.printStackTrace();
+			return false;
 		}
+		return true;
+	}
 
-    } catch (FileNotFoundException e) {
-	  System.out.println("File not found!");
-	  System.exit(1);
-    } catch (IOException e) {
-	  e.printStackTrace(System.err);
-    } catch (Exception e) {
-	  e.printStackTrace();
-    }
-  }
+	private void traversTreeXML(GenericTreeNode root, Document doc){
+		Element element = doc.createElement(root.toString());
+		doc.appendChild(element);
+		for(GenericTreeNode child : root.getChildren())
+			traversTreeXML(child, element, doc);
+	}
+
+	private void traversTreeXML(GenericTreeNode parent, Element parentElement, Document doc){
+		Element element = doc.createElement(parent.toString());
+		parentElement.appendChild(element);
+		for(GenericTreeNode child : parent.getChildren())
+			traversTreeXML(child, element, doc);
+	}
+  
+	public static void main(String[] args) {
+		try{
+			String filename = "testInput.cfg";
+			ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
+			ConfigParser parser = new ConfigParser();
+			DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);
+			if (!program.errors().isEmpty()) {
+				System.err.println();
+				System.err.println("Errors: ");
+				for (ErrorMessage e: program.errors()) {
+					System.err.println("- " + e);
+				}
+			} else {
+				JastAddAd debugger = new JastAddAd(program);
+				//program.genCode(System.out);
+			}
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found!");
+			System.exit(1);
+		} catch (IOException e) {
+			e.printStackTrace(System.err);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
