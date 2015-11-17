@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Class for cluster of clusters
  * Created by gda10jth on 10/21/15.
  */
 public class TreeClusterParent extends GenericTreeCluster {
 
-    private List<TreeCluster> clusters;
+    private List<TreeCluster> clusters; //The clusters the cluster contains
     public TreeClusterParent(GenericTreeNode parent){
         super(parent);
         clusters = new ArrayList<>();

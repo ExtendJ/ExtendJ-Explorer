@@ -11,6 +11,7 @@ import jastaddad.api.nodeinfo.NodeInfo;
 import java.util.*;
 
 /**
+ * Class for the "real" nodes in the filtered tree.
  * Created by gda10jth on 10/16/15.
  */
 public class TreeNode extends GenericTreeNode {
@@ -31,16 +32,37 @@ public class TreeNode extends GenericTreeNode {
         setExpandable(true);
     }
 
+    /**
+     * Returns the Object of the AST
+     * @return
+     */
     public Node getNode(){ return node; }
 
+    /**
+     * Sets the flag which determine that if the node is filtered of not.
+     * @param enabled
+     */
     public void setEnabled(boolean enabled){ this.enabled = enabled; }
 
+    /**
+     * Check with the filter if the node is filtered.
+     * @param filter
+     * @return
+     */
     private boolean setEnabled(Config filter){
         return filter.isEnabled(node);
     }
 
+    /**
+     * Check if the node is filtered
+     * @return
+     */
     public boolean isEnabled(){ return enabled; }
 
+    /**
+     * Add a child node, and set its edge
+     * @param child
+     */
     @Override
     public void addChild(GenericTreeNode child){
         if(child.isNode()) {
@@ -51,9 +73,13 @@ public class TreeNode extends GenericTreeNode {
     }
 
     public boolean isRealChild(GenericTreeNode child){
-        return !child.isNode() ? false : realChildEdge.get(((TreeNode)child).node.id);
+        return child.isNode() && realChildEdge.get(((TreeNode)child).node.id);
     }
 
+    /**
+     * Returns a iterator for the children
+     * @return
+     */
     public Iterator<GenericTreeNode> iterator(){ return children.iterator(); }
 
     public boolean isNode(){ return true; }
@@ -68,7 +94,10 @@ public class TreeNode extends GenericTreeNode {
     @Override
     public String toGraphString(){ return graphName != null ? graphName : "<html>" + toString() + "</html>"; }
 
-
+    /**
+     * Set the node specific styles, derived from the config
+     * @param filter
+     */
     @Override
     public void setStyles(Config filter) {
         if(node.isList() || node.isOpt()) {
@@ -89,6 +118,13 @@ public class TreeNode extends GenericTreeNode {
         }
     }
 
+    /**
+     * This method will derive which attributes that should be displayed, it will also save the reference attributes as NodeReferences.
+     * NOTE: The value which graphToString returns will be manipulated by this method.
+     * @param config
+     * @param allReferences
+     * @param api
+     */
     public void setDisplayedAttributes(Config config, ArrayList<NodeReference> allReferences, ASTAPI api){
         HashSet<String> set = config.getDisplayedAttributes(node);
         if(set.size() == 0)
