@@ -41,6 +41,7 @@ public class Compiler {
 				}
 			} else {
 				JastAddAd debugger = new JastAddAd(program);
+				debugger.run();
 				//program.genCode(System.out);
 			}
 		} catch (FileNotFoundException e) {

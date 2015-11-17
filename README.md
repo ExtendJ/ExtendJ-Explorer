@@ -46,19 +46,19 @@ It is possible to add another section before the "-include". This is "-configs",
 configurations:
 ```
 -configs{
-  ignore-include = true;
+  include = true;
 }
 -include{
   ...
 }
 ```
-In this example the ignore-include is set to true and therefore the "-include" block will be ignored.
+In this example the "include" is set to true and therefore the "-include" block will be ignored.
 
 IMPLEMENTED CONFIGS:
 
-- ignore-filter == [Bool] // ignore all -filter parts in the code
-- ignore-global == [Bool] // ignore everything inside -global. 
-- ignore-include == [Bool // ignore everything inside -include. 
+- filter == [Bool] // ignore all -filter parts in the code
+- global == [Bool] // ignore everything inside -global. 
+- include == [Bool // ignore everything inside -include. 
 
 Filter nodes on attributes
 ------------ 
@@ -122,14 +122,14 @@ Supported styles so far
 
 Attributes
 ------------ 
-In the UI part of the JastAddAd, it is possible to display attributes directly in the graph. This is done by adding the -displayed-attributes
+In the UI part of the JastAddAd, it is possible to display attributes directly in the graph. This is done by adding the -display-attributes
 inside a node. The attributes listed there will be shown directly in the graph.
 ```
 -include{
   Stmt {
     -filter{ ... }
     -style{ ... }
-    -displayed-attributes{
+    -display-attributes{
       Value; 
       getInt; 
       NumInList;
@@ -152,7 +152,7 @@ block, but is applied on every node.
 -global{
     -filter{ ... }
     -style{ ... }
-    -displayed-attributes{ ... }
+    -display-attributes{ ... }
 }MENTED CONFIGS:
   
 -include{
@@ -186,8 +186,8 @@ Big Example
 Here is a slightly bigger example that you should be able to understand after reading the above:
 ```
 -configs{
-  ignore-include = false;
-  ignore-filter = true;
+  include = false;
+  filter = true;
 }
 -global{
       -filter{
@@ -196,7 +196,7 @@ Here is a slightly bigger example that you should be able to understand after re
       -style{ 
 	  node-color = #0000FF;
       }
-      -displayed-attributes{
+      -display-attributes{
 	  x;
       }
 }
@@ -228,19 +228,19 @@ Standard configuration file
 This can be copy and pasted in to a "filter.cfg" file.
 ```
 -configs{
-  	ignore-filter = true;
-	ignore-include = false;
-	ignore-global = false;
+  	filter = true;
+	include = false;
+	global = false;
 }
 -global{
 	-style{}
 	-filter{getString == print;}
-	-displayed-attributes{}
+	-display-attributes{}
 }
 -include{
 	Opt;
 	List{
-		-displayed-attributes{}
+		-display-attributes{}
 		-filter{ }
 		-style{ node-color = #FF8000; }
 	}

@@ -24,17 +24,30 @@ import java.lang.System;
 
 public class JastAddAd{
 	public final static String FILE_NAME = "jastAddAd-result";
+    public final static String CLUSTER_STRING = "cluster";
 	private ASTAPI api;
 	private UIComponent ui;
+
+	private boolean runUI;
+    private Object root;
+    private String filterDir;
 
 	public JastAddAd(Object root){
 		this(root, true);
 	}
 
 	public JastAddAd(Object root, boolean runUI){
-		api = new ASTAPI(root);
-		if(runUI)
-			ui = new UIComponent(api);
+        this.root = root;
+		this.runUI = runUI;
+        filterDir = "";
+	}
+
+    public void setFilterDir(String dir){filterDir = dir;}
+
+	public void run(){
+        api = new ASTAPI(root, filterDir);
+        if(runUI)
+            ui = new UIComponent(api);
 	}
 
 	public GenericTreeNode getFilteredTree(){
@@ -82,7 +95,11 @@ public class JastAddAd{
 	}
 
 	private void traversTreeXML(GenericTreeNode parent, Element parentElement, Document doc){
-		Element element = doc.createElement(parent.toString());
+        Element element;
+        if(!parent.isNode())
+            element = doc.createElement(CLUSTER_STRING);
+        else
+            element = doc.createElement(parent.toString());
 		parentElement.appendChild(element);
 		for(GenericTreeNode child : parent.getChildren())
 			traversTreeXML(child, element, doc);
@@ -102,6 +119,7 @@ public class JastAddAd{
 				}
 			} else {
 				JastAddAd debugger = new JastAddAd(program);
+                debugger.run();
 				//program.genCode(System.out);
 			}
 		} catch (FileNotFoundException e) {

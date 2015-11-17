@@ -26,8 +26,9 @@ public class ASTAPI {
     private HashMap<String, ArrayList<String>> errors;
     private HashMap<String, ArrayList<String>> warnings;
     private ArrayList<NodeReference> displayedReferences;
+    private String filterDir;
 
-    public ASTAPI(Object root){
+    public ASTAPI(Object root, String filterDir){
         displayedReferences = new ArrayList<>();
         nodeReferences = new HashMap();
         objectReferences = new HashSet<>();
@@ -38,7 +39,7 @@ public class ASTAPI {
 
         tree = new Node(root, this);
         this.filteredTree = null;
-        filterConfig = new Config(this);
+        filterConfig = new Config(this, filterDir);
         traversTree(this.tree, null, null, true);
     }
 

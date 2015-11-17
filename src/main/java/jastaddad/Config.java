@@ -23,29 +23,33 @@ public class Config{
     private static final String FILTER_LIST = "-filter";
     private static final String STYLE_LIST = "-style";
     private static final String DISPLAY_ATTRIBUTES_LIST = "-display-attributes";
+    private String filterDir;
 
-    public Config(ASTAPI api){
+    public Config(ASTAPI api, String filterDir){
         this.api = api;
+        this.filterDir = filterDir;
         noError = readFilter(filterFileName);
     }
 
     private boolean readFilter(String fileName){
+        String fullFilePath = filterDir + fileName;
+        System.out.println(fullFilePath);
         DebuggerConfig tmpFilter;
 
         ConfigScanner scanner;
         try {
             // check if file exists
-            File f = new File(fileName);
+            File f = new File(fullFilePath);
             PrintWriter writer = null;
             if(!f.exists()) {
-                writer = new PrintWriter(fileName, "UTF-8");
+                writer = new PrintWriter(fullFilePath, "UTF-8");
                 writer.print("-configs{\n\tfilter = true;\n\tglobal = false;\n\tinclude = false;\n}" +
                         "\n-global{\n\t-filter{}\n\t-style{}\n\t-display-attributes{}\n}\n" +
                         "-include{\n\n}\n");
                 writer.close();
             }
             // create the scanner
-            scanner = new ConfigScanner(new FileReader(fileName));
+            scanner = new ConfigScanner(new FileReader(fullFilePath));
             try{
 
                 ConfigParser parser = new ConfigParser();
@@ -94,9 +98,11 @@ public class Config{
 
     public boolean saveAndUpdateFilter(String text){
         System.out.println("SAVE");
+        String fullTmpFilePath = filterDir + filterTmpFileName;
+        String fullFilePath = filterDir + filterFileName;
         PrintWriter writer = null;
         try {
-            writer = new PrintWriter("filter-tmp.cfg", "UTF-8");
+            writer = new PrintWriter(fullTmpFilePath, "UTF-8");
             writer.print(text);
             writer.close();
         } catch (FileNotFoundException e) {
@@ -111,12 +117,12 @@ public class Config{
         noError = readFilter(filterTmpFileName);
         try {
             if (noError) {
-                File oldFilter = new File(filterFileName);
-                File newFilter = new File(filterTmpFileName);
+                File oldFilter = new File(fullFilePath);
+                File newFilter = new File(fullTmpFilePath);
                 oldFilter.delete();
                 newFilter.renameTo(oldFilter);
             } else {
-                File newFilter = new File(filterTmpFileName);
+                File newFilter = new File(fullTmpFilePath);
                 newFilter.delete();
             }
         }catch(Exception e){
@@ -142,14 +148,14 @@ public class Config{
         HashMap<String, BinExpr> binExprs = new HashMap<>();
 
         // If there a global filter add it to the hashmap
-        if(isSet(CONFIG_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBinExprList(FILTER_LIST) != null) {
+        if (isSet(CONFIG_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBinExprList(FILTER_LIST) != null) {
             for (BinExpr be : configs.getGlobal().getBinExprList(FILTER_LIST).getBinExprList()) {
                 binExprs.put(be.getDecl().getID(), be);
             }
         }
 
         // don't do this if the -include is set to false
-        if(isSet(CONFIG_INCLUDE)) {
+        if (isSet(CONFIG_INCLUDE)) {
             // try to find the node in the Include.
             boolean className = configs.getNodes().containsKey(node.className); // Div;
             boolean tellingName = configs.getNodes().containsKey(node.fullName); // Div:Left
@@ -200,13 +206,13 @@ public class Config{
         HashMap<String, Value> map = new HashMap<>();
 
         // If there a global style add it to the hashmap if -ignore-global == false;
-        if(isSet(CONFIG_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBindingList(STYLE_LIST) != null) {
+        if (isSet(CONFIG_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBindingList(STYLE_LIST) != null) {
             for(Binding b : configs.getGlobal().getBindingList(STYLE_LIST).getBindingList()){
               map.put(b.getName().print(), b.getValue());
             }
         }
 
-        if(!isSet(CONFIG_INCLUDE))
+        if (!isSet(CONFIG_INCLUDE))
             return map;
 
         boolean className = configs.getNodes().containsKey(node.className); // Div;
@@ -235,13 +241,13 @@ public class Config{
     public HashSet<String> getDisplayedAttributes(Node node){
         HashSet<String> set = new HashSet();
 
-        if(isSet(CONFIG_GLOBAL) && configs.getGlobal().getIdDeclList(DISPLAY_ATTRIBUTES_LIST) != null){
+        if (isSet(CONFIG_GLOBAL) && configs.getGlobal().getIdDeclList(DISPLAY_ATTRIBUTES_LIST) != null){
             for (IdDecl decl : configs.getGlobal().getIdDeclList(DISPLAY_ATTRIBUTES_LIST).getIdDeclList()){
                 set.add(decl.getID());
             }
         }
 
-        if(!isSet(CONFIG_INCLUDE))
+        if (!isSet(CONFIG_INCLUDE))
             return set;
 
         boolean className = configs.getNodes().containsKey(node.className); // Div;
