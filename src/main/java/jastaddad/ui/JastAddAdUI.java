@@ -21,6 +21,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+/**
+ * This is the main class for the JastAddAd system if the user wants the UI. This class will create an jastAddAd
+ * instance that in its turn creates an ASTAPI object that will generate the filtered AST. After this it opens the UI.
+ *
+ * JastAddAd can be started by calling run() method on this class or JastAddAdUI.
+ *
+ */
+
 public class JastAddAdUI extends Application {
 
     private static UIMonitor mon;
@@ -33,8 +41,10 @@ public class JastAddAdUI extends Application {
         jastAddAd = new JastAddAdAPI(root);
     }
 
+    /**
+     * run() generates the AST and then opens the UI
+     */
     public void run(){
-        System.out.println("asdasdasd");
         jastAddAd.run();
         this.mon = new UIMonitor(jastAddAd.api());
         launch(new String[0]);
@@ -42,6 +52,12 @@ public class JastAddAdUI extends Application {
 
     public void setFilterDir(String dir){jastAddAd.setFilterDir(dir);}
 
+    /**
+     * start the UI and is by JavaFX. Load the FXML files and genereates the UI. It also embeds the Swing based graph.
+     *
+     * @param stage
+     * @throws IOException
+     */
     @Override
     public void start (Stage stage) throws IOException {
         FXMLLoader loader = new FXMLLoader();
@@ -60,6 +76,10 @@ public class JastAddAdUI extends Application {
         center.setContent(graphview);
     }
 
+    /**
+     * main function for starting a JastAddAdUI session.
+     * @param args
+     */
     public static void main(String[] args) {
         try{
             String filename = "testInput.cfg";
