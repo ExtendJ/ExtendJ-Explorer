@@ -4,7 +4,6 @@ import configAST.*;
 import jastaddad.objectinfo.NodeInfo;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -131,11 +130,6 @@ public class Config{
 
     private boolean isSet(String name){
         HashMap<String, Value> filterConfigs = configs.configs();
-        return filterConfigs.containsKey(name) && filterConfigs.get(name).getBool();
-    }
-
-    private boolean isSetOrExist(String name){
-        HashMap<String, Value> filterConfigs = configs.configs();
         return !filterConfigs.containsKey(name) || filterConfigs.get(name).getBool();
     }
 
@@ -143,21 +137,21 @@ public class Config{
         if(!noError)
             return false;
 
-        if(isSet(CONFIG_FILTER))
+        if(!isSet(CONFIG_FILTER))
             return true;
 
         // Add all bin expressions to one hashmap. This will allow expressions to override each other
         HashMap<String, BinExpr> binExprs = new HashMap<>();
 
         // If there a global filter add it to the hashmap
-        if(isSetOrExist(CONFIG_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBinExprList(FILTER_LIST) != null) {
+        if(isSet(CONFIG_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBinExprList(FILTER_LIST) != null) {
             for (BinExpr be : configs.getGlobal().getBinExprList(FILTER_LIST).getBinExprList()) {
                 binExprs.put(be.getDecl().getID(), be);
             }
         }
 
         // don't do this if the -include is set to false
-        if(isSetOrExist(CONFIG_INCLUDE)) {
+        if(isSet(CONFIG_INCLUDE)) {
             // try to find the node in the Include.
             boolean className = configs.getNodes().containsKey(node.className); // Div;
             boolean tellingName = configs.getNodes().containsKey(node.fullName); // Div:Left
@@ -208,13 +202,13 @@ public class Config{
         HashMap<String, Value> map = new HashMap<>();
 
         // If there a global style add it to the hashmap if -ignore-global == false;
-        if(isSetOrExist(CONFIG_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBindingList(STYLE_LIST) != null) {
+        if(isSet(CONFIG_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBindingList(STYLE_LIST) != null) {
             for(Binding b : configs.getGlobal().getBindingList(STYLE_LIST).getBindingList()){
               map.put(b.getName().print(), b.getValue());
             }
         }
 
-        if(!isSetOrExist(CONFIG_INCLUDE))
+        if(!isSet(CONFIG_INCLUDE))
             return map;
 
         boolean className = configs.getNodes().containsKey(node.className); // Div;
@@ -243,13 +237,13 @@ public class Config{
     public HashSet<String> getDisplayedAttributes(Node node){
         HashSet<String> set = new HashSet();
 
-        if(isSetOrExist(CONFIG_GLOBAL) && configs.getGlobal().getIdDeclList(DISPLAY_ATTRIBUTES_LIST) != null){
+        if(isSet(CONFIG_GLOBAL) && configs.getGlobal().getIdDeclList(DISPLAY_ATTRIBUTES_LIST) != null){
             for (IdDecl decl : configs.getGlobal().getIdDeclList(DISPLAY_ATTRIBUTES_LIST).getIdDeclList()){
                 set.add(decl.getID());
             }
         }
 
-        if(!isSetOrExist(CONFIG_INCLUDE))
+        if(!isSet(CONFIG_INCLUDE))
             return set;
 
         boolean className = configs.getNodes().containsKey(node.className); // Div;
