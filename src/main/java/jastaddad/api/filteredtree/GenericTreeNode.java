@@ -1,10 +1,9 @@
-package jastaddad.filteredtree;
+package jastaddad.api.filteredtree;
 
 import configAST.Color;
 import configAST.Str;
 import configAST.Value;
-import jastaddad.Config;
-import javafx.scene.Parent;
+import jastaddad.api.Config;
 
 import java.util.ArrayList;
 import java.util.HashMap;

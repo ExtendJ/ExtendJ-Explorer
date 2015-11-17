@@ -1,10 +1,8 @@
-package jastaddad;
+package jastaddad.api;
 
-import jastaddad.filteredtree.GenericTreeNode;
-import org.w3c.dom.Attr;
+import jastaddad.api.filteredtree.GenericTreeNode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import uicomponent.UIComponent;
 
 import configAST.*;
 
@@ -21,38 +19,27 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.lang.System;
 
-public class JastAddAd{
+public class JastAddAdAPI {
 	public final static String FILE_NAME = "jastAddAd-result";
     public final static String CLUSTER_STRING = "cluster";
 	private ASTAPI api;
-	private UIComponent ui;
 
-	private boolean runUI;
     private Object root;
     private String filterDir;
 
 	
-	public JastAddAd(Object root){
-		this(root, true);
-	}
-
-	public JastAddAd(Object root, boolean runUI){
+	public JastAddAdAPI(Object root){
         this.root = root;
-		this.runUI = runUI;
         filterDir = "";
-	}
-      
-	public UIComponent getUI(){
-	    return ui;
 	}
 	
     public void setFilterDir(String dir){filterDir = dir;}
 
 	public void run(){
         api = new ASTAPI(root, filterDir);
-        if(runUI)
-            ui = new UIComponent(api);
 	}
+
+    public ASTAPI api(){return api;};
 
 	public GenericTreeNode getFilteredTree(){
 		return api.getFilteredTree();
@@ -122,7 +109,7 @@ public class JastAddAd{
 					System.err.println("- " + e);
 				}
 			} else {
-				JastAddAd debugger = new JastAddAd(program);
+				JastAddAdAPI debugger = new JastAddAdAPI(program);
                 debugger.run();
 				//program.genCode(System.out);
 			}

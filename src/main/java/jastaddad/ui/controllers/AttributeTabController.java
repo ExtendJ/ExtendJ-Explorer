@@ -1,9 +1,9 @@
-package uicomponent.controllers;
+package jastaddad.ui.controllers;
 
-import jastaddad.Node;
-import jastaddad.filteredtree.GenericTreeNode;
-import jastaddad.filteredtree.TreeNode;
-import jastaddad.objectinfo.NodeInfo;
+import jastaddad.api.Node;
+import jastaddad.api.filteredtree.GenericTreeNode;
+import jastaddad.api.filteredtree.TreeNode;
+import jastaddad.api.objectinfo.NodeInfo;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -12,10 +12,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
-import uicomponent.AttributeInfo;
-import uicomponent.AttributeInputDialog;
-import uicomponent.UIMonitor;
-import uicomponent.graph.GraphView;
+import jastaddad.ui.AttributeInfo;
+import jastaddad.ui.AttributeInputDialog;
+import jastaddad.ui.UIMonitor;
+import jastaddad.ui.graph.GraphView;
 
 import java.net.URL;
 import java.util.ArrayList;

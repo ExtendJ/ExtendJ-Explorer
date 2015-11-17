@@ -1,7 +1,7 @@
-package uicomponent;
+package jastaddad.ui;
 
-import jastaddad.objectinfo.NodeInfo;
-import jastaddad.objectinfo.NodeInfoHolder;
+import jastaddad.api.objectinfo.NodeInfo;
+import jastaddad.api.objectinfo.NodeInfoHolder;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 

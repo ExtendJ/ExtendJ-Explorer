@@ -1,7 +1,6 @@
-package uicomponent;
+package jastaddad.ui;
 
-import jastaddad.objectinfo.Attribute;
-import jastaddad.objectinfo.NodeInfo;
+import jastaddad.api.objectinfo.NodeInfo;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 

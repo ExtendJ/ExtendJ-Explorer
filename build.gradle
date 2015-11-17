@@ -52,7 +52,7 @@ dependencies {
 
 task fatJar(type: Jar) {
 	destinationDir = projectDir
-	manifest.attributes 'Main-Class': 'jastaddad.JastAddAd'
+	manifest.attributes 'Main-Class': 'jastaddad.ui.JastAddAdUI'
 	baseName = "${project.name}"
 	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 	with jar

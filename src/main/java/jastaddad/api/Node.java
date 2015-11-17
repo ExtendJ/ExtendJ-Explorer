@@ -1,16 +1,12 @@
-package jastaddad;
+package jastaddad.api;
 
-import jastaddad.objectinfo.Attribute;
-import jastaddad.objectinfo.NodeContent;
-import jastaddad.objectinfo.NodeInfo;
+import jastaddad.api.objectinfo.NodeContent;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 
 public class Node{
     public final Object node;

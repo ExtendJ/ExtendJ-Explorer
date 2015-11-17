@@ -1,7 +1,6 @@
 package lang;
 
 import beaver.Parser.Exception;
-import jastaddad.JastAddAd;
 import lang.ast.ErrorMessage;
 import lang.ast.LangParser;
 import lang.ast.LangScanner;
@@ -40,7 +39,7 @@ public class Compiler {
 					System.err.println("- " + e);
 				}
 			} else {
-				JastAddAd debugger = new JastAddAd(program);
+                JastAddAdUI debugger = new JastAddAdUI(program);
 				debugger.run();
 				//program.genCode(System.out);
 			}

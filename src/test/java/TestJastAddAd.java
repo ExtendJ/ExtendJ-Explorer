@@ -4,8 +4,8 @@ import configAST.ConfigParser;
 import configAST.ConfigScanner;
 import configAST.DebuggerConfig;
 import configAST.ErrorMessage;
-import jastaddad.JastAddAd;
-import jastaddad.filteredtree.GenericTreeNode;
+import jastaddad.api.JastAddAdAPI;
+import jastaddad.api.filteredtree.GenericTreeNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -22,7 +22,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 
 
@@ -38,7 +37,7 @@ public class TestJastAddAd extends AbstractParameterizedTest {
 	 * @param dir filename of test input file
 	 */
 	public TestJastAddAd(String dir) {
-		super(TEST_DIR, dir, JastAddAd.FILE_NAME);
+		super(TEST_DIR, dir, JastAddAdAPI.FILE_NAME);
 	}
 
 	/**
@@ -61,7 +60,7 @@ public class TestJastAddAd extends AbstractParameterizedTest {
 					}
 				} else {
 					// everything went well!
-					JastAddAd debugger = new JastAddAd(program, false);
+					JastAddAdAPI debugger = new JastAddAdAPI(program);
 					debugger.setFilterDir(inDirectory + "/");
 					debugger.run();
 					debugger.printToXML(inDirectory, OUT_EXTENSION);
@@ -99,7 +98,7 @@ public class TestJastAddAd extends AbstractParameterizedTest {
     private String nodeName(GenericTreeNode node){
         String name = node.toString();
         if(!node.isNode())
-            name = JastAddAd.CLUSTER_STRING;
+            name = JastAddAdAPI.CLUSTER_STRING;
         return name;
     }
 

@@ -1,8 +1,8 @@
-package uicomponent.controllers;
+package jastaddad.ui.controllers;
 
-import jastaddad.ASTAPI;
-import jastaddad.filteredtree.GenericTreeNode;
-import jastaddad.filteredtree.TreeNode;
+import jastaddad.api.ASTAPI;
+import jastaddad.api.filteredtree.GenericTreeNode;
+import jastaddad.api.filteredtree.TreeNode;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -17,9 +17,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import uicomponent.UIComponent;
-import uicomponent.UIMonitor;
-import uicomponent.graph.GraphView;
+import jastaddad.ui.JastAddAdUI;
+import jastaddad.ui.UIMonitor;
+import jastaddad.ui.graph.GraphView;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -82,7 +82,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) { }
 
-    public void init(UIMonitor mon, GraphView graphView, UIComponent uiComponent) throws IOException {
+    public void init(UIMonitor mon, GraphView graphView, JastAddAdUI uiComponent) throws IOException {
         this.mon = mon;
         this.graphView = graphView;
 

@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.TextFlow?>
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="uicomponent.controllers.Controller">
+            fx:controller="jastaddad.ui.controllers.Controller">
     <top>
         <HBox styleClass="topParent">
             <Label text=" "/>

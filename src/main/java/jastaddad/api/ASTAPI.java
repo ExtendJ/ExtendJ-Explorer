@@ -1,7 +1,7 @@
-package jastaddad;
+package jastaddad.api;
 
-import jastaddad.filteredtree.*;
-import jastaddad.objectinfo.NodeInfo;
+import jastaddad.api.filteredtree.*;
+import jastaddad.api.objectinfo.NodeInfo;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package jastaddad.objectinfo;
+package jastaddad.api.objectinfo;
 
 /**
  * Created by gda10jli on 11/3/15.
