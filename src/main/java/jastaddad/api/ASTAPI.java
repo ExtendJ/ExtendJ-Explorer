@@ -150,8 +150,9 @@ public class ASTAPI {
     }
 
     private void traversTree(Node node, GenericTreeNode parent, TreeCluster cluster, boolean firstTime, ArrayList<NodeReference> futureReferences){
-        if(node == null)
+        if(node == null) {
             return;
+        }
         GenericTreeNode addToParent = null;
         TreeNode fNode = new TreeNode(node, parent, filterConfig);
         fNode.setStyles(filterConfig);

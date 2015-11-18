@@ -1,9 +1,6 @@
 package jastaddad.ui;
 
-import configAST.ConfigParser;
-import configAST.ConfigScanner;
-import configAST.DebuggerConfig;
-import configAST.ErrorMessage;
+import configAST.*;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.JastAddAdAPI;
 import javafx.application.Application;
@@ -93,7 +90,10 @@ public class JastAddAdUI extends Application {
                     System.err.println("- " + e);
                 }
             } else {
-                JastAddAdUI debugger = new JastAddAdUI(program);
+                List a = new List();
+                a.add(new Include(null, new Opt<NodeConfigList>()));
+                DebuggerConfig d = new DebuggerConfig(new Opt(), a);
+                JastAddAdUI debugger = new JastAddAdUI(d);
                 debugger.run();
                 //program.genCode(System.out);
             }

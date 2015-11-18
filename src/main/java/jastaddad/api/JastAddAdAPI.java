@@ -23,7 +23,7 @@ import java.lang.System;
  * This is the main class for the JastAddAd system. This class will create an ASTAPI object that will generate the
  * filtered AST.
  *
- * JastAddAd can be started by calling run() method on this class or JastAddAdUI.
+ * JastAddAd can be started by calling run() method on this class or JastAddAdUI (in the jastaddad.ui package).
  *
  */
 public class JastAddAdAPI {

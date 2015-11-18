@@ -162,6 +162,8 @@ public class NodeContent {
      * @param obj
      */
     public void compute(Object obj){
+        if(node.isNull())
+            return;
         for(Method m : obj.getClass().getMethods()){
             compute(obj, m);
         }

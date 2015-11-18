@@ -21,7 +21,7 @@ public class UIComponentTestSuite extends GuiTest {
         try {
             System.out.println("start UI tests");
             try{
-                ConfigScanner scanner = new ConfigScanner(new FileReader("tests/allBlocks/testInput.cfg"));
+                ConfigScanner scanner = new ConfigScanner(new FileReader("tests/uiTests/allBlocks/testInput.cfg"));
                 ConfigParser parser = new ConfigParser();
                 DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);
                 if (!program.errors().isEmpty()) {

@@ -66,6 +66,10 @@ public abstract class GenericTreeNode {
         return this;
     }
 
+    public boolean isNullNode(){
+        return isNode() && ((TreeNode)this).getNode().isNull();
+    }
+
     /**
      * Check if the a reference flag is set
      */
