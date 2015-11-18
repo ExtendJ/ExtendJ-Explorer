@@ -120,7 +120,7 @@ public class TreeNode extends GenericTreeNode {
 
     /**
      * This method will derive which attributes that should be displayed, it will also save the reference attributes as NodeReferences.
-     * NOTE: The value which graphToString returns will be manipulated by this method.
+     * NOTE: The value which the method toGraphString() returns will be manipulated by this method.
      * @param config
      * @param allReferences
      * @param api
