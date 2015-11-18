@@ -51,7 +51,7 @@ public class GraphView extends SwingNode implements ItemListener {
         this.con = mon.getController();
         DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge>();
         graph = new DelegateForest<GenericTreeNode, UIEdge>(n);
-        createTree(graph, mon.getRootNode());
+        createTree(graph, mon.getRootNode(), true);
         createLayout(graph);
         setListeners();
         addDisplayedReferences();
@@ -63,7 +63,12 @@ public class GraphView extends SwingNode implements ItemListener {
      * @param g
      * @param parent
      */
-    private void createTree(Forest<GenericTreeNode, UIEdge> g, GenericTreeNode parent){
+    private void createTree(Forest<GenericTreeNode, UIEdge> g, GenericTreeNode parent, boolean root){
+        if(root && parent.getChildren().size() <= 0){
+            g.addVertex(parent);
+        }
+
+
 
         for (GenericTreeNode child : parent.getChildren()) {
             UIEdge edge = null;
@@ -77,14 +82,14 @@ public class GraphView extends SwingNode implements ItemListener {
                 edge = new UIEdge(parent.isRealChild(child));
             }
             g.addEdge(edge, parent, child);
-            createTree(g, child);
+            createTree(g, child, false);
         }
     }
 
     public void updateGraph(){
         DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge>();
         graph = new DelegateForest<GenericTreeNode, UIEdge>(n);
-        createTree(graph, mon.getRootNode());
+        createTree(graph, mon.getRootNode(), true);
         vs.getGraphLayout().setGraph(graph);
         addDisplayedReferences();
         vs.repaint();
@@ -304,6 +309,9 @@ public class GraphView extends SwingNode implements ItemListener {
             if(pi.isPicked(fNode)) {
                 return new Color(240, 240, 200);
             }
+            if(fNode.isNullNode()){
+                return new Color(254, 160, 160);
+            }
             if(fNode.isReferenceHighlight())
                 return new Color(80, 180, 80);
             try{
@@ -344,7 +352,7 @@ public class GraphView extends SwingNode implements ItemListener {
             int width = size.width+20;
 
             // make sure nodes have a minimum width
-            if(fNode.isNode() && width < 130){
+            if(fNode.isNode() && !fNode.isNullNode() && width < 130){
                 width = 130;
                 centerX = -65;
             }
@@ -355,6 +363,8 @@ public class GraphView extends SwingNode implements ItemListener {
                 centerY = -20;
             }
 
+            if(fNode.isNullNode())
+                return new Ellipse2D.Float(centerX, centerY, width, height);
             //Rectangle bounds = new Rectangle(-size.width/2 -2, -size.height/2 -2, size.width+4, size.height);
 
             String shape = fNode.getStyles().get("node-shape").getStr();
