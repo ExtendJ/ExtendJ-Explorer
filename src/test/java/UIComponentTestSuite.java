@@ -2,6 +2,7 @@ import configAST.ConfigParser;
 import configAST.ConfigScanner;
 import configAST.DebuggerConfig;
 import configAST.ErrorMessage;
+import jastaddad.ui.JastAddAdUI;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import org.junit.Test;
@@ -31,7 +32,7 @@ public class UIComponentTestSuite extends GuiTest {
                         System.err.println("- " + e);
                     }
                 } else {
-                    FXMLLoader loader = new FXMLLoader();
+                    JastAddAdUI ui = new JastAddAdUI(program);
                     return loader.load(getClass().getResource("/main.fxml").openStream());
                 }
             } catch (FileNotFoundException e) {
