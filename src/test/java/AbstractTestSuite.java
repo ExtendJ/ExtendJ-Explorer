@@ -23,7 +23,6 @@ abstract class AbstractTestSuite {
 	 * Check that the string matches the contents of the given file.
 	 * Also writes the actual output to file.
 	 * @param actual actual output
-	 * @param out file where output should be written
 	 * @param expected file containing expected output
 	 */
 	protected static void compareOutput(String actual, String expected) {

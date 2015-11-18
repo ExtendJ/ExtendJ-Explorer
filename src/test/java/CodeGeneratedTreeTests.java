@@ -1,5 +1,6 @@
 import configAST.*;
 import jastaddad.api.JastAddAdAPI;
+import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -13,57 +14,28 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by gda10jth on 11/18/15.
  */
-@RunWith(Parameterized.class)
-public class CodeGeneratedTreeTests extends AbstractParameterizedTest{
-    private static final String TEST_DIR = "tests/codeGeneratedTreeTests/";
-
-
-    public CodeGeneratedTreeTests(String dir) {
-        super(TEST_DIR, dir, JastAddAdAPI.FILE_NAME);
-    }
-
+public class CodeGeneratedTreeTests {
 
     @Test
-    public void runTest(){
-        assertEquals("FAIL", true, true);
-        /*
-        try {
-            System.out.println("start test in: " + inDirectory);
-            try{
-                String filename = inDirectory + "/testInput.cfg";
-                ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
-                ConfigParser parser = new ConfigParser();
-                DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);
-                if (!program.errors().isEmpty()) {
-                    System.err.println();
-                    System.err.println("Errors: ");
-                    for (ErrorMessage e: program.errors()) {
-                        System.err.println("- " + e);
-                    }
-                } else {
-                    // everything went well!
-                    JastAddAdAPI debugger = new JastAddAdAPI(program);
-                    debugger.setFilterDir(inDirectory + "/");
-                    debugger.run();
-                    debugger.printToXML(inDirectory, OUT_EXTENSION);
-                    checkOutput(debugger.getFilteredTree(), readXML(expectedFile), inDirectory);
-                }
-            } catch (FileNotFoundException e) {
-                System.out.println("File not found!");
-                //System.exit(1);
-            } catch (IOException e) {
-                e.printStackTrace(System.err);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } catch (Exception e) {
-            //fail(e.getMessage());
-        }
-        */
+    public void nullRootTree(){
+        DebuggerConfig d = null;
+        runThisTree(d, "nullRootTree");
     }
-    @SuppressWarnings("javadoc")
-    @Parameterized.Parameters(name = "{0}")
-    public static Iterable<Object[]> getTests() {
-        return getTestParameters(TEST_DIR);
+
+    @Test
+    public void nullNodeInTree(){
+        List a = new List();
+        a.add(new Include(null, new Opt<NodeConfigList>()));
+        DebuggerConfig d = new DebuggerConfig(new Opt(), a);
+        runThisTree(d, "nullNodeInTree");
+    }
+
+    private void runThisTree(Object program, String expectedFile){
+        String inDirectory = "tests/codeGeneratedTreeTests/";
+        JastAddAdAPI debugger = new JastAddAdAPI(program);
+        //debugger.setFilterDir("/");
+        debugger.run();
+        debugger.printToXML(inDirectory, expectedFile, ".out");
+        new OutoutXMLcomparer().checkOutput(debugger.getFilteredTree(), expectedFile + ".expected", inDirectory);
     }
 }

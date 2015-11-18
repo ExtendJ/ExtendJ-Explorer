@@ -62,7 +62,7 @@ public class InputFileTreeTest extends AbstractParameterizedTest {
 					debugger.setFilterDir(inDirectory + "/");
 					debugger.run();
 					debugger.printToXML(inDirectory, OUT_EXTENSION);
-					checkOutput(debugger.getFilteredTree(), readXML(expectedFile), inDirectory);
+					new OutoutXMLcomparer().checkOutput(debugger.getFilteredTree(), expectedFile, inDirectory);
 				}
 			} catch (FileNotFoundException e) {
 				System.out.println("File not found!");

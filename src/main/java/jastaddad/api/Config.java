@@ -47,7 +47,7 @@ public class Config{
      */
     private boolean readFilter(String fileName){
         String fullFilePath = filterDir + fileName;
-        System.out.println(fullFilePath);
+        //System.out.println(fullFilePath);
         DebuggerConfig tmpFilter;
 
         ConfigScanner scanner;
