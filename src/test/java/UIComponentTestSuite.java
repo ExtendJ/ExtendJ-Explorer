@@ -4,6 +4,7 @@ import configAST.DebuggerConfig;
 import configAST.ErrorMessage;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.JastAddAdAPI;
+import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.controllers.Controller;
 import jastaddad.ui.graph.GraphView;
@@ -71,9 +72,13 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
     protected static UIMonitor mon;
     protected static JastAddAdAPI jastAddAd;
     protected static Controller con;
+    private static boolean init = true;
 
     @Override
     public void start(Stage stage) throws Exception {
+        if(!init)
+            return;
+        init = false;
         jastAddAd = new JastAddAdAPI(getRootNode());
         jastAddAd.run();
         mon = new UIMonitor(jastAddAd.api());
@@ -82,14 +87,59 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         con = loader.<Controller>getController();
         mon.setController(con);
         GraphView graphview = new GraphView(mon);
+        mon.setGraphView(graphview);
         con.init(mon, graphview);
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         stage.setTitle("JastAddDebugger " + ASTAPI.VERSION);
         stage.setScene(new Scene(rootView, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
         stage.setMaximized(true);
         stage.show();
-        ScrollPane center = (ScrollPane) rootView.lookup("#graphView");
+        ScrollPane center = (ScrollPane) rootView.lookup("#graphViewScrollPane");
         center.setContent(graphview);
+    }
+
+    @Test
+    public void testGraphClick(){
+        mon.getGraphView();
+    }
+
+    @Test
+    public void treeViewTab(){
+        clickOn("#treeViewTabNode");
+        TreeView<GenericTreeNode> tree = find("#graphTreeView");
+        expandTreeView(tree.getTreeItem(0));
+        tree.getTreeItem(0).setExpanded(false);
+        clickOn("#graphViewTabNode");
+    }
+
+   private void expandTreeView(TreeItem<GenericTreeNode> node) {
+        if (node == null)
+            return;
+        node.setExpanded(true);
+        for(TreeItem<GenericTreeNode> child : node.getChildren())
+            expandTreeView(child);
+    }
+
+    @Test
+    public void treeViewStructure(){
+        TreeView<GenericTreeNode> tree = find("#graphTreeView");
+        TreeItem<GenericTreeNode> treeItem = tree.getTreeItem(0);
+        compareTreeView(treeItem, mon.getApi().getFilteredTree());
+    }
+
+    private void compareTreeView(TreeItem<GenericTreeNode> parent, GenericTreeNode node) {
+        assertTrue("TreeView nodes does not match, TreeItem = " +
+                parent.getValue() + " : ASTAPI = " + node,
+                node.equals(parent.getValue()));
+
+        assertTrue("TreeView has wrong number of children, TreeView = " +
+                parent.getChildren().size() + " : ASTAPI = " +
+                node.getChildren().size(),
+                parent.getChildren().size() == node.getChildren().size());
+
+        for(int i = 0; i < parent.getChildren().size(); i++) {
+            compareTreeView(parent.getChildren().get(i), node.getChildren().get(i));
+        }
     }
 
     @Test
@@ -98,9 +148,9 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         clickOn("#minimizeRightSide");
         clickOn("#minimizeLeftSide");
 
-        clickOn("#minimizeConsole");
-        clickOn("#minimizeRightSide");
         clickOn("#minimizeLeftSide");
+        clickOn("#minimizeRightSide");
+        clickOn("#minimizeConsole");
 
         push(KeyCode.F);
         push(KeyCode.F);

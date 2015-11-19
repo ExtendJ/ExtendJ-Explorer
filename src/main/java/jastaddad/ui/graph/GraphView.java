@@ -26,6 +26,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ import java.util.HashMap;
 public class GraphView extends SwingNode implements ItemListener {
     private UIMonitor mon;
     private Controller con;
-    private VisualizationViewer vs;
+    private VisualizationViewer<GenericTreeNode, UIEdge> vs;
     private DelegateForest<GenericTreeNode, UIEdge> graph;
 
     public GraphView(UIMonitor mon){
@@ -226,6 +227,11 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
         vs.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
 
+    }
+
+    public void getPosition(GenericTreeNode node){
+        Point2D d = vs.getGraphLayout().transform(node);
+        con.addMessage(d.toString());
     }
 
     /**

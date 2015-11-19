@@ -36,7 +36,7 @@
                                 <ScrollPane styleClass="graphView" fx:id="graphViewScrollPane"/>
                             </Tab>
                             <Tab text="Tree" fx:id="treeViewTabNode">
-                                <fx:include fx:id="textTreeTab" source="/textTreeTab.fxml"/>
+                                <fx:include fx:id="textTreeTab" source="/treeViewTab.fxml"/>
                             </Tab>
                         </tabs>
                     </TabPane>

@@ -64,13 +64,12 @@ public class TreeViewTabController implements Initializable, ChangeListener {
     }
 
     /**
-     * Recursively create all the ui TreeItems that will be used by the tree.
+     * Recursively creates all the ui TreeItems that will be used by the treeView.
      * @param parent
      */
     private void createTree(TreeItem<GenericTreeNode> parent){
         GenericTreeNode parentGNode = parent.getValue();
         for (GenericTreeNode child : parentGNode.getChildren()) {
-
             TreeItem<GenericTreeNode> childItem = new TreeItem<>(child);
             parent.getChildren().add(childItem);
             nodeToItemRef.put(child, childItem);
