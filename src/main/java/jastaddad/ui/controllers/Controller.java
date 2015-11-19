@@ -14,6 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -131,71 +132,78 @@ public class Controller implements Initializable {
         });
 
         // minimize buttons for each side bar
-        minimizeLeftSide.setOnAction((event1 -> {
-            if(centerSplitPane.getDividers().get(0).getPosition() < 0.05)
-                centerSplitPane.setDividerPosition(0,0.2);
-            else
-                centerSplitPane.setDividerPosition(0,0);
-        }));
-        minimizeRightSide.setOnAction((event1 -> {
-            if(centerSplitPane.getDividers().get(1).getPosition() > 0.95)
-                centerSplitPane.setDividerPosition(1,0.8);
-            else
-                centerSplitPane.setDividerPosition(1,1);
-
-        }));
-        minimizeConsole.setOnAction((event1 -> {
-            if(consoleAndGraphSplitPane.getDividers().get(0).getPosition() > 0.95)
-                consoleAndGraphSplitPane.setDividerPosition(0,0.8);
-            else
-                consoleAndGraphSplitPane.setDividerPosition(0,1);
-
-        }));
-
-        // update the new filter. This is done in the API
-        saveNewFilterButton.setOnAction((event) -> {
-            addMessage("Filter update: starting");
-            long timeStart = System.currentTimeMillis();
-            boolean noError = mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
-            if(noError) {
-                graphView.updateGraph();
-                textTreeTabController.updateTree();
-                resetReferences();
-                if (mon.getSelectedNode() != null) {
-                    Platform.runLater(() -> {
-                        textTreeTabController.newNodeSelected(mon.getSelectedNode());
-                    });
-                }
-                addMessage("Filter update: done after, " + (System.currentTimeMillis() - timeStart) + " ms");
-            }else{
-                addError("Could not update graph: ");
-                mon.getApi().getErrors(ASTAPI.FILTER_ERROR).forEach(this::addError);
-                addMessage("Filter update: something is wrong!");
+        minimizeLeftSide.setOnMouseClicked(event2 -> {
+            if(event2.getButton() == MouseButton.PRIMARY) {
+                if (centerSplitPane.getDividers().get(0).getPosition() < 0.05)
+                    centerSplitPane.setDividerPosition(0, 0.2);
+                else
+                    centerSplitPane.setDividerPosition(0, 0);
+            }
+        });
+        minimizeRightSide.setOnMouseClicked(event2 -> {
+            if (event2.getButton() == MouseButton.PRIMARY) {
+                if (centerSplitPane.getDividers().get(1).getPosition() > 0.95)
+                    centerSplitPane.setDividerPosition(1, 0.8);
+                else
+                    centerSplitPane.setDividerPosition(1, 1);
             }
 
-        });
+            });
+            minimizeConsole.setOnMouseClicked(event2 -> {
+                if(event2.getButton() == MouseButton.PRIMARY) {
+                    if (consoleAndGraphSplitPane.getDividers().get(0).getPosition() > 0.95)
+                        consoleAndGraphSplitPane.setDividerPosition(0, 0.8);
+                    else
+                        consoleAndGraphSplitPane.setDividerPosition(0, 1);
+                }
 
-        // not working right now. The graph does not repaint when moving between the tabs
-        graphViewTabs.getSelectionModel().selectedItemProperty().addListener(
-                (ov, t, t1) -> {
-                    if(t1.getId().equals("graphViewTabNode")){
+            });
+
+            // update the new filter. This is done in the API
+            saveNewFilterButton.setOnAction((event) -> {
+                addMessage("Filter update: starting");
+                long timeStart = System.currentTimeMillis();
+                boolean noError = mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
+                if (noError) {
+                    graphView.updateGraph();
+                    textTreeTabController.updateTree();
+                    resetReferences();
+                    if (mon.getSelectedNode() != null) {
                         Platform.runLater(() -> {
-                            graphView.repaint(); graphView.requestFocus();
+                            textTreeTabController.newNodeSelected(mon.getSelectedNode());
                         });
-                    } else if(t1.getId().equals("treeViewTabNode")){
-
                     }
+                    addMessage("Filter update: done after, " + (System.currentTimeMillis() - timeStart) + " ms");
+                } else {
+                    addError("Could not update graph: ");
+                    mon.getApi().getErrors(ASTAPI.FILTER_ERROR).forEach(this::addError);
+                    addMessage("Filter update: something is wrong!");
                 }
-        );
 
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                addWarnings(mon.getApi().getWarnings(ASTAPI.AST_STRUCTURE_WARNING));
-                addErrors(mon.getApi().getErrors(ASTAPI.AST_STRUCTURE_ERROR));
-            }
-        });
-    }
+            });
+
+            // not working right now. The graph does not repaint when moving between the tabs
+            graphViewTabs.getSelectionModel().selectedItemProperty().addListener(
+                    (ov, t, t1) -> {
+                        if (t1.getId().equals("graphViewTabNode")) {
+                            Platform.runLater(() -> {
+                                graphView.repaint();
+                                graphView.requestFocus();
+                            });
+                        } else if (t1.getId().equals("treeViewTabNode")) {
+
+                        }
+                    }
+            );
+
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    addWarnings(mon.getApi().getWarnings(ASTAPI.AST_STRUCTURE_WARNING));
+                    addErrors(mon.getApi().getErrors(ASTAPI.AST_STRUCTURE_ERROR));
+                }
+            });
+        }
 
     private void setConsoleScrollHeightListener(DoubleProperty consoleHeight, ScrollPane consoleScrollPane, TextFlow textFlow){
         consoleHeight.bind(textFlow.heightProperty());
