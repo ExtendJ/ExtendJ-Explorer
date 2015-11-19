@@ -91,7 +91,7 @@ public class Controller implements Initializable {
      * @param uiComponent
      * @throws IOException
      */
-    public void init(UIMonitor mon, GraphView graphView, JastAddAdUI uiComponent) throws IOException {
+    public void init(UIMonitor mon, GraphView graphView) throws IOException {
         this.mon = mon;
         this.graphView = graphView;
 

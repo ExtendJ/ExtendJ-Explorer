@@ -2,15 +2,23 @@ import configAST.ConfigParser;
 import configAST.ConfigScanner;
 import configAST.DebuggerConfig;
 import configAST.ErrorMessage;
+import jastaddad.api.ASTAPI;
+import jastaddad.api.JastAddAdAPI;
 import jastaddad.ui.JastAddAdUI;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.controllers.Controller;
+import jastaddad.ui.graph.GraphView;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 import org.junit.Test;
-import org.loadui.testfx.GuiTest;
+import org.testfx.framework.junit.ApplicationTest;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -19,10 +27,9 @@ import java.io.IOException;
 /**
  * Created by gda10jli on 11/17/15.
  */
-public class UIComponentTestSuite extends GuiTest {
+public class UIComponentTestSuite extends ApplicationTest {
 
-    @Override
-    protected Parent getRootNode() {
+    protected Object getRootNode() {
         try {
             System.out.println("start UI tests");
             try{
@@ -36,9 +43,7 @@ public class UIComponentTestSuite extends GuiTest {
                         System.err.println("- " + e);
                     }
                 } else {
-                    JastAddAdUITest ui = new JastAddAdUITest(program);
-                    ui.initRootView();
-                    return ui.getRootView();
+                    return program;
                 }
             } catch (FileNotFoundException e) {
                 System.out.println("File not found!");
@@ -53,31 +58,35 @@ public class UIComponentTestSuite extends GuiTest {
         return null;
     }
 
-    private class JastAddAdUITest extends JastAddAdUI{
-        public JastAddAdUITest(Object root){
-            super(root);
-        }
-        @Override
-        protected void initRootView() throws IOException{
-            jastAddAd.run();
-            mon = new UIMonitor(jastAddAd.api());
-            FXMLLoader loader = new FXMLLoader();
-            rootView = loader.load(getClass().getResource("/main.fxml").openStream());
-            con = loader.<Controller>getController();
-            mon.setController(con);
-        }
-
-        public Parent getRootView(){
-            return rootView;
-        }
+    @Override
+    public void start(Stage stage) throws Exception {
+        JastAddAdAPI jastAddAd = new JastAddAdAPI(getRootNode());
+        jastAddAd.run();
+        UIMonitor mon = new UIMonitor(jastAddAd.api());
+        FXMLLoader loader = new FXMLLoader();
+        Parent rootView = loader.load(getClass().getResource("/main.fxml").openStream());
+        Controller con = loader.<Controller>getController();
+        mon.setController(con);
+        GraphView graphview = new GraphView(mon);
+        con.init(mon, graphview);
+        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+        stage.setTitle("JastAddDebugger " + ASTAPI.VERSION);
+        stage.setScene(new Scene(rootView, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
+        stage.setMaximized(true);
+        stage.show();
+        ScrollPane center = (ScrollPane) rootView.lookup("#graphView");
+        center.setContent(graphview);
     }
 
     @Test
-    public void TreeViewTest() {
-        final Button button = find("#minimizeConsole");
-        clickOn(button);
-        final Button buttonRight = find("#minimizeRightSide");
-        clickOn(buttonRight);
-        buttonRight.fire();
+    public void testMinimize() {
+        clickOn("#minimizeConsole");
+        clickOn("#minimizeRightSide");
+        clickOn("#minimizeLeftSide");
+
+
+        clickOn("#minimizeConsole");
+        clickOn("#minimizeRightSide");
+        clickOn("#minimizeLeftSide");
     }
 }

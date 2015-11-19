@@ -6,6 +6,8 @@ buildscript {
 	dependencies {
 		classpath group: 'org.jastadd', name: 'jastaddgradle', version: '1.9'
 	}
+
+	repositories.jcenter()
 }
 
 
@@ -44,10 +46,8 @@ dependencies {
 	compile fileTree(dir: "${System.properties['java.home']}", include: '**/ant-javafx.jar')
 
 	testCompile 'junit:junit:4.+'
-	testCompile 'org.testfx:testfx-core:4.0.+'
-	testCompile 'org.testfx:testfx-legacy:4.0.+', {
-		exclude group: 'junit', module: 'junit'
-	}
+	testCompile "org.testfx:testfx-core:4.0.+"
+	testCompile "org.testfx:testfx-junit:4.0.+"
 }
 
 task fatJar(type: Jar) {

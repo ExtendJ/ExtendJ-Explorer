@@ -33,8 +33,6 @@ public class JastAddAdUI extends Application {
     protected static JastAddAdAPI jastAddAd;
     protected static Controller con;
 
-    protected static Parent rootView;
-
     public JastAddAdUI() {} // This one is used by Application
 
     public JastAddAdUI(Object root) {
@@ -59,10 +57,13 @@ public class JastAddAdUI extends Application {
      * @throws IOException
      */
     @Override
-    public void start (Stage stage) throws IOException {
-        initRootView();
+    public void start (Stage stage) throws IOException, Exception {
+        FXMLLoader loader = new FXMLLoader();
+        Parent rootView = loader.load(getClass().getResource("/main.fxml").openStream());
+        con = loader.<Controller>getController();
+        mon.setController(con);
         GraphView graphview = new GraphView(mon);
-        con.init(mon, graphview, this);
+        con.init(mon, graphview);
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         stage.setTitle("JastAddDebugger " + ASTAPI.VERSION);
         stage.setScene(new Scene(rootView, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
@@ -72,16 +73,6 @@ public class JastAddAdUI extends Application {
         center.setContent(graphview);
     }
 
-    /**
-     * Method for initializing the rootView, mainly used by test which overrides this one
-     * @throws IOException
-     */
-    protected void initRootView() throws IOException{
-        FXMLLoader loader = new FXMLLoader();
-        rootView = loader.load(getClass().getResource("/main.fxml").openStream());
-        con = loader.<Controller>getController();
-        mon.setController(con);
-    }
 
     /**
      * main function for starting a JastAddAdUI session.
