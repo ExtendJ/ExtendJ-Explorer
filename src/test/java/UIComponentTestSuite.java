@@ -78,6 +78,7 @@ public class UIComponentTestSuite extends GuiTest {
         clickOn(button);
         final Button buttonRight = find("#minimizeRightSide");
         clickOn(buttonRight);
-        buttonRight.fire();
+        final Button buttonleft = find("#minimizeLeftSide");
+        clickOn(buttonleft);
     }
 }
