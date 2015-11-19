@@ -31,6 +31,7 @@ import static org.testfx.api.FxAssert.verifyThat;
  */
 public class UIComponentTestSuite extends UIApplicationTestHelper {
 
+    private static boolean init = true;
     protected Object getRootNode() {
         try {
             System.out.println("start UI tests");
@@ -62,6 +63,9 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
 
     @Override
     public void start(Stage stage) throws Exception {
+        if(!init)
+            return;
+        init = false;
         JastAddAdAPI jastAddAd = new JastAddAdAPI(getRootNode());
         jastAddAd.run();
         UIMonitor mon = new UIMonitor(jastAddAd.api());
@@ -76,8 +80,8 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         stage.setScene(new Scene(rootView, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
         stage.setMaximized(true);
         stage.show();
-        ScrollPane center = (ScrollPane) rootView.lookup("#graphView");
-        //center.setContent(graphview);
+        ScrollPane center = (ScrollPane) rootView.lookup("#graphViewScrollPane");
+        center.setContent(graphview);
     }
 
     @Test
