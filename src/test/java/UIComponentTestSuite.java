@@ -81,7 +81,6 @@ public class UIComponentTestSuite extends ApplicationTest {
         clickOn("#minimizeRightSide");
         clickOn("#minimizeLeftSide");
 
-
         clickOn("#minimizeConsole");
         clickOn("#minimizeRightSide");
         clickOn("#minimizeLeftSide");
