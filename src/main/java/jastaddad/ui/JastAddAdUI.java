@@ -72,7 +72,7 @@ public class JastAddAdUI extends Application {
         stage.setScene(new Scene(rootView, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
         stage.setMaximized(true);
         stage.show();
-        ScrollPane center = (ScrollPane) rootView.lookup("#graphView");
+        ScrollPane center = (ScrollPane) rootView.lookup("#graphViewScrollPane");
         center.setContent(graphview);
     }
 

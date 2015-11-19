@@ -18,9 +18,14 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.junit.Test;
 
+import java.awt.geom.RoundRectangle2D;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
+import static org.junit.Assert.assertTrue;
+import static org.testfx.api.FxAssert.verifyThat;
+
 /**
  * Created by gda10jli on 11/17/15.
  */
@@ -72,7 +77,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         stage.setMaximized(true);
         stage.show();
         ScrollPane center = (ScrollPane) rootView.lookup("#graphView");
-        center.setContent(graphview);
+        //center.setContent(graphview);
     }
 
     @Test
@@ -87,9 +92,27 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
 
         push(KeyCode.F);
         push(KeyCode.F);
+    }
 
-        SplitPane splitPane = find("#centerSplitPane");
-        System.out.println(splitPane.getDividers().get(0).getPosition());
+    @Test
+    public void leftMinimizeButton(){
+        testMinimizeButton("#centerSplitPane", 0, "#minimizeLeftSide", 0.5, 0.1, false);
+    }
+
+    @Test
+    public void rightMinimizeButton(){
+        testMinimizeButton("#centerSplitPane", 1, "#minimizeRightSide", 0.5, 0.9, true);
+    }
+
+    private void testMinimizeButton(String splitter, int divider, String button, double defaultPos, double minimizedPos, boolean bg){
+        SplitPane splitPane = find(splitter);
+        splitPane.getDividers().get(divider).setPosition(0.5);
+        clickOn(button);
+        boolean res = bg ? splitPane.getDividers().get(divider).getPosition() > minimizedPos : splitPane.getDividers().get(divider).getPosition() < minimizedPos;
+        assertTrue("Minimize button: " + button + " minimizing does not work correctly. ", res);
+        clickOn(button);
+        res = bg ? splitPane.getDividers().get(0).getPosition() < minimizedPos : splitPane.getDividers().get(0).getPosition() > minimizedPos;
+        assertTrue("Minimize button: " + button + " expanding does not work correctly. ", res);
     }
 
 
