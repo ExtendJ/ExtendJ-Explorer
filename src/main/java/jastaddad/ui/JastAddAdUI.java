@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import jastaddad.ui.controllers.Controller;
 import jastaddad.ui.graph.GraphView;
 
+import javax.xml.soap.Node;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -28,9 +29,11 @@ import java.io.IOException;
 
 public class JastAddAdUI extends Application {
 
-    private static UIMonitor mon;
-    private static JastAddAdAPI jastAddAd;
-    private static Controller con;
+    protected static UIMonitor mon;
+    protected static JastAddAdAPI jastAddAd;
+    protected static Controller con;
+
+    protected static Parent rootView;
 
     public JastAddAdUI() {} // This one is used by Application
 
@@ -57,20 +60,27 @@ public class JastAddAdUI extends Application {
      */
     @Override
     public void start (Stage stage) throws IOException {
-        FXMLLoader loader = new FXMLLoader();
-        Parent a = loader.load(getClass().getResource("/main.fxml").openStream());
-        con = loader.<Controller>getController();
-        mon.setController(con);
+        initRootView();
         GraphView graphview = new GraphView(mon);
         con.init(mon, graphview, this);
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         stage.setTitle("JastAddDebugger " + ASTAPI.VERSION);
-        stage.setScene(new Scene(a, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
+        stage.setScene(new Scene(rootView, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
         stage.setMaximized(true);
         stage.show();
-
-        ScrollPane center = (ScrollPane) a.lookup("#graphView");
+        ScrollPane center = (ScrollPane) rootView.lookup("#graphView");
         center.setContent(graphview);
+    }
+
+    /**
+     * Method for initializing the rootView, mainly used by test which overrides this one
+     * @throws IOException
+     */
+    protected void initRootView() throws IOException{
+        FXMLLoader loader = new FXMLLoader();
+        rootView = loader.load(getClass().getResource("/main.fxml").openStream());
+        con = loader.<Controller>getController();
+        mon.setController(con);
     }
 
     /**
