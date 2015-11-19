@@ -11,11 +11,11 @@ import jastaddad.api.filteredtree.TreeCluster;
 import jastaddad.api.filteredtree.TreeNode;
 import jastaddad.ui.UIMonitor;
 
+import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashSet;
-import javax.swing.*;
 
 /**
  * A PopupGraphMousePlugin that brings up distinct popup menus when an edge or vertex is

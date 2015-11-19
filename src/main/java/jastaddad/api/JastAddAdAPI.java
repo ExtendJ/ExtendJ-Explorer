@@ -1,10 +1,12 @@
 package jastaddad.api;
 
+import configAST.ConfigParser;
+import configAST.ConfigScanner;
+import configAST.DebuggerConfig;
+import configAST.ErrorMessage;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import configAST.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -14,10 +16,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.lang.System;
 
 /**
  * This is the main class for the JastAddAd system. This class will create an ASTAPI object that will generate the

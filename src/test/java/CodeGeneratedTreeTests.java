@@ -1,15 +1,6 @@
 import configAST.*;
 import jastaddad.api.JastAddAdAPI;
-import junit.framework.TestCase;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by gda10jth on 11/18/15.

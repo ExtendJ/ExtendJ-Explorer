@@ -1,25 +1,16 @@
-import static org.junit.Assert.*;
-
-import configAST.*;
+import configAST.ConfigParser;
+import configAST.ConfigScanner;
+import configAST.DebuggerConfig;
+import configAST.ErrorMessage;
 import jastaddad.api.JastAddAdAPI;
-import jastaddad.api.filteredtree.GenericTreeNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 
 
 @RunWith(Parameterized.class)

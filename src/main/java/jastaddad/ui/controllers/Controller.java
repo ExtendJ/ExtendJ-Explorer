@@ -3,6 +3,8 @@ package jastaddad.ui.controllers;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.TreeNode;
+import jastaddad.ui.UIMonitor;
+import jastaddad.ui.graph.GraphView;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -18,9 +20,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import jastaddad.ui.JastAddAdUI;
-import jastaddad.ui.UIMonitor;
-import jastaddad.ui.graph.GraphView;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

@@ -15,11 +15,11 @@ import edu.uci.ics.jung.visualization.renderers.VertexLabelAsShapeRenderer;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.NodeReference;
 import jastaddad.api.filteredtree.TreeNode;
+import jastaddad.ui.UIMonitor;
+import jastaddad.ui.controllers.Controller;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import org.apache.commons.collections15.Transformer;
-import jastaddad.ui.UIMonitor;
-import jastaddad.ui.controllers.Controller;
 
 import java.awt.*;
 import java.awt.event.ItemEvent;
