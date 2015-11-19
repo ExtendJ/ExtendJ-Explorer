@@ -89,7 +89,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         stage.setMaximized(true);
         stage.show();
         ScrollPane center = (ScrollPane) rootView.lookup("#graphView");
-        //center.setContent(graphview);
+        center.setContent(graphview);
     }
 
     @Test
