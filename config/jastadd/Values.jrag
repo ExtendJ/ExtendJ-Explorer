@@ -1,5 +1,7 @@
 aspect Values{
 
+    syn Num DebuggerConfig.getNum() = new Num("1");
+
     syn lazy Include DebuggerConfig.getInclude(){
         for(Block block : getBlockList()){
             if(block.isInclude())

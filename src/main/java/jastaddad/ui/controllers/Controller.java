@@ -196,14 +196,11 @@ public class Controller implements Initializable {
                     }
             );
 
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    addWarnings(mon.getApi().getWarnings(ASTAPI.AST_STRUCTURE_WARNING));
-                    addErrors(mon.getApi().getErrors(ASTAPI.AST_STRUCTURE_ERROR));
-                }
+            Platform.runLater(() -> {
+                addWarnings(mon.getApi().getWarnings(ASTAPI.AST_STRUCTURE_WARNING));
+                addErrors(mon.getApi().getErrors(ASTAPI.AST_STRUCTURE_ERROR));
             });
-        }
+    }
 
     private void setConsoleScrollHeightListener(DoubleProperty consoleHeight, ScrollPane consoleScrollPane, TextFlow textFlow){
         consoleHeight.bind(textFlow.heightProperty());

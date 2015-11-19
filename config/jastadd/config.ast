@@ -1,4 +1,4 @@
-DebuggerConfig ::= [Config] Block*;
+DebuggerConfig ::= [Config] Block* /Num/;
 
 abstract Block;
 Include : Block ::= ConfigDecl [NodeConfigList];

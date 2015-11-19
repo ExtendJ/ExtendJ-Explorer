@@ -33,7 +33,7 @@ public class CodeGeneratedTreeTests {
     private void runThisTree(Object program, String expectedFile){
         String inDirectory = "tests/codeGeneratedTreeTests/";
         JastAddAdAPI debugger = new JastAddAdAPI(program);
-        //debugger.setFilterDir("/");
+        debugger.setFilterDir("tests/codeGeneratedTreeTests/");
         debugger.run();
         debugger.printToXML(inDirectory, expectedFile, ".out");
         new OutoutXMLcomparer().checkOutput(debugger.getFilteredTree(), expectedFile + ".expected", inDirectory);
