@@ -2,11 +2,15 @@ import configAST.ConfigParser;
 import configAST.ConfigScanner;
 import configAST.DebuggerConfig;
 import configAST.ErrorMessage;
+import edu.uci.ics.jung.graph.DelegateForest;
+import edu.uci.ics.jung.graph.Graph;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.JastAddAdAPI;
+import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.controllers.Controller;
 import jastaddad.ui.graph.GraphView;
+import jastaddad.ui.graph.UIEdge;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -31,6 +35,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertTrue;
 import static org.testfx.api.FxAssert.verifyThat;
 
@@ -98,11 +104,6 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
     }
 
     @Test
-    public void testGraphClick(){
-        mon.getGraphView()
-    }
-
-    @Test
     public void testMinimize() {
         clickOn("#minimizeConsole");
         clickOn("#minimizeRightSide");
@@ -116,7 +117,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         push(KeyCode.F);
     }
 
-    @Test
+   @Test
     public void testConsole() {
         clickOn("#consoleTabWarning");
         mon.getController().addWarning("Test warning");
@@ -146,6 +147,50 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         clickOn(button);
         res = bg ? splitPane.getDividers().get(0).getPosition() < minimizedPos : splitPane.getDividers().get(0).getPosition() > minimizedPos;
         assertTrue("Minimize button: " + button + " expanding does not work correctly. ", res);
+    }
+
+    @Test
+    public void compareApiTreeAndGraphTree(){
+        DelegateForest<GenericTreeNode, UIEdge> graph = mon.getGraphView().getJungGraph();
+
+        GenericTreeNode apiRoot = mon.getRootNode();
+        System.out.println("NULL? " + graph.getRoot());
+        //assertEquals("Graph tree and API tree does not have the same root. api root: " + apiRoot.toString() + " graph root: " + graph.getRoot().toString(), apiRoot, graph.getRoot());
+        compareTrees(apiRoot, graph);
+    }
+
+    private void compareTrees(GenericTreeNode apiRoot, Graph<GenericTreeNode, UIEdge> graph) {
+
+        ArrayList<GenericTreeNode> graphChildren = new ArrayList<>();
+        for(UIEdge graphEdge : graph.getOutEdges(apiRoot)){
+            if(!graphEdge.isReference()){
+                graphChildren.add(graph.getDest(graphEdge));
+            }
+        }
+
+        // same children count?
+        assertEquals("Graph tree has to many children: " + graphChildren.size() + "should be: " + graphChildren.size(),
+                apiRoot.getChildren().size(),
+                graphChildren.size());
+
+        // same children??
+        for(GenericTreeNode child : apiRoot.getChildren()){
+            boolean s = graphChildren.contains(child);
+            assertTrue("API tree node: " + apiRoot.toString() + " is missing in graph.",
+                    s);
+        }
+
+        // next iteration
+        for(GenericTreeNode child : apiRoot.getChildren())
+            compareTrees(child, graph);
+    }
+
+    private GenericTreeNode getChild(ArrayList<GenericTreeNode> list, GenericTreeNode child){
+        for(GenericTreeNode b : list){
+            if(b.equals(child))
+                return b;
+        }
+        return null;
     }
 
 }
