@@ -4,6 +4,7 @@ import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.DirectedOrderedSparseMultigraph;
 import edu.uci.ics.jung.graph.Forest;
+import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.*;
@@ -229,9 +230,10 @@ public class GraphView extends SwingNode implements ItemListener {
 
     }
 
-    public void getPosition(GenericTreeNode node){
-        Point2D d = vs.getGraphLayout().transform(node);
-        con.addMessage(d.toString());
+    public DelegateForest<GenericTreeNode, UIEdge> getJungGraph(){
+
+        System.out.println("NULL? " + ((DelegateForest<GenericTreeNode, UIEdge> )vs.getGraphLayout().getGraph()).getRoot());
+        return (DelegateForest<GenericTreeNode, UIEdge> )vs.getGraphLayout().getGraph();
     }
 
     /**

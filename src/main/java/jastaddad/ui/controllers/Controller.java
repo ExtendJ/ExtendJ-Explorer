@@ -87,7 +87,6 @@ public class Controller implements Initializable {
      *
      * @param mon
      * @param graphView
-     * @param uiComponent
      * @throws IOException
      */
     public void init(UIMonitor mon, GraphView graphView) throws IOException {
@@ -160,8 +159,8 @@ public class Controller implements Initializable {
 
             // update the new filter. This is done in the API
             saveNewFilterButton.setOnAction((event) -> {
-                graphView.getPosition(mon.getRootNode());
                 addMessage("Filter update: starting");
+                graphView.getJungGraph();
                 long timeStart = System.currentTimeMillis();
                 boolean noError = mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
                 if (noError) {
