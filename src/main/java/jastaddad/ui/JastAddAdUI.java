@@ -103,7 +103,7 @@ public class JastAddAdUI extends Application {
                 List a = new List();
                 a.add(new Include(null, new Opt<NodeConfigList>()));
                 DebuggerConfig d = new DebuggerConfig(new Opt(), a);
-                JastAddAdUI debugger = new JastAddAdUI(d);
+                JastAddAdUI debugger = new JastAddAdUI(program);
                 debugger.run();
                 //program.genCode(System.out);
             }

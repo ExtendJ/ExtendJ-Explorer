@@ -59,6 +59,10 @@ public class JastAddAdAPI {
 		return api.getFilteredTree();
 	}
 
+	public boolean printToXML(String toDirectory, String ext){
+		return printToXML(toDirectory, FILE_NAME, ext);
+	}
+
     /**
      * Prints the generated Filtered AST as XML to a file in toDirecty with the file extension ext.
      *
@@ -66,7 +70,7 @@ public class JastAddAdAPI {
      * @param ext
      * @return true if successful.
      */
-	public boolean printToXML(String toDirectory, String ext){
+	public boolean printToXML(String toDirectory, String fileName, String ext){
 		try {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -80,7 +84,7 @@ public class JastAddAdAPI {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(toDirectory + "/" + FILE_NAME + ext);
+			StreamResult result = new StreamResult(toDirectory + "/" + fileName + ext);
 
 			// Output to console for testing
 			// StreamResult result = new StreamResult(System.out);
