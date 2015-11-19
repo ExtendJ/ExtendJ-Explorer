@@ -9,14 +9,13 @@ public class CodeGeneratedTreeTests {
 
     @Test
     public void nullRootTree(){
-        DebuggerConfig d = null;
-        runThisTree(d, "nullRootTree");
+        runThisTree(null, "nullRootTree");
     }
 
     @Test
     public void nullNodeInTree(){
         List a = new List();
-        a.add(new Include(null, new Opt<NodeConfigList>()));
+        a.addChild(new Include(null, new Opt<>()));
         DebuggerConfig d = new DebuggerConfig(new Opt(), a);
         runThisTree(d, "nullNodeInTree");
     }

@@ -1,3 +1,4 @@
+import com.google.common.util.concurrent.SettableFuture;
 import configAST.ConfigParser;
 import configAST.ConfigScanner;
 import configAST.DebuggerConfig;
@@ -12,6 +13,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.junit.Test;
@@ -20,6 +22,8 @@ import org.testfx.framework.junit.ApplicationTest;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
+import static org.testfx.api.FxAssert.verifyThat;
 
 /**
  * Created by gda10jli on 11/17/15.
@@ -84,5 +88,11 @@ public class UIComponentTestSuite extends ApplicationTest {
         clickOn("#minimizeConsole");
         clickOn("#minimizeRightSide");
         clickOn("#minimizeLeftSide");
+
+        push(KeyCode.F);
+        push(KeyCode.F);
     }
+
+
+
 }
