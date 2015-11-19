@@ -33,7 +33,7 @@
                     <TabPane tabClosingPolicy="UNAVAILABLE" fx:id="graphViewTabs">
                         <tabs>
                             <Tab text="Graph" fx:id="graphViewTabNode">
-                                <ScrollPane styleClass="graphView" fx:id="graphView"/>
+                                <ScrollPane styleClass="graphView" fx:id="graphViewScrollPane"/>
                             </Tab>
                             <Tab text="Tree" fx:id="treeViewTabNode">
                                 <fx:include fx:id="textTreeTab" source="/textTreeTab.fxml"/>
