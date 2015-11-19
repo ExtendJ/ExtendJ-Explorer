@@ -1,3 +1,4 @@
+import EDU.oswego.cs.dl.util.concurrent.FJTask;
 import configAST.ConfigParser;
 import configAST.ConfigScanner;
 import configAST.DebuggerConfig;
@@ -9,22 +10,30 @@ import jastaddad.ui.controllers.Controller;
 import jastaddad.ui.graph.GraphView;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SplitPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
+import org.testfx.service.finder.NodeFinder;
+import org.testfx.service.finder.NodeFinderException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import static org.testfx.api.FxAssert.verifyThat;
+import static org.testfx.api.FxService.serviceContext;
+import static org.testfx.matcher.base.NodeMatchers.*;
+
 /**
  * Created by gda10jli on 11/17/15.
  */
-public class UIComponentTestSuite extends ApplicationTest {
+public class UIComponentTestSuite extends UIApplicationTestHelper {
 
     protected Object getRootNode() {
         try {
@@ -84,5 +93,8 @@ public class UIComponentTestSuite extends ApplicationTest {
         clickOn("#minimizeConsole");
         clickOn("#minimizeRightSide");
         clickOn("#minimizeLeftSide");
+
+        SplitPane splitPane = find("#centerSplitPane");
+        System.out.println(splitPane.getDividers().get(0).getPosition());
     }
 }

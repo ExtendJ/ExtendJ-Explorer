@@ -32,12 +32,16 @@ public class JastAddAdUI extends Application {
     protected static JastAddAdAPI jastAddAd;
     protected static Controller con;
 
+    private Parent rootView;
     public JastAddAdUI() {} // This one is used by Application
 
     public JastAddAdUI(Object root) {
         jastAddAd = new JastAddAdAPI(root);
     }
 
+    public Parent getRoot(){
+        return rootView;
+    }
     /**
      * run() generates the AST and then opens the UI
      */
@@ -58,7 +62,7 @@ public class JastAddAdUI extends Application {
     @Override
     public void start (Stage stage) throws IOException, Exception {
         FXMLLoader loader = new FXMLLoader();
-        Parent rootView = loader.load(getClass().getResource("/main.fxml").openStream());
+        rootView = loader.load(getClass().getResource("/main.fxml").openStream());
         con = loader.<Controller>getController();
         mon.setController(con);
         GraphView graphview = new GraphView(mon);
