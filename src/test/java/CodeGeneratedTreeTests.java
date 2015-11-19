@@ -1,4 +1,7 @@
-import configAST.*;
+import configAST.DebuggerConfig;
+import configAST.Include;
+import configAST.List;
+import configAST.Opt;
 import jastaddad.api.JastAddAdAPI;
 import org.junit.Test;
 
