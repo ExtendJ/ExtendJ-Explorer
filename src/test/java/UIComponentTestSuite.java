@@ -7,20 +7,31 @@ import jastaddad.api.JastAddAdAPI;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.controllers.Controller;
 import jastaddad.ui.graph.GraphView;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import junit.framework.Assert;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+
+import static org.testfx.api.FxAssert.verifyThat;
+
 /**
  * Created by gda10jli on 11/17/15.
  */
@@ -55,14 +66,18 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         return null;
     }
 
+    protected static UIMonitor mon;
+    protected static JastAddAdAPI jastAddAd;
+    protected static Controller con;
+
     @Override
     public void start(Stage stage) throws Exception {
-        JastAddAdAPI jastAddAd = new JastAddAdAPI(getRootNode());
+        jastAddAd = new JastAddAdAPI(getRootNode());
         jastAddAd.run();
-        UIMonitor mon = new UIMonitor(jastAddAd.api());
+        mon = new UIMonitor(jastAddAd.api());
         FXMLLoader loader = new FXMLLoader();
         Parent rootView = loader.load(getClass().getResource("/main.fxml").openStream());
-        Controller con = loader.<Controller>getController();
+        con = loader.<Controller>getController();
         mon.setController(con);
         GraphView graphview = new GraphView(mon);
         con.init(mon, graphview);
@@ -72,7 +87,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         stage.setMaximized(true);
         stage.show();
         ScrollPane center = (ScrollPane) rootView.lookup("#graphView");
-        center.setContent(graphview);
+        //center.setContent(graphview);
     }
 
     @Test
@@ -87,9 +102,18 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
 
         push(KeyCode.F);
         push(KeyCode.F);
+    }
 
-        SplitPane splitPane = find("#centerSplitPane");
-        System.out.println(splitPane.getDividers().get(0).getPosition());
+    @Test
+    public void testConsole() {
+        clickOn("#consoleTabWarning");
+        mon.getController().addWarning("Test warning");
+        clickOn("#consoleTabError");
+        mon.getController().addError("Test error");
+        clickOn("#consoleTabMessage");
+        mon.getController().addMessage("Test message");
+        clickOn("#consoleTabAll");
+        
     }
 
 
