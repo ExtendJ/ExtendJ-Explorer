@@ -66,6 +66,7 @@ public class JastAddAdUI extends Application {
         con = loader.<Controller>getController();
         mon.setController(con);
         GraphView graphview = new GraphView(mon);
+        mon.setGraphView(graphview);
         con.init(mon, graphview);
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         stage.setTitle("JastAddDebugger " + ASTAPI.VERSION);

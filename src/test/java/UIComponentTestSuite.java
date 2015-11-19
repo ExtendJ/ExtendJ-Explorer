@@ -7,21 +7,29 @@ import jastaddad.api.JastAddAdAPI;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.controllers.Controller;
 import jastaddad.ui.graph.GraphView;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.SplitPane;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import junit.framework.Assert;
 import org.junit.Test;
 
 import java.awt.geom.RoundRectangle2D;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+
 
 import static org.junit.Assert.assertTrue;
 import static org.testfx.api.FxAssert.verifyThat;
@@ -31,7 +39,6 @@ import static org.testfx.api.FxAssert.verifyThat;
  */
 public class UIComponentTestSuite extends UIApplicationTestHelper {
 
-    private static boolean init = true;
     protected Object getRootNode() {
         try {
             System.out.println("start UI tests");
@@ -61,19 +68,25 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         return null;
     }
 
+    protected static UIMonitor mon;
+    protected static JastAddAdAPI jastAddAd;
+    protected static Controller con;
+    private static boolean init = true;
+
     @Override
     public void start(Stage stage) throws Exception {
         if(!init)
             return;
         init = false;
-        JastAddAdAPI jastAddAd = new JastAddAdAPI(getRootNode());
+        jastAddAd = new JastAddAdAPI(getRootNode());
         jastAddAd.run();
-        UIMonitor mon = new UIMonitor(jastAddAd.api());
+        mon = new UIMonitor(jastAddAd.api());
         FXMLLoader loader = new FXMLLoader();
         Parent rootView = loader.load(getClass().getResource("/main.fxml").openStream());
-        Controller con = loader.<Controller>getController();
+        con = loader.<Controller>getController();
         mon.setController(con);
         GraphView graphview = new GraphView(mon);
+        mon.setGraphView(graphview);
         con.init(mon, graphview);
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         stage.setTitle("JastAddDebugger " + ASTAPI.VERSION);
@@ -82,6 +95,11 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         stage.show();
         ScrollPane center = (ScrollPane) rootView.lookup("#graphViewScrollPane");
         center.setContent(graphview);
+    }
+
+    @Test
+    public void testGraphClick(){
+        mon.getGraphView()
     }
 
     @Test
@@ -96,6 +114,17 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
 
         push(KeyCode.F);
         push(KeyCode.F);
+    }
+
+    @Test
+    public void testConsole() {
+        clickOn("#consoleTabWarning");
+        mon.getController().addWarning("Test warning");
+        clickOn("#consoleTabError");
+        mon.getController().addError("Test error");
+        clickOn("#consoleTabMessage");
+        mon.getController().addMessage("Test message");
+        clickOn("#consoleTabAll");
     }
 
     @Test
@@ -118,7 +147,5 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         res = bg ? splitPane.getDividers().get(0).getPosition() < minimizedPos : splitPane.getDividers().get(0).getPosition() > minimizedPos;
         assertTrue("Minimize button: " + button + " expanding does not work correctly. ", res);
     }
-
-
 
 }

@@ -3,6 +3,7 @@ package jastaddad.ui;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.ui.controllers.Controller;
+import jastaddad.ui.graph.GraphView;
 import jastaddad.ui.graph.UIEdge;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class UIMonitor {
     private HashMap<GenericTreeNode,ArrayList<UIEdge>> displayedRefEdges;
     private ASTAPI api;
     private Controller controller;
+    private GraphView graphView;
 
     public UIMonitor(ASTAPI api){
         this.api = api;
@@ -70,4 +72,8 @@ public class UIMonitor {
 
     public HashMap<GenericTreeNode,ArrayList<UIEdge>> getDisplayedReferenceEdges(){ return displayedRefEdges; }
 
+    public void setGraphView(GraphView graphView) {
+        this.graphView = graphView;
+    }
+    public GraphView getGraphView(){return graphView;}
 }

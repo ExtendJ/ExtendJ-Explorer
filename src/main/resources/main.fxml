@@ -48,24 +48,24 @@
                                 </tooltip>
                             </Button>
                         </VBox>
-                        <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+                        <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" fx:id="consoleTabs">
                             <tabs>
                                 <Tab text="All" fx:id="consoleTabAll">
                                     <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneAll">
                                         <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowAll"/>
                                     </ScrollPane>
                                 </Tab>
-                                <Tab text="Warnings">
+                                <Tab text="Warnings" fx:id="consoleTabWarning">
                                     <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneWarning">
                                         <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowWarning"/>
                                     </ScrollPane>
                                 </Tab>
-                                <Tab text="Errors">
+                                <Tab text="Errors" fx:id="consoleTabError">
                                     <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneError">
                                         <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowError"/>
                                     </ScrollPane>
                                 </Tab>
-                                <Tab text="Messages">
+                                <Tab text="Messages" fx:id="consoleTabMessage">
                                     <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneMessage">
                                         <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowMessage"/>
                                     </ScrollPane>
