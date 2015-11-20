@@ -75,9 +75,6 @@ public class GraphView extends SwingNode implements ItemListener {
         if(root && parent.getChildren().size() <= 0){
             g.addVertex(parent);
         }
-
-
-
         for (GenericTreeNode child : parent.getChildren()) {
             UIEdge edge = null;
             if(child.isNode()){
@@ -98,7 +95,9 @@ public class GraphView extends SwingNode implements ItemListener {
         DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge>();
         graph = new DelegateForest<GenericTreeNode, UIEdge>(n);
         createTree(graph, mon.getRootNode(), true);
-        vs.getGraphLayout().setGraph(graph);
+        TreeLayout<GenericTreeNode, UIEdge> layout = new TreeLayout<>(graph, 150, 100);
+        vs.setGraphLayout(layout);
+        //vs.getGraphLayout().setGraph(graph);
         addDisplayedReferences();
         vs.repaint();
     }
@@ -135,7 +134,7 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.repaint();
     }
 
-    public void saveGraphAsImage(String ext){
+    public void saveGraphAsImage(String filename, String ext){
 
         VisualizationImageServer<GenericTreeNode, UIEdge> vis =
                 new VisualizationImageServer<>(vs.getGraphLayout(),
@@ -150,13 +149,24 @@ public class GraphView extends SwingNode implements ItemListener {
                 new Dimension(vs.getGraphLayout().getSize()));
 
         // Write image to a png file
-        File outputfile = new File("graph" + ext);
+        File outputfile = new File(filename + "." + ext);
 
         try {
-            ImageIO.write(image, "png", outputfile);
+            ImageIO.write(image, ext, outputfile);
         } catch (IOException e) {
             // Exception handling
             e.printStackTrace();
+        }
+    }
+
+    public void savePrintScreenGraph(String filename, String ext) {
+
+        BufferedImage bufImage = ScreenImage.createImage(getContent());
+        try {
+            File outputfile = new File(filename + "." + ext);
+            ImageIO.write(bufImage, ext, outputfile);
+        } catch (Exception e) {
+            System.out.println("writeToImageFile(): " + e.getMessage());
         }
     }
 

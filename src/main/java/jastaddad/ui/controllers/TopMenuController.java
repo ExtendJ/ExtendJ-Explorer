@@ -10,6 +10,8 @@ import javafx.scene.control.Menu;
 import javafx.stage.StageStyle;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -41,13 +43,24 @@ public class TopMenuController implements Initializable {
                 mon.getController().addError("XML file where not genereated.");
         });
 
-        MenuItem exportImage = new MenuItem("Image (png)");
+        Menu imageMenu = new Menu("Image (png)");
+        MenuItem exportImage = new MenuItem("Whole graph");
         exportImage.setOnAction(event -> {
-            mon.getGraphView().saveGraphAsImage(".png");
-            mon.getController().addMessage("Image saved");
+            String fileName = "whole_graph_" + new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
+            mon.getGraphView().saveGraphAsImage(fileName, "png");;
+            mon.getController().addMessage("Image saved:" + fileName);
+        });
+        MenuItem exportImagePrintScreen = new MenuItem("On screen");
+        exportImagePrintScreen.setOnAction(event -> {
+            String fileName = "screen_graph_" + new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
+
+            mon.getGraphView().savePrintScreenGraph(fileName, "png");
+            mon.getController().addMessage("Image saved:" + fileName);
         });
         topMenuExportMenu.getItems().add(exportXml);
-        topMenuExportMenu.getItems().add(exportImage);
+        topMenuExportMenu.getItems().add(imageMenu);
+        imageMenu.getItems().add(exportImage);
+        imageMenu.getItems().add(exportImagePrintScreen);
 
     }
 
