@@ -1,0 +1,72 @@
+<project name="ConfigLanguage" default="gen">
+	<property name="jar.file" value="compiler.jar" />
+	<property name="main.class" value="lang.Compiler" />
+
+	<property name="tools.dir" location="tools" />
+	<property name="src.dir" location="src" />
+	<property name="config.dir" location="config" />
+	<property name="gen.dir" location="${src.dir}/gen" />
+	<property name="build.dir" location="build" />
+
+	<taskdef name="jflex" classname="jflex.anttask.JFlexTask"
+		classpath="${tools.dir}/jflex-1.6.0.jar"/>
+	<taskdef name="beaver" classname="beaver.comp.run.AntTask"
+		classpath="${tools.dir}/beaver-ant.jar"/>
+	<taskdef name="jastadd" classname="org.jastadd.JastAddTask"
+		classpath="${tools.dir}/jastadd2.jar" />
+
+
+	<target name="gen" depends="scanner-gen,parser-gen,ast-gen">
+	</target>
+
+	<target name="scanner-gen">
+		<mkdir dir="${gen.dir}/configAST" />
+		<jflex file="${config.dir}/ConfigScanner.flex" outdir="${gen.dir}/configAST" nobak="yes"/>
+	</target>
+
+	<target name="parser-gen">
+	<!-- compose parser specification -->
+	<mkdir dir="${build.dir}/parser"/>
+	<concat destfile="${build.dir}/parser/ConfigParser.all"
+			binary="true" force="false">
+		<fileset dir="${config.dir}">
+			<include name="*.parser"/>
+		</fileset>
+	</concat>
+	<java classname="Main" fork="true">
+		<classpath>
+			<pathelement path="${tools.dir}/JastAddParser.jar"/>
+			<pathelement path="${tools.dir}/beaver-rt.jar"/>
+		</classpath>
+		<arg value="${build.dir}/parser/ConfigParser.all"/>
+		<arg value="${build.dir}/parser/ConfigParser.beaver"/>
+	</java>
+	<!-- invoke parser generator -->
+	<mkdir dir="${gen.dir}/configAST"/>
+	<beaver file="${build.dir}/parser/ConfigParser.beaver"
+			destdir="${gen.dir}/configAST"
+			terminalNames="yes"
+			compress="no"
+			useSwitch="yes"/>
+	</target>
+
+	<target name="ast-gen">
+		<mkdir dir="${gen.dir}" />
+		<jastadd package="configAST"
+			outdir="${gen.dir}"
+			beaver="true"
+			cache="all">
+			<fileset dir="${config.dir}/jastadd">
+				<include name="*.ast" />
+				<include name="*.jadd" />
+				<include name="*.jrag" />
+			</fileset>
+		</jastadd>
+	</target>
+
+	<target name="clean-gen">
+		<delete dir="${gen.dir}" />
+		<mkdir dir="${gen.dir}" />
+	</target>
+
+</project>

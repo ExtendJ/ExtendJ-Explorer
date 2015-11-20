@@ -1,12 +1,8 @@
 buildscript {
-	repositories.mavenLocal()
-	repositories.maven {
-		url 'http://jastadd.org/mvn/'
-	}
+	repositories.mavenCentral()
 	dependencies {
-		classpath group: 'org.jastadd', name: 'jastaddgradle', version: '1.9'
+		//classpath group: 'org.jastadd', name: 'jastaddgradle', version: '1.9.6' //Todo change this when new annotations is standard
 	}
-
 	repositories.jcenter()
 }
 
@@ -14,17 +10,38 @@ buildscript {
 if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
 	throw new GradleException("Must Build with Java 1.8")
 }
-// check for 8u20
+// check for java  8u20
 def matcher = System.getProperty("java.runtime.version") =~ /(\d*)\.(\d*)\.(\d*)(_(\d*))?(\D.*)/
 if (matcher?.matches() && (!matcher?.group(5) || Integer.parseInt(matcher?.group(5)) < 20)) {
 	throw new GradleException("Must Build with Java 8 update 20 or later")
 }
 
+//Temp for local JastAdd2 with the new annotations, remove this when its standard in JastAdd
+repositories {
+	mavenCentral()
+	flatDir {
+		dirs 'tools'
+	}
+}
+
+ant.importBuild 'build.xml'
+
 apply plugin: 'java'
 apply plugin: 'application'
-apply plugin: 'jastadd'
+//apply plugin: 'jastadd'//Todo change this when new annotations is standard
 
-jastadd {
+sourceSets {
+	main {
+		java {
+			srcDirs = ['src/main/java', 'src/gen']
+		}
+		resources {
+			srcDir 'src/mainresources'
+		}
+	}
+}
+
+/*jastadd {//Todo change this when new annotations is standard
 	modules "."
 	module = "config"
 	astPackage = "configAST"
@@ -32,10 +49,13 @@ jastadd {
 	scanner.genDir = "src/gen/configAST"
 	parser.name = "ConfigParser"
 	parser.genDir = "src/gen/configAST"
-}
+}*/
+
 
 dependencies {
 	compile fileTree(dir: 'libs', include: '*.jar')
+	compile name: 'jastadd2'
+	compile name: 'beaver-rt'
 	compile 'org.apache.ant:ant:1.9.4'
 	compile 'net.sf.jung:jung-graph-impl:2.0.1'
 	compile 'net.sf.jung:jung-api:2.0.1'
@@ -49,6 +69,11 @@ dependencies {
 	testCompile "org.testfx:testfx-core:4.0.+"
 	testCompile "org.testfx:testfx-junit:4.0.+"
 }
+
+gradle.projectsEvaluated {
+	compileJava.dependsOn(gen)
+}
+
 
 task fatJar(type: Jar) {
 	destinationDir = projectDir

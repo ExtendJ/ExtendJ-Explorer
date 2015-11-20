@@ -4,6 +4,7 @@
 !gradlew.bat
 !gradlew
 !build.gradle
+!build.xml
 !modules
 !/gradle/
 !/samples/
@@ -17,6 +18,6 @@
 /A6-CalcASM/compiler.jar
 
 !/config
-
+!/tools
 !/tests/
 **/*.out
