@@ -1,6 +1,7 @@
 package jastaddad.ui;
 
 import jastaddad.api.ASTAPI;
+import jastaddad.api.JastAddAdAPI;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.ui.controllers.Controller;
 import jastaddad.ui.graph.GraphView;
@@ -20,19 +21,22 @@ public class UIMonitor {
     private AttributeInfo selectedInfo;
     private ArrayList<UIEdge> refEdges;
     private HashMap<GenericTreeNode,ArrayList<UIEdge>> displayedRefEdges;
-    private ASTAPI api;
+    private JastAddAdAPI jaaApi;
     private Controller controller;
     private GraphView graphView;
 
-    public UIMonitor(ASTAPI api){
-        this.api = api;
+    public UIMonitor(JastAddAdAPI jaaApi){
+        this.jaaApi = jaaApi;
     }
 
     public ASTAPI getApi(){
-        return api;
+        return jaaApi.api();
+    }
+    public JastAddAdAPI getJastAddAdAPI(){
+        return jaaApi;
     }
 
-    public GenericTreeNode getRootNode(){ return api.getFilteredTree(); }
+    public GenericTreeNode getRootNode(){ return jaaApi.getFilteredTree(); }
     public Controller getController(){return controller;}
 
     public void setController(Controller controller) {

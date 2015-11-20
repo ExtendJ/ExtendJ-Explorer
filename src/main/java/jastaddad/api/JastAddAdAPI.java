@@ -34,12 +34,17 @@ public class JastAddAdAPI {
 
     private Object root;
     private String filterDir;
-
+    private boolean done;
 	
 	public JastAddAdAPI(Object root){
         this.root = root;
         filterDir = "";
+        done = false;
 	}
+
+    public boolean hasRun(){
+        return done;
+    }
 
     /**
      * Sets the directory of the projects
@@ -52,87 +57,13 @@ public class JastAddAdAPI {
      */
 	public void run(){
         api = new ASTAPI(root, filterDir);
+        done = true;
 	}
 
     public ASTAPI api(){return api;};
 
 	public GenericTreeNode getFilteredTree(){
 		return api.getFilteredTree();
-	}
-
-	public boolean printToXML(String toDirectory, String ext){
-		return printToXML(toDirectory, FILE_NAME, ext);
-	}
-
-    /**
-     * Prints the generated Filtered AST as XML to a file in toDirecty with the file extension ext.
-     *
-     * @param toDirectory
-     * @param ext
-     * @return true if successful.
-     */
-	public boolean printToXML(String toDirectory, String fileName, String ext){
-		try {
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-			// root elements
-			Document doc = docBuilder.newDocument();
-
-			traversTreeXML(api.getFilteredTree(), doc);
-
-			// write the content into xml file
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(toDirectory + "/" + fileName + ext);
-
-			// Output to console for testing
-			// StreamResult result = new StreamResult(System.out);
-
-			transformer.transform(source, result);
-
-			System.out.println("File saved!");
-
-		} catch (ParserConfigurationException pce) {
-			pce.printStackTrace();
-			return false;
-		} catch (TransformerException tfe) {
-			tfe.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-
-    /**
-     * Used to generate the XML code.
-     *
-     * @param root
-     * @param doc
-     */
-	private void traversTreeXML(GenericTreeNode root, Document doc){
-		Element element = doc.createElement(root.toString());
-		doc.appendChild(element);
-		for(GenericTreeNode child : root.getChildren())
-			traversTreeXML(child, element, doc);
-	}
-
-    /**
-     * Used to generate the XML code.
-     *
-     * @param parent
-     * @param parentElement
-     * @param doc
-     */
-	private void traversTreeXML(GenericTreeNode parent, Element parentElement, Document doc){
-        Element element;
-        if(!parent.isNode())
-            element = doc.createElement(CLUSTER_STRING);
-        else
-            element = doc.createElement(parent.toString());
-		parentElement.appendChild(element);
-		for(GenericTreeNode child : parent.getChildren())
-			traversTreeXML(child, element, doc);
 	}
 
     /**

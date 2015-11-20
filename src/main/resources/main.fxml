@@ -4,10 +4,10 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.TextFlow?>
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="jastaddad.ui.controllers.Controller">
+            fx:controller="jastaddad.ui.controllers.Controller" fx:id="root">
     <top>
         <HBox styleClass="topParent">
-            <Label text=" "/>
+            <fx:include fx:id="topMenu" source="/topMenu.fxml"/>
         </HBox>
     </top>
     <center>
@@ -89,7 +89,7 @@
                         <tabs>
                             <Tab text="Filter">
                                 <VBox styleClass="paneParent">
-                                    <Button text="Filter" StyleClass="updateFilterButton, our_button" fx:id="saveNewFilterButton">
+                                    <Button text="Apply filter" StyleClass="updateFilterButton, our_button" fx:id="saveNewFilterButton">
                                         <tooltip>
                                             <Tooltip text="Update the graph with the new filter."/>
                                         </tooltip>
@@ -111,5 +111,6 @@
             </VBox>
         </SplitPane>
     </center>
-    <stylesheets>style.css</stylesheets>
+    <stylesheets>style/style.css</stylesheets>
+    <stylesheets>style/topmenu.css</stylesheets>
 </BorderPane>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.MenuItem?>
+<MenuBar styleClass="typeListView" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jastaddad.ui.controllers.TopMenuController">
+    <Menu text="File" fx:id="topMenuFileMenu">
+        <items>
+            <Menu text="Export" fx:id="topMenuExportMenu">
+            </Menu>
+            <SeparatorMenuItem/>
+            <MenuItem text="Exit" fx:id="exitMenuItem"></MenuItem>
+        </items>
+    </Menu>
+</MenuBar>
