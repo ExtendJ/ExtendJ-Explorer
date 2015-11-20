@@ -1,9 +1,8 @@
 package jastaddad.api;
 
+import configAST.*;
 import configAST.ConfigParser;
 import configAST.ConfigScanner;
-import configAST.DebuggerConfig;
-import configAST.ErrorMessage;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

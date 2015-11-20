@@ -30,7 +30,7 @@
 	}
 :};
 
-%goal debuggerconfig
+%goal debuggerconfig;
 
 DebuggerConfig debuggerconfig =
 	config.a block_list.b {: return new DebuggerConfig(new Opt(a), b); :}

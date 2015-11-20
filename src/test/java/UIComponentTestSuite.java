@@ -106,10 +106,10 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
     @Test
     public void testGraphClick(){
         mon.getGraphView();
-    }
+    }//Todo add some checks, atm it does nothing
 
     @Test
-    public void treeViewTab(){
+    public void treeViewTab(){ //Todo add some checks, atm it does nothing
         clickOn("#treeViewTabNode");
         TreeView<GenericTreeNode> tree = find("#graphTreeView");
         expandTreeView(tree.getTreeItem(0));
@@ -148,7 +148,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
     }
 
     @Test
-    public void testMinimize() {
+    public void testMinimize() { //Todo add some checks, atm it does nothing
         clickOn("#minimizeConsole");
         clickOn("#minimizeRightSide");
         clickOn("#minimizeLeftSide");
@@ -162,7 +162,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
     }
 
    @Test
-    public void testConsole() {
+    public void testConsole() {//Todo add some checks, atm it does nothing
         clickOn("#consoleTabWarning");
         mon.getController().addWarning("Test warning");
         clickOn("#consoleTabError");

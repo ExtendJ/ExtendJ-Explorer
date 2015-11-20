@@ -112,8 +112,8 @@ public class Node{
                 for (Annotation a: m.getAnnotations()) {
                     if(ASTAnnotation.isChild(a)) {
                         Object obj = m.invoke(root, new Object[m.getParameterCount()]);
-                        nullCheck(obj, api, getName(a));
-                        children.add(new Node(obj, getName(a),
+                        nullCheck(obj, api, ASTAnnotation.getName(a));
+                        children.add(new Node(obj, ASTAnnotation.getName(a),
                                 !ASTAnnotation.isSingleChild(a),
                                 ASTAnnotation.isOptChild(a),
                                 level + 1, api));
@@ -129,20 +129,6 @@ public class Node{
         if(obj == null) {
             api.putError(ASTAPI.AST_STRUCTURE_ERROR, String.format("The child %s is null, can't continue the traversal of this path", name));
         }
-    }
-
-    /**
-     * Returns the name given by the parent node, by the annotations.
-     * @param a
-     * @return
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
-     */
-    private String getName(Annotation a) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        if (a.getClass().getMethod("name") != null)
-            return (String) a.getClass().getMethod("name").invoke(a, new Object[]{});
-        return "";
     }
 
     public String nodeName() { return isNull() ? "null" : node.toString(); }
