@@ -79,8 +79,8 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         stage.setTitle("JastAddDebugger " + ASTAPI.VERSION);
         stage.setScene(new Scene(rootView, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
-        stage.setMaximized(true);
-
+        //stage.setMaximized(true);
+        
         stage.setOnCloseRequest(we -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirm Exit");
