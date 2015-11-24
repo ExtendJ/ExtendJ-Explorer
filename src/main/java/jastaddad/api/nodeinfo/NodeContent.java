@@ -109,6 +109,7 @@ public class NodeContent {
             return true;
         }catch(Throwable e){
             invokedValues.put(method.getName(), getAttribute(null, method, params, forcedComputation));
+            e.printStackTrace();
             addInvocationErrors(e);
             return false;
         }

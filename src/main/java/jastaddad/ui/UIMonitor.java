@@ -6,6 +6,7 @@ import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.ui.controllers.Controller;
 import jastaddad.ui.graph.GraphView;
 import jastaddad.ui.graph.UIEdge;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,9 +25,23 @@ public class UIMonitor {
     private JastAddAdAPI jaaApi;
     private Controller controller;
     private GraphView graphView;
-
+    private Stage parentStage;
+    private ArrayList<UIDialog> subWindows;
     public UIMonitor(JastAddAdAPI jaaApi){
         this.jaaApi = jaaApi;
+        subWindows = new ArrayList<>();
+    }
+
+    public ArrayList<UIDialog> getSubWindows() {
+        return subWindows;
+    }
+
+    public void addSubWindow(UIDialog window){
+        subWindows.add(window);
+    }
+
+    public void removeSubWindow(UIDialog window){
+        subWindows.remove(window);
     }
 
     public ASTAPI getApi(){
@@ -55,6 +70,9 @@ public class UIMonitor {
         if(node == null)
             lastRealNode = null;
     }
+
+    public Stage getParentStage(){return parentStage;}
+    public void setParentStage(Stage stage){parentStage = stage;}
 
     public AttributeInfo getSelectedInfo(){ return selectedInfo;}
 

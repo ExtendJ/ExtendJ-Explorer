@@ -72,6 +72,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         FXMLLoader loader = new FXMLLoader();
         rootView = loader.load(getClass().getResource("/main.fxml").openStream());
         con = loader.<Controller>getController();
+        mon.setParentStage(stage);
         mon.setController(con);
         GraphView graphview = new GraphView(mon);
         mon.setGraphView(graphview);
@@ -92,8 +93,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
             } else {
                 we.consume();
             }
-        });
-*/
+        });*/
         stage.show();
         ScrollPane center = (ScrollPane) rootView.lookup("#graphViewScrollPane");
         center.setContent(graphview);
