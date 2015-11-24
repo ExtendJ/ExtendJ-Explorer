@@ -1,0 +1,32 @@
+.menu-bar{
+    -fx-background-color:transparent;
+}
+
+.menu-bar .label{
+    -fx-text-fill: white;
+    -fx-font-weight:normal;
+    -fx-font-size:13;
+}
+
+.menu-item .label {
+    -fx-text-fill: white;
+    -fx-pref-width:200;
+}
+/*
+.menu-item:focused {
+     -fx-background-color: #606090;
+}
+*/
+.menu-item:focused .label {
+    -fx-text-fill: white;
+}
+
+.context-menu {
+    -fx-skin: "com.sun.javafx.scene.control.skin.ContextMenuSkin";
+    -fx-background-color: #707070;
+    -fx-background-insets: 0, 0, 0;
+    -fx-border-width:1 1 1 1;
+    -fx-border-color:#dddddd #dddddd #dddddd #dddddd;
+/*    -fx-padding: 0.666667em 0.083333em 0.666667em 0.083333em;  8 1 8 1 */
+    -fx-padding: 0 0 0 0; /* 4 1 8 1 */
+}

@@ -3,6 +3,7 @@ import configAST.Include;
 import configAST.List;
 import configAST.Opt;
 import jastaddad.api.JastAddAdAPI;
+import jastaddad.tasks.JastAddAdXML;
 import org.junit.Test;
 
 /**
@@ -28,7 +29,8 @@ public class CodeGeneratedTreeTests {
         JastAddAdAPI debugger = new JastAddAdAPI(program);
         debugger.setFilterDir("tests/codeGeneratedTreeTests/");
         debugger.run();
-        debugger.printToXML(inDirectory, expectedFile, ".out");
+        JastAddAdXML xmlPrinter = new JastAddAdXML(debugger);
+        xmlPrinter.printToXML(inDirectory, expectedFile, ".out");
         new OutoutXMLcomparer().checkOutput(debugger.getFilteredTree(), expectedFile + ".expected", inDirectory);
     }
 }

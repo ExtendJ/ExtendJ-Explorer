@@ -3,20 +3,28 @@ package jastaddad.ui;
 import configAST.*;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.JastAddAdAPI;
+import jastaddad.tasks.JastAddAdTask;
+import jastaddad.tasks.JastAddAdXML;
 import jastaddad.ui.controllers.Controller;
 import jastaddad.ui.graph.GraphView;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ScrollPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * This is the main class for the JastAddAd system if the user wants the UI. This class will create an jastAddAd
@@ -26,7 +34,7 @@ import java.io.IOException;
  *
  */
 
-public class JastAddAdUI extends Application {
+public class JastAddAdUI extends Application implements JastAddAdTask {
 
     protected static UIMonitor mon;
     protected static JastAddAdAPI jastAddAd;
@@ -47,7 +55,7 @@ public class JastAddAdUI extends Application {
      */
     public void run(){
         jastAddAd.run();
-        this.mon = new UIMonitor(jastAddAd.api());
+        this.mon = new UIMonitor(jastAddAd);
         launch(new String[0]);
     }
 
@@ -71,7 +79,21 @@ public class JastAddAdUI extends Application {
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         stage.setTitle("JastAddDebugger " + ASTAPI.VERSION);
         stage.setScene(new Scene(rootView, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
-        stage.setMaximized(true);
+        //stage.setMaximized(true);
+        
+        stage.setOnCloseRequest(we -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirm Exit");
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.setContentText("Are you sure you want to quit?");
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK){
+            } else {
+                we.consume();
+            }
+        });
+
         stage.show();
         ScrollPane center = (ScrollPane) rootView.lookup("#graphViewScrollPane");
         center.setContent(graphview);

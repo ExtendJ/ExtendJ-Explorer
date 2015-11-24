@@ -5,7 +5,9 @@ import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.DirectedOrderedSparseMultigraph;
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import edu.uci.ics.jung.visualization.RenderContext;
+import edu.uci.ics.jung.visualization.VisualizationImageServer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.*;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
@@ -22,6 +24,7 @@ import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import org.apache.commons.collections15.Transformer;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -29,6 +32,9 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -69,9 +75,6 @@ public class GraphView extends SwingNode implements ItemListener {
         if(root && parent.getChildren().size() <= 0){
             g.addVertex(parent);
         }
-
-
-
         for (GenericTreeNode child : parent.getChildren()) {
             UIEdge edge = null;
             if(child.isNode()){
@@ -92,7 +95,9 @@ public class GraphView extends SwingNode implements ItemListener {
         DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge>();
         graph = new DelegateForest<GenericTreeNode, UIEdge>(n);
         createTree(graph, mon.getRootNode(), true);
-        vs.getGraphLayout().setGraph(graph);
+        TreeLayout<GenericTreeNode, UIEdge> layout = new TreeLayout<>(graph, 150, 100);
+        vs.setGraphLayout(layout);
+        //vs.getGraphLayout().setGraph(graph);
         addDisplayedReferences();
         vs.repaint();
     }
@@ -127,6 +132,42 @@ public class GraphView extends SwingNode implements ItemListener {
         }
         mon.setReferenceEdges(edges);
         vs.repaint();
+    }
+
+    public void saveGraphAsImage(String filename, String ext){
+
+        VisualizationImageServer<GenericTreeNode, UIEdge> vis =
+                new VisualizationImageServer<>(vs.getGraphLayout(),
+                        vs.getGraphLayout().getSize());
+
+        setVisualizationTransformers(vis);
+
+        // Create the buffered image
+        BufferedImage image = (BufferedImage) vis.getImage(
+                new Point2D.Double(vs.getGraphLayout().getSize().getWidth() / 2,
+                        vs.getGraphLayout().getSize().getHeight() / 2),
+                new Dimension(vs.getGraphLayout().getSize()));
+
+        // Write image to a png file
+        File outputfile = new File(filename + "." + ext);
+
+        try {
+            ImageIO.write(image, ext, outputfile);
+        } catch (IOException e) {
+            // Exception handling
+            e.printStackTrace();
+        }
+    }
+
+    public void savePrintScreenGraph(String filename, String ext) {
+
+        BufferedImage bufImage = ScreenImage.createImage(getContent());
+        try {
+            File outputfile = new File(filename + "." + ext);
+            ImageIO.write(bufImage, ext, outputfile);
+        } catch (Exception e) {
+            System.out.println("writeToImageFile(): " + e.getMessage());
+        }
     }
 
     /**
@@ -172,19 +213,7 @@ public class GraphView extends SwingNode implements ItemListener {
         }
     }
 
-    /**
-     * This function creates the VisualizationViewer Object and defines all Transformers.
-     *
-     * Transformers in Jung2 are used to define the shape, size, color etc on vertexes and edges. A Transformer have two
-     * generics that defines what (the first generic) will be transformed to what (the second generic). An example:
-     * to define a color on a vertex, a Transformer<GenericTreeNode, Color> is used. it "transform" a GenericTreeNode to
-     * a Color.
-     * @param g
-     */
-    public void createLayout(Forest<GenericTreeNode, UIEdge> g ){
-
-        TreeLayout<GenericTreeNode, UIEdge> layout = new TreeLayout<>(g, 150, 100);
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    public void setVisualizationTransformers(BasicVisualizationServer<GenericTreeNode, UIEdge> bvs){
 
         // Vertex text transformer
         Transformer <GenericTreeNode, String> toStringTransformer = fNode -> fNode.toGraphString();
@@ -215,18 +244,35 @@ public class GraphView extends SwingNode implements ItemListener {
         // Build the VisualizationViewer that holds the graph and all transformers.
         ScalingControl visualizationViewerScalingControl = new CrossoverScalingControl();
 
-        vs = new VisualizationViewer<>(layout, screenSize);
-        vs.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
-        vs.scaleToLayout(visualizationViewerScalingControl);
 
-        vs.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
-        vs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
-        vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.QuadCurve<>());
-        vs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
-        vs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
-        vs.getRenderContext().setVertexShapeTransformer(new VertexShapeTransformer(mon, vs.getRenderContext()));
-        vs.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
-        vs.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
+        bvs.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
+        bvs.scaleToLayout(visualizationViewerScalingControl);
+
+        bvs.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
+        bvs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
+        bvs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.QuadCurve<>());
+        bvs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
+        bvs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
+        bvs.getRenderContext().setVertexShapeTransformer(new VertexShapeTransformer(mon, vs.getRenderContext()));
+        bvs.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
+        bvs.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
+    }
+
+    /**
+     * This function creates the VisualizationViewer Object and defines all Transformers.
+     *
+     * Transformers in Jung2 are used to define the shape, size, color etc on vertexes and edges. A Transformer have two
+     * generics that defines what (the first generic) will be transformed to what (the second generic). An example:
+     * to define a color on a vertex, a Transformer<GenericTreeNode, Color> is used. it "transform" a GenericTreeNode to
+     * a Color.
+     * @param g
+     */
+    public void createLayout(Forest<GenericTreeNode, UIEdge> g){
+
+        TreeLayout<GenericTreeNode, UIEdge> layout = new TreeLayout<>(g, 150, 100);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        vs = new VisualizationViewer<>(layout, screenSize);
+        setVisualizationTransformers(vs);
 
     }
 

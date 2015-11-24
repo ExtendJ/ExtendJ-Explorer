@@ -3,6 +3,7 @@ import configAST.ConfigScanner;
 import configAST.DebuggerConfig;
 import configAST.ErrorMessage;
 import jastaddad.api.JastAddAdAPI;
+import jastaddad.tasks.JastAddAdXML;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -52,7 +53,8 @@ public class InputFileTreeTest extends AbstractParameterizedTest {
 					JastAddAdAPI debugger = new JastAddAdAPI(program);
 					debugger.setFilterDir(inDirectory + "/");
 					debugger.run();
-					debugger.printToXML(inDirectory, OUT_EXTENSION);
+					JastAddAdXML xmlPrinter = new JastAddAdXML(debugger);
+					xmlPrinter.printToXML(inDirectory, OUT_EXTENSION);
 					new OutoutXMLcomparer().checkOutput(debugger.getFilteredTree(), expectedFile, inDirectory);
 				}
 			} catch (FileNotFoundException e) {

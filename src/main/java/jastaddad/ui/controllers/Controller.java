@@ -13,6 +13,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -20,6 +21,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -32,10 +35,12 @@ import java.util.*;
  * not have its own controller, its events will be handled here.
  */
 public class Controller implements Initializable {
+    @FXML Parent root;
     @FXML private VBox attributeTab;
     @FXML private AttributeTabController attributeTabController;
     @FXML private ScrollPane textTreeTab;
     @FXML private TreeViewTabController textTreeTabController;
+    @FXML private TopMenuController topMenuController;
 
     @FXML
     private TabPane graphViewTabs;
@@ -95,6 +100,7 @@ public class Controller implements Initializable {
 
         attributeTabController.init(mon, graphView);
         textTreeTabController.init(mon);
+        topMenuController.init(mon, graphView);
 
         loadClassTreeView();
         loadFilterFileText();
@@ -199,6 +205,20 @@ public class Controller implements Initializable {
                 addWarnings(mon.getApi().getWarnings(ASTAPI.AST_STRUCTURE_WARNING));
                 addErrors(mon.getApi().getErrors(ASTAPI.AST_STRUCTURE_ERROR));
             });
+    }
+
+    public void exitProgram(){
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirm Exit");
+        alert.initStyle(StageStyle.UNDECORATED);
+        alert.setContentText("Are you sure you want to quit?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            Stage stage = (Stage) root.getScene().getWindow();
+            stage.close();
+        } else {
+        };
     }
 
     private void setConsoleScrollHeightListener(DoubleProperty consoleHeight, ScrollPane consoleScrollPane, TextFlow textFlow){
