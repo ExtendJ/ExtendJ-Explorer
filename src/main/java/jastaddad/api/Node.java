@@ -112,8 +112,9 @@ public class Node{
                 for (Annotation a: m.getAnnotations()) {
                     if(ASTAnnotation.isChild(a)) {
                         Object obj = m.invoke(root, new Object[m.getParameterCount()]);
-                        nullCheck(obj, api, ASTAnnotation.getName(a));
-                        children.add(new Node(obj, ASTAnnotation.getName(a),
+                        String name =  ASTAnnotation.getString(a, ASTAnnotation.AST_METHOD_NAME);
+                        nullCheck(obj, api, name);
+                        children.add(new Node(obj, name,
                                 !ASTAnnotation.isSingleChild(a),
                                 ASTAnnotation.isOptChild(a),
                                 level + 1, api));

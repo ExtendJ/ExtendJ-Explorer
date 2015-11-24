@@ -24,12 +24,15 @@ public class NodeContent {
     private ArrayList<String> innovationErrors; //Error list for invoke calls
     private HashMap<String, NodeInfo> invokedValues; //The cached values for invoked methods
     private Node node; //The node the content is a part of
+    private Object nodeObject; //The node the content is a part of
 
     public NodeContent(Node node){
-        attributes = new HashMap();
-        tokens = new HashMap();
+        attributes = new HashMap<>();
+        tokens = new HashMap<>();
         innovationErrors = new ArrayList<>();
+        invokedValues = new HashMap<>();
         this.node = node;
+        this.nodeObject = node.node;
     }
 
     /**
@@ -50,16 +53,6 @@ public class NodeContent {
     public boolean noErrors(){ return innovationErrors.size() == 0; }
 
     /**
-     * Add some invoked value to the cachedMap
-     * @param info
-     */
-    public void addInvokedValue(NodeInfo info){
-        if(invokedValues == null)
-            invokedValues = new HashMap<>();
-        invokedValues.put(info.getName(), info);
-    }
-
-    /**
      * Will return an Attribute or Token for the given key.
      * @param key
      * @return
@@ -72,17 +65,35 @@ public class NodeContent {
     }
 
     /**
-     * Computes the method in the NodeInfo, with the given parameters.
+     * Prints the name with its parameters, if the parameters are null the type of the parameters will then be added.
+     * * MethodName(1,2) or MethodName(int, String)
+     * @param m
+     * @param params
+     * @return
+     */
+    protected static String getName(Method m, Object[] params){
+        String name = m.getName() + "(";
+        if (m.getParameterCount() > 0){
+            for(int i = 0; i < m.getParameterCount(); i++) {
+                name += params != null ? params[i].toString() : m.getParameterTypes()[i].toString();
+                if(i + 1 < m.getParameterCount())
+                    name += ",";
+            }
+        }
+        return name + ")";
+    }
+
+    /**
+     * Computes the method in the NodeInfo, with the given parameters, and adds it to the cached list.
      * @param nodeInfo
      * @param par
-     * @return the value of the computation.
+     * @return true if the invocation was successful.
      */
-    public Object compute(NodeInfo nodeInfo, ArrayList<Object> par){
+    public boolean compute(NodeInfo nodeInfo, ArrayList<Object> par){
         if(!nodeInfo.isParametrized())
-            return null;
+            return false;
         innovationErrors.clear();
         Object[] params = null;
-        Attribute attr;
         Method method = nodeInfo.getMethod();
         try{
             params = new Object[method.getParameterCount()];
@@ -91,23 +102,18 @@ public class NodeContent {
                 obj = par.get(i);
                 Class c = method.getParameterTypes()[i];
                 if(obj == null)
-                    return null;
+                    return false;
                 obj = getParam(obj, c);
                 if(obj == null)
-                    return null;
+                    return false;
                 params[i] = obj;
             }
-            obj = method.invoke(node.node, params);
-            if(obj == null)
-                return null;
-            attr = new Attribute(NodeInfo.getName(method, params), obj, method);
-            invokedValues.put(NodeInfo.getName(method, params), attr);
-            return obj;
+            invokedValues.put(method.getName(), getAttribute(nodeObject, method, params));
+            return true;
         }catch(Throwable e){
-            attr = new Attribute(NodeInfo.getName(method, params), null, method);
-            invokedValues.put(NodeInfo.getName(method, params), attr);
+            invokedValues.put(method.getName(), getAttribute(null, method, params));
             addInvocationErrors(e);
-            return null;
+            return false;
         }
     }
 
@@ -124,7 +130,7 @@ public class NodeContent {
             return Boolean.parseBoolean(obj.toString());
         else if(c == String.class)
             return obj;
-        return null;
+        return obj;
     }
 
     /**
@@ -136,28 +142,10 @@ public class NodeContent {
         innovationErrors.clear();
         attributes.clear();
         tokens.clear();
-        compute(node.node);
+        compute(nodeObject);
         return innovationErrors;
     }
 
-    /**
-     * Compute the attribute/token method with some given name.
-     * @param method
-     * @return
-     */
-    public NodeInfo compute(String method){
-        try {
-            Method m = node.node.getClass().getMethod(method);
-            for (Annotation a : m.getAnnotations()) {
-                if (ASTAnnotation.isAttribute(a))
-                    return getAttribute(node.node, m, a);
-                if (ASTAnnotation.isToken(a))
-                    return getToken(node.node, m);
-            }
-        }  catch (NoSuchMethodException e) {
-        }
-        return null;
-    }
 
     /**
      * Computes all methods of the given object, the values will be added to NodeContents value Lists.
@@ -168,64 +156,93 @@ public class NodeContent {
         if(node.isNull())
             return;
         for(Method m : obj.getClass().getMethods()){
-            compute(obj, m);
+            computeMethod(m, true, null);
         }
     }
 
     /**
-     * Computes the method of the given object if it has an annotation of the ASTAnnotation type.
-     * The value will be added to a List in the NodeContent
-     * @param obj
+     * Compute the attribute/token method with some given name.
+     * @param method
+     * @return
      */
-    public void compute(Object obj, Method m) {
-        for(Annotation a : m.getAnnotations()) {
-            compute(obj, m, a);
-        }
-    }
 
-    /**
-     * Computes the method of the given object with if the annotation is a ASTAnnotation.
-     * The value will be added to a List in the NodeContent
-     * @param obj
-     */
-    public NodeInfo compute(Object obj, Method m, Annotation a)  {
-        if(ASTAnnotation.isAttribute(a)) {
-            return attributes.put(NodeInfo.getName(m),getAttribute(obj, m, a));
+    public NodeInfo computeMethod(String method){
+        try{
+            return computeMethod(nodeObject.getClass().getMethod(method), false, null);
+        }  catch (NoSuchMethodException e) {
+            e.printStackTrace();
         }
-        if(ASTAnnotation.isToken(a))
-            return tokens.put(NodeInfo.getName(m), getToken(obj, m));
         return null;
     }
 
     /**
-     * Get the Attribute of the method in the obj.
-     * @param obj
+     * Computes the given method, and add it to the list with the computed Attributes.
      * @param m
      * @return
      */
-
-    private Attribute getAttribute(Object obj, Method m, Annotation a){
-        return getAttribute(obj, m, a, null);
+    public NodeInfo computeMethod(Method m){
+        return computeMethod(m, true, null);
     }
 
-    //Todo might move these methods to their specific classes
-    private Attribute getAttribute(Object obj, Method m, Annotation a, Object[] params){
+    /**
+     * Computes the given method, and depending on the parameter @param add it to the list with the computed Attributes.
+     * @param m
+     * @param add
+     * @return
+     */
+    public NodeInfo computeMethod(Method m, boolean add, Object[] params){
+        NodeInfo info = null;
+        for (Annotation a : m.getAnnotations()) {
+            if (ASTAnnotation.isAttribute(a)) {
+                info = getAttribute(nodeObject, m, params);
+                if(add)
+                    tokens.put(getName(m , params), info);
+                break;
+            }
+            else if (ASTAnnotation.isToken(a)) {
+                info = getToken(nodeObject, m);
+                if(add)
+                    tokens.put(m.getName(), info);
+                break;
+            }
+        }
+        return info;
+    }
+
+    /**
+     * Creates a Attribute and invokes the method with the supplied parameters, if any.
+     * Will also add the specific information about the Attribute, which is derived form the annotations.
+     * @param obj
+     * @param m
+     * @param params
+     * @return
+     */
+    private Attribute getAttribute(Object obj, Method m, Object[] params){
         boolean parametrized = m.getParameterCount() > 0;
         Attribute attribute = new Attribute(m.getName(), null, m);
         attribute.setParametrized(parametrized);
-        attribute.setKind(ASTAnnotation.getKind(a));
+        for(Annotation a : m.getAnnotations()) { //To many attribute specific methods so I decided to iterate through the Annotations again instead of sending them as parameters.
+            if (ASTAnnotation.isAttribute(a)){
+                attribute.setKind(ASTAnnotation.get(a, ASTAnnotation.AST_METHOD_KIND));
+                attribute.setCircular(ASTAnnotation.is(a, ASTAnnotation.AST_METHOD_CIRCULAR));
+                attribute.setNTA(ASTAnnotation.is(a, ASTAnnotation.AST_METHOD_NTA));
+            }else if(ASTAnnotation.isSource(a)){
+                attribute.setAspect(ASTAnnotation.getString(a, ASTAnnotation.AST_METHOD_ASPECT));
+                attribute.setDeclaredAt(ASTAnnotation.getString(a, ASTAnnotation.AST_METHOD_DECLARED_AT));
+            }
+        }
         try{
             if(parametrized) {
                 if(params != null && params.length == m.getParameterCount())
-                    attribute.setValue(m.invoke(params));
+                    attribute.setValue(m.invoke(obj, params));
                 else
                     attribute.setValue(USER_INPUT);
             }
-            else
+            else if(obj != null)
                 attribute.setValue(m.invoke(obj, new Object[0]));
         } catch (Throwable e) {
             addInvocationErrors(e);
-            attribute.setValue(e.getCause().toString());
+            attribute.setValue(e.getCause());
         }
         return attribute;
     }
@@ -246,10 +263,10 @@ public class NodeContent {
         }
     }
 
-
     private void addInvocationErrors(Throwable e){
-        innovationErrors.add(e.getCause().toString());
-        //e.printStackTrace();
+        String message = e.getCause() != null ? e.getCause().toString() : e.getMessage();
+        innovationErrors.add(message);
+        e.printStackTrace();
     }
 
     /**
@@ -269,32 +286,4 @@ public class NodeContent {
         Collections.sort(temp);
         return temp;
     }
-
-
-    private HashMap<Object, Object> getCachedMapValues(Object obj, Method m) throws IllegalAccessException, InstantiationException {
-        try {
-            Field f = getField(obj.getClass(), m.getName(), "_values");
-            if(f == null)
-                return null;
-            f.setAccessible(true);
-            Object map = f.get(obj);
-            return map != null ? (HashMap<Object, Object>) map : null;
-        } catch (Throwable e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private Field getField(Class clazz, String mName, String fieldName) throws NoSuchFieldException {
-        for(Field f : clazz.getDeclaredFields()){
-            if(f.getName().contains(mName + '_') && f.getName().endsWith(fieldName))
-                return f;
-        }
-        Class superClass = clazz.getSuperclass();
-        if (superClass == null)
-           return null;
-        else
-            return getField(superClass, mName, fieldName);
-    }
-
 }

@@ -70,15 +70,7 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
      * @return
      */
     protected static String getName(Method m, Object[] params){
-        String name = m.getName() + "(";
-        if (m.getParameterCount() > 0){
-            for(int i = 0; i < m.getParameterCount(); i++) {
-                name += params != null ? params[i].toString() : m.getParameterTypes()[i].toString();
-                if(i + 1 < m.getParameterCount())
-                    name += ",";
-            }
-        }
-        return name + ")";
+        return NodeContent.getName(m, params);
     }
 
     /**
@@ -91,10 +83,10 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
         al.add(new NodeInfoHolder("Name", name));
         al.add(new NodeInfoHolder("Value", value));
         al.add(new NodeInfoHolder("Return type", method.getReturnType()));
-        al.add(new NodeInfoHolder("isParameterized", isParametrized()));
         for (int i = 0; i < method.getParameterCount(); i++)
             al.add(new NodeInfoHolder("Parameter type: " + i, method.getParameterTypes()[i]));
         setChildInfo(al);
+        al.add(new NodeInfoHolder("Is parameterized", isParametrized()));
         return al;
     }
 }

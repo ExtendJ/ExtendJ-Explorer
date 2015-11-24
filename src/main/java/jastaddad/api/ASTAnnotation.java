@@ -10,19 +10,19 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class ASTAnnotation{
 
+  private static final String AST_ANNO = "ASTNodeAnnotation.";
 
-  private static final String AST_ANNO = "ASTNodeAnnotation";
-  private static final String AST_NODE_OPT_CHILD = AST_ANNO + ".OptChild";
-  private static final String AST_NODE_LIST_CHILD = AST_ANNO +  ".ListChild";
-  private static final String AST_NODE_CHILD = AST_ANNO + ".Child";
-  private static final String AST_NODE_ATTRIBUTE = AST_ANNO + ".Attribute";
-  private static final String AST_NODE_TOKEN = AST_ANNO + ".Token";
-  private static final String AST_NODE_SOURCE = AST_ANNO + ".Source";
+  public static final String AST_NODE_OPT_CHILD = AST_ANNO + "OptChild";
+  public static final String AST_NODE_LIST_CHILD = AST_ANNO +  "ListChild";
+  public static final String AST_NODE_CHILD = AST_ANNO + "Child";
+  public static final String AST_NODE_ATTRIBUTE = AST_ANNO + "Attribute";
+  public static final String AST_NODE_TOKEN = AST_ANNO + "Token";
+  public static final String AST_NODE_SOURCE = AST_ANNO + "Source";
 
-  private static final String AST_KIND = AST_ANNO + ".Kind";
-  private static final String AST_KIND_SYN = AST_KIND + ".SYN";
-  private static final String AST_KIND_INH = AST_KIND + ".INH";
-  private static final String AST_KIND_COLL = AST_KIND + ".COLL";
+  public static final String AST_KIND = AST_ANNO + "Kind";
+  public static final String AST_KIND_SYN = AST_KIND + "SYN";
+  public static final String AST_KIND_INH = AST_KIND + "INH";
+  public static final String AST_KIND_COLL = AST_KIND + "COLL";
 
   public static final String AST_METHOD_NAME = "name";
   public static final String AST_METHOD_KIND = "kind";
@@ -30,6 +30,9 @@ public class ASTAnnotation{
   public static final String AST_METHOD_ASPECT = "aspect";
   public static final String AST_METHOD_NTA = "isNTA";
   public static final String AST_METHOD_CIRCULAR = "isCircular";
+
+  public static final int ATTRIBUTE = 0;
+  public static final int TOKEN = 1;
 
   //Todo might wanna change so it's only one or two methods, it will lower the readability of the code though
 
@@ -59,33 +62,18 @@ public class ASTAnnotation{
     return annotation.annotationType().getCanonicalName().endsWith(AST_NODE_SOURCE);
   }
 
-  public static Object getKind(Annotation annotation)  {
-    return compute(annotation, AST_METHOD_KIND);
+  public static Object get(Annotation annotation, String method)  {
+    return compute(annotation, method);
   }
 
-  public static String getDeclaredAt(Annotation annotation)  {
-    Object obj = compute(annotation, AST_METHOD_DECLARED_AT);
+  public static String getString(Annotation annotation, String method)  {
+    Object obj = compute(annotation, method);
     return obj != null ? obj.toString() : "null";
   }
 
-  public static String getAspect(Annotation annotation)  {
-    Object obj = compute(annotation, AST_METHOD_ASPECT);
-    return obj != null ? obj.toString() : "null";
-  }
-
-  public static boolean isNTA(Annotation annotation) {
-    Object obj = compute(annotation, AST_METHOD_NTA);
+  public static boolean is(Annotation annotation, String method) {
+    Object obj = compute(annotation, method);
     return obj != null ? (Boolean) obj: false;
-  }
-
-  public static boolean isCircular(Annotation annotation) {
-    Object obj = compute(annotation, AST_METHOD_CIRCULAR);
-    return obj != null ? (Boolean) obj : false;
-  }
-
-  public static String getName(Annotation a) {
-    Object obj = compute(a, AST_METHOD_NAME);
-    return obj != null ? obj.toString() : "null";
   }
 
   /**

@@ -16,7 +16,7 @@ public class Token extends NodeInfo {
 
     @Override
     protected void setChildInfo(ArrayList<NodeInfoHolder> al) {
-        al.add(new NodeInfoHolder("Type", "token"));
+        al.add(new NodeInfoHolder("Type", "TOKEN"));
     }
 
     @Override

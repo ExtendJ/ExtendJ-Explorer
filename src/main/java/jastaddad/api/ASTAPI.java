@@ -129,6 +129,13 @@ public class ASTAPI {
         typeHash.put(node.className, fNode.isEnabled() ? 1:0);
     }
 
+    /**
+     * Traveses the tree, and after the traversal is done it will add the real nodes references
+     * @param node
+     * @param parent
+     * @param cluster
+     * @param firstTime
+     */
     private void traversTree(Node node, GenericTreeNode parent, TreeCluster cluster, boolean firstTime){
         ArrayList<NodeReference> futureReferences = new ArrayList<>();
         traversTree(node, parent, cluster, firstTime, futureReferences);
@@ -137,6 +144,8 @@ public class ASTAPI {
         for (NodeReference ref : futureReferences){
             ArrayList<GenericTreeNode> nodeRefs = new ArrayList<>();
             GenericTreeNode to;
+            if(!ref.getReferenceFrom().isNode())
+                continue;
             for (Object obj : ref.getFutureReferences()){
                 if(isNodeReference(obj)){
                     to = getNodeReference(obj);
