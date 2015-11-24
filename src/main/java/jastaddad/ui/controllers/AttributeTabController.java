@@ -13,9 +13,13 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -73,28 +77,40 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
         });
 
         mouseMenu = new ContextMenu();
+
         MenuItem cmItem1 = new MenuItem("Invoke with parameters");
         /**
          * This sub method will call teh invocation of the method that has been clicked on, after the values have been added
          */
         cmItem1.setOnAction(e -> {
+            TreeNode node = (TreeNode) mon.getSelectedNode();
             NodeInfo info  = attributeTableView.getSelectionModel().getSelectedItem().getNodeInfo();
-            AttributeInputDialog dialog = new AttributeInputDialog(info);
-            Optional<ArrayList<Object>> result = dialog.showAndWait();
-            if(result == null || result.get() == null)
-                return;
-            Object obj = null;
-            if(mon.getLastRealNode() != null){
-                TreeNode node = (TreeNode) mon.getSelectedNode();
-                obj = node.getNode().getNodeContent().compute(info, result.get());
-                if(node.getNode().getNodeContent().noErrors() && obj != null){
-                    mon.getController().addMessage("Invocation successful, result: " + obj);
-                }else{
-                    mon.getController().addMessage("Invocation unsuccessful, result: " + null);
-                    mon.getController().addErrors(node.getNode().getNodeContent().getInnvokationErrors());
+
+            AttributeInputDialog dialog = new AttributeInputDialog(info, node, mon);
+            dialog.init();
+            dialog.setOnCloseRequest(event -> {
+                if(dialog.invokeButtonPressed()) {
+                    ArrayList<Object> result = dialog.getResult();
+                    if(result == null)
+                        return;
+                    Object obj = null;
+                    if(mon.getLastRealNode() != null){
+                        obj = dialog.getTreeNode().getNode().getNodeContent().compute(dialog.getInfo(), result);
+                        if(node.getNode().getNodeContent().noErrors() && obj != null){
+                            mon.getController().addMessage("Invocation successful, result: " + obj);
+                        }else{
+                            mon.getController().addMessage("Invocation unsuccessful, result: " + null);
+                            mon.getController().addErrors(node.getNode().getNodeContent().getInnvokationErrors());
+                        }
+                        setAttributeList(node, false);
+                    }
                 }
-                setAttributeList(node, false);
-            }
+                mon.getController().nodeSelected(dialog.getTreeNode(), false);
+            });
+            dialog.show();
+
+
+
         });
         mouseMenu.getItems().add(cmItem1);
     }

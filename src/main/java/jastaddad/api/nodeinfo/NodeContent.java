@@ -101,8 +101,9 @@ public class NodeContent {
                 return null;
             node.getNodeContent().addInvokedValue(new Attribute(NodeInfo.getName(method, params), obj, method, "", true));
             return obj;
-        }catch(Throwable e){
+        }catch(Exception e){
             node.getNodeContent().addInvokedValue(new Attribute(NodeInfo.getName(method, params), e.getCause(), method, "", true));
+            e.printStackTrace();
             addInvocationErrors(e);
             return null;
         }
@@ -121,7 +122,7 @@ public class NodeContent {
             return Boolean.parseBoolean(obj.toString());
         else if(c == String.class)
             return obj;
-        return null;
+        return obj;
     }
 
     /**

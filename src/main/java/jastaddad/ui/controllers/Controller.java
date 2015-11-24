@@ -3,6 +3,7 @@ package jastaddad.ui.controllers;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.TreeNode;
+import jastaddad.ui.UIDialog;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.graph.GraphView;
 import javafx.application.Platform;
@@ -289,6 +290,8 @@ public class Controller implements Initializable {
      * @param fromGraph
      */
     public void nodeSelected(GenericTreeNode node, boolean fromGraph){
+        for(UIDialog subWindow : mon.getSubWindows())
+            subWindow.nodeSelected(node);
         mon.setSelectedNode(node);
         attributeTabController.setAttributes();
         if(fromGraph)
