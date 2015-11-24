@@ -295,4 +295,18 @@ public class ASTAPI {
             nodes.add(info.getValue());
         return nodes;
     }
+
+    public boolean compute(Node node, NodeInfo info) {
+        return compute(node, info, null);
+    }
+
+    public boolean compute(Node node, NodeInfo info, ArrayList<Object> params) {
+        if (info == null)
+            return false;
+        if (info.isNTA() || info.isParametrized()) {
+            node.getNodeContent().compute(info, params, true);
+        }else
+            node.getNodeContent().compute(info.getMethod());
+        return true;
+    }
 }

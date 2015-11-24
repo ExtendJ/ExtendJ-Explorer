@@ -22,21 +22,20 @@ public class Node{
     public final ArrayList<Node> children;
     private boolean isList;
     private boolean isOpt;
-    private boolean isNull;
+    private boolean isNTA;
     private int level;
     private NodeContent nodeContent;
 
     /**
-     * This THE a constructor for the root node of the AST
+     * This is THE constructor for the root node of the AST
      * @param root
      * @param api used for contributing errors and warnings, during the traversal of the AST.
      */
     public Node(Object root, ASTAPI api){
         this.children = new ArrayList<>();
         this.name = "";
-        isNull = root == null;
         nullCheck(root, api, "ROOT");
-        if(!isNull)
+        if(root != null)
             this.className = root.getClass().getSimpleName();
         else
             this.className = "Null";
@@ -44,6 +43,51 @@ public class Node{
         fullName = className;
         id = System.identityHashCode(this.toString());
         init(root, false, false, 1, api);
+    }
+    /**
+     * This is the constructor used for NTA:S during the traversal of the AST.
+     * Will not traverse continue the traversal
+     * @param root
+     * @param name
+     */
+    public Node(Object root, String name){
+        this.children = new ArrayList<>();
+        this.isNTA = true;
+        this.node = root;
+        this.className = "NTA : " + name;
+        this.fullName = "";
+        this.name = "";
+        id = System.identityHashCode(this.toString());
+        this.nodeContent = new NodeContent(this);
+    }
+
+    /**
+     * This is the constructor used for the creation of NTA:s
+     * @param root
+     * @param name
+     * @param isList
+     * @param level
+     * @param api
+     */
+    public Node(Object root, String name, boolean isList, int level, ASTAPI api){
+        this.children = new ArrayList<>();
+        this.isNTA = true;
+        this.isList = isList;
+        this.nodeContent = new NodeContent(this);
+        this.level = level;
+        if(root != null)
+            this.className = root.getClass().getSimpleName();
+        else
+            this.className = "Null";
+        this.node = root;
+        if(name.equals(className) || name.length() == 0){
+            this.name = "";
+            fullName = className;
+        }else {
+            this.name = name;
+            fullName = className + ":" + name;
+        }
+        id = System.identityHashCode(this.toString());
     }
 
     /**
@@ -57,13 +101,12 @@ public class Node{
      */
     public Node(Object root, String name, boolean isList, boolean isOpt, int level, ASTAPI api){
         this.children = new ArrayList<>();
-        this.isNull = root == null;
-        if(!isNull)
+        if(root != null)
             this.className = root.getClass().getSimpleName();
         else
             this.className = "Null";
         this.node = root;
-        if(name == className || name.length() == 0){
+        if(name.equals(className) || name.length() == 0){
             this.name = "";
             fullName = className;
         }else {
@@ -88,7 +131,7 @@ public class Node{
         this.isList = isList;
         this.nodeContent = new NodeContent(this);
         this.level = level;
-        if(!isNull) {
+        if(root != null) {
             api.addObjectReference(node);
             if (isList) {
                 for (Object child : (Iterable<?>) root) {
@@ -112,7 +155,7 @@ public class Node{
                 for (Annotation a: m.getAnnotations()) {
                     if(ASTAnnotation.isChild(a)) {
                         Object obj = m.invoke(root, new Object[m.getParameterCount()]);
-                        String name =  ASTAnnotation.getString(a, ASTAnnotation.AST_METHOD_NAME);
+                        String name = ASTAnnotation.getString(a, ASTAnnotation.AST_METHOD_NAME);
                         nullCheck(obj, api, name);
                         children.add(new Node(obj, name,
                                 !ASTAnnotation.isSingleChild(a),
@@ -132,10 +175,11 @@ public class Node{
         }
     }
 
-    public String nodeName() { return isNull() ? "null" : node.toString(); }
+    public String nodeName() { return isNull() && !isNTA() ? "null" : node.toString(); }
     public boolean isOpt(){return isOpt;}
     public boolean isList(){ return isList; }
-    public boolean isNull(){ return isNull; }
+    public boolean isNull(){ return node == null; }
+    public boolean isNTA(){ return isNTA; }
     public String toString() {
         return className;
     }

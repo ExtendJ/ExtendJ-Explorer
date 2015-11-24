@@ -366,6 +366,9 @@ public class GraphView extends SwingNode implements ItemListener {
             if(fNode.isNullNode()){
                 return new Color(254, 160, 160);
             }
+            if(fNode.isNTANode()){
+                return new Color(120, 160, 200);
+            }
             if(fNode.isReferenceHighlight())
                 return new Color(80, 180, 80);
             try{
@@ -409,8 +412,7 @@ public class GraphView extends SwingNode implements ItemListener {
             if(fNode.isNode() && !fNode.isNullNode() && width < 130){
                 width = 130;
                 centerX = -65;
-            }
-            if(!fNode.isNode()){
+            }else if(!fNode.isNode()){
                 width = 40;
                 height = 40;
                 centerX = -20;

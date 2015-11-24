@@ -25,8 +25,8 @@ public class Attribute extends NodeInfo {
 
     @Override
     protected void setChildInfo(ArrayList<NodeInfoHolder> al) {
-        al.add(new NodeInfoHolder("Circular", isCircular));
-        al.add(new NodeInfoHolder("NTA", isNTA));
+        al.add(new NodeInfoHolder("Is Circular", isCircular));
+        al.add(new NodeInfoHolder("Is NTA", isNTA));
         al.add(new NodeInfoHolder("Kind", kind));
         al.add(new NodeInfoHolder("Aspect", aspect));
         al.add(new NodeInfoHolder("Declared at", declaredAt));

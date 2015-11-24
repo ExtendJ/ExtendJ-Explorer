@@ -22,4 +22,6 @@ public class Token extends NodeInfo {
     @Override
     public boolean isParametrized() { return false; }
 
+    public boolean isNTA() { return false; }
+
 }

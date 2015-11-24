@@ -17,11 +17,9 @@ import java.util.HashMap;
  */
 public class NodeContent {
 
-    public static final String USER_INPUT = "Need input from user";
-
     private HashMap<String, NodeInfo> attributes;
     private HashMap<String, NodeInfo> tokens;
-    private ArrayList<String> innovationErrors; //Error list for invoke calls
+    private ArrayList<String> invocationErrors; //Error list for invoke calls
     private HashMap<String, NodeInfo> invokedValues; //The cached values for invoked methods
     private Node node; //The node the content is a part of
     private Object nodeObject; //The node the content is a part of
@@ -29,7 +27,7 @@ public class NodeContent {
     public NodeContent(Node node){
         attributes = new HashMap<>();
         tokens = new HashMap<>();
-        innovationErrors = new ArrayList<>();
+        invocationErrors = new ArrayList<>();
         invokedValues = new HashMap<>();
         this.node = node;
         this.nodeObject = node.node;
@@ -40,9 +38,9 @@ public class NodeContent {
      * NOTE: Will also clear the list.
      * @return
      */
-    public ArrayList<String> getInnvokationErrors(){
-        ArrayList<String> temp = innovationErrors;
-        innovationErrors.clear();
+    public ArrayList<String> getInvocationErrors(){
+        ArrayList<String> temp = invocationErrors;
+        invocationErrors.clear();
         return temp;
     }
 
@@ -50,7 +48,7 @@ public class NodeContent {
      * Will check if any error have been cast during some invocation.
      * @return
      */
-    public boolean noErrors(){ return innovationErrors.size() == 0; }
+    public boolean noErrors(){ return invocationErrors.size() == 0; }
 
     /**
      * Will return an Attribute or Token for the given key.
@@ -85,14 +83,13 @@ public class NodeContent {
 
     /**
      * Computes the method in the NodeInfo, with the given parameters, and adds it to the cached list.
+     * If forceComputation is true it will compute even if it's parametrized or NTA
      * @param nodeInfo
      * @param par
      * @return true if the invocation was successful.
      */
-    public boolean compute(NodeInfo nodeInfo, ArrayList<Object> par){
-        if(!nodeInfo.isParametrized())
-            return false;
-        innovationErrors.clear();
+    public boolean compute(NodeInfo nodeInfo, ArrayList<Object> par, boolean forcedComputation){
+        invocationErrors.clear();
         Object[] params = null;
         Method method = nodeInfo.getMethod();
         try{
@@ -108,13 +105,17 @@ public class NodeContent {
                     return false;
                 params[i] = obj;
             }
-            invokedValues.put(method.getName(), getAttribute(nodeObject, method, params));
+            invokedValues.put(method.getName(), getAttribute(nodeObject, method, params, forcedComputation));
             return true;
         }catch(Throwable e){
-            invokedValues.put(method.getName(), getAttribute(null, method, params));
+            invokedValues.put(method.getName(), getAttribute(null, method, params, forcedComputation));
             addInvocationErrors(e);
             return false;
         }
+    }
+
+    public boolean compute(NodeInfo nodeInfo, ArrayList<Object> par){
+        return compute(nodeInfo, par, false);
     }
 
     /**
@@ -136,28 +137,37 @@ public class NodeContent {
     /**
      * Computes all methods of the NodeContents node, this will clear the old values except the invoked ones.
      * This is used for onDemand execution attributes values.
+     * If forceComputation is true it will compute even if it's parametrized or NTA
      * @return
      */
-    public ArrayList<String> compute(){
-        innovationErrors.clear();
+    public ArrayList<String> compute(boolean forceComputation){
+        invocationErrors.clear();
         attributes.clear();
         tokens.clear();
-        compute(nodeObject);
-        return innovationErrors;
+        compute(nodeObject, forceComputation);
+        return invocationErrors;
     }
 
+    public ArrayList<String> compute(){
+        return compute(false);
+    }
 
     /**
      * Computes all methods of the given object, the values will be added to NodeContents value Lists.
      * NOTE: it will only compute the methods with annotations of the ASTAnnotation type.
+     * If forceComputation is true it will compute even if it's parametrized or NTA
      * @param obj
      */
-    public void compute(Object obj){
+    public void compute(Object obj, boolean forceComputation){
         if(node.isNull())
             return;
         for(Method m : obj.getClass().getMethods()){
-            computeMethod(m, true, null);
+            computeMethod(m, true, null, forceComputation);
         }
+    }
+
+    public void compute(Object obj){
+        compute(obj , false);
     }
 
     /**
@@ -175,31 +185,23 @@ public class NodeContent {
         return null;
     }
 
-    /**
-     * Computes the given method, and add it to the list with the computed Attributes.
-     * @param m
-     * @return
-     */
-    public NodeInfo computeMethod(Method m){
-        return computeMethod(m, true, null);
-    }
 
     /**
      * Computes the given method, and depending on the parameter @param add it to the list with the computed Attributes.
+     * If forceComputation is true it will compute even if it's parametrized or NTA
      * @param m
      * @param add
      * @return
      */
-    public NodeInfo computeMethod(Method m, boolean add, Object[] params){
+    public NodeInfo computeMethod(Method m, boolean add, Object[] params, boolean forceComputation){
         NodeInfo info = null;
         for (Annotation a : m.getAnnotations()) {
             if (ASTAnnotation.isAttribute(a)) {
-                info = getAttribute(nodeObject, m, params);
+                info = getAttribute(nodeObject, m, params, forceComputation);
                 if(add)
-                    tokens.put(getName(m , params), info);
+                    attributes.put(getName(m , params), info);
                 break;
-            }
-            else if (ASTAnnotation.isToken(a)) {
+            } else if (ASTAnnotation.isToken(a)) {
                 info = getToken(nodeObject, m);
                 if(add)
                     tokens.put(m.getName(), info);
@@ -207,6 +209,10 @@ public class NodeContent {
             }
         }
         return info;
+    }
+
+    public NodeInfo computeMethod(Method m, boolean add, Object[] params){
+        return computeMethod(m, add, params, false);
     }
 
     /**
@@ -218,9 +224,22 @@ public class NodeContent {
      * @return
      */
     private Attribute getAttribute(Object obj, Method m, Object[] params){
-        boolean parametrized = m.getParameterCount() > 0;
+        return getAttribute(obj, m, params, false);
+    }
+
+    /**
+     * Creates a Attribute and invokes the method with the supplied parameters, if any.
+     * Will also add the specific information about the Attribute, which is derived form the annotations.
+     * If forceComputation is true it will compute even if it's parametrized or NTA
+     * @param obj
+     * @param m
+     * @param params
+     * @param forceComputation
+     * @return
+     */
+    private Attribute getAttribute(Object obj, Method m, Object[] params, boolean forceComputation){
         Attribute attribute = new Attribute(m.getName(), null, m);
-        attribute.setParametrized(parametrized);
+        attribute.setParametrized(m.getParameterCount() > 0);
         for(Annotation a : m.getAnnotations()) { //To many attribute specific methods so I decided to iterate through the Annotations again instead of sending them as parameters.
             if (ASTAnnotation.isAttribute(a)){
                 attribute.setKind(ASTAnnotation.get(a, ASTAnnotation.AST_METHOD_KIND));
@@ -232,13 +251,11 @@ public class NodeContent {
             }
         }
         try{
-            if(parametrized) {
-                if(params != null && params.length == m.getParameterCount())
-                    attribute.setValue(m.invoke(obj, params));
-                else
-                    attribute.setValue(USER_INPUT);
-            }
-            else if(obj != null)
+            if((attribute.isParametrized() || attribute.isNTA()) && !forceComputation) {
+                attribute.setValue(null);
+            }else if(params != null && params.length == m.getParameterCount()) {
+                attribute.setValue(m.invoke(obj, params));
+            } else if(obj != null)
                 attribute.setValue(m.invoke(obj, new Object[0]));
         } catch (Throwable e) {
             addInvocationErrors(e);
@@ -265,7 +282,7 @@ public class NodeContent {
 
     private void addInvocationErrors(Throwable e){
         String message = e.getCause() != null ? e.getCause().toString() : e.getMessage();
-        innovationErrors.add(message);
+        invocationErrors.add(message);
         e.printStackTrace();
     }
 

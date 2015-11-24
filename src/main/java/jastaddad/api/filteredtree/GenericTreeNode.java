@@ -66,8 +66,12 @@ public abstract class GenericTreeNode {
         return this;
     }
 
+    public boolean isNTANode(){
+        return isNode() && ((TreeNode)this).getNode().isNTA();
+    }
+
     public boolean isNullNode(){
-        return isNode() && ((TreeNode)this).getNode().isNull();
+        return isNode() && ((TreeNode)this).getNode().isNull() && !((TreeNode)this).getNode().isNTA();
     }
 
     /**

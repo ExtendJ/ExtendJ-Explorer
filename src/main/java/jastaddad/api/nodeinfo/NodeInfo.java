@@ -49,6 +49,12 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
     public abstract boolean isParametrized();
 
     /**
+     * Check if a attribute is parametrized
+     * @return
+     */
+    public abstract boolean isNTA();
+
+    /**
      * This will add more type specific information to the List, used by getInfo()
      * @param al
      */
