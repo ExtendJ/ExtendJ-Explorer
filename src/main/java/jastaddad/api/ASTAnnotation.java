@@ -59,33 +59,31 @@ public class ASTAnnotation{
     return annotation.annotationType().getCanonicalName().endsWith(AST_NODE_SOURCE);
   }
 
-  public static Object getKind(Annotation annotation) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-    Object obj = compute(annotation, AST_METHOD_KIND);
-    System.out.print("Kind :" + obj);
-    return obj;
+  public static Object getKind(Annotation annotation)  {
+    return compute(annotation, AST_METHOD_KIND);
   }
 
-  public static String getDeclaredAt(Annotation annotation) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+  public static String getDeclaredAt(Annotation annotation)  {
     Object obj = compute(annotation, AST_METHOD_DECLARED_AT);
     return obj != null ? obj.toString() : "null";
   }
 
-  public static String getAspect(Annotation annotation) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+  public static String getAspect(Annotation annotation)  {
     Object obj = compute(annotation, AST_METHOD_ASPECT);
     return obj != null ? obj.toString() : "null";
   }
 
-  public static boolean isNTA(Annotation annotation) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException{
+  public static boolean isNTA(Annotation annotation) {
     Object obj = compute(annotation, AST_METHOD_NTA);
     return obj != null ? (Boolean) obj: false;
   }
 
-  public static boolean isCircular(Annotation annotation) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException{
+  public static boolean isCircular(Annotation annotation) {
     Object obj = compute(annotation, AST_METHOD_CIRCULAR);
     return obj != null ? (Boolean) obj : false;
   }
 
-  public static String getName(Annotation a) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+  public static String getName(Annotation a) {
     Object obj = compute(a, AST_METHOD_NAME);
     return obj != null ? obj.toString() : "null";
   }
@@ -98,9 +96,13 @@ public class ASTAnnotation{
    * @throws InvocationTargetException
    * @throws IllegalAccessException
    */
-  public static Object compute(Annotation annotation, String methodName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-    if (annotation.getClass().getMethod(methodName) != null)
-      return  annotation.getClass().getMethod(methodName).invoke(annotation, new Object[]{});
+  public static Object compute(Annotation annotation, String methodName)  {
+    try {
+      if (annotation.getClass().getMethod(methodName) != null)
+        return annotation.getClass().getMethod(methodName).invoke(annotation, new Object[]{});
+    }catch (Throwable e){
+      e.getStackTrace();
+    }
     return null;
   }
 }

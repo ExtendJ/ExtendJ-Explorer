@@ -20,6 +20,8 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
 
     public Object getValue(){ return value; }
 
+    public void setValue(Object value){ this.value = value; }
+
     public String getName(){ return name; }
 
     public Class getReturnType(){ return method.getReturnType(); }

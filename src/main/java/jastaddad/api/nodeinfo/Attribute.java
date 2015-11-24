@@ -9,14 +9,14 @@ import java.util.ArrayList;
  */
 public class Attribute extends NodeInfo {
     private boolean parametrized;
-    private String kind; // the kind of the attribute, i.e. inh, syn..
+    private Object kind; // the kind of the attribute, i.e. inh, syn..
+
+    public Attribute(String name, Object value, Method m) {
+        super(name, value, m);
+    }
 
     public Attribute(String name, Object value, Method m, String kind) {
         super(name, value, m); this.kind = kind;
-    }
-
-    public Attribute(String name, Object value, Method m, String kind, boolean parametrized) {
-        super(name, value, m); this.kind = kind; this.parametrized = parametrized;
     }
 
     @Override
@@ -24,6 +24,8 @@ public class Attribute extends NodeInfo {
 
     @Override
     public boolean isParametrized() { return parametrized; }
+
+    public void setParametrized(boolean parametrized) { this.parametrized = parametrized; }
 
     @Override
     protected void setChildInfo(ArrayList<NodeInfoHolder> al) {
@@ -34,6 +36,9 @@ public class Attribute extends NodeInfo {
      * Returns the kind of the method, i.e. syn, syn, etc.
      * @return
      */
-    public String getKind(){ return kind; }
+    public String getKind(){ return kind.toString(); }
+
+    public void setKind(Object kind) { this.kind = kind; }
+
 
 }

@@ -82,6 +82,7 @@ public class NodeContent {
             return null;
         innovationErrors.clear();
         Object[] params = null;
+        Attribute attr;
         Method method = nodeInfo.getMethod();
         try{
             params = new Object[method.getParameterCount()];
@@ -99,10 +100,12 @@ public class NodeContent {
             obj = method.invoke(node.node, params);
             if(obj == null)
                 return null;
-            node.getNodeContent().addInvokedValue(new Attribute(NodeInfo.getName(method, params), obj, method, "", true));
+            attr = new Attribute(NodeInfo.getName(method, params), obj, method);
+            invokedValues.put(NodeInfo.getName(method, params), attr);
             return obj;
         }catch(Throwable e){
-            node.getNodeContent().addInvokedValue(new Attribute(NodeInfo.getName(method, params), e.getCause(), method, "", true));
+            attr = new Attribute(NodeInfo.getName(method, params), null, method);
+            invokedValues.put(NodeInfo.getName(method, params), attr);
             addInvocationErrors(e);
             return null;
         }
@@ -147,7 +150,7 @@ public class NodeContent {
             Method m = node.node.getClass().getMethod(method);
             for (Annotation a : m.getAnnotations()) {
                 if (ASTAnnotation.isAttribute(a))
-                    return getAttribute(node.node, m);
+                    return getAttribute(node.node, m, a);
                 if (ASTAnnotation.isToken(a))
                     return getToken(node.node, m);
             }
@@ -187,7 +190,7 @@ public class NodeContent {
      */
     public NodeInfo compute(Object obj, Method m, Annotation a)  {
         if(ASTAnnotation.isAttribute(a)) {
-            return attributes.put(NodeInfo.getName(m),getAttribute(obj, m));
+            return attributes.put(NodeInfo.getName(m),getAttribute(obj, m, a));
         }
         if(ASTAnnotation.isToken(a))
             return tokens.put(NodeInfo.getName(m), getToken(obj, m));
@@ -200,19 +203,31 @@ public class NodeContent {
      * @param m
      * @return
      */
+
+    private Attribute getAttribute(Object obj, Method m, Annotation a){
+        return getAttribute(obj, m, a, null);
+    }
+
     //Todo might move these methods to their specific classes
-    private Attribute getAttribute(Object obj, Method m){
-        String name = m.getName();
+    private Attribute getAttribute(Object obj, Method m, Annotation a, Object[] params){
         boolean parametrized = m.getParameterCount() > 0;
+        Attribute attribute = new Attribute(m.getName(), null, m);
+        attribute.setParametrized(parametrized);
+        attribute.setKind(ASTAnnotation.getKind(a));
         try{
-            if(parametrized)
-                return new Attribute(name, USER_INPUT, m, "", true);
+            if(parametrized) {
+                if(params != null && params.length == m.getParameterCount())
+                    attribute.setValue(m.invoke(params));
+                else
+                    attribute.setValue(USER_INPUT);
+            }
             else
-                return new Attribute(name, m.invoke(obj, new Object[0]), m, "");
+                attribute.setValue(m.invoke(obj, new Object[0]));
         } catch (Throwable e) {
             addInvocationErrors(e);
-            return new Attribute(name, e.getCause().toString(), m, "", parametrized);
+            attribute.setValue(e.getCause().toString());
         }
+        return attribute;
     }
 
     /**
