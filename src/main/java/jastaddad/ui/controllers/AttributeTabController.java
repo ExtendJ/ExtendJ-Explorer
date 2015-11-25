@@ -1,5 +1,6 @@
 package jastaddad.ui.controllers;
 
+import jastaddad.api.ASTAPI;
 import jastaddad.api.Node;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.TreeNode;
@@ -84,32 +85,35 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
         cmItem1.setOnAction(e -> {
             TreeNode node = (TreeNode) mon.getSelectedNode();
             NodeInfo info  = attributeTableView.getSelectionModel().getSelectedItem().getNodeInfo();
-
+            if(info.isNTA() && !info.isParametrized()){
+                mon.getApi().compute(node.getNode(), info);
+                return;
+            }
             AttributeInputDialog dialog = new AttributeInputDialog(info, node, mon);
             dialog.init();
             dialog.setOnCloseRequest(event -> {
                 if(dialog.invokeButtonPressed()) {
                     ArrayList<Object> result = dialog.getResult();
-                    if(result == null)
+                    if(result == null ||  mon.getLastRealNode() != null)
                         return;
-                    Object obj = null;
-                    if(mon.getLastRealNode() != null){
-                        obj = dialog.getTreeNode().getNode().getNodeContent().compute(dialog.getInfo(), result);
-                        if(node.getNode().getNodeContent().noErrors() && obj != null){
-                            mon.getController().addMessage("Invocation successful, result: " + obj);
-                        }else{
-                            mon.getController().addMessage("Invocation unsuccessful, result: " + null);
-                            mon.getController().addErrors(node.getNode().getNodeContent().getInvocationErrors());
-                        }
-                        setAttributeList(node, false);
+                    int type = mon.getApi().compute(dialog.getTreeNode().getNode(), dialog.getInfo(), result);
+                    switch (type){
+                        case ASTAPI.NORMAL :
+                        case ASTAPI.NTA :
+                        case ASTAPI.PARAMETRIZED :
+                        break;
                     }
+                    if(node.getNode().getNodeContent().noErrors()){
+                        mon.getController().addMessage("Invocation successful");
+                    }else{
+                        mon.getController().addMessage("Invocation unsuccessful");
+                        mon.getController().addErrors(node.getNode().getNodeContent().getInvocationErrors());
+                    }
+                    setAttributeList(node, false);
                 }
                 mon.getController().nodeSelected(dialog.getTreeNode(), false);
             });
             dialog.show();
-
-
-
         });
         mouseMenu.getItems().add(cmItem1);
     }
@@ -138,10 +142,10 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
     public void setAttributeList(TreeNode node, boolean compute){
         Node n = node.getNode();
         if(compute) {
-            mon.getController().addErrors(n.getNodeContent().compute());
+            mon.getController().addErrors(mon.getApi().compute(n));
             attributeTableView.getSelectionModel().clearSelection();
         }
-        attributeTableView.setItems(FXCollections.observableList(AttributeInfo.toArray(n.getNodeContent().toArray())));
+        attributeTableView.setItems(FXCollections.observableList(AttributeInfo.toArray(n.getNodeContentArray())));
         if(attributeTableView.getItems().size() <= 0) {
             attributeInfoTableView.getItems().clear();
         }
@@ -201,14 +205,18 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
                 if (info != null && info.isParametrized()){
                     setContextMenu(mouseMenu);
                     setText("Need input form user");
-                }else if(info != null && info.isNTA())
-                    setText("Is NTA, need to be run by user");
-                else
+                } else if(info != null && info.isNTA()) {
+                    if(item == null) {
+                        setContextMenu(mouseMenu);
+                        setText("Is NTA, need to be run by user");
+                    }else
+                        setText(String.valueOf(item));
+                } else
                     setText(String.valueOf(item));
-            }else if (empty || item == null) {
+            } else if (empty || item == null) {
                 setText(null);
                 return;
-            }else if(getTableRow().getItem() == null){
+            } else if(getTableRow().getItem() == null){
                 setText(String.valueOf(item));
                 return;
             }

@@ -1,10 +1,9 @@
 package jastaddad.api;
 
 
-import jastaddad.api.nodeinfo.NodeContent;
+import jastaddad.api.nodeinfo.NodeInfoHolder;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,9 +53,10 @@ public class Node{
         this.children = new ArrayList<>();
         this.isNTA = true;
         this.node = root;
-        this.className = "NTA : " + name;
-        this.fullName = "";
-        this.name = "";
+        System.out.println("" + root);
+        this.className = root.getClass().getSimpleName();
+        this.fullName = className;
+        this.name = name;
         id = System.identityHashCode(this.toString());
         this.nodeContent = new NodeContent(this);
     }
@@ -175,7 +175,11 @@ public class Node{
         }
     }
 
-    public String nodeName() { return isNull() && !isNTA() ? "null" : node.toString(); }
+    private void addChild(Node node){
+        children.add(node);
+    }
+
+    public String nodeName() { return isNull() ? "null" : node.toString(); }
     public boolean isOpt(){return isOpt;}
     public boolean isList(){ return isList; }
     public boolean isNull(){ return node == null; }
@@ -187,5 +191,7 @@ public class Node{
     public int getLevel(){ return level;}
 
     public NodeContent getNodeContent(){ return nodeContent;}
+
+    public ArrayList<NodeInfoHolder> getNodeContentArray(){ return nodeContent.toArray();}
 
 }

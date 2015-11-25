@@ -1,7 +1,12 @@
-package jastaddad.api.nodeinfo;
+package jastaddad.api;
 
+import jastaddad.api.ASTAPI;
 import jastaddad.api.ASTAnnotation;
 import jastaddad.api.Node;
+import jastaddad.api.nodeinfo.Attribute;
+import jastaddad.api.nodeinfo.NodeInfo;
+import jastaddad.api.nodeinfo.NodeInfoHolder;
+import jastaddad.api.nodeinfo.Token;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -17,18 +22,18 @@ import java.util.HashMap;
  */
 public class NodeContent {
 
-    private HashMap<String, NodeInfo> attributes;
-    private HashMap<String, NodeInfo> tokens;
+    private ArrayList<NodeInfo> attributes;
+    private ArrayList<NodeInfo> tokens;
     private ArrayList<String> invocationErrors; //Error list for invoke calls
-    private HashMap<String, NodeInfo> invokedValues; //The cached values for invoked methods
+    private ArrayList<NodeInfo> invokedValues; //The cached values for invoked methods
     private Node node; //The node the content is a part of
     private Object nodeObject; //The node the content is a part of
 
     public NodeContent(Node node){
-        attributes = new HashMap<>();
-        tokens = new HashMap<>();
+        attributes = new ArrayList<>();
+        tokens = new ArrayList<>();
+        invokedValues = new ArrayList<>();
         invocationErrors = new ArrayList<>();
-        invokedValues = new HashMap<>();
         this.node = node;
         this.nodeObject = node.node;
     }
@@ -50,36 +55,6 @@ public class NodeContent {
      */
     public boolean noErrors(){ return invocationErrors.size() == 0; }
 
-    /**
-     * Will return an Attribute or Token for the given key.
-     * @param key
-     * @return
-     */
-    public NodeInfo get(String key){
-        NodeInfo ret = attributes.get(key);
-        if(ret == null)
-            ret = tokens.get(key);
-        return ret;
-    }
-
-    /**
-     * Prints the name with its parameters, if the parameters are null the type of the parameters will then be added.
-     * * MethodName(1,2) or MethodName(int, String)
-     * @param m
-     * @param params
-     * @return
-     */
-    protected static String getName(Method m, Object[] params){
-        String name = m.getName() + "(";
-        if (m.getParameterCount() > 0){
-            for(int i = 0; i < m.getParameterCount(); i++) {
-                name += params != null ? params[i].toString() : m.getParameterTypes()[i].toString();
-                if(i + 1 < m.getParameterCount())
-                    name += ",";
-            }
-        }
-        return name + ")";
-    }
 
     /**
      * Computes the method in the NodeInfo, with the given parameters, and adds it to the cached list.
@@ -88,52 +63,39 @@ public class NodeContent {
      * @param par
      * @return true if the invocation was successful.
      */
-    public boolean compute(NodeInfo nodeInfo, ArrayList<Object> par, boolean forcedComputation){
+    protected Object compute(NodeInfo nodeInfo, ArrayList<Object> par, boolean forcedComputation, ASTAPI api) {
         invocationErrors.clear();
-        Object[] params = null;
+        Object[] params;
         Method method = nodeInfo.getMethod();
-        try{
+        if ((par != null && par.size() != method.getParameterCount()) || (par == null && method.getParameterCount() != 0)) {
+            invocationErrors.add("Wrong number of arguments for the method: " + method);
+            return null;
+        }
+        if(par == null)
             params = new Object[method.getParameterCount()];
-            Object obj;
-            for(int i = 0; i < method.getParameterCount(); i++){
-                obj = par.get(i);
-                Class c = method.getParameterTypes()[i];
-                if(obj == null)
-                    return false;
-                obj = getParam(obj, c);
-                if(obj == null)
-                    return false;
-                params[i] = obj;
-            }
-            invokedValues.put(method.getName(), getAttribute(nodeObject, method, params, forcedComputation));
-            return true;
+        else
+            params = par.toArray();
+
+        Attribute attribute;
+        try{
+            attribute = getAttribute(nodeObject, method, params, forcedComputation);
+            if(!api.isObjectReference(attribute.getValue()))
+                invokedValues.add(attribute);
+            return attribute.getValue();
         }catch(Throwable e){
-            invokedValues.put(method.getName(), getAttribute(null, method, params, forcedComputation));
+            attribute = getAttribute(null, method, params, forcedComputation);
+            if(!api.isObjectReference(attribute.getValue()))
+                invokedValues.add(attribute);
             e.printStackTrace();
             addInvocationErrors(e);
-            return false;
+            return null;
         }
     }
 
-    public boolean compute(NodeInfo nodeInfo, ArrayList<Object> par){
-        return compute(nodeInfo, par, false);
+    protected Object compute(NodeInfo nodeInfo, ArrayList<Object> par, ASTAPI api){
+        return compute(nodeInfo, par, false, api);
     }
 
-    /**
-     * Creates a object of the given class type, where the Object will be cast.
-     * @param obj
-     * @param c
-     * @return The newly created object.
-     */
-    private Object getParam(Object obj, Class c){ //Todo expand this shit, and do something smarter with the parameters
-        if(c == int.class || c == Integer.class)
-            return new Integer(Integer.parseInt(obj.toString()));
-        else if(c == boolean.class || c == Boolean.class)
-            return Boolean.parseBoolean(obj.toString());
-        else if(c == String.class)
-            return obj;
-        return obj;
-    }
 
     /**
      * Computes all methods of the NodeContents node, this will clear the old values except the invoked ones.
@@ -141,7 +103,7 @@ public class NodeContent {
      * If forceComputation is true it will compute even if it's parametrized or NTA
      * @return
      */
-    public ArrayList<String> compute(boolean forceComputation){
+    protected ArrayList<String> compute(boolean forceComputation){
         invocationErrors.clear();
         attributes.clear();
         tokens.clear();
@@ -149,7 +111,7 @@ public class NodeContent {
         return invocationErrors;
     }
 
-    public ArrayList<String> compute(){
+    protected ArrayList<String> compute(){
         return compute(false);
     }
 
@@ -159,7 +121,7 @@ public class NodeContent {
      * If forceComputation is true it will compute even if it's parametrized or NTA
      * @param obj
      */
-    public void compute(Object obj, boolean forceComputation){
+    protected void compute(Object obj, boolean forceComputation){
         if(node.isNull())
             return;
         for(Method m : obj.getClass().getMethods()){
@@ -167,7 +129,7 @@ public class NodeContent {
         }
     }
 
-    public void compute(Object obj){
+    protected void compute(Object obj){
         compute(obj , false);
     }
 
@@ -177,7 +139,7 @@ public class NodeContent {
      * @return
      */
 
-    public NodeInfo computeMethod(String method){
+    protected NodeInfo computeMethod(String method){
         try{
             return computeMethod(nodeObject.getClass().getMethod(method), false, null);
         }  catch (NoSuchMethodException e) {
@@ -194,25 +156,25 @@ public class NodeContent {
      * @param add
      * @return
      */
-    public NodeInfo computeMethod(Method m, boolean add, Object[] params, boolean forceComputation){
+    protected NodeInfo computeMethod(Method m, boolean add, Object[] params, boolean forceComputation){
         NodeInfo info = null;
         for (Annotation a : m.getAnnotations()) {
             if (ASTAnnotation.isAttribute(a)) {
                 info = getAttribute(nodeObject, m, params, forceComputation);
                 if(add)
-                    attributes.put(getName(m , params), info);
+                    attributes.add(info);
                 break;
             } else if (ASTAnnotation.isToken(a)) {
                 info = getToken(nodeObject, m);
                 if(add)
-                    tokens.put(m.getName(), info);
+                    tokens.add(info);
                 break;
             }
         }
         return info;
     }
 
-    public NodeInfo computeMethod(Method m, boolean add, Object[] params){
+    protected NodeInfo computeMethod(Method m, boolean add, Object[] params){
         return computeMethod(m, add, params, false);
     }
 
@@ -291,14 +253,14 @@ public class NodeContent {
      * Creates a list of all attributes, tokens and invokedValues
      * @return
      */
-    public ArrayList<NodeInfoHolder> toArray(){
+    protected ArrayList<NodeInfoHolder> toArray(){
         ArrayList<NodeInfoHolder> temp = new ArrayList<>();
-        for (NodeInfo a : attributes.values())
+        for (NodeInfo a : attributes)
             temp.add(new NodeInfoHolder(a.print(), a.getValue(), a));
-        for (NodeInfo t : tokens.values())
+        for (NodeInfo t : tokens)
             temp.add(new NodeInfoHolder(t.print(), t.getValue(), t));
         if(invokedValues != null) {
-            for (NodeInfo i : invokedValues.values())
+            for (NodeInfo i : invokedValues)
                 temp.add(new NodeInfoHolder(i.getName(), i.getValue(), i));
         }
         Collections.sort(temp);

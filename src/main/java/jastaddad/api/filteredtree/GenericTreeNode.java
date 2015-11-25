@@ -71,7 +71,7 @@ public abstract class GenericTreeNode {
     }
 
     public boolean isNullNode(){
-        return isNode() && ((TreeNode)this).getNode().isNull() && !((TreeNode)this).getNode().isNTA();
+        return isNode() && ((TreeNode)this).getNode().isNull();
     }
 
     /**
