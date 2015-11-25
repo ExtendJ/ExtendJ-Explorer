@@ -62,7 +62,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
     public void setFilterDir(String dir){jastAddAd.setFilterDir(dir);}
 
     /**
-     * start the UI and is by JavaFX. Load the FXML files and genereates the UI. It also embeds the Swing based graph.
+     * start the UI and is by JavaFX. Load the FXML files and generates the UI. It also embeds the Swing based graph.
      *
      * @param stage
      * @throws IOException
@@ -81,8 +81,8 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         stage.setTitle("JastAddDebugger " + ASTAPI.VERSION);
         stage.setScene(new Scene(rootView, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
         //stage.setMaximized(true);
-        /*
-        stage.setOnCloseRequest(we -> {
+        
+        /*stage.setOnCloseRequest(we -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirm Exit");
             alert.initStyle(StageStyle.UNDECORATED);
@@ -94,7 +94,6 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
                 we.consume();
             }
         });*/
-
         stage.show();
         ScrollPane center = (ScrollPane) rootView.lookup("#graphViewScrollPane");
         center.setContent(graphview);
@@ -123,7 +122,6 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
                 DebuggerConfig d = new DebuggerConfig(new Opt(), a);
                 JastAddAdUI debugger = new JastAddAdUI(program);
                 debugger.run();
-                //program.genCode(System.out);
             }
         } catch (FileNotFoundException e) {
             System.out.println("File not found!");

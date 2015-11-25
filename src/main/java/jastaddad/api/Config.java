@@ -219,12 +219,12 @@ public class Config{
             String decl = entry.getKey();
             BinExpr be = entry.getValue();
 
-            NodeInfo a = node.getNodeContent().compute(decl);
+            NodeInfo a = node.getNodeContent().computeMethod(decl);
             if(a == null)
                 return false;
             if(be.isDoubleDecl()){
                 String decl2 = ((IdDecl)be.getValue()).getID();
-                NodeInfo b = node.getNodeContent().compute(decl2);
+                NodeInfo b = node.getNodeContent().computeMethod(decl2);
                 if(b == null)
                     return false;
                 return a.getReturnType().equals(b.getReturnType()) && be.validateExpr(a.getValue(), b.getValue(), a.getReturnType(), decl);

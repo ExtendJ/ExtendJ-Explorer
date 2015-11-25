@@ -84,7 +84,6 @@ public class JastAddAdAPI {
 			} else {
 				JastAddAdAPI debugger = new JastAddAdAPI(program);
                 debugger.run();
-				//program.genCode(System.out);
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found!");

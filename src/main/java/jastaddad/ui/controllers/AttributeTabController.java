@@ -78,8 +78,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
         });
 
         mouseMenu = new ContextMenu();
-
-        MenuItem cmItem1 = new MenuItem("Invoke with parameters");
+        MenuItem cmItem1 = new MenuItem("Compute");
         /**
          * This sub method will call teh invocation of the method that has been clicked on, after the values have been added
          */
@@ -101,7 +100,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
                             mon.getController().addMessage("Invocation successful, result: " + obj);
                         }else{
                             mon.getController().addMessage("Invocation unsuccessful, result: " + null);
-                            mon.getController().addErrors(node.getNode().getNodeContent().getInnvokationErrors());
+                            mon.getController().addErrors(node.getNode().getNodeContent().getInvocationErrors());
                         }
                         setAttributeList(node, false);
                     }
@@ -205,12 +204,22 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
-            if (empty || item == null) {
+            setContextMenu(null);
+            if(getTableRow().getItem() != null){
+                NodeInfo info = ((AttributeInfo) getTableRow().getItem()).getNodeInfo();
+                if (info != null && info.isParametrized()){
+                    setText("Need input form user");
+                }else if(info != null && info.isNTA())
+                    setText("Is NTA, need to be run by user");
+                else
+                    setText(String.valueOf(item));
+            }else if (empty || item == null) {
                 setText(null);
-                setContextMenu(null);
+                return;
+            }else if(getTableRow().getItem() == null){
+                setText(String.valueOf(item));
                 return;
             }
-            setText(String.valueOf(item));
             setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.SECONDARY) {
                     if(getTableRow().getItem() != null &&

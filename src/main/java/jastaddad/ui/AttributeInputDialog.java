@@ -160,7 +160,7 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
                 params.set(i, field.getText());
             }
         }
-        
+
         return params;
     }
 

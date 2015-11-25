@@ -20,6 +20,8 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
 
     public Object getValue(){ return value; }
 
+    public void setValue(Object value){ this.value = value; }
+
     public String getName(){ return name; }
 
     public Class getReturnType(){ return method.getReturnType(); }
@@ -47,6 +49,12 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
     public abstract boolean isParametrized();
 
     /**
+     * Check if a attribute is parametrized
+     * @return
+     */
+    public abstract boolean isNTA();
+
+    /**
      * This will add more type specific information to the List, used by getInfo()
      * @param al
      */
@@ -68,15 +76,7 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
      * @return
      */
     protected static String getName(Method m, Object[] params){
-        String name = m.getName() + "(";
-        if (m.getParameterCount() > 0){
-            for(int i = 0; i < m.getParameterCount(); i++) {
-                name += params != null ? params[i].toString() : m.getParameterTypes()[i].toString();
-                if(i + 1 < m.getParameterCount())
-                    name += ",";
-            }
-        }
-        return name + ")";
+        return NodeContent.getName(m, params);
     }
 
     /**
@@ -89,10 +89,10 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
         al.add(new NodeInfoHolder("Name", name));
         al.add(new NodeInfoHolder("Value", value));
         al.add(new NodeInfoHolder("Return type", method.getReturnType()));
-        al.add(new NodeInfoHolder("isParameterized", isParametrized()));
         for (int i = 0; i < method.getParameterCount(); i++)
             al.add(new NodeInfoHolder("Parameter type: " + i, method.getParameterTypes()[i]));
         setChildInfo(al);
+        al.add(new NodeInfoHolder("Is parameterized", isParametrized()));
         return al;
     }
 }
