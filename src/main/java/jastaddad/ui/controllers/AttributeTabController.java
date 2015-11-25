@@ -160,6 +160,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
     /**
      * Listener for the attribute tableview, sets the attributeInfoTableView for the selected attribute.
      * It will also remove old references, and add new references if the value of selected attribute is a AST node.
+     * Also tells the main controller that an attribute was selected.
      * @param observable
      * @param oldValue
      * @param newValue
@@ -168,6 +169,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
     public void changed(ObservableValue<? extends AttributeInfo> observable, AttributeInfo oldValue, AttributeInfo newValue) {
         setAttributeInfo(newValue);
         mon.setSelectedInfo(newValue);
+        mon.getController().attributeInNodeSelected(newValue);
         if(oldValue != null)
             mon.getApi().getNodeReferences(oldValue.getNodeInfo(), false);
         setReference(newValue);

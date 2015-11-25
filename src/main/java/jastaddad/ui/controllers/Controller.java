@@ -3,6 +3,7 @@ package jastaddad.ui.controllers;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.TreeNode;
+import jastaddad.ui.AttributeInfo;
 import jastaddad.ui.UIDialog;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.graph.GraphView;
@@ -283,6 +284,9 @@ public class Controller implements Initializable {
         }
     }
 
+    /**
+     * When a function is started,e.g. a dialog window is opened, this method is called.
+     */
     public void functionStarted(){
         mon.functionStart();
         attributeTabController.functionStarted();
@@ -290,11 +294,23 @@ public class Controller implements Initializable {
         topMenuController.functionStarted();
     }
 
+    /**
+     * When a function is stopped,e.g. a dialog window is closed, this method is called.
+     */
     public void functionStoped(){
         mon.functionDone();
         attributeTabController.functionStoped();
         textTreeTabController.functionStoped();
         topMenuController.functionStoped();
+    }
+
+    /**
+     * An attribute was selected for the selected node. This method tells different parts of the UI of this event.
+     * @param info
+     */
+    public void attributeInNodeSelected(AttributeInfo info){
+        for(UIDialog subWindow : mon.getSubWindows())
+            subWindow.attributeSelected(info);
     }
 
     /**

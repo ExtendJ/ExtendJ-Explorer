@@ -20,7 +20,7 @@ public abstract class UIDialog extends Stage{
     protected Button buttonTypeOk;
 
     protected UIDialog(UIMonitor mon){
-        super(StageStyle.UTILITY);
+        super(StageStyle.UNIFIED);
         this.mon = mon;
         mon.getController().functionStarted();
         invokeButtonPressed = false;
@@ -58,7 +58,7 @@ public abstract class UIDialog extends Stage{
     protected abstract void dialogClose();
     public abstract ArrayList<Object> getResult();
     protected abstract Parent buildDialogContent();
-
+    public abstract void attributeSelected(AttributeInfo info);
     public void nodeSelected(GenericTreeNode node){
         if(!invokeButtonPressed)
             nodeSelectedChild(node);

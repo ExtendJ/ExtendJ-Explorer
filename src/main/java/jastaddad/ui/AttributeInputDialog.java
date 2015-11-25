@@ -3,10 +3,13 @@ package jastaddad.ui;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.TreeNode;
 import jastaddad.api.nodeinfo.NodeInfo;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
+import javafx.util.Duration;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -23,13 +26,15 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
     int[] gridNodePosition;
     private nodeParameter focusedNodeParameter;
     private ArrayList<nodeParameter> nodeParameters;
-    ArrayList<Object> params;
+    private ArrayList<Object> params;
+    private boolean blinkAnimationWhite;
 
     public AttributeInputDialog(NodeInfo attribute, TreeNode node, UIMonitor mon){
         super(mon);
         initModality(Modality.NONE);
         this.info = attribute;
         this.node = node;
+        blinkAnimationWhite = true;
         nodeParameters = new ArrayList<>();
 
         if(!attribute.isParametrized())
@@ -117,6 +122,20 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
         return grid;
     }
 
+    @Override
+    public void attributeSelected(AttributeInfo info) {
+        if(info == null)
+            return;
+        if(mon.getApi().isNodeReference(info.getValue())) {
+            mon.getController().addMessage("1(" + info + ")");
+            GenericTreeNode aNode = mon.getApi().getNodeReference(info.getValue());
+            if(!aNode.isNode())
+                return;
+            mon.getController().addMessage("2(" + info + ")");
+            trySelectNode((TreeNode)aNode);
+        }
+    }
+
     protected void yesButtonClicked(){
 
     }
@@ -127,11 +146,14 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
     }
 
     private void paramTextFieldSelected(nodeParameter param){
+
         if(focusedNodeParameter != null){
             focusedNodeParameter.field.setStyle("-fx-control-inner-background: #ffffff");
         }
         focusedNodeParameter = param;
-        focusedNodeParameter.field.setStyle("-fx-control-inner-background: #789456");
+        focusedNodeParameter.field.setStyle("-fx-control-inner-background: #FFC573");
+        attributeSelected(mon.getSelectedInfo());
+
     }
 
     private boolean isNodeParam(Class type){
@@ -176,21 +198,43 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
     public void nodeSelectedChild(GenericTreeNode node){
         if(node.isNode() && focusedNodeParameter != null) {
             TreeNode fNode = (TreeNode) node;
-            if (focusedNodeParameter.type.getSimpleName().equals(fNode.getNode().simpleNameClass)){
-                int index = nodeParameters.indexOf(focusedNodeParameter);
-                mon.getController().addMessage("index: " + index);
-                if(index >= 0){
-                    mon.removeDialogSelectedNodes(nodeParameters.get(index).getNode());
-                }
-                focusedNodeParameter.setNode(node);
-                mon.addDialogSelectedNodes(focusedNodeParameter.getNode());
-                params.set(focusedNodeParameter.pos, fNode.getNode().node);
-                focusedNodeParameter.field.setText(focusedNodeParameter.type.getCanonicalName());
-                //System.out.println("asdasd: " + focusedNodeParameter.toString());
-            }
+            trySelectNode(fNode);
         }
     }
 
+    private void trySelectNode(TreeNode fNode){
+        mon.getController().addMessage(fNode.getNode().simpleNameClass);
+        if (focusedNodeParameter.type.getSimpleName().equals(fNode.getNode().simpleNameClass)){
+            mon.getController().addMessage("3()");
+            int index = nodeParameters.indexOf(focusedNodeParameter);
+            if(index >= 0){
+                mon.removeDialogSelectedNodes(nodeParameters.get(index).getNode());
+            }
+            focusedNodeParameter.setNode(fNode);
+            mon.addDialogSelectedNodes(focusedNodeParameter.getNode());
+            params.set(focusedNodeParameter.pos, fNode.getNode().node);
+            focusedNodeParameter.field.setText(focusedNodeParameter.type.getCanonicalName());
+            mon.getGraphView().repaint();
+
+            Timeline timeline = new Timeline(new KeyFrame(
+                    Duration.millis(200),
+                    ae -> blinkTextField(focusedNodeParameter.field)));
+            timeline.setCycleCount(4);
+            timeline.play();
+
+
+            //System.out.println("asdasd: " + focusedNodeParameter.toString());
+        }
+    }
+
+    private void blinkTextField(TextField field){
+        if(blinkAnimationWhite){
+            field.setStyle("-fx-control-inner-background: #ffffff");
+        }else{
+            field.setStyle("-fx-control-inner-background: #FFC573");
+        }
+        blinkAnimationWhite = !blinkAnimationWhite;
+    }
 
     private class nodeParameter{
         final int pos;
