@@ -69,7 +69,7 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
      * @param params
      * @return
      */
-    protected static String getName(Method m, Object[] params){
+    public static String getName(Method m, Object[] params){
         String name = m.getName() + "(";
         if (m.getParameterCount() > 0){
             for(int i = 0; i < m.getParameterCount(); i++) {

@@ -25,7 +25,6 @@ public class ASTAPI {
     public static final int PARAMETRIZED = 1;
     public static final int NORMAL = 2;
 
-
     private Node tree;
     private GenericTreeNode filteredTree;
     private Config filterConfig;
@@ -112,10 +111,10 @@ public class ASTAPI {
     private void addToTypes(TreeNode fNode){
         // add the node to the hashmap of types
         Node node = fNode.getNode();
-        if(!typeNodeHash.containsKey(node.className))
-            typeNodeHash.put(node.className, new ArrayList<>());
-        typeNodeHash.get(node.className).add(fNode);
-        if(node.name != "") {
+        if(!typeNodeHash.containsKey(node.simpleNameClass))
+            typeNodeHash.put(node.simpleNameClass, new ArrayList<>());
+        typeNodeHash.get(node.simpleNameClass).add(fNode);
+        if(node.nameFromParent != "") {
             if(!typeNodeHash.containsKey(node.fullName))
                 typeNodeHash.put(node.fullName, new ArrayList<>());
             typeNodeHash.get(node.fullName).add(fNode);
@@ -130,9 +129,9 @@ public class ASTAPI {
     private void addToConfigs(TreeNode fNode){
         // Add the node to the config hash
         Node node = fNode.getNode();
-        if(node.name != "")
+        if(node.nameFromParent != "")
             typeHash.put(node.fullName, fNode.isEnabled() ? 1:0);
-        typeHash.put(node.className, fNode.isEnabled() ? 1:0);
+        typeHash.put(node.simpleNameClass, fNode.isEnabled() ? 1:0);
     }
 
     /**
@@ -310,7 +309,7 @@ public class ASTAPI {
 
     public int compute(Node node, NodeInfo info) { return compute(node, info, null); }
 
-    public int compute(Node node, NodeInfo info, ArrayList<Object> params) {
+    public int compute(Node node, NodeInfo info, Object[]  params) {
         if (info == null)
             return NULL;
         if (info.isNTA() || info.isParametrized()) {
@@ -331,4 +330,5 @@ public class ASTAPI {
         nodeReferences.put(obj, treeNode);
         return NTA;
     }
+
 }

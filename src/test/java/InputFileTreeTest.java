@@ -54,7 +54,7 @@ public class InputFileTreeTest extends AbstractParameterizedTest {
 					debugger.setFilterDir(inDirectory + "/");
 					debugger.run();
 					JastAddAdXML xmlPrinter = new JastAddAdXML(debugger);
-					xmlPrinter.printToXML(inDirectory, OUT_EXTENSION);
+					xmlPrinter.printXml(inDirectory, OUT_EXTENSION);
 					new OutoutXMLcomparer().checkOutput(debugger.getFilteredTree(), expectedFile, inDirectory);
 				}
 			} catch (FileNotFoundException e) {

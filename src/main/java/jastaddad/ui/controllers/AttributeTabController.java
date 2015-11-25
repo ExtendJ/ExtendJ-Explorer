@@ -17,6 +17,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -87,13 +88,14 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
             NodeInfo info  = attributeTableView.getSelectionModel().getSelectedItem().getNodeInfo();
             if(info.isNTA() && !info.isParametrized()){
                 mon.getApi().compute(node.getNode(), info);
+                setAttributeList(node, false);
                 return;
             }
             AttributeInputDialog dialog = new AttributeInputDialog(info, node, mon);
             dialog.init();
             dialog.setOnCloseRequest(event -> {
                 if(dialog.invokeButtonPressed()) {
-                    ArrayList<Object> result = dialog.getResult();
+                    Object[]  result = dialog.getResult();
                     if(result == null ||  mon.getLastRealNode() != null)
                         return;
                     int type = mon.getApi().compute(dialog.getTreeNode().getNode(), dialog.getInfo(), result);
@@ -103,8 +105,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
                         case ASTAPI.PARAMETRIZED :
                         break;
                     }
+                    mon.getController().addMessage("Invocation successful");
                     if(node.getNode().getNodeContent().noErrors()){
-                        mon.getController().addMessage("Invocation successful");
                     }else{
                         mon.getController().addMessage("Invocation unsuccessful");
                         mon.getController().addErrors(node.getNode().getNodeContent().getInvocationErrors());
@@ -116,6 +118,14 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
             dialog.show();
         });
         mouseMenu.getItems().add(cmItem1);
+    }
+
+    public void functionStarted(){
+
+    }
+
+    public void functionStoped(){
+
     }
 
     /**
@@ -199,28 +209,31 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
-            setContextMenu(null);
-            if(getTableRow().getItem() != null){
-                NodeInfo info = ((AttributeInfo) getTableRow().getItem()).getNodeInfo();
-                if (info != null && info.isParametrized()){
-                    setContextMenu(mouseMenu);
-                    setText("Need input form user");
-                } else if(info != null && info.isNTA()) {
-                    if(item == null) {
-                        setContextMenu(mouseMenu);
-                        setText("Is NTA, need to be run by user");
-                    }else
-                        setText(String.valueOf(item));
-                } else
-                    setText(String.valueOf(item));
-            } else if (empty || item == null) {
+
+            setText(String.valueOf(item));
+
+            if (getTableRow().getItem() == null && (empty || item == null)) {
                 setText(null);
-                return;
-            } else if(getTableRow().getItem() == null){
-                setText(String.valueOf(item));
                 return;
             }
 
+            NodeInfo info = ((AttributeInfo) getTableRow().getItem()).getNodeInfo();
+            if(info == null)
+                return;
+            if (info.isParametrized())
+                setText("Need input form user");
+            else if(info.isNTA() && item == null)
+                setText("Is NTA, need to be run by user");
+
+            setOnMouseClicked(event -> {
+                if (event.getButton() == MouseButton.SECONDARY) {
+                    if(getTableRow().getItem() != null &&
+                            ((AttributeInfo )getTableRow().getItem()).hasCompute() &&
+                            !mon.isFunctionRunning()) {
+                        mouseMenu.show(this, event.getScreenX(), event.getScreenY());
+                    }
+                }
+            });
         }
 
     }

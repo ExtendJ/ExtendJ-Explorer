@@ -283,6 +283,20 @@ public class Controller implements Initializable {
         }
     }
 
+    public void functionStarted(){
+        mon.functionStart();
+        attributeTabController.functionStarted();
+        textTreeTabController.functionStarted();
+        topMenuController.functionStarted();
+    }
+
+    public void functionStoped(){
+        mon.functionDone();
+        attributeTabController.functionStoped();
+        textTreeTabController.functionStoped();
+        topMenuController.functionStoped();
+    }
+
     /**
      * Method for selecting a node in the graph or tree. Used for example by other controllers.
      *

@@ -4,7 +4,7 @@ import configAST.List;
 import configAST.Opt;
 import jastaddad.api.JastAddAdAPI;
 import jastaddad.tasks.JastAddAdXML;
-import org.junit.Test;
+import org.junit.Test;pokhead
 
 /**
  * Created by gda10jth on 11/18/15.
@@ -30,7 +30,7 @@ public class CodeGeneratedTreeTests {
         debugger.setFilterDir("tests/codeGeneratedTreeTests/");
         debugger.run();
         JastAddAdXML xmlPrinter = new JastAddAdXML(debugger);
-        xmlPrinter.printToXML(inDirectory, expectedFile, ".out");
+        xmlPrinter.printXml(inDirectory, expectedFile, ".out");
         new OutoutXMLcomparer().checkOutput(debugger.getFilteredTree(), expectedFile + ".expected", inDirectory);
     }
 }

@@ -7,13 +7,13 @@ import jastaddad.api.nodeinfo.Attribute;
 import jastaddad.api.nodeinfo.NodeInfo;
 import jastaddad.api.nodeinfo.NodeInfoHolder;
 import jastaddad.api.nodeinfo.Token;
+import org.w3c.dom.Attr;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This class holds all information about the a node, all attribute values and invokedvalues.
@@ -25,17 +25,20 @@ public class NodeContent {
     private ArrayList<NodeInfo> attributes;
     private ArrayList<NodeInfo> tokens;
     private ArrayList<String> invocationErrors; //Error list for invoke calls
-    private ArrayList<NodeInfo> invokedValues; //The cached values for invoked methods
+    private HashMap<String, NodeInfo> invokedValues; //The cached values for invoked methods
+    private HashSet<String> invokedMethods;
     private Node node; //The node the content is a part of
     private Object nodeObject; //The node the content is a part of
 
     public NodeContent(Node node){
         attributes = new ArrayList<>();
         tokens = new ArrayList<>();
-        invokedValues = new ArrayList<>();
+        invokedValues = new HashMap<>();
+        invokedMethods = new HashSet<>();
         invocationErrors = new ArrayList<>();
         this.node = node;
         this.nodeObject = node.node;
+
     }
 
     /**
@@ -63,36 +66,42 @@ public class NodeContent {
      * @param par
      * @return true if the invocation was successful.
      */
-    protected Object compute(NodeInfo nodeInfo, ArrayList<Object> par, boolean forcedComputation, ASTAPI api) {
+    protected Object compute(NodeInfo nodeInfo, Object[] par, boolean forcedComputation, ASTAPI api) {
         invocationErrors.clear();
         Object[] params;
         Method method = nodeInfo.getMethod();
-        if ((par != null && par.size() != method.getParameterCount()) || (par == null && method.getParameterCount() != 0)) {
+        if ((par != null && par.length != method.getParameterCount()) || (par == null && method.getParameterCount() != 0)) {
             invocationErrors.add("Wrong number of arguments for the method: " + method);
             return null;
         }
         if(par == null)
             params = new Object[method.getParameterCount()];
         else
-            params = par.toArray();
+            params = par;
 
         Attribute attribute;
         try{
             attribute = getAttribute(nodeObject, method, params, forcedComputation);
-            if(!api.isObjectReference(attribute.getValue()))
-                invokedValues.add(attribute);
+            addInvokedValue(attribute, method, params);
             return attribute.getValue();
         }catch(Throwable e){
             attribute = getAttribute(null, method, params, forcedComputation);
-            if(!api.isObjectReference(attribute.getValue()))
-                invokedValues.add(attribute);
+            addInvokedValue(attribute, method, params);
             e.printStackTrace();
             addInvocationErrors(e);
             return null;
         }
     }
 
-    protected Object compute(NodeInfo nodeInfo, ArrayList<Object> par, ASTAPI api){
+    private void addInvokedValue(Attribute attribute, Method method, Object[] params){
+        String key = method.getName() + ":" + params.toString();
+        if(invokedMethods.contains(key))
+            return;
+        invokedValues.put(method.getName(), attribute);
+        invokedMethods.add(key);
+    }
+
+    protected Object compute(NodeInfo nodeInfo, Object[] par, ASTAPI api){
         return compute(nodeInfo, par, false, api);
     }
 
@@ -260,8 +269,9 @@ public class NodeContent {
         for (NodeInfo t : tokens)
             temp.add(new NodeInfoHolder(t.print(), t.getValue(), t));
         if(invokedValues != null) {
-            for (NodeInfo i : invokedValues)
+            for (NodeInfo i : invokedValues.values()){
                 temp.add(new NodeInfoHolder(i.getName(), i.getValue(), i));
+            }
         }
         Collections.sort(temp);
         return temp;

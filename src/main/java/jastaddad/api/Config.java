@@ -189,7 +189,7 @@ public class Config{
         // don't do this if the -include is set to false
         if (isSet(CONFIG_INCLUDE)) {
             // try to find the node in the Include.
-            boolean className = configs.getNodes().containsKey(node.className); // Div;
+            boolean className = configs.getNodes().containsKey(node.simpleNameClass); // Div;
             boolean tellingName = configs.getNodes().containsKey(node.fullName); // Div:Left
 
             // not found
@@ -197,7 +197,7 @@ public class Config{
                 return false;
 
             // First add class specific bin expressions
-            NodeConfig cNode = configs.getNodes().get(node.className);
+            NodeConfig cNode = configs.getNodes().get(node.simpleNameClass);
             if (className && cNode.getBinExprList(FILTER_LIST) != null) {
                 for (BinExpr be : cNode.getBinExprList(FILTER_LIST).getBinExprList()) {
                     binExprs.put(be.getDecl().getID(), be);
@@ -252,7 +252,7 @@ public class Config{
         if (!isSet(CONFIG_INCLUDE))
             return map;
 
-        boolean className = configs.getNodes().containsKey(node.className); // Div;
+        boolean className = configs.getNodes().containsKey(node.simpleNameClass); // Div;
         boolean tellingName = configs.getNodes().containsKey(node.fullName); // Div:Left
 
         if(!tellingName && !className)
@@ -260,7 +260,7 @@ public class Config{
 
         // Add all class and telling bin expressions to one hashmap. this will let the telling expressions to override
 
-        NodeConfig cNode = configs.getNodes().get(node.className);
+        NodeConfig cNode = configs.getNodes().get(node.simpleNameClass);
         if(className && cNode.getBindingList(STYLE_LIST) != null) {
             for(Binding b : cNode.getBindingList(STYLE_LIST).getBindingList()){
                 map.put(b.getName().print(), b.getValue());
@@ -292,13 +292,13 @@ public class Config{
         if (!isSet(CONFIG_INCLUDE))
             return set;
 
-        boolean className = configs.getNodes().containsKey(node.className); // Div;
+        boolean className = configs.getNodes().containsKey(node.simpleNameClass); // Div;
         boolean tellingName = configs.getNodes().containsKey(node.fullName); // Div:Left
 
         if(!tellingName && !className)
             return set;
 
-        NodeConfig cNode = configs.getNodes().get(node.className);
+        NodeConfig cNode = configs.getNodes().get(node.simpleNameClass);
         if(className && cNode.getIdDeclList(DISPLAY_ATTRIBUTES_LIST) != null) {
             for(IdDecl decl : cNode.getIdDeclList(DISPLAY_ATTRIBUTES_LIST).getIdDeclList()){
                 set.add(decl.getID());

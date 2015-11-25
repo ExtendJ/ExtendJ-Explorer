@@ -30,6 +30,16 @@ public class JastAddAdXML extends DecoratorTask {
         printToXML(JastAddAdAPI.FILE_NAME + ".xml");
     }
 
+    public boolean printXml(String toDirectory, String fileName, String ext){
+        loadAPI();
+        String filePath = fileName + ext;
+        if(toDirectory.length() > 0){
+            filePath = toDirectory + "/" + fileName + ext;
+        }
+
+        return printToXML(filePath);
+    }
+
     public boolean printXml(String toDirectory, String ext){
         loadAPI();
         String filePath = JastAddAdAPI.FILE_NAME + ext;

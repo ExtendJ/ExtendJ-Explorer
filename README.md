@@ -1,17 +1,93 @@
-Getting started
-============
+# JastAddAd readme #
+This readme has the following content
 
-1. Clone the project..
-2. Go to the directory where you cloned the project, with your terminal.
-3. Run the bash file gradlew,./gradlew on linux, with the tasks build and fatjar. This will create a .jar file which contains the debugger.
-4. Add created Jar to your projects Library path.
-5. Include all files in the .jar to your compiler script. Do not forget the .fxml and .css files. For example if you are using an ant build script add something like this <zipfileset includes="\*\*/\*.\*" src="/[path to debugger .jar]"/> to the build scripts jar target.
-6. To run the debugger with your compiler add the following code, after the parsing is done and the AST tree is generated: "new JastAddAd(rootNode);". Where rootNode is the Object of your AST:s root.
-7. Now run your compiler on some source file!
+* Getting Started 
+    - Get the project on you machine
+    - Building the project
+    - Create jar file
+    - See if things are working
+    - Running JastAddAd on your project
+    - Lib dependencies for Linux
+* Filtering the AST
+    - Basic example
+    - Configurations
+    - Filter nodes on attributes
+    - Styles
+    - Attributes
+    - Global
+    - Hierarchy of -include and -global
+    - Big Example
+    - Standard configuration file
 
-Lib dependencies for Linux
------------- 
-Add these if ToolKit errors are thrown when running the debugger.
+# Getting started #
+## Get the project on you machine ##
+Start of by cloning 
+```
+git clone https://[yourUserName]@bitbucket.org/jastadd/jastadddebugger-exjobb.git
+```
+Then go to the directory where you cloned the project, with your terminal
+
+## Building the project ##
+In order to run JastAddAd you first need to build the project and then create its jar file.
+
+There are two ways to assemble the project. Either just assemble:
+```
+./gradlew assemble
+```
+or build which will run some tests:
+```
+./gradlew build
+```
+OBS! The second one will run both normal and UI tests.
+
+## Create jar file ##
+After assembling the project, create the jar by writing the following command:
+```
+./gradlew fatJar
+```
+## See if things are working ##
+To test if the JastAddAd is ready to run on your computer you can just run the jar with the following command:
+```
+java -jar jastadddebugger-exjobb.jar
+```
+This should run a sample JastAdd project and run the JastAddAdUI program. see Lib dependencis below if it's not working.
+
+OBS! The debugger will run on the sample.cfg file in your directory.
+
+## Running JastAddAd on your project ##
+There are a few things that must be done to run JastAddAd on your own project.
+
+* Add created Jar to your projects Library path.
+* Include all files in the .jar to your compiler script. Do not forget the .fxml and .css files. 
+For example if you are using an ant build script do something like this:
+Add the jar as a library to the script:
+```
+<property name="your.libname" value="[Other libs]:[path to debugger .jar]"/>
+```
+And then add the jar to the to the scripts jar target:
+```
+<zipfileset includes="**/*.*" src="/[path to debugger .jar]"/> 
+```
+Now JastAddAd is ready to run! In your own java code (typically the same class as you run your parser) add the following code when the AST is created: 
+```
+YourScanner scanner = new YourScanner(...);
+YourParser parser = new YourParser();
+RootNode rootNode = (RootNode) parser.parse(scanner);
+JastAddAdUI debugger = new JastAddAdUI(rootNode);// Where rootNode is the Object of your AST:s root.
+debugger.run();
+```
+
+Now your done! Next time you run your project on your source code, JastAddAdUI will start up after the parsing and scanning is done. 
+
+NOTE! You don't need to run the UI of JastAddAd. All computations are done in a class JastAddAdAPI. If you want to get the data without an UI, run the following code:
+```
+JastAddAdAPI debugger = new JastAddAdAPI(rootNode); // Where rootNode is the Object of your AST:s root
+debugge.run();
+```
+
+## Lib dependencies for Linux ##
+
+When running the debugger on Linux the following library dependencies are required if any ToolKit errors are thrown.
 
 - libgtk+-x11-2.0_0 - X11 backend of The GIMP ToolKit (GTK+).
 - libgtk+2.0_0 - The GIMP ToolKit (GTK+), a library for creating GUIs.

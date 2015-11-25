@@ -80,7 +80,7 @@ public class GraphView extends SwingNode implements ItemListener {
             if(child.isNode()){
                 TreeNode n = (TreeNode) child;
                 if(parent.isNode() && !((TreeNode)parent).getNode().isOpt())
-                    edge = new UIEdge(parent.isRealChild(child), n.getNode().name);
+                    edge = new UIEdge(parent.isRealChild(child), n.getNode().nameFromParent);
                 else
                     edge = new UIEdge(parent.isRealChild(child));
             }else {
@@ -360,7 +360,9 @@ public class GraphView extends SwingNode implements ItemListener {
         @Override
         public Paint transform(GenericTreeNode fNode) {
             String color = fNode.getStyles().get("node-color").getColor();
-            if(pi.isPicked(fNode)) {
+            if(mon.getDialogSelectedNodes().contains(fNode))
+                return new Color(120, 148, 86);
+            if (pi.isPicked(fNode)) {
                 return new Color(240, 240, 200);
             }
             if(fNode.isNullNode()){

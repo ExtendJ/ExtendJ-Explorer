@@ -15,8 +15,8 @@ import java.util.Collection;
 public class Node{
     public final Object node;
     public final int id;
-    public final String name;
-    public final String className;
+    public final String nameFromParent;
+    public final String simpleNameClass;
     public final String fullName;
     public final ArrayList<Node> children;
     private boolean isList;
@@ -32,14 +32,13 @@ public class Node{
      */
     public Node(Object root, ASTAPI api){
         this.children = new ArrayList<>();
-        this.name = "";
-        nullCheck(root, api, "ROOT");
+        this.nameFromParent = "";
         if(root != null)
-            this.className = root.getClass().getSimpleName();
+            this.simpleNameClass = root.getClass().getSimpleName();
         else
-            this.className = "Null";
+            this.simpleNameClass = "Null";
         this.node = root;
-        fullName = className;
+        fullName = simpleNameClass;
         id = System.identityHashCode(this.toString());
         init(root, false, false, 1, api);
     }
@@ -53,41 +52,11 @@ public class Node{
         this.children = new ArrayList<>();
         this.isNTA = true;
         this.node = root;
-        System.out.println("" + root);
-        this.className = root.getClass().getSimpleName();
-        this.fullName = className;
-        this.name = name;
+        this.simpleNameClass = root.getClass().getSimpleName();
+        this.fullName = "";
+        this.nameFromParent = name;
         id = System.identityHashCode(this.toString());
         this.nodeContent = new NodeContent(this);
-    }
-
-    /**
-     * This is the constructor used for the creation of NTA:s
-     * @param root
-     * @param name
-     * @param isList
-     * @param level
-     * @param api
-     */
-    public Node(Object root, String name, boolean isList, int level, ASTAPI api){
-        this.children = new ArrayList<>();
-        this.isNTA = true;
-        this.isList = isList;
-        this.nodeContent = new NodeContent(this);
-        this.level = level;
-        if(root != null)
-            this.className = root.getClass().getSimpleName();
-        else
-            this.className = "Null";
-        this.node = root;
-        if(name.equals(className) || name.length() == 0){
-            this.name = "";
-            fullName = className;
-        }else {
-            this.name = name;
-            fullName = className + ":" + name;
-        }
-        id = System.identityHashCode(this.toString());
     }
 
     /**
@@ -102,16 +71,17 @@ public class Node{
     public Node(Object root, String name, boolean isList, boolean isOpt, int level, ASTAPI api){
         this.children = new ArrayList<>();
         if(root != null)
-            this.className = root.getClass().getSimpleName();
+            this.simpleNameClass = root.getClass().getSimpleName();
         else
-            this.className = "Null";
+            this.simpleNameClass = "Null";
         this.node = root;
-        if(name.equals(className) || name.length() == 0){
-            this.name = "";
-            fullName = className;
+
+        if(name == simpleNameClass || name.length() == 0){
+            this.nameFromParent = "";
+            fullName = simpleNameClass;
         }else {
-            this.name = name;
-            fullName = className + ":" + name;
+            this.nameFromParent = name;
+            fullName = simpleNameClass + ":" + name;
         }
         id = System.identityHashCode(this.toString());
         init(root, isList, isOpt, level, api);
@@ -137,7 +107,7 @@ public class Node{
                 for (Object child : (Iterable<?>) root) {
                     if (child instanceof Collection && child.getClass().getSimpleName().equals("List") && isOpt)
                         api.putWarning(ASTAPI.AST_STRUCTURE_WARNING, "A List is a direct child to a Opt parent, parent : " + root + ", -> child : " + child);
-                    children.add(new Node(child, isOpt ? name : "", child instanceof Collection, false, 1, api));
+                    children.add(new Node(child, isOpt ? nameFromParent : "", child instanceof Collection, false, 1, api));
                 }
             }
             traversDown(root, api);
@@ -185,7 +155,7 @@ public class Node{
     public boolean isNull(){ return node == null; }
     public boolean isNTA(){ return isNTA; }
     public String toString() {
-        return className;
+        return simpleNameClass;
     }
 
     public int getLevel(){ return level;}

@@ -35,6 +35,14 @@ public class TreeViewTabController implements Initializable, ChangeListener {
         graphTreeView.getSelectionModel().selectedItemProperty().addListener(this);
     }
 
+    public void functionStarted(){
+
+    }
+
+    public void functionStoped(){
+
+    }
+
     /**
      * Called when something changes in the tree view, e.g. a node is selected.
      * Calls the nodeSelected(...) in the main controller Controller.

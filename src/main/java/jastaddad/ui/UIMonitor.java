@@ -27,22 +27,42 @@ public class UIMonitor {
     private GraphView graphView;
     private Stage parentStage;
     private ArrayList<UIDialog> subWindows;
+    private ArrayList<GenericTreeNode> dialogSelectedNodes;
+    private boolean functionRunning;
+
     public UIMonitor(JastAddAdAPI jaaApi){
         this.jaaApi = jaaApi;
         subWindows = new ArrayList<>();
+        dialogSelectedNodes = new ArrayList<>();
+        functionRunning = false;
     }
+
+    public void functionStart(){functionRunning = true;}
+    public void functionDone(){functionRunning = false;}
+    public boolean isFunctionRunning(){return functionRunning;}
 
     public ArrayList<UIDialog> getSubWindows() {
         return subWindows;
     }
-
     public void addSubWindow(UIDialog window){
         subWindows.add(window);
     }
-
     public void removeSubWindow(UIDialog window){
         subWindows.remove(window);
     }
+
+    public ArrayList<GenericTreeNode> getDialogSelectedNodes() {
+        return dialogSelectedNodes;
+    }
+    public void addDialogSelectedNodes(GenericTreeNode node){
+        dialogSelectedNodes.add(node);
+    }
+    public void removeDialogSelectedNodes(GenericTreeNode node){
+        if(node != null)
+            dialogSelectedNodes.remove(node);
+    }
+    public void clearDialogSelectedNodes(){ dialogSelectedNodes.clear();}
+
 
     public ASTAPI getApi(){
         return jaaApi.api();
