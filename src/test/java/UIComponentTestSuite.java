@@ -86,7 +86,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         init = false;
         jastAddAd = new JastAddAdAPI(getRootNode());
         jastAddAd.run();
-        mon = new UIMonitor(jastAddAd.api());
+        mon = new UIMonitor(jastAddAd);
         FXMLLoader loader = new FXMLLoader();
         Parent rootView = loader.load(getClass().getResource("/main.fxml").openStream());
         con = loader.<Controller>getController();

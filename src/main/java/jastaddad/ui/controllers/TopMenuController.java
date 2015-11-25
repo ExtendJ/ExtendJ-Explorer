@@ -64,6 +64,14 @@ public class TopMenuController implements Initializable {
 
     }
 
+    public void functionStarted(){
+
+    }
+
+    public void functionStoped(){
+
+    }
+
     public void init(UIMonitor mon, GraphView graphView){
         this.mon = mon;
         this.graphView = graphView;

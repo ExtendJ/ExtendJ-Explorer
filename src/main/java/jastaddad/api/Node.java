@@ -4,7 +4,6 @@ package jastaddad.api;
 import jastaddad.api.nodeinfo.NodeContent;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,8 +15,8 @@ import java.util.Collection;
 public class Node{
     public final Object node;
     public final int id;
-    public final String name;
-    public final String className;
+    public final String nameFromParent;
+    public final String simpleNameClass;
     public final String fullName;
     public final ArrayList<Node> children;
     private boolean isList;
@@ -33,15 +32,15 @@ public class Node{
      */
     public Node(Object root, ASTAPI api){
         this.children = new ArrayList<>();
-        this.name = "";
+        this.nameFromParent = "";
         isNull = root == null;
         nullCheck(root, api, "ROOT");
         if(!isNull)
-            this.className = root.getClass().getSimpleName();
+            this.simpleNameClass = root.getClass().getSimpleName();
         else
-            this.className = "Null";
+            this.simpleNameClass = "Null";
         this.node = root;
-        fullName = className;
+        fullName = simpleNameClass;
         id = System.identityHashCode(this.toString());
         init(root, false, false, 1, api);
     }
@@ -59,16 +58,16 @@ public class Node{
         this.children = new ArrayList<>();
         this.isNull = root == null;
         if(!isNull)
-            this.className = root.getClass().getSimpleName();
+            this.simpleNameClass = root.getClass().getSimpleName();
         else
-            this.className = "Null";
+            this.simpleNameClass = "Null";
         this.node = root;
-        if(name == className || name.length() == 0){
-            this.name = "";
-            fullName = className;
+        if(name == simpleNameClass || name.length() == 0){
+            this.nameFromParent = "";
+            fullName = simpleNameClass;
         }else {
-            this.name = name;
-            fullName = className + ":" + name;
+            this.nameFromParent = name;
+            fullName = simpleNameClass + ":" + name;
         }
         id = System.identityHashCode(this.toString());
         init(root, isList, isOpt, level, api);
@@ -94,7 +93,7 @@ public class Node{
                 for (Object child : (Iterable<?>) root) {
                     if (child instanceof Collection && child.getClass().getSimpleName().equals("List") && isOpt)
                         api.putWarning(ASTAPI.AST_STRUCTURE_WARNING, "A List is a direct child to a Opt parent, parent : " + root + ", -> child : " + child);
-                    children.add(new Node(child, isOpt ? name : "", child instanceof Collection, false, 1, api));
+                    children.add(new Node(child, isOpt ? nameFromParent : "", child instanceof Collection, false, 1, api));
                 }
             }
             traversDown(root, api);
@@ -136,7 +135,7 @@ public class Node{
     public boolean isList(){ return isList; }
     public boolean isNull(){ return isNull; }
     public String toString() {
-        return className;
+        return simpleNameClass;
     }
 
     public int getLevel(){ return level;}

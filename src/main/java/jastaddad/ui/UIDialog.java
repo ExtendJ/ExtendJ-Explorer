@@ -22,18 +22,20 @@ public abstract class UIDialog extends Stage{
     protected UIDialog(UIMonitor mon){
         super(StageStyle.UTILITY);
         this.mon = mon;
+        mon.getController().functionStarted();
         invokeButtonPressed = false;
 
         mon.addSubWindow(this);
 
-        initModality(Modality.NONE);
+        initModality(Modality.WINDOW_MODAL);
         setAlwaysOnTop(true);
         initOwner(mon.getParentStage());
         setResizable(false);
 
         setOnHidden(event -> {
-            System.out.println("DIE DIE DIE");
             mon.removeSubWindow(this);
+            dialogClose();
+            mon.getController().functionStoped();
         });
     }
 
@@ -53,6 +55,7 @@ public abstract class UIDialog extends Stage{
         setScene(new Scene(buildDialogContent()));
     }
     protected abstract void yesButtonClicked();
+    protected abstract void dialogClose();
     public abstract ArrayList<Object> getResult();
     protected abstract Parent buildDialogContent();
 

@@ -16,6 +16,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -115,6 +116,14 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
         mouseMenu.getItems().add(cmItem1);
     }
 
+    public void functionStarted(){
+
+    }
+
+    public void functionStoped(){
+
+    }
+
     /**
      * Sets the attributes in the tableview, called when a node has been selected.
      * Will Clear the list if the selected node is null or not a "real" node
@@ -202,10 +211,15 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
                 return;
             }
             setText(String.valueOf(item));
-            if(getTableRow().getItem() != null && ((AttributeInfo )getTableRow().getItem()).getNodeInfo().isParametrized())
-                setContextMenu(mouseMenu);
-            else
-                setContextMenu(null);
+            setOnMouseClicked(event -> {
+                if (event.getButton() == MouseButton.SECONDARY) {
+                    if(getTableRow().getItem() != null &&
+                            ((AttributeInfo )getTableRow().getItem()).getNodeInfo().isParametrized() &&
+                            !mon.isFunctionRunning()) {
+                        mouseMenu.show(this, event.getScreenX(), event.getScreenY());
+                    }
+                }
+            });
         }
 
     }

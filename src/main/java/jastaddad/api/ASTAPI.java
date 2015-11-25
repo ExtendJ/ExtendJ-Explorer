@@ -106,10 +106,10 @@ public class ASTAPI {
     private void addToTypes(TreeNode fNode){
         // add the node to the hashmap of types
         Node node = fNode.getNode();
-        if(!typeNodeHash.containsKey(node.className))
-            typeNodeHash.put(node.className, new ArrayList<>());
-        typeNodeHash.get(node.className).add(fNode);
-        if(node.name != "") {
+        if(!typeNodeHash.containsKey(node.simpleNameClass))
+            typeNodeHash.put(node.simpleNameClass, new ArrayList<>());
+        typeNodeHash.get(node.simpleNameClass).add(fNode);
+        if(node.nameFromParent != "") {
             if(!typeNodeHash.containsKey(node.fullName))
                 typeNodeHash.put(node.fullName, new ArrayList<>());
             typeNodeHash.get(node.fullName).add(fNode);
@@ -124,9 +124,9 @@ public class ASTAPI {
     private void addToConfigs(TreeNode fNode){
         // Add the node to the config hash
         Node node = fNode.getNode();
-        if(node.name != "")
+        if(node.nameFromParent != "")
             typeHash.put(node.fullName, fNode.isEnabled() ? 1:0);
-        typeHash.put(node.className, fNode.isEnabled() ? 1:0);
+        typeHash.put(node.simpleNameClass, fNode.isEnabled() ? 1:0);
     }
 
     private void traversTree(Node node, GenericTreeNode parent, TreeCluster cluster, boolean firstTime){
