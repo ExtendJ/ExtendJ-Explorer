@@ -23,7 +23,7 @@ This readme has the following content
 ## Get the project on you machine ##
 Start of by cloning 
 ```
-git clone https://pokhead@bitbucket.org/jastadd/jastadddebugger-exjobb.git
+git clone https://[yourUserName]@bitbucket.org/jastadd/jastadddebugger-exjobb.git
 ```
 Then go to the directory where you cloned the project, with your terminal
 
