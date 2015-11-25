@@ -52,7 +52,7 @@ java -jar jastadddebugger-exjobb.jar
 ```
 This should run a sample JastAdd project and run the JastAddAdUI program. see Lib dependencis below if it's not working.
 
-OBS! The debugger will run on the sample.cfg file in your directory.
+OBS! The debugger will run on the sample.cfg file in your directory. The file sample.cfg contain some Configuration Language code which is described later.
 
 ## Running JastAddAd on your project ##
 There are a few things that must be done to run JastAddAd on your own project.
