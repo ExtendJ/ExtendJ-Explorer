@@ -95,8 +95,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
             dialog.init();
             dialog.setOnCloseRequest(event -> {
                 if(dialog.invokeButtonPressed()) {
-                    Object[]  result = dialog.getResult();
-                    if(result == null ||  mon.getLastRealNode() != null)
+                    Object[] result = dialog.getResult();
+                    if(result == null ||  mon.getLastRealNode() == null)
                         return;
                     int type = mon.getApi().compute(dialog.getTreeNode().getNode(), dialog.getInfo(), result);
                     switch (type){
@@ -105,9 +105,9 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
                         case ASTAPI.PARAMETRIZED :
                         break;
                     }
-                    mon.getController().addMessage("Invocation successful");
-                    if(node.getNode().getNodeContent().noErrors()){
-                    }else{
+                    if(node.getNode().getNodeContent().noErrors())
+                        mon.getController().addMessage("Invocation successful");
+                    else{
                         mon.getController().addMessage("Invocation unsuccessful");
                         mon.getController().addErrors(node.getNode().getNodeContent().getInvocationErrors());
                     }
@@ -211,13 +211,12 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
-
-            setText(String.valueOf(item));
-
-            if (getTableRow().getItem() == null && (empty || item == null)) {
+            if (getTableRow().getItem() == null || empty) {
                 setText(null);
                 return;
             }
+
+            setText(String.valueOf(item));
 
             NodeInfo info = ((AttributeInfo) getTableRow().getItem()).getNodeInfo();
             if(info == null)

@@ -277,8 +277,6 @@ public class GraphView extends SwingNode implements ItemListener {
     }
 
     public DelegateForest<GenericTreeNode, UIEdge> getJungGraph(){
-
-        System.out.println("NULL? " + ((DelegateForest<GenericTreeNode, UIEdge> )vs.getGraphLayout().getGraph()).getRoot());
         return (DelegateForest<GenericTreeNode, UIEdge> )vs.getGraphLayout().getGraph();
     }
 

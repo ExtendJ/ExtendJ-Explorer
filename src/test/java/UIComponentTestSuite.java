@@ -196,9 +196,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
     @Test
     public void compareApiTreeAndGraphTree(){
         DelegateForest<GenericTreeNode, UIEdge> graph = mon.getGraphView().getJungGraph();
-
         GenericTreeNode apiRoot = mon.getRootNode();
-        System.out.println("NULL? " + graph.getRoot());
         //assertEquals("Graph tree and API tree does not have the same root. api root: " + apiRoot.toString() + " graph root: " + graph.getRoot().toString(), apiRoot, graph.getRoot());
         compareTrees(apiRoot, graph);
     }
