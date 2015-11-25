@@ -34,7 +34,7 @@ There are two ways to assemble the project. Either just assemble:
 ```
 ./gradlew assemble
 ```
-or assemble and then after run tests:
+or build which will run some tests:
 ```
 ./gradlew build
 ```
@@ -51,6 +51,7 @@ To test if the JastAddAd is ready to run on your computer you can just run the j
 java -jar jastadddebugger-exjobb.jar
 ```
 This should run a sample JastAdd project and run the JastAddAdUI program. see Lib dependencis below if it's not working.
+OBS! The debugger will run on the sample.cfg file in your directory.
 
 ## Running JastAddAd on your project ##
 There are a few things that must be done to run JastAddAd on your own project.
