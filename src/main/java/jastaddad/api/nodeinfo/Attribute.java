@@ -33,7 +33,7 @@ public class Attribute extends NodeInfo {
     }
 
     @Override
-    public String print(){ return getName(method); }
+    public String print(){ return getName(method, null); }
 
     @Override
     public boolean isParametrized() { return parametrized; }

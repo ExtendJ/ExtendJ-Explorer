@@ -12,7 +12,7 @@ public class Token extends NodeInfo {
     public Token(String name, Object value, Method m){ super(name, value, m);}
 
     @Override
-    public String print(){ return getName(method); }
+    public String print(){ return getName(method, null); }
 
     @Override
     protected void setChildInfo(ArrayList<NodeInfoHolder> al) {

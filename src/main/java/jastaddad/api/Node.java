@@ -1,7 +1,7 @@
 package jastaddad.api;
 
 
-import jastaddad.api.nodeinfo.NodeContent;
+import jastaddad.api.nodeinfo.NodeInfoHolder;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -52,40 +52,11 @@ public class Node{
         this.children = new ArrayList<>();
         this.isNTA = true;
         this.node = root;
-        this.simpleNameClass = "NTA : " + name;
+        this.simpleNameClass = root.getClass().getSimpleName();
         this.fullName = "";
-        this.nameFromParent = "";
+        this.nameFromParent = name;
         id = System.identityHashCode(this.toString());
         this.nodeContent = new NodeContent(this);
-    }
-
-    /**
-     * This is the constructor used for the creation of NTA:s
-     * @param root
-     * @param name
-     * @param isList
-     * @param level
-     * @param api
-     */
-    public Node(Object root, String name, boolean isList, int level, ASTAPI api){
-        this.children = new ArrayList<>();
-        this.isNTA = true;
-        this.isList = isList;
-        this.nodeContent = new NodeContent(this);
-        this.level = level;
-        if(root != null)
-            this.simpleNameClass = root.getClass().getSimpleName();
-        else
-            this.simpleNameClass = "Null";
-        this.node = root;
-        if(name.equals(simpleNameClass) || name.length() == 0){
-            this.nameFromParent = "";
-            fullName = simpleNameClass;
-        }else {
-            this.nameFromParent = name;
-            fullName = simpleNameClass + ":" + name;
-        }
-        id = System.identityHashCode(this.toString());
     }
 
     /**
@@ -174,7 +145,11 @@ public class Node{
         }
     }
 
-    public String nodeName() { return isNull() && !isNTA() ? "null" : node.toString(); }
+    private void addChild(Node node){
+        children.add(node);
+    }
+
+    public String nodeName() { return isNull() ? "null" : node.toString(); }
     public boolean isOpt(){return isOpt;}
     public boolean isList(){ return isList; }
     public boolean isNull(){ return node == null; }
@@ -186,5 +161,7 @@ public class Node{
     public int getLevel(){ return level;}
 
     public NodeContent getNodeContent(){ return nodeContent;}
+
+    public ArrayList<NodeInfoHolder> getNodeContentArray(){ return nodeContent.toArray();}
 
 }

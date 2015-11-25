@@ -133,7 +133,7 @@ public class TreeNode extends GenericTreeNode {
         if(outwardReferences == null)
             outwardReferences = new HashSet<>();
         for (String s : set){
-            NodeInfo info = node.getNodeContent().computeMethod(s);
+            NodeInfo info = api.computeMethod(node, s);
             if(info == null)
                 continue;
             ArrayList<Object> refs = api.getNodeReferences(info);

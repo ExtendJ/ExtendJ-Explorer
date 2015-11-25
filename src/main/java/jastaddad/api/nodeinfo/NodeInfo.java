@@ -1,5 +1,7 @@
 package jastaddad.api.nodeinfo;
 
+import jastaddad.api.NodeContent;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -62,21 +64,21 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
 
     /**
      * Prints the name with its parameters, if the parameters are null the type of the parameters will then be added.
-     * MethodName(1,2) or MethodName(int, String)
-     * @param m
-     * @return
-     */
-    protected static String getName(Method m){ return getName(m, null); }
-
-    /**
-     * Prints the name with its parameters, if the parameters are null the type of the parameters will then be added.
      * * MethodName(1,2) or MethodName(int, String)
      * @param m
      * @param params
      * @return
      */
-    protected static String getName(Method m, Object[] params){
-        return NodeContent.getName(m, params);
+    public static String getName(Method m, Object[] params){
+        String name = m.getName() + "(";
+        if (m.getParameterCount() > 0){
+            for(int i = 0; i < m.getParameterCount(); i++) {
+                name += params != null ? params[i].toString() : m.getParameterTypes()[i].toString();
+                if(i + 1 < m.getParameterCount())
+                    name += ",";
+            }
+        }
+        return name + ")";
     }
 
     /**

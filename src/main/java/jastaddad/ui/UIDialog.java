@@ -56,7 +56,7 @@ public abstract class UIDialog extends Stage{
     }
     protected abstract void yesButtonClicked();
     protected abstract void dialogClose();
-    public abstract ArrayList<Object> getResult();
+    public abstract Object[]  getResult();
     protected abstract Parent buildDialogContent();
     public abstract void attributeSelected(AttributeInfo info);
     public void nodeSelected(GenericTreeNode node){

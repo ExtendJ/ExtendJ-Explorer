@@ -11,7 +11,7 @@ import java.util.HashSet;
  * Abstract class which contains the similarities between Cluster and ClusterParent
  * Created by gda10jli on 11/11/15.
  */
-public abstract  class GenericTreeCluster extends  GenericTreeNode{
+public abstract  class GenericTreeCluster extends GenericTreeNode{
 
     public GenericTreeCluster(GenericTreeNode parent) {
         super(parent);

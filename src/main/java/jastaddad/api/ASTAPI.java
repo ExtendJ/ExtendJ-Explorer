@@ -20,6 +20,11 @@ public class ASTAPI {
     public static final String AST_STRUCTURE_ERROR = "AST structure error";
     public static final String FILTER_ERROR = "filter error";
 
+    public static final int NULL = -1;
+    public static final int NTA = 0;
+    public static final int PARAMETRIZED = 1;
+    public static final int NORMAL = 2;
+
     private Node tree;
     private GenericTreeNode filteredTree;
     private Config filterConfig;
@@ -296,17 +301,34 @@ public class ASTAPI {
         return nodes;
     }
 
-    public boolean compute(Node node, NodeInfo info) {
-        return compute(node, info, null);
+    public NodeInfo computeMethod(Node node, String method) { return node.getNodeContent().computeMethod(method); }
+
+    public ArrayList<String> compute(Node node, boolean force) { return node.getNodeContent().compute(force); }
+
+    public ArrayList<String> compute(Node node) { return node.getNodeContent().compute(); }
+
+    public int compute(Node node, NodeInfo info) { return compute(node, info, null); }
+
+    public int compute(Node node, NodeInfo info, Object[]  params) {
+        if (info == null)
+            return NULL;
+        if (info.isNTA() || info.isParametrized()) {
+            Object obj = node.getNodeContent().compute(info, params, true, this);
+            return info.isNTA() ? addNTA(node, obj) : PARAMETRIZED;
+        }
+        node.getNodeContent().compute(info.getMethod());
+        return NORMAL;
     }
 
-    public boolean compute(Node node, NodeInfo info, ArrayList<Object> params) {
-        if (info == null)
-            return false;
-        if (info.isNTA() || info.isParametrized()) {
-            node.getNodeContent().compute(info, params, true);
-        }else
-            node.getNodeContent().compute(info.getMethod());
-        return true;
+    private int addNTA(Node node, Object obj){
+        if(obj == null || objectReferences.contains(obj))
+            return NULL;
+        objectReferences.add(obj);
+        Node astNode = new Node(obj, "");
+        node.children.add(astNode);
+        TreeNode treeNode = new TreeNode(astNode, getNodeReference(astNode), filterConfig);
+        nodeReferences.put(obj, treeNode);
+        return NTA;
     }
+
 }

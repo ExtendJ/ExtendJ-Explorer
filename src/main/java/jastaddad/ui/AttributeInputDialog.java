@@ -8,6 +8,7 @@ import javafx.animation.Timeline;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.util.Duration;
 
@@ -26,8 +27,9 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
     int[] gridNodePosition;
     private nodeParameter focusedNodeParameter;
     private ArrayList<nodeParameter> nodeParameters;
-    private ArrayList<Object> params;
+
     private boolean blinkAnimationWhite;
+    Object[]  params;
 
     public AttributeInputDialog(NodeInfo attribute, TreeNode node, UIMonitor mon){
         super(mon);
@@ -44,9 +46,9 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
         //setHeaderText("BEWARE: At the moment it only works with primitive types and String"); //TODO change so that more complex inputs can be added
 
         m = attribute.getMethod();
-        params = new ArrayList();
+        params = new Object[m.getParameterCount()];
         for(int i=0; i< m.getParameterCount();i++)
-            params.add(null);
+            params[i] = null;
 
     }
 
@@ -58,7 +60,12 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
         for(int i = 0; i < m.getParameterCount(); i++){
             fieldCounter = 0;
             Class type = m.getParameterTypes()[i];
-            grid.add(new Label("Input: " + type + " "), 1, i+1);
+            HBox hBox = new HBox();
+            hBox.setStyle(i % 2 == 1 ? "-fx-background-color:#808080;" : "-fx-background-color:#606060;");
+            grid.add(hBox, 1, i+1);
+            Label label = new Label("Input: " + type + " ");
+            label.setStyle("-fx-pref-width:300;");
+            hBox.getChildren().add(label);
             if(type == int.class){
                 TextField field = new TextField() {
                     @Override public void replaceText(int start, int end, String text) {
@@ -74,7 +81,7 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
                     }
                 };
                 fieldCounter = 1;
-                grid.add(field, 2, i+1);
+                hBox.getChildren().add(field);
             }else if(type == boolean.class){
                 final ToggleGroup group = new ToggleGroup();
 
@@ -85,8 +92,8 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
                 RadioButton rb2 = new RadioButton("False");
                 rb2.setToggleGroup(group);
                 fieldCounter = 2;
-                grid.add(rb1, 2, i+1  );
-                grid.add(rb2, 3, i+1  );
+                hBox.getChildren().add(rb1);
+                hBox.getChildren().add(rb2);
 
             }else if(isNodeParam(type)) {
                 TextField nodeRefField = new TextField();
@@ -105,10 +112,10 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
                 }
 
                 fieldCounter = 1;
-                grid.add(nodeRefField, 2, i + 1);
+                hBox.getChildren().add(nodeRefField);
             }else {
                 fieldCounter = 1;
-                grid.add(new TextField(), 2, i + 1);
+                hBox.getChildren().add(new TextField());
             }
 
             if(i != 0)
@@ -118,7 +125,7 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
         }
 
         buttonTypeOk.setText("Invoke");
-        grid.add(buttonTypeOk, 1, gridNodePosition.length+1);
+        grid.add(buttonTypeOk, 1, gridNodePosition.length + 1);
         return grid;
     }
 
@@ -160,7 +167,7 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
         return mon.getApi().getTypeHash().containsKey(type.getSimpleName());
     }
 
-    public ArrayList<Object> getResult(){
+    public Object[] getResult(){
         if(!invokeButtonPressed)
             return null;
         GridPane grid = (GridPane)getScene().getRoot();
@@ -170,16 +177,16 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
                 //System.out.println("row: " + i + " pos: " + gridNodePosition[i]);
                 RadioButton rb = (RadioButton)grid.getChildren().get(gridNodePosition[i]);
                 rb = (RadioButton)rb.getToggleGroup().getSelectedToggle();
-                params.set(i, rb.getText().equals("True"));
+                params[i] = rb.getText().equals("True");
             }else if(isNodeParam(type)) {
                 // this kind of parameter is set in function nodeSelectedChild(...);
             }else if(type == int.class || type == Integer.class) {
                 TextField field = (TextField) grid.getChildren().get(gridNodePosition[i]);
-                params.set(i, Integer.parseInt(field.getText()));
+                params[i] = Integer.parseInt(field.getText());
             }else {
                 //System.out.println("row: " + i + " pos: " + gridNodePosition[i]);
                 TextField field = (TextField) grid.getChildren().get(gridNodePosition[i]);
-                params.set(i, field.getText());
+                params[i] = field.getText();
             }
         }
 
@@ -204,17 +211,16 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
 
     private void trySelectNode(TreeNode fNode){
         mon.getController().addMessage(fNode.getNode().simpleNameClass);
-        if (focusedNodeParameter.type.getSimpleName().equals(fNode.getNode().simpleNameClass)){
-            mon.getController().addMessage("3()");
+        if (focusedNodeParameter.type.getSimpleName().equals(fNode.getNode().simpleNameClass)) {
             int index = nodeParameters.indexOf(focusedNodeParameter);
+            mon.getController().addMessage("index: " + index);
             if(index >= 0){
                 mon.removeDialogSelectedNodes(nodeParameters.get(index).getNode());
             }
-            focusedNodeParameter.setNode(fNode);
+            focusedNodeParameter.setNode(node);
             mon.addDialogSelectedNodes(focusedNodeParameter.getNode());
-            params.set(focusedNodeParameter.pos, fNode.getNode().node);
+            params[focusedNodeParameter.pos] = fNode.getNode().node;
             focusedNodeParameter.field.setText(focusedNodeParameter.type.getCanonicalName());
-            mon.getGraphView().repaint();
 
             Timeline timeline = new Timeline(new KeyFrame(
                     Duration.millis(200),
@@ -224,6 +230,7 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
 
 
             //System.out.println("asdasd: " + focusedNodeParameter.toString());
+
         }
     }
 
