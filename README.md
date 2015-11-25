@@ -52,13 +52,12 @@ java -jar jastadddebugger-exjobb.jar
 ```
 This should run a sample JastAdd project and run the JastAddAdUI program. see Lib dependencis below if it's not working.
 
-OBS! The debugger will run on the sample.cfg file in your directory.
+OBS! The debugger will run on the sample.cfg file in your directory. The file sample.cfg contain some Configuration Language code which is described later.
 
 ## Running JastAddAd on your project ##
 There are a few things that must be done to run JastAddAd on your own project.
 
 * Add created Jar to your projects Library path.
-* Include all files in the .jar to your compiler script. Do not forget the .fxml and .css files. 
 For example if you are using an ant build script do something like this:
 Add the jar as a library to the script:
 ```
@@ -68,12 +67,14 @@ And then add the jar to the to the scripts jar target:
 ```
 <zipfileset includes="**/*.*" src="/[path to debugger .jar]"/> 
 ```
+OBS! The jastadddebugger-exjobb.jar contatins a number of .fxml and .css files, these are required to run the UI. The include="\*\*/\*.\*" above does this, for ant. 
+
 Now JastAddAd is ready to run! In your own java code (typically the same class as you run your parser) add the following code when the AST is created: 
 ```
 YourScanner scanner = new YourScanner(...);
 YourParser parser = new YourParser();
 RootNode rootNode = (RootNode) parser.parse(scanner);
-JastAddAdUI debugger = new JastAddAdUI(rootNode);// Where rootNode is the Object of your AST:s root.
+jastaddad.ui.JastAddAdUI debugger = new jastaddad.ui.JastAddAdUI(rootNode);// Where rootNode is the Object of your AST:s root.
 debugger.run();
 ```
 
@@ -81,8 +82,8 @@ Now your done! Next time you run your project on your source code, JastAddAdUI w
 
 NOTE! You don't need to run the UI of JastAddAd. All computations are done in a class JastAddAdAPI. If you want to get the data without an UI, run the following code:
 ```
-JastAddAdAPI debugger = new JastAddAdAPI(rootNode); // Where rootNode is the Object of your AST:s root
-debugge.run();
+jastaddad.api.JastAddAdAPI debugger = new jastaddad.api.JastAddAdAPI(rootNode); // Where rootNode is the Object of your AST:s root
+debugger.run();
 ```
 
 ## Lib dependencies for Linux ##
