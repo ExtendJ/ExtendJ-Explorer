@@ -3,7 +3,7 @@ This readme has the following content
 
 * Getting Started 
     - Get the project on you machine
-    - Assemble
+    - Building the project
     - Create jar file
     - See if things are working
     - Running JastAddAd on your project
@@ -27,8 +27,8 @@ git clone https://[yourUserName]@bitbucket.org/jastadd/jastadddebugger-exjobb.gi
 ```
 Then go to the directory where you cloned the project, with your terminal
 
-## Assemble ##
-In order to run JastAddAd you first need to assemble the project and then create a jar file.
+## Building the project ##
+In order to run JastAddAd you first need to build the project and then create its jar file.
 
 There are two ways to assemble the project. Either just assemble:
 ```
@@ -51,6 +51,7 @@ To test if the JastAddAd is ready to run on your computer you can just run the j
 java -jar jastadddebugger-exjobb.jar
 ```
 This should run a sample JastAdd project and run the JastAddAdUI program. see Lib dependencis below if it's not working.
+
 OBS! The debugger will run on the sample.cfg file in your directory.
 
 ## Running JastAddAd on your project ##
@@ -58,25 +59,35 @@ There are a few things that must be done to run JastAddAd on your own project.
 
 * Add created Jar to your projects Library path.
 * Include all files in the .jar to your compiler script. Do not forget the .fxml and .css files. 
-For example if you are using an ant build script add something like this to the build scripts jar target:
+For example if you are using an ant build script do something like this:
+Add the jar as a library to the script:
 ```
-<zipfileset includes="\*\*/\*.\*" src="/[path to debugger .jar]"/> 
+<property name="your.libname" value="[Other libs]:[path to debugger .jar]"/>
+```
+And then add the jar to the to the scripts jar target:
+```
+<zipfileset includes="**/*.*" src="/[path to debugger .jar]"/> 
 ```
 Now JastAddAd is ready to run! In your own java code (typically the same class as you run your parser) add the following code when the AST is created: 
 ```
-new JastAddAdUI(rootNode); // Where rootNode is the Object of your AST:s root.
+YourScanner scanner = new YourScanner(...);
+YourParser parser = new YourParser();
+RootNode rootNode = (RootNode) parser.parse(scanner);
+JastAddAdUI debugger = new JastAddAdUI(rootNode);// Where rootNode is the Object of your AST:s root.
+debugger.run();
 ```
 
-Now your done! Next time you run your project on your own source code, JastAddAdUI will start up after the parsing and scanning is done. 
+Now your done! Next time you run your project on your source code, JastAddAdUI will start up after the parsing and scanning is done. 
 
 NOTE! You don't need to run the UI of JastAddAd. All computations are done in a class JastAddAdAPI. If you want to get the data without an UI, run the following code:
 ```
-new JastAddAdAPI(rootNode); // Where rootNode is the Object of your AST:s root.
+JastAddAdAPI debugger = new JastAddAdAPI(rootNode); // Where rootNode is the Object of your AST:s root
+debugge.run();
 ```
 
 ## Lib dependencies for Linux ##
 
-Add these if ToolKit errors are thrown when running the debugger.
+When running the debugger on Linux the following library dependencies are required if any ToolKit errors are thrown.
 
 - libgtk+-x11-2.0_0 - X11 backend of The GIMP ToolKit (GTK+).
 - libgtk+2.0_0 - The GIMP ToolKit (GTK+), a library for creating GUIs.
