@@ -2,7 +2,7 @@ aspect Test{
     syn int ASTNode.aValue(){ return 5;}
     syn IdDecl NodeName.getTestName() = getClassName();
     syn Num DebuggerConfig.getNum() = new Num("1");
-    syn IdDecl DebuggerConfig.twoNodePar(IdDecl a, NodeConfig b){
+    syn IdDecl DebuggerConfig.twoNodePar(IdDecl a, NodeConfig b, String c, boolean d, int e){
         return a;
     }
 }
