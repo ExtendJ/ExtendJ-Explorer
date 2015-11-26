@@ -1,8 +1,22 @@
 aspect Test{
     syn int ASTNode.aValue(){ return 5;}
     syn IdDecl NodeName.getTestName() = getClassName();
-    syn Num DebuggerConfig.getNum() = new Num("1");
     syn IdDecl DebuggerConfig.twoNodePar(IdDecl a, NodeConfig b){
         return a;
+    }
+
+    //NTA test things
+
+    syn nta Num DebuggerConfig.getNum() = new Num("1");
+
+    syn nta DebuggerConfig DebuggerConfig.getDebuggerNTA() = new DebuggerConfig(new Opt(), new List());
+    syn nta List DebuggerConfig.getDebuggerNTAList() {
+        List list = new List();
+        list.add(new DebuggerConfig(new Opt(), new List()));
+        list.add(new DebuggerConfig(new Opt(), new List()));
+        list.add(new DebuggerConfig(new Opt(), new List()));
+        list.add(new DebuggerConfig(new Opt(), new List()));
+        list.add(new DebuggerConfig(new Opt(), new List()));
+        return list;
     }
 }

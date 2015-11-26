@@ -359,7 +359,7 @@ public class Controller implements Initializable {
         GenericTreeNode node = mon.getLastRealNode();
         if(node == null)
             return;
-        node = mon.getApi().getNodeReference(((TreeNode) node).getNode().node);
+        node = mon.getApi().getTreeNode(((TreeNode) node).getNode().node);
         mon.setSelectedNode(node);
         graphView.setSelectedNode(node.getClusterNode());
         if(mon.getSelectedInfo() != null)

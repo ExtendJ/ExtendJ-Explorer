@@ -40,24 +40,27 @@ public class Node{
         this.node = root;
         fullName = simpleNameClass;
         id = System.identityHashCode(this.toString());
-        init(root, false, false, 1, api);
+        System.out.println(root instanceof Collection);
+        init(root, root instanceof Collection, false, 1, api);
     }
+
     /**
      * This is the constructor used for NTA:S during the traversal of the AST.
-     * Will not traverse continue the traversal
+     * Will traverse the real childs of the node
      * @param root
-     * @param name
+     * @param api
      */
-    public Node(Object root, String name){
+    /*public Node(Object root, boolean NTA ,ASTAPI api){
         this.children = new ArrayList<>();
-        this.isNTA = true;
+        this.isNTA = NTA;
         this.node = root;
         this.simpleNameClass = root.getClass().getSimpleName();
         this.fullName = "";
-        this.nameFromParent = name;
+        this.nameFromParent = "";
         id = System.identityHashCode(this.toString());
         this.nodeContent = new NodeContent(this);
-    }
+        init(root, isList, false, level, api);
+    }*/
 
     /**
      * This is the constructor used during the traversal of the AST
@@ -102,7 +105,7 @@ public class Node{
         this.nodeContent = new NodeContent(this);
         this.level = level;
         if(root != null) {
-            api.addObjectReference(node);
+            api.addASTObject(node);
             if (isList) {
                 for (Object child : (Iterable<?>) root) {
                     if (child instanceof Collection && child.getClass().getSimpleName().equals("List") && isOpt)
@@ -153,15 +156,14 @@ public class Node{
     public boolean isOpt(){return isOpt;}
     public boolean isList(){ return isList; }
     public boolean isNull(){ return node == null; }
-    public boolean isNTA(){ return isNTA; }
-    public String toString() {
-        return simpleNameClass;
-    }
 
+    public boolean isNTA(){ return isNTA; }
+    public void setNTA(boolean nta){ this.isNTA = nta; }
+
+    public String toString() { return simpleNameClass; }
     public int getLevel(){ return level;}
 
     public NodeContent getNodeContent(){ return nodeContent;}
-
     public ArrayList<NodeInfoHolder> getNodeContentArray(){ return nodeContent.toArray();}
 
 }
