@@ -19,6 +19,8 @@ public class ASTAPI {
     public static final String AST_STRUCTURE_WARNING = "AST structure warning";
     public static final String AST_STRUCTURE_ERROR = "AST structure error";
     public static final String FILTER_ERROR = "filter error";
+    public static final String INVOCATION_WARNING = "invocation warning";
+    public static final String INVOCATION_ERROR = "invocation error";
 
     public static final int NULL = -1;
     public static final int NTA = 0;
@@ -30,8 +32,8 @@ public class ASTAPI {
     private Config filterConfig;
     private HashMap<String, Integer> typeHash;
     private HashMap<String, List<TreeNode>> typeNodeHash;  // will probably be removed
-    private HashMap<Object, GenericTreeNode> nodeReferences;
-    private HashSet<Object> objectReferences;
+    private HashMap<Object, GenericTreeNode> treeNodes;
+    private HashSet<Object> ASTObjects;
     private HashMap<String, ArrayList<String>> errors;
     private HashMap<String, ArrayList<String>> warnings;
     private ArrayList<NodeReference> displayedReferences;
@@ -40,8 +42,8 @@ public class ASTAPI {
     public ASTAPI(Object root, String filterDir){
         directoryPath = filterDir;
         displayedReferences = new ArrayList<>();
-        nodeReferences = new HashMap();
-        objectReferences = new HashSet<>();
+        treeNodes = new HashMap();
+        ASTObjects = new HashSet<>();
         typeHash = new HashMap<>();
         typeNodeHash = new HashMap<>(); // will probably be removed
         errors = new HashMap<>();
@@ -152,8 +154,8 @@ public class ASTAPI {
             if(!ref.getReferenceFrom().isNode())
                 continue;
             for (Object obj : ref.getFutureReferences()){
-                if(isNodeReference(obj)){
-                    to = getNodeReference(obj);
+                if(isTreeNode(obj)){
+                    to = getTreeNode(obj);
                     nodeRefs.add(to);
                     to.addInWardNodeReference(ref);
                 }
@@ -170,7 +172,7 @@ public class ASTAPI {
         GenericTreeNode addToParent = null;
         TreeNode fNode = new TreeNode(node, parent, filterConfig);
         fNode.setStyles(filterConfig);
-        nodeReferences.put(node.node, fNode);
+        treeNodes.put(node.node, fNode);
         TreeCluster tmpCluster = cluster;
 
         if(firstTime) {
@@ -249,11 +251,11 @@ public class ASTAPI {
 
     public HashMap<String, Integer> getTypeHash(){ return typeHash; }
 
-    public GenericTreeNode getNodeReference(Object node){ return nodeReferences.get(node); }
-    public boolean isNodeReference(Object node){ return nodeReferences.containsKey(node); }
+    public GenericTreeNode getTreeNode(Object node){ return treeNodes.get(node); }
+    public boolean isTreeNode(Object node){ return treeNodes.containsKey(node); }
 
-    public boolean isObjectReference(Object node){ return objectReferences.contains(node); }
-    public boolean addObjectReference(Object node){ return objectReferences.add(node); }
+    public boolean isASTObject(Object node){ return ASTObjects.contains(node); }
+    public boolean addASTObject(Object node){ return ASTObjects.add(node); }
 
     public void clearDisplayedReferences(){ displayedReferences.clear(); }
     public ArrayList<NodeReference> getDisplayedReferences(){ return displayedReferences; }
@@ -282,7 +284,7 @@ public class ASTAPI {
     public ArrayList<GenericTreeNode> getNodeReferences(NodeInfo info, boolean highlight){
         ArrayList<GenericTreeNode> nodes = new ArrayList();
         for(Object o : getNodeReferences(info)){
-            nodes.add(getNodeReference(o).setReferenceHighlight(highlight));
+            nodes.add(getTreeNode(o).setReferenceHighlight(highlight));
         }
         return nodes;
     }
@@ -293,10 +295,10 @@ public class ASTAPI {
             return nodes;
         if(info.getValue() instanceof Collection<?>) {
             for (Object n : (Iterable<Object>) info.getValue()) {
-                if (isObjectReference(n))
+                if (isASTObject(n))
                     nodes.add(n);
             }
-        }else if (isObjectReference(info.getValue()))
+        }else if (isASTObject(info.getValue()))
             nodes.add(info.getValue());
         return nodes;
     }
@@ -321,13 +323,13 @@ public class ASTAPI {
     }
 
     private int addNTA(Node node, Object obj){
-        if(obj == null || objectReferences.contains(obj))
+        if(obj == null || ASTObjects.contains(obj))
             return NULL;
-        objectReferences.add(obj);
-        Node astNode = new Node(obj, "");
+        ASTObjects.add(obj);
+        Node astNode = new Node(obj, this);
         node.children.add(astNode);
-        TreeNode treeNode = new TreeNode(astNode, getNodeReference(astNode), filterConfig);
-        nodeReferences.put(obj, treeNode);
+        TreeNode treeNode = new TreeNode(astNode, getTreeNode(astNode), filterConfig);
+        treeNodes.put(obj, treeNode);
         return NTA;
     }
 

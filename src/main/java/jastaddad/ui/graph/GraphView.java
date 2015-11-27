@@ -48,7 +48,7 @@ import java.util.HashMap;
  *
  * Created by gda10jli on 10/15/15.
  */
-public class GraphView extends SwingNode implements ItemListener {
+public class GraphView extends SwingNode implements ItemListener { //TODO needs a performance overhaul when it comes to HUGE graphs
     private UIMonitor mon;
     private Controller con;
     private VisualizationViewer<GenericTreeNode, UIEdge> vs;
@@ -86,6 +86,7 @@ public class GraphView extends SwingNode implements ItemListener {
             }else {
                 edge = new UIEdge(parent.isRealChild(child));
             }
+            edge.setType(child.isNTANode() ? UIEdge.ATTRIBUTE_NTA : UIEdge.STANDARD);
             g.addEdge(edge, parent, child);
             createTree(g, child, false);
         }
@@ -250,7 +251,7 @@ public class GraphView extends SwingNode implements ItemListener {
 
         bvs.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
         bvs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
-        bvs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.QuadCurve<>());
+        bvs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<>());
         bvs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
         bvs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
         bvs.getRenderContext().setVertexShapeTransformer(new VertexShapeTransformer(mon, vs.getRenderContext()));
@@ -360,6 +361,8 @@ public class GraphView extends SwingNode implements ItemListener {
             String color = fNode.getStyles().get("node-color").getColor();
             if(mon.getDialogSelectedNodes().contains(fNode))
                 return new Color(255, 197, 115);
+            if(fNode.isNode() && mon.gethighlightedSimpleClassNames().contains(((TreeNode)fNode).getNode().simpleNameClass))
+                return new Color(255, 140, 140);
             if (pi.isPicked(fNode)) {
                 return new Color(240, 240, 200);
             }

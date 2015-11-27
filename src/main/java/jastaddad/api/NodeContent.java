@@ -71,6 +71,7 @@ public class NodeContent {
         Object[] params;
         Method method = nodeInfo.getMethod();
         if ((par != null && par.length != method.getParameterCount()) || (par == null && method.getParameterCount() != 0)) {
+            api.putError(ASTAPI.INVOCATION_ERROR, "Wrong number of arguments for the method: " + method);
             invocationErrors.add("Wrong number of arguments for the method: " + method);
             return null;
         }
@@ -82,29 +83,30 @@ public class NodeContent {
         Attribute attribute;
         try{
             attribute = getAttribute(nodeObject, method, params, forcedComputation);
-            addInvokedValue(attribute, method, params);
+            addInvokedValue(attribute, method, params, api);
             return attribute.getValue();
         }catch(Throwable e){
             attribute = getAttribute(null, method, params, forcedComputation);
-            addInvokedValue(attribute, method, params);
+            addInvokedValue(attribute, method, params, api);
             e.printStackTrace();
             addInvocationErrors(e);
             return null;
         }
     }
 
-    private void addInvokedValue(Attribute attribute, Method method, Object[] params){
-        String key = method.getName() + ":" + params.toString();
-        if(invokedMethods.contains(key))
+    private void addInvokedValue(Attribute attribute, Method method, Object[] params, ASTAPI api){
+        String key = method.getName() + ":";
+        for(Object o : params)
+            key += o;
+        if(invokedMethods.contains(key)) {
+            api.putWarning(ASTAPI.INVOCATION_WARNING, "Method " + method +
+                    " with the parameters have been + " + params +
+                    "computed have already been computed before");
             return;
-        invokedValues.put(method.getName(), attribute);
+        }
+        invokedValues.put(key, attribute);
         invokedMethods.add(key);
     }
-
-    protected Object compute(NodeInfo nodeInfo, Object[] par, ASTAPI api){
-        return compute(nodeInfo, par, false, api);
-    }
-
 
     /**
      * Computes all methods of the NodeContents node, this will clear the old values except the invoked ones.
@@ -270,7 +272,7 @@ public class NodeContent {
             temp.add(new NodeInfoHolder(t.print(), t.getValue(), t));
         if(invokedValues != null) {
             for (NodeInfo i : invokedValues.values()){
-                temp.add(new NodeInfoHolder(i.getName(), i.getValue(), i));
+                temp.add(new NodeInfoHolder(i.print(), i.getValue(), i));
             }
         }
         Collections.sort(temp);

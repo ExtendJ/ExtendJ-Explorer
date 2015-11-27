@@ -219,11 +219,11 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
             setText(String.valueOf(item));
 
             NodeInfo info = ((AttributeInfo) getTableRow().getItem()).getNodeInfo();
-            if(info == null)
+            if(info == null || item != null)
                 return;
             if (info.isParametrized())
                 setText("Need input form user");
-            else if(info.isNTA() && item == null)
+            else if(info.isNTA())
                 setText("Is NTA, need to be run by user");
 
             setOnMouseClicked(event -> {
