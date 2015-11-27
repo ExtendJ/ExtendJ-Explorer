@@ -112,5 +112,6 @@
         </SplitPane>
     </center>
     <stylesheets>style/style.css</stylesheets>
+    <stylesheets>style/invokeAttributeDialog.css</stylesheets>
     <stylesheets>style/topmenu.css</stylesheets>
 </BorderPane>

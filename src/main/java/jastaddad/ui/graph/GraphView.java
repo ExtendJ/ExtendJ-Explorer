@@ -360,7 +360,9 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         public Paint transform(GenericTreeNode fNode) {
             String color = fNode.getStyles().get("node-color").getColor();
             if(mon.getDialogSelectedNodes().contains(fNode))
-                return new Color(120, 148, 86);
+                return new Color(255, 197, 115);
+            if(fNode.isNode() && mon.gethighlightedSimpleClassNames().contains(((TreeNode)fNode).getNode().simpleNameClass))
+                return new Color(255, 140, 140);
             if (pi.isPicked(fNode)) {
                 return new Color(240, 240, 200);
             }

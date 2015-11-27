@@ -1,0 +1,17 @@
+.aDialogRow{
+    -fx-border-width:0 0 1 0;
+    -fx-border-color:#606060;
+    -fx-text-fill:white;
+    -fx-background-color: #606060;
+}
+.aDialogRow1{
+    -fx-background-color: #808080;
+}
+
+.aDialogRow2{
+    -fx-background-color: #606060;
+}
+
+.aDialogLabel{
+    -fx-pref-width:300;
+}

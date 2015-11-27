@@ -1,6 +1,9 @@
 aspect Test{
     syn int ASTNode.aValue(){ return 5;}
     syn IdDecl NodeName.getTestName() = getClassName();
+    syn IdDecl DebuggerConfig.lotNodePar(IdDecl a, NodeConfig b, String c, boolean d, int e){
+        return a;
+       }
     syn IdDecl DebuggerConfig.twoNodePar(IdDecl a, NodeConfig b){
         return a;
     }

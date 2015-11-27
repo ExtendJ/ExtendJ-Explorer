@@ -29,11 +29,13 @@ public class UIMonitor {
     private ArrayList<UIDialog> subWindows;
     private ArrayList<GenericTreeNode> dialogSelectedNodes;
     private boolean functionRunning;
+    private ArrayList<String> highlightedSimpleClassNames;
 
     public UIMonitor(JastAddAdAPI jaaApi){
         this.jaaApi = jaaApi;
         subWindows = new ArrayList<>();
         dialogSelectedNodes = new ArrayList<>();
+        highlightedSimpleClassNames = new ArrayList<>();
         functionRunning = false;
     }
 
@@ -44,12 +46,14 @@ public class UIMonitor {
     public ArrayList<UIDialog> getSubWindows() {
         return subWindows;
     }
-    public void addSubWindow(UIDialog window){
-        subWindows.add(window);
+    public void addSubWindow(UIDialog window){ subWindows.add(window); }
+    public void removeSubWindow(UIDialog window){ subWindows.remove(window); }
+
+    public ArrayList<String> gethighlightedSimpleClassNames() {
+        return highlightedSimpleClassNames;
     }
-    public void removeSubWindow(UIDialog window){
-        subWindows.remove(window);
-    }
+    public void addhighlightedSimpleClassName(String className){ highlightedSimpleClassNames.add(className); }
+    public void removehighlightedSimpleClassName(String className){ highlightedSimpleClassNames.remove(className); }
 
     public ArrayList<GenericTreeNode> getDialogSelectedNodes() {
         return dialogSelectedNodes;

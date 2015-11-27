@@ -20,7 +20,7 @@ public abstract class UIDialog extends Stage{
     protected Button buttonTypeOk;
 
     protected UIDialog(UIMonitor mon){
-        super(StageStyle.UTILITY);
+        super(StageStyle.UNIFIED);
         this.mon = mon;
         mon.getController().functionStarted();
         invokeButtonPressed = false;
@@ -42,23 +42,24 @@ public abstract class UIDialog extends Stage{
     public void init(){
         buttonTypeOk = new Button("yes");
         buttonTypeOk.setOnMouseClicked(event -> {
-            invokeButtonPressed = true;
-            yesButtonClicked();
-            fireEvent(
-                new WindowEvent(
-                    this,
-                    WindowEvent.WINDOW_CLOSE_REQUEST
-                )
-            );
+            if(yesButtonClicked()) {
+                invokeButtonPressed = true;
+                fireEvent(
+                        new WindowEvent(
+                                this,
+                                WindowEvent.WINDOW_CLOSE_REQUEST
+                        )
+                );
+            }
 
         });
         setScene(new Scene(buildDialogContent()));
     }
-    protected abstract void yesButtonClicked();
+    protected abstract boolean yesButtonClicked();
     protected abstract void dialogClose();
     public abstract Object[]  getResult();
     protected abstract Parent buildDialogContent();
-
+    public abstract void attributeSelected(AttributeInfo info);
     public void nodeSelected(GenericTreeNode node){
         if(!invokeButtonPressed)
             nodeSelectedChild(node);
