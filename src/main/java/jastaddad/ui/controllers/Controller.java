@@ -171,14 +171,7 @@ public class Controller implements Initializable {
                 long timeStart = System.currentTimeMillis();
                 boolean noError = mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
                 if (noError) {
-                    graphView.updateGraph();
-                    textTreeTabController.updateTree();
-                    resetReferences();
-                    if (mon.getSelectedNode() != null) {
-                        Platform.runLater(() -> {
-                            textTreeTabController.newNodeSelected(mon.getSelectedNode());
-                        });
-                    }
+                    updateUI();
                     addMessage("Filter update: done after, " + (System.currentTimeMillis() - timeStart) + " ms");
                 } else {
                     addError("Could not update graph: ");
@@ -206,6 +199,17 @@ public class Controller implements Initializable {
                 addWarnings(mon.getApi().getWarnings(ASTAPI.AST_STRUCTURE_WARNING));
                 addErrors(mon.getApi().getErrors(ASTAPI.AST_STRUCTURE_ERROR));
             });
+    }
+
+    public void updateUI(){
+        graphView.updateGraph();
+        textTreeTabController.updateTree();
+        resetReferences();
+        if (mon.getSelectedNode() != null) {
+            Platform.runLater(() -> {
+                textTreeTabController.newNodeSelected(mon.getSelectedNode());
+            });
+        }
     }
 
     public void exitProgram(){

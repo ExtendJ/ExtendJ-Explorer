@@ -9,19 +9,22 @@ import java.util.ArrayList;
  */
 public class Token extends NodeInfo {
 
-    public Token(String name, Object value, Method m){ super(name, value, m);}
+    public Token(String name, Object value, Method m){ super(name, value, m, "TOKEN");}
 
     @Override
     public String print(){ return getName(method, null); }
 
     @Override
-    protected void setChildInfo(ArrayList<NodeInfoHolder> al) {
-        al.add(new NodeInfoHolder("Type", "TOKEN"));
-    }
+    protected void setChildInfo(ArrayList<NodeInfoHolder> al) { }
 
     @Override
     public boolean isParametrized() { return false; }
 
     public boolean isNTA() { return false; }
 
+    /**
+     * Check if a attribute is parametrized
+     * @return
+     */
+    public boolean isAttribute(){ return false; }
 }

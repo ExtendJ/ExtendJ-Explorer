@@ -47,5 +47,5 @@ public class AttributeInfo {
         return al;
     }
 
-    public boolean hasCompute(){ return nodeInfo.isNTA() || nodeInfo.isParametrized(); }
+    public boolean hasCompute(){ return (nodeInfo.isNTA() || nodeInfo.isParametrized()) && value.getValue() == null; }
 }

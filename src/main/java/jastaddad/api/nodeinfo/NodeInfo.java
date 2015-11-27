@@ -13,11 +13,13 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
     protected Object value; //The value of the attribute
     protected Method method; //The method which is used to invoke the attribute
     protected String name;
+    protected Object kind;
 
-    public NodeInfo(String name, Object value, Method method){
+    public NodeInfo(String name, Object value, Method method, Object kind){
         this.name = name;
         this.value = value;
         this.method = method;
+        this.kind = kind;
     }
 
     public Object getValue(){ return value; }
@@ -29,6 +31,13 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
     public Class getReturnType(){ return method.getReturnType(); }
 
     public Method getMethod(){ return method; }
+
+    /**
+     * Returns the kind of the method, i.e. syn, syn, etc.
+     * @return
+     */
+    public Object getKind(){ return kind; }
+    public void setKind(Object kind) { this.kind = kind; }
 
     /**
      * This will print the name of the attribute with its parameters
@@ -55,6 +64,12 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
      * @return
      */
     public abstract boolean isNTA();
+
+    /**
+     * Check if a attribute is parametrized
+     * @return
+     */
+    public abstract boolean isAttribute();
 
     /**
      * This will add more type specific information to the List, used by getInfo()
@@ -94,7 +109,8 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
         for (int i = 0; i < method.getParameterCount(); i++)
             al.add(new NodeInfoHolder("Parameter type: " + i, method.getParameterTypes()[i]));
         al.add(new NodeInfoHolder("Is parameterized", isParametrized()));
-        setChildInfo(al);
+        setChildInfo(al);;
+        al.add(new NodeInfoHolder("Kind", kind));
         return al;
     }
 }

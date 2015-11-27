@@ -16,10 +16,10 @@ public class NodeInfoHolder implements Comparable<NodeInfoHolder>{
         nodeInfo = null;
     }
 
-    public NodeInfoHolder(String name, Object value, NodeInfo nodeInfo){
-        this.name = name;
-        this.value = value;
+    public NodeInfoHolder(NodeInfo nodeInfo){
         this.nodeInfo = nodeInfo;
+        this.name = nodeInfo.print();
+        this.value = nodeInfo.getValue();
     }
 
     public NodeInfo getNodeInfo(){ return nodeInfo; }

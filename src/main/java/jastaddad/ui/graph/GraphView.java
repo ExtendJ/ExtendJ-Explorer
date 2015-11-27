@@ -58,7 +58,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         this.mon = mon;
         this.con = mon.getController();
         DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge>();
-        graph = new DelegateForest<GenericTreeNode, UIEdge>(n);
+        graph = new DelegateForest<>(n);
         createTree(graph, mon.getRootNode(), true);
         createLayout(graph);
         setListeners();
@@ -94,7 +94,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
 
     public void updateGraph(){
         DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge>();
-        graph = new DelegateForest<GenericTreeNode, UIEdge>(n);
+        graph = new DelegateForest<>(n);
         createTree(graph, mon.getRootNode(), true);
         TreeLayout<GenericTreeNode, UIEdge> layout = new TreeLayout<>(graph, 150, 100);
         vs.setGraphLayout(layout);
@@ -251,8 +251,8 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
 
         bvs.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
         bvs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
-        bvs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<>());
-        bvs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
+        bvs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.QuadCurve<>());
+        bvs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<>());
         bvs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
         bvs.getRenderContext().setVertexShapeTransformer(new VertexShapeTransformer(mon, vs.getRenderContext()));
         bvs.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
@@ -367,11 +367,12 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
             if(fNode.isNullNode()){
                 return new Color(254, 160, 160);
             }
+            if(fNode.isReferenceHighlight()) {
+                return new Color(80, 180, 80);
+            }
             if(fNode.isNTANode()){
                 return new Color(120, 160, 200);
             }
-            if(fNode.isReferenceHighlight())
-                return new Color(80, 180, 80);
             try{
                 return Color.decode(color);
             }catch (NumberFormatException e){

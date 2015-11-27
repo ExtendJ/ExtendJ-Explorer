@@ -2,32 +2,33 @@ package jastaddad.api.nodeinfo;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Class that holds the terminal Attributes
+ * A Attribute holds their computed values.
  * Created by gda10jli on 10/20/15.
  */
 public class Attribute extends NodeInfo {
     private boolean parametrized;
-    private Object kind; // the kind of the attribute, i.e. inh, syn..
     private String aspect;
     private String declaredAt;
     private boolean isCircular;
     private boolean isNTA;
+    private HashMap<String, Object> computedValues;
 
     public Attribute(String name, Object value, Method m) {
-        super(name, value, m);
+        super(name, value, m, "");
     }
 
-    public Attribute(String name, Object value, Method m, String kind) {
-        super(name, value, m); this.kind = kind;
+    public Attribute(String name, Object value, Method m, Object kind) {
+        super(name, value, m, kind);
     }
 
     @Override
     protected void setChildInfo(ArrayList<NodeInfoHolder> al) {
         al.add(new NodeInfoHolder("Is Circular", isCircular));
         al.add(new NodeInfoHolder("Is NTA", isNTA));
-        al.add(new NodeInfoHolder("Kind", kind));
         al.add(new NodeInfoHolder("Aspect", aspect));
         al.add(new NodeInfoHolder("Declared at", declaredAt));
     }
@@ -59,6 +60,11 @@ public class Attribute extends NodeInfo {
     public String getAspect() { return aspect; }
     public void setAspect(String aspect) { this.aspect = aspect; }
 
+    /**
+     * Check if a attribute is parametrized
+     * @return
+     */
+    public boolean isAttribute(){ return true; }
 
     /**
      * Returns the file path to where the Attribute was declared
@@ -67,11 +73,36 @@ public class Attribute extends NodeInfo {
     public void setDeclaredAt(String declaredAt) { this.declaredAt = declaredAt; }
 
     /**
-     * Returns the kind of the method, i.e. syn, syn, etc.
-     * @return
+     * Adds a computed value to its List of computed values.
+     * If the attribute is non-parametrized it will write to the attributes main value
+     * @param params
+     * @param value
      */
-    public String getKind(){ return kind.toString(); }
-    public void setKind(Object kind) { this.kind = kind; }
+    public void addComputedValue(Object[] params, Object value){
+        if(!isParametrized() && this.value == null){
+            this.value = value;
+        }
+        if(computedValues == null)
+            computedValues = new HashMap<>();
 
+        computedValues.put(getKey(params), value);
+    }
+
+    public boolean containsValue(Object[] params){
+        return computedValues != null && computedValues.containsKey(getKey(params));
+    }
+
+    public Object getComputedValue(Object[] params){
+        return computedValues != null ? computedValues.get(getKey(params)) : null;
+    }
+
+    private String getKey(Object[] params){
+        String key = "";
+        for (Object obj : params)
+            key += obj.hashCode() + " : ";
+        if(params.length == 0)
+            key = "no-params";
+        return key;
+    }
 
 }

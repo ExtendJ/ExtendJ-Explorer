@@ -86,11 +86,17 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
         cmItem1.setOnAction(e -> {
             TreeNode node = (TreeNode) mon.getSelectedNode();
             NodeInfo info  = attributeTableView.getSelectionModel().getSelectedItem().getNodeInfo();
-            if(info.isNTA() && !info.isParametrized()){
-                mon.getApi().compute(node.getNode(), info);
+
+            if(info.isNTA() && !info.isParametrized()){ //Handle the non-parametrized NTA:s
+                Object obj = mon.getApi().compute(node.getNode(), info);
+                if(!printToConsole(node, obj))
+                    return;
                 setAttributeList(node, false);
+                mon.getApi().buildFilteredTree();
+                mon.getController().updateUI();
                 return;
             }
+
             AttributeInputDialog dialog = new AttributeInputDialog(info, node, mon);
             dialog.init();
             dialog.setOnCloseRequest(event -> {
@@ -98,18 +104,13 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
                     Object[] result = dialog.getResult();
                     if(result == null ||  mon.getLastRealNode() == null)
                         return;
-                    int type = mon.getApi().compute(dialog.getTreeNode().getNode(), dialog.getInfo(), result);
-                    switch (type){
-                        case ASTAPI.NORMAL :
-                        case ASTAPI.NTA :
-                        case ASTAPI.PARAMETRIZED :
-                        break;
-                    }
-                    if(node.getNode().getNodeContent().noErrors())
-                        mon.getController().addMessage("Invocation successful");
-                    else{
-                        mon.getController().addMessage("Invocation unsuccessful");
-                        mon.getController().addErrors(node.getNode().getNodeContent().getInvocationErrors());
+                    Object value = mon.getApi().compute(dialog.getTreeNode().getNode(), dialog.getInfo(), result);
+                    if(!printToConsole(node, value))
+                        return;
+
+                    if(info.isNTA()){
+                        mon.getApi().buildFilteredTree();
+                        mon.getController().updateUI();
                     }
                     setAttributeList(node, false);
                 }
@@ -118,6 +119,22 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
             dialog.show();
         });
         mouseMenu.getItems().add(cmItem1);
+    }
+
+    private boolean printToConsole(TreeNode node, Object value){
+
+        if(!node.getNode().getNodeContent().noErrors()) {
+            mon.getController().addErrors(node.getNode().getNodeContent().getInvocationErrors());
+            mon.getController().addErrors(mon.getApi().getErrors(ASTAPI.INVOCATION_ERROR));
+            mon.getController().addWarnings(mon.getApi().getWarnings(ASTAPI.INVOCATION_WARNING));
+            mon.getController().addMessage("Computation unsuccessful");
+            return false;
+        }
+
+        mon.getController().addWarnings(mon.getApi().getWarnings(ASTAPI.INVOCATION_WARNING));
+        mon.getController().addMessage("Computation successful : " + value);
+        return true;
+
     }
 
     public void functionStarted(){
@@ -155,8 +172,27 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
             mon.getController().addErrors(mon.getApi().compute(n));
             attributeTableView.getSelectionModel().clearSelection();
         }
+        /*TreeItem<String> mainParent = new TreeItem<>("ROOT");
+        final TreeTableView<String> treeTableView = new TreeTableView<>(mainParent);
+        treeTableView.setShowRoot(false);
+
+        for(NodeInfoContainer container : n.getNodeContentArray()){ //NTA, Attributes, token
+            TreeItem<String> parentCon = new TreeItem<>(container.getName());
+            for(Object key : container.getMainKeys()){ //Syn, Coll, inh etc
+                TreeItem<String> parent = new TreeItem<>(key.toString());
+                for(ArrayList<NodeInfo> list : container.get(key)){ //Methods and values
+                    for()
+                    TreeItem<String> child = new TreeItem<>();
+                    if(list.size() > 0)
+                        System.out.println("Con " + container.getName() + ", Key : " + key + ", Value : " + list.get(0).print());
+                    parent.getChildren().add(child);
+                }
+                parentCon.getChildren().add(parent);
+            }
+            mainParent.getChildren().add(parentCon);
+        }*/
         attributeTableView.setItems(FXCollections.observableList(AttributeInfo.toArray(n.getNodeContentArray())));
-        if(attributeTableView.getItems().size() <= 0) {
+            if(attributeTableView.getItems().size() <= 0) {
             attributeInfoTableView.getItems().clear();
         }
 
@@ -222,7 +258,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
             if (info.isParametrized())
                 setText("Need input form user");
             else if(info.isNTA())
-                setText("Is NTA, need to be run by user");
+                setText("NTA, need to be run by user");
 
             setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.SECONDARY) {

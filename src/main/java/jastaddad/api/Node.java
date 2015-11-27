@@ -1,6 +1,7 @@
 package jastaddad.api;
 
 
+import jastaddad.api.nodeinfo.NodeInfo;
 import jastaddad.api.nodeinfo.NodeInfoHolder;
 
 import java.lang.annotation.Annotation;
@@ -40,8 +41,7 @@ public class Node{
         this.node = root;
         fullName = simpleNameClass;
         id = System.identityHashCode(this.toString());
-        System.out.println(root instanceof Collection);
-        init(root, root instanceof Collection, false, 1, api);
+        init(root, false, false, 1, api);
     }
 
     /**
@@ -50,17 +50,19 @@ public class Node{
      * @param root
      * @param api
      */
-    /*public Node(Object root, boolean NTA ,ASTAPI api){
+    public Node(Object root, boolean NTA ,ASTAPI api){
         this.children = new ArrayList<>();
-        this.isNTA = NTA;
-        this.node = root;
-        this.simpleNameClass = root.getClass().getSimpleName();
-        this.fullName = "";
         this.nameFromParent = "";
+        this.isNTA = NTA;
+        if(root != null)
+            this.simpleNameClass = root.getClass().getSimpleName();
+        else
+            this.simpleNameClass = "Null";
+        this.node = root;
+        fullName = simpleNameClass;
         id = System.identityHashCode(this.toString());
-        this.nodeContent = new NodeContent(this);
-        init(root, isList, false, level, api);
-    }*/
+        init(root, true, false, 1, api);
+    }
 
     /**
      * This is the constructor used during the traversal of the AST

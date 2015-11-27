@@ -22,11 +22,6 @@ public class ASTAPI {
     public static final String INVOCATION_WARNING = "invocation warning";
     public static final String INVOCATION_ERROR = "invocation error";
 
-    public static final int NULL = -1;
-    public static final int NTA = 0;
-    public static final int PARAMETRIZED = 1;
-    public static final int NORMAL = 2;
-
     private Node tree;
     private GenericTreeNode filteredTree;
     private Config filterConfig;
@@ -42,7 +37,7 @@ public class ASTAPI {
     public ASTAPI(Object root, String filterDir){
         directoryPath = filterDir;
         displayedReferences = new ArrayList<>();
-        treeNodes = new HashMap();
+        treeNodes = new HashMap<>();
         ASTObjects = new HashSet<>();
         typeHash = new HashMap<>();
         typeNodeHash = new HashMap<>(); // will probably be removed
@@ -116,7 +111,7 @@ public class ASTAPI {
         if(!typeNodeHash.containsKey(node.simpleNameClass))
             typeNodeHash.put(node.simpleNameClass, new ArrayList<>());
         typeNodeHash.get(node.simpleNameClass).add(fNode);
-        if(node.nameFromParent != "") {
+        if(!node.nameFromParent.equals("")) {
             if(!typeNodeHash.containsKey(node.fullName))
                 typeNodeHash.put(node.fullName, new ArrayList<>());
             typeNodeHash.get(node.fullName).add(fNode);
@@ -215,6 +210,7 @@ public class ASTAPI {
         for(Node child : node.children){
             traversTree(child, fNode, tmpCluster, firstTime, futureReferences);
         }
+        
         fNode.setClusterReference(tmpCluster);
         clusterClusters(fNode);
 
@@ -279,10 +275,19 @@ public class ASTAPI {
         return res;
     }
 
+    /**
+     * Reevaluates the API:s filtered tree
+     */
+    public void buildFilteredTree(){
+        clearDisplayedReferences();
+        filteredTree = null;
+        traversTree(this.tree, null, null, false);
+    }
+
     public Config getfilterConfig(){ return filterConfig; }
 
     public ArrayList<GenericTreeNode> getNodeReferences(NodeInfo info, boolean highlight){
-        ArrayList<GenericTreeNode> nodes = new ArrayList();
+        ArrayList<GenericTreeNode> nodes = new ArrayList<>();
         for(Object o : getNodeReferences(info)){
             nodes.add(getTreeNode(o).setReferenceHighlight(highlight));
         }
@@ -290,7 +295,7 @@ public class ASTAPI {
     }
 
     public ArrayList<Object> getNodeReferences(NodeInfo info){
-        ArrayList<Object> nodes = new ArrayList();
+        ArrayList<Object> nodes = new ArrayList<>();
         if(info == null)
             return nodes;
         if(info.getValue() instanceof Collection<?>) {
@@ -305,32 +310,46 @@ public class ASTAPI {
 
     public NodeInfo computeMethod(Node node, String method) { return node.getNodeContent().computeMethod(method); }
 
-    public ArrayList<String> compute(Node node, boolean force) { return node.getNodeContent().compute(force); }
+    public ArrayList<String> compute(Node node, boolean force) { return node.getNodeContent().compute(false, force); }
 
-    public ArrayList<String> compute(Node node) { return node.getNodeContent().compute(); }
+    public ArrayList<String> compute(Node node) { return node.getNodeContent().compute(false, false); }
 
-    public int compute(Node node, NodeInfo info) { return compute(node, info, null); }
+    /**
+     * Computes the method for the NodeInfo,
+     * @param node
+     * @param info
+     * @return
+     */
+    public Object compute(Node node, NodeInfo info) { return compute(node, info, null); }
 
-    public int compute(Node node, NodeInfo info, Object[]  params) {
+    /**
+     * Computes the method for the NodeInfo,
+     * @param node
+     * @param info
+     * @return
+     */
+    public Object compute(Node node, NodeInfo info, Object[]  params) {
         if (info == null)
-            return NULL;
-        if (info.isNTA() || info.isParametrized()) {
-            Object obj = node.getNodeContent().compute(info, params, true, this);
-            return info.isNTA() ? addNTA(node, obj) : PARAMETRIZED;
-        }
-        node.getNodeContent().compute(info.getMethod());
-        return NORMAL;
+            return null;
+        Object obj = node.getNodeContent().compute(info, params, this);
+        if(info.isNTA())
+            addNTA(node, obj);
+        return obj;
     }
 
-    private int addNTA(Node node, Object obj){
-        if(obj == null || ASTObjects.contains(obj))
-            return NULL;
+    /**
+     * Adds the NTA to the low-level api, the represented AST, and to the filtered tree.
+     * @param node
+     * @param obj
+     */
+    private void addNTA(Node node, Object obj){
+        if(obj == null || ASTObjects.contains(obj)) //Todo might want to add null nodes
+            return;
         ASTObjects.add(obj);
-        Node astNode = new Node(obj, this);
+        Node astNode = new Node(obj, true, this);
         node.children.add(astNode);
         TreeNode treeNode = new TreeNode(astNode, getTreeNode(astNode), filterConfig);
         treeNodes.put(obj, treeNode);
-        return NTA;
     }
 
 }
