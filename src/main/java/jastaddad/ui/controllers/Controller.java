@@ -174,6 +174,7 @@ public class Controller implements Initializable {
                 if (noError) {
                     updateUI();
                     addMessage("Filter update: done after, " + (System.currentTimeMillis() - timeStart) + " ms");
+                    addMessage("Number of nodes : " + mon.getApi().getASTSize());
                 } else {
                     addError("Could not update graph: ");
                     mon.getApi().getErrors(ASTAPI.FILTER_ERROR).forEach(this::addError);
@@ -403,12 +404,8 @@ public class Controller implements Initializable {
             treeItem.setIndependent(true);
             treeItem.setSelected(item.enabled);
 
-            treeItem.selectedProperty().addListener(new ChangeListener<Boolean>() {
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    //mon.getApi().newTypeFiltered(treeItem.getValue().fullName, newValue);
-                    //graphView.updateGraph();
-                    addMessage("Type list view called update");
-                }
+            treeItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+                addMessage("Type list view called update");
             });
 
             if(item.name.length() <= 0) {

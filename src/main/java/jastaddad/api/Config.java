@@ -22,13 +22,14 @@ public class Config{
     private final String filterFileName = "filter.cfg";
     private final String filterTmpFileName = "filter-tmp.cfg";
 
-    private static final String CONFIG_FILTER = "filter";
-    private static final String CONFIG_GLOBAL = "global";
-    private static final String CONFIG_INCLUDE = "include";
+    public static final String CONFIG_FILTER = "filter";
+    public static final String CONFIG_GLOBAL = "global";
+    public static final String CONFIG_INCLUDE = "include";
 
-    private static final String FILTER_LIST = "-filter";
-    private static final String STYLE_LIST = "-style";
-    private static final String DISPLAY_ATTRIBUTES_LIST = "-display-attributes";
+    public static final String FILTER_LIST = "-filter";
+    public static final String STYLE_LIST = "-style";
+    public static final String DISPLAY_ATTRIBUTES_LIST = "-display-attributes";
+    public static final String NTA_DEPTH = "NTA-depth";
 
     private String filterDir; //Directory of the filter file.
 
@@ -150,6 +151,16 @@ public class Config{
             api.getErrors(ASTAPI.FILTER_ERROR).add("Could not delete or remove new or old filter file. Permission problem?");
         }
         return noError;
+    }
+
+    /**
+     * Check if a specified config is set in the -global config
+     * @param name
+     * @return
+     */
+    public int getInt(String name){
+        HashMap<String, Value> filterConfigs = configs.configs();
+        return filterConfigs.containsKey(name) ? filterConfigs.get(name).getInt() : 0;
     }
 
     /**

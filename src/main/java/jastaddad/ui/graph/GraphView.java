@@ -76,17 +76,17 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
             g.addVertex(parent);
         }
         for (GenericTreeNode child : parent.getChildren()) {
-            UIEdge edge = null;
-            if(child.isNode()){
-                TreeNode n = (TreeNode) child;
-                if(parent.isNode() && !((TreeNode)parent).getNode().isOpt())
-                    edge = new UIEdge(parent.isRealChild(child), n.getNode().nameFromParent);
-                else
-                    edge = new UIEdge(parent.isRealChild(child));
-            }else {
-                edge = new UIEdge(parent.isRealChild(child));
-            }
-            edge.setType(child.isNTANode() ? UIEdge.ATTRIBUTE_NTA : UIEdge.STANDARD);
+            UIEdge edge = new UIEdge();
+            boolean nodeToNode = parent.isNode() && child.isNode();
+
+            if(nodeToNode && !((TreeNode)parent).getNode().isOpt())
+                edge.setLabel(((TreeNode) child).getNode().nameFromParent);
+
+            if(nodeToNode)
+                edge.setType(child.isNTANode() ? UIEdge.ATTRIBUTE_NTA : UIEdge.STANDARD);
+            else
+                edge.setType(UIEdge.CLUSTER);
+
             g.addEdge(edge, parent, child);
             createTree(g, child, false);
         }
@@ -148,7 +148,6 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
                 new Point2D.Double(vs.getGraphLayout().getSize().getWidth() / 2,
                         vs.getGraphLayout().getSize().getHeight() / 2),
                 new Dimension(vs.getGraphLayout().getSize()));
-
         // Write image to a png file
         File outputfile = new File(filename + "." + ext);
 
@@ -157,6 +156,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         } catch (IOException e) {
             // Exception handling
             e.printStackTrace();
+            mon.getController().addError("Error while capturing graph: " + e.getCause());
         }
     }
 
@@ -227,11 +227,17 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         final Stroke dashedStroke = new BasicStroke(0.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
         final Stroke normalStroke = new BasicStroke(1.0f);
         Transformer<UIEdge, Stroke> edgeStrokeTransformer = edge -> {
-            if(edge.isRealChild())
-                return normalStroke;
-            if(edge.isReference())
-                return refStroke;
-            return dashedStroke;
+            switch (edge.getType()){
+                case UIEdge.STANDARD :
+                case UIEdge.ATTRIBUTE_NTA :
+                    return normalStroke;
+                case UIEdge.ATTRIBUTE_REF :
+                case UIEdge.DISPLAYED_REF :
+                    return refStroke;
+                case UIEdge.CLUSTER :
+                default :
+                    return dashedStroke;
+            }
         };
 
         // Vertex border style transformer

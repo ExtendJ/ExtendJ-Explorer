@@ -293,22 +293,20 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
                     nodeRef.add(ref);
             }
         }
-        // calculate the edge for the chil
+        // calculate the edge for the child
         for (GenericTreeNode child : parent.getChildren()) {
-            UIEdge edge;
-            if(child.isNode()){
-                TreeNode n = (TreeNode) child;
-                if(parent.isNode() && !((TreeNode)parent).getNode().isOpt())
-                    edge = new UIEdge(parent.isRealChild(child), n.getNode().nameFromParent);
-                else
-                    edge = new UIEdge(parent.isRealChild(child));
-            }else {
-                edge = new UIEdge(parent.isRealChild(child));
-            }
+            UIEdge edge = new UIEdge();
+            boolean nodeToNode = parent.isNode() && child.isNode();
 
-            // add the edge to the child
+            if(nodeToNode && !((TreeNode)parent).getNode().isOpt())
+                edge.setLabel(((TreeNode) child).getNode().nameFromParent);
+
+            if(nodeToNode)
+                edge.setType(child.isNTANode() ? UIEdge.ATTRIBUTE_NTA : UIEdge.STANDARD);
+            else
+                edge.setType(UIEdge.CLUSTER);
+
             g.addEdge(edge, parent, child);
-
             createTree(g, child, nodeRef);
         }
     }

@@ -14,7 +14,7 @@ import java.util.*;
  */
 public class ASTAPI {
 
-    public static final String VERSION = "alphabuild-0.1.0";
+    public static final String VERSION = "alphabuild-0.1.1";
 
     public static final String AST_STRUCTURE_WARNING = "AST structure warning";
     public static final String AST_STRUCTURE_ERROR = "AST structure error";
@@ -28,7 +28,9 @@ public class ASTAPI {
     private HashMap<String, Integer> typeHash;
     private HashMap<String, List<TreeNode>> typeNodeHash;  // will probably be removed
     private HashMap<Object, GenericTreeNode> treeNodes;
+    private HashMap<Node, Node> computedNTAs; //This might be a temporary solution,
     private HashSet<Object> ASTObjects;
+    private HashSet<Object> ASTNTAObjects;
     private HashMap<String, ArrayList<String>> errors;
     private HashMap<String, ArrayList<String>> warnings;
     private ArrayList<NodeReference> displayedReferences;
@@ -38,11 +40,13 @@ public class ASTAPI {
         directoryPath = filterDir;
         displayedReferences = new ArrayList<>();
         treeNodes = new HashMap<>();
-        ASTObjects = new HashSet<>();
+        computedNTAs = new HashMap<>();
         typeHash = new HashMap<>();
         typeNodeHash = new HashMap<>(); // will probably be removed
         errors = new HashMap<>();
         warnings = new HashMap<>();
+        ASTObjects = new HashSet<>();
+        ASTNTAObjects = new HashSet<>();
 
         tree = new Node(root, this);
         this.filteredTree = null;
@@ -52,23 +56,6 @@ public class ASTAPI {
 
     public String getFilterFilePath(){return directoryPath + "filter.cfg"; }
     public String getDirectoryPath(){return directoryPath;}
-    /**
-     * Old function, will probably be removed.
-     *
-     * Changes the enabled bool in all nodes of a sertain type.
-     *
-     * @param type
-     * @param enabled
-     * @return
-     */
-    public boolean newTypeFiltered(String type, boolean enabled){
-        for(TreeNode fNode : typeNodeHash.get(type) ){
-            fNode.setEnabled(enabled);
-            addToConfigs(fNode);
-        }
-        traversTree(this.tree, null, null, true);
-        return true;
-    }
 
     public ArrayList<String> getErrors(String type){ return getMessageLine(errors, type); }
 
@@ -140,7 +127,7 @@ public class ASTAPI {
      */
     private void traversTree(Node node, GenericTreeNode parent, TreeCluster cluster, boolean firstTime){
         ArrayList<NodeReference> futureReferences = new ArrayList<>();
-        traversTree(node, parent, cluster, firstTime, futureReferences);
+        traversTree(node, parent, cluster, firstTime, filterConfig.getInt(Config.NTA_DEPTH), futureReferences);
 
         // Add reference edges that is defined in the filter language
         for (NodeReference ref : futureReferences){
@@ -160,7 +147,7 @@ public class ASTAPI {
         displayedReferences = futureReferences;
     }
 
-    private void traversTree(Node node, GenericTreeNode parent, TreeCluster cluster, boolean firstTime, ArrayList<NodeReference> futureReferences){
+    private void traversTree(Node node, GenericTreeNode parent, TreeCluster cluster, boolean firstTime, int depth, ArrayList<NodeReference> futureReferences){
         if(node == null) {
             return;
         }
@@ -206,18 +193,41 @@ public class ASTAPI {
                 filteredTree = tmpCluster;
         }
 
+        // Create the nta nodes specified by the Configuration language, and traverse down THE NTA:s
+
+        HashSet<String> displayedAttributes = filterConfig.getDisplayedAttributes(node);
+
+        if(depth > 0) {
+            for (String s : displayedAttributes) {
+                if (!node.NTAChildren.containsKey(s))
+                    continue;
+                Node ntaNode = node.NTAChildren.get(s);
+                if (ntaNode == null) {
+                    ntaNode = new Node(node.getNodeContent().computeMethod(s, true).getValue(), true, this);
+                    node.NTAChildren.put(s, ntaNode);
+                }
+                ASTNTAObjects.add(ntaNode.node);
+                traversTree(ntaNode, fNode, tmpCluster, firstTime, depth - 1, futureReferences);
+            }
+        }
+
         // travers down the tree
         for(Node child : node.children){
-            traversTree(child, fNode, tmpCluster, firstTime, futureReferences);
+            traversTree(child, fNode, tmpCluster, firstTime, depth  ,futureReferences);
         }
-        
+
+        // travers down the tree
+        if(computedNTAs.containsKey(fNode.getNode())) {
+            traversTree(computedNTAs.get(fNode), fNode, tmpCluster, firstTime, 1, futureReferences);
+        }
+
         fNode.setClusterReference(tmpCluster);
         clusterClusters(fNode);
 
         if(addToParent != null)
             parent.addChild(addToParent);
 
-        fNode.setDisplayedAttributes(filterConfig, futureReferences , this);
+        fNode.setDisplayedAttributes(futureReferences, displayedAttributes, this);
     }
 
     /**
@@ -250,15 +260,13 @@ public class ASTAPI {
     public GenericTreeNode getTreeNode(Object node){ return treeNodes.get(node); }
     public boolean isTreeNode(Object node){ return treeNodes.containsKey(node); }
 
-    public boolean isASTObject(Object node){ return ASTObjects.contains(node); }
-    public boolean addASTObject(Object node){ return ASTObjects.add(node); }
+    public boolean isASTObject(Object node){ return ASTObjects.contains(node) || ASTNTAObjects.contains(node);}
+    public boolean addASTObject(Object node, boolean nta){ return nta ? ASTNTAObjects.add(node) : ASTObjects.add(node); }
 
     public void clearDisplayedReferences(){ displayedReferences.clear(); }
     public ArrayList<NodeReference> getDisplayedReferences(){ return displayedReferences; }
 
-    public GenericTreeNode getFilteredTree(){
-        return filteredTree;
-    }
+    public GenericTreeNode getFilteredTree() { return filteredTree; }
 
     /**
      * Write the new filter text to file and generate a new filtered AST
@@ -268,6 +276,9 @@ public class ASTAPI {
     public boolean saveNewFilter(String text){
         boolean res = filterConfig.saveAndUpdateConfig(text);
         if(res) {
+            ASTNTAObjects.forEach(treeNodes::remove);
+            ASTNTAObjects.clear();
+            computedNTAs.clear();
             clearDisplayedReferences();
             filteredTree = null;
             traversTree(this.tree, null, null, false);
@@ -323,7 +334,8 @@ public class ASTAPI {
     public Object compute(Node node, NodeInfo info) { return compute(node, info, null); }
 
     /**
-     * Computes the method for the NodeInfo,
+     * Computes the method for the NodeInfo.
+     * If a NTA is found it will be added to the low-level api, the represented AST, and to the filtered tree.
      * @param node
      * @param info
      * @return
@@ -332,24 +344,20 @@ public class ASTAPI {
         if (info == null)
             return null;
         Object obj = node.getNodeContent().compute(info, params, this);
-        if(info.isNTA())
-            addNTA(node, obj);
+        if(!info.isNTA() ||  obj == null || ASTNTAObjects.contains(obj))//Todo might want to add null nodes
+            return obj;
+        Node astNode = new Node(obj, true, this);
+        computedNTAs.put(node, astNode);
+        node.NTAChildren.put(NodeInfo.getName(info.getMethod(), params),astNode);
+        TreeNode treeNode = new TreeNode(astNode, getTreeNode(astNode), filterConfig);
+        treeNodes.put(obj, treeNode);
         return obj;
     }
 
     /**
-     * Adds the NTA to the low-level api, the represented AST, and to the filtered tree.
-     * @param node
-     * @param obj
+     * Returns the Size of the graph, ie the number of Nodes in the AST.
      */
-    private void addNTA(Node node, Object obj){
-        if(obj == null || ASTObjects.contains(obj)) //Todo might want to add null nodes
-            return;
-        ASTObjects.add(obj);
-        Node astNode = new Node(obj, true, this);
-        node.children.add(astNode);
-        TreeNode treeNode = new TreeNode(astNode, getTreeNode(astNode), filterConfig);
-        treeNodes.put(obj, treeNode);
-    }
+    public int getASTSize(){ return ASTObjects.size(); }
+
 
 }

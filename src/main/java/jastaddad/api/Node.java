@@ -8,6 +8,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * This class represents the Node in the AST, it holds all its terminal attributes and references to its children.
@@ -20,6 +21,7 @@ public class Node{
     public final String simpleNameClass;
     public final String fullName;
     public final ArrayList<Node> children;
+    public final HashMap<String,Node> NTAChildren;
     private boolean isList;
     private boolean isOpt;
     private boolean isNTA;
@@ -33,6 +35,7 @@ public class Node{
      */
     public Node(Object root, ASTAPI api){
         this.children = new ArrayList<>();
+        this.NTAChildren = new HashMap<>();
         this.nameFromParent = "";
         if(root != null)
             this.simpleNameClass = root.getClass().getSimpleName();
@@ -41,7 +44,7 @@ public class Node{
         this.node = root;
         fullName = simpleNameClass;
         id = System.identityHashCode(this.toString());
-        init(root, false, false, 1, api);
+        init(root, false, false, false, 1, api);
     }
 
     /**
@@ -50,8 +53,9 @@ public class Node{
      * @param root
      * @param api
      */
-    public Node(Object root, boolean NTA ,ASTAPI api){
+    public Node(Object root, boolean NTA, ASTAPI api){
         this.children = new ArrayList<>();
+        this.NTAChildren = new HashMap<>();
         this.nameFromParent = "";
         this.isNTA = NTA;
         if(root != null)
@@ -61,7 +65,7 @@ public class Node{
         this.node = root;
         fullName = simpleNameClass;
         id = System.identityHashCode(this.toString());
-        init(root, true, false, 1, api);
+        init(root, true, false, true,  1, api);
     }
 
     /**
@@ -73,8 +77,9 @@ public class Node{
      * @param level
      * @param api
      */
-    public Node(Object root, String name, boolean isList, boolean isOpt, int level, ASTAPI api){
+    public Node(Object root, String name, boolean isList, boolean isOpt, boolean isNTA, int level, ASTAPI api){
         this.children = new ArrayList<>();
+        this.NTAChildren = new HashMap<>();
         if(root != null)
             this.simpleNameClass = root.getClass().getSimpleName();
         else
@@ -89,7 +94,7 @@ public class Node{
             fullName = simpleNameClass + ":" + name;
         }
         id = System.identityHashCode(this.toString());
-        init(root, isList, isOpt, level, api);
+        init(root, isList, isOpt, isNTA, level, api);
     }
 
     /**
@@ -101,18 +106,18 @@ public class Node{
      * @param level
      * @param api
      */
-    private void init(Object root, boolean isList, boolean isOpt, int level, ASTAPI api){
+    private void init(Object root, boolean isList, boolean isOpt, boolean isNTA, int level, ASTAPI api){
         this.isOpt = isOpt;
         this.isList = isList;
         this.nodeContent = new NodeContent(this);
         this.level = level;
         if(root != null) {
-            api.addASTObject(node);
+            api.addASTObject(node, isNTA);
             if (isList) {
                 for (Object child : (Iterable<?>) root) {
                     if (child instanceof Collection && child.getClass().getSimpleName().equals("List") && isOpt)
                         api.putWarning(ASTAPI.AST_STRUCTURE_WARNING, "A List is a direct child to a Opt parent, parent : " + root + ", -> child : " + child);
-                    children.add(new Node(child, isOpt ? nameFromParent : "", child instanceof Collection, false, 1, api));
+                    children.add(new Node(child, isOpt ? nameFromParent : "", child instanceof Collection, false, isNTA, 1, api));
                 }
             }
             traversDown(root, api);
@@ -135,7 +140,9 @@ public class Node{
                         children.add(new Node(obj, name,
                                 !ASTAnnotation.isSingleChild(a),
                                 ASTAnnotation.isOptChild(a),
-                                level + 1, api));
+                                isNTA, level + 1, api));
+                    }else if(ASTAnnotation.isAttribute(a) && ASTAnnotation.is(a, ASTAnnotation.AST_METHOD_NTA) && m.getParameterCount() == 0){
+                        NTAChildren.put(m.getName(), null);
                     }
                 }
             }
@@ -150,17 +157,12 @@ public class Node{
         }
     }
 
-    private void addChild(Node node){
-        children.add(node);
-    }
-
     public String nodeName() { return isNull() ? "null" : node.toString(); }
     public boolean isOpt(){return isOpt;}
     public boolean isList(){ return isList; }
     public boolean isNull(){ return node == null; }
 
     public boolean isNTA(){ return isNTA; }
-    public void setNTA(boolean nta){ this.isNTA = nta; }
 
     public String toString() { return simpleNameClass; }
     public int getLevel(){ return level;}

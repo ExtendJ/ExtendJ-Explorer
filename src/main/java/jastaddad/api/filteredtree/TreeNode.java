@@ -121,12 +121,11 @@ public class TreeNode extends GenericTreeNode {
     /**
      * This method will derive which attributes that should be displayed, it will also save the reference attributes as NodeReferences.
      * NOTE: The value which the method toGraphString() returns will be manipulated by this method.
-     * @param config
      * @param allReferences
+     * @param set
      * @param api
      */
-    public void setDisplayedAttributes(Config config, ArrayList<NodeReference> allReferences, ASTAPI api){
-        HashSet<String> set = config.getDisplayedAttributes(node);
+    public void setDisplayedAttributes(ArrayList<NodeReference> allReferences, HashSet<String> set , ASTAPI api){
         if(set.size() == 0)
             return;
         graphName = "<html>" + toString();

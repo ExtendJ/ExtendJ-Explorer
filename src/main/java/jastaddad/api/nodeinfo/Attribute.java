@@ -84,7 +84,6 @@ public class Attribute extends NodeInfo {
         }
         if(computedValues == null)
             computedValues = new HashMap<>();
-
         computedValues.put(getKey(params), value);
     }
 

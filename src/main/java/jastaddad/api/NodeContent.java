@@ -17,18 +17,18 @@ import java.util.stream.Collectors;
  */
 public class NodeContent {
 
-    private ArrayList<NodeInfo> attributes;
-    private ArrayList<NodeInfo> tokens;
-    private ArrayList<NodeInfo> NTAs;
+    private HashMap<Method, NodeInfo> attributes;
+    private HashMap<Method,NodeInfo> tokens;
+    private HashMap<Method,NodeInfo> NTAs;
     private HashMap<Method, NodeInfo> computedMethods; //Error list for invoke calls
     private ArrayList<String> invocationErrors; //Error list for invoke calls
     private Node node; //The node the content is a part of
     private Object nodeObject; //The node the content is a part of
 
     public NodeContent(Node node){
-        attributes = new ArrayList<>();
-        tokens = new ArrayList<>();
-        NTAs = new ArrayList<>();
+        attributes = new HashMap<>();
+        tokens = new HashMap<>();
+        NTAs = new HashMap<>();
         computedMethods = new HashMap<>();
         invocationErrors = new ArrayList<>();
         this.node = node;
@@ -51,6 +51,21 @@ public class NodeContent {
      * @return
      */
     public boolean noErrors(){ return invocationErrors.size() == 0; }
+
+    /**
+     * Will return the errors that may have been cast during the invocation of a method or methods.
+     * NOTE: Will also clear the list.
+     * @return
+     */
+    public void resetNTAValue(String method){
+        try{
+            NodeInfo info = NTAs.get(nodeObject.getClass().getMethod(method));
+            if(info != null)
+                info.setValue(null);
+        }  catch (NoSuchMethodException e) {
+            //e.printStackTrace();
+        }
+    }
 
     /**
      * Computes the method in the NodeInfo, with the given parameters, and adds it to the cached list of the Attribute.
@@ -120,21 +135,32 @@ public class NodeContent {
         if(node.isNull())
             return;
         for(Method m : obj.getClass().getMethods()){
-            computeMethod(m, null, forceComputation);
+            compute(m, null, forceComputation);
         }
     }
 
     /**
      * Compute the attribute/token method with some given name.
+     * If forceComputation is true it will compute the non-parametrized NTA:s
      * @param method
      * @return
      */
-
     protected NodeInfo computeMethod(String method){
+        return computeMethod(method, false);
+    }
+
+    /**
+     * Compute the attribute/token method with some given name.
+     * If forceComputation is true it will compute the non-parametrized NTA:s
+     * @param method
+     * @return
+     */
+    protected NodeInfo computeMethod(String method, boolean forceComputation){
         try{
-            return computeMethod(nodeObject.getClass().getMethod(method), null, false);
+            Method m = nodeObject.getClass().getMethod(method);
+            return compute(m, null, forceComputation);
         }  catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return null;
     }
@@ -145,18 +171,21 @@ public class NodeContent {
      * @param m
      * @return
      */
-    protected NodeInfo computeMethod(Method m, Object[] params, boolean forceComputation){
-        if(computedMethods.containsKey(m))
+    protected NodeInfo compute(Method m, Object[] params, boolean forceComputation){
+        if(computedMethods.containsKey(m) && !forceComputation)
             return computedMethods.get(m);
         NodeInfo info = null;
         for (Annotation a : m.getAnnotations()) {
             if (ASTAnnotation.isAttribute(a)) {
                 info = computeAttribute(nodeObject, m, params, forceComputation);
-                addAttribute((Attribute) info);
+                if(info.isNTA())
+                    NTAs.put(m, info);
+                else
+                    attributes.put(m ,info);
                 break;
             } else if (ASTAnnotation.isToken(a)) {
                 info = computeToken(nodeObject, m);
-                tokens.add(info);
+                tokens.put(m, info);
                 break;
             }
         }
@@ -175,7 +204,7 @@ public class NodeContent {
      * @return
      */
     private Attribute computeAttribute(Object obj, Method m, Object[] params, boolean forceComputation){
-        Attribute attribute = new Attribute(m.getName(), null, m);
+        Attribute attribute = new Attribute(getName(m), null, m);
         attribute.setParametrized(m.getParameterCount() > 0);
         for(Annotation a : m.getAnnotations()) { //To many attribute specific methods so I decided to iterate through the Annotations again instead of sending them as parameters.
             if (ASTAnnotation.isAttribute(a)){
@@ -211,7 +240,7 @@ public class NodeContent {
      * @return
      */
     private Token computeToken(Object obj, Method m){
-        String name = m.getName();
+        String name = getName(m);
         try{
             return new Token(name, m.invoke(obj), m);
         } catch (Throwable e) {
@@ -220,16 +249,7 @@ public class NodeContent {
         }
     }
 
-    /**
-     * Adds the attribute to the correct list
-     * @param attribute
-     */
-    public void addAttribute(Attribute attribute){
-        if(attribute.isNTA())
-            NTAs.add(attribute);
-        else
-            attributes.add(attribute);
-    }
+    private String getName(Method m){ return NodeInfo.getName(m, null); }
 
     /**
      *
@@ -247,9 +267,9 @@ public class NodeContent {
      */
     protected ArrayList<NodeInfoHolder> toArray(){
         ArrayList<NodeInfoHolder> temp = new ArrayList<>();
-        temp.addAll(NTAs.stream().map(NodeInfoHolder::new).collect(Collectors.toList()));
-        temp.addAll(attributes.stream().map(NodeInfoHolder::new).collect(Collectors.toList()));
-        temp.addAll(tokens.stream().map(NodeInfoHolder::new).collect(Collectors.toList()));
+        temp.addAll(NTAs.values().stream().map(NodeInfoHolder::new).collect(Collectors.toList()));
+        temp.addAll(attributes.values().stream().map(NodeInfoHolder::new).collect(Collectors.toList()));
+        temp.addAll(tokens.values().stream().map(NodeInfoHolder::new).collect(Collectors.toList()));
         return temp;
     }
 
