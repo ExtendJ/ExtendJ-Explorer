@@ -179,7 +179,7 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
     }
 
     @Override
-    public void attributeSelected(AttributeInfo info) {
+    public void attributeSelected(NodeInfo info) {
         if(info == null)
             return;
         if(mon.getApi().isTreeNode(info.getValue())) {

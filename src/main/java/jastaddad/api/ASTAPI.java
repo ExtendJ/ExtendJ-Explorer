@@ -286,25 +286,29 @@ public class ASTAPI {
 
     public Config getfilterConfig(){ return filterConfig; }
 
-    public ArrayList<GenericTreeNode> getNodeReferences(NodeInfo info, boolean highlight){
+    public ArrayList<GenericTreeNode> getNodeReferencesAndHighlightThem(Object value, boolean highlight){
         ArrayList<GenericTreeNode> nodes = new ArrayList<>();
-        for(Object o : getNodeReferences(info)){
+        for(Object o : getNodeReferences(value)){
             nodes.add(getTreeNode(o).setReferenceHighlight(highlight));
         }
         return nodes;
     }
 
-    public ArrayList<Object> getNodeReferences(NodeInfo info){
+    public ArrayList<Object> getNodeReferences(Object value){
         ArrayList<Object> nodes = new ArrayList<>();
-        if(info == null)
+        System.out.println("1");
+        if(value == null)
             return nodes;
-        if(info.getValue() instanceof Collection<?>) {
-            for (Object n : (Iterable<Object>) info.getValue()) {
+        System.out.println("2");
+        if(value instanceof Collection<?>) {
+            for (Object n : (Iterable<Object>) value) {
                 if (isASTObject(n))
                     nodes.add(n);
             }
-        }else if (isASTObject(info.getValue()))
-            nodes.add(info.getValue());
+            System.out.println("3");
+        }else if (isASTObject(value))
+            nodes.add(value);
+        System.out.println("4: " + nodes.size());
         return nodes;
     }
 

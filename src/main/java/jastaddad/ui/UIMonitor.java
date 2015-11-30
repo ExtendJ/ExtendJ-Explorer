@@ -3,6 +3,7 @@ package jastaddad.ui;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.JastAddAdAPI;
 import jastaddad.api.filteredtree.GenericTreeNode;
+import jastaddad.api.nodeinfo.NodeInfo;
 import jastaddad.ui.controllers.Controller;
 import jastaddad.ui.graph.GraphView;
 import jastaddad.ui.graph.UIEdge;
@@ -19,7 +20,7 @@ import java.util.HashMap;
 public class UIMonitor {
     private GenericTreeNode lastRealNode;
     private GenericTreeNode selectedNode;
-    private AttributeInfo selectedInfo;
+    private NodeInfo selectedInfo;
     private ArrayList<UIEdge> refEdges;
     private HashMap<GenericTreeNode,ArrayList<UIEdge>> displayedRefEdges;
     private JastAddAdAPI jaaApi;
@@ -98,9 +99,9 @@ public class UIMonitor {
     public Stage getParentStage(){return parentStage;}
     public void setParentStage(Stage stage){parentStage = stage;}
 
-    public AttributeInfo getSelectedInfo(){ return selectedInfo;}
+    public NodeInfo getSelectedInfo(){ return selectedInfo;}
 
-    public void setSelectedInfo(AttributeInfo info){ this.selectedInfo = info; }
+    public void setSelectedInfo(NodeInfo info){ this.selectedInfo = info; }
 
     public GenericTreeNode getSelectedNode(){ return selectedNode;}
 

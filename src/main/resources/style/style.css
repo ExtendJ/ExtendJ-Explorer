@@ -73,7 +73,6 @@
 
 
 .tree-cell:expanded, .tree-cell:sub-tree-item {
-
 }
 
 .tree-cell {
@@ -188,36 +187,6 @@
 .list-cell:filled:hover {
     -fx-background-color: #999999;
     -fx-text-fill: white;
-}
-
-.table-view {
-    -fx-fit-to-height:true;
-    -fx-fit-to-width:true;
-    -fx-base: #606060;
-    -fx-control-inner-background: #606060;
-    -fx-background-color: #606060;
-    -fx-padding: 0;
-}
-
-.info-table-view .info-column-header-background {
-    visibility: hidden;
-    -fx-padding: -1em;
- }
-
-.table-view .column-header-background {
-    -fx-background-color: #808080;
-}
-
-.table-view .column-header, .table-view .filler {
-    -fx-size: 35;
-    -fx-border-width: 0 0 0 0;
-    -fx-border-insets: 0 10 1 0;
-}
-
-.table-view .column-header .label {
-    -fx-font-size: 12px;
-    -fx-alignment: CENTER;
-    -fx-text-fill: #eeeeee;
 }
 
 .consoleTextFlow{

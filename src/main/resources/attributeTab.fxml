@@ -7,13 +7,12 @@
        <SplitPane fx:id="attributeSplitPane" orientation="VERTICAL" dividerPositions="0.7">
            <VBox VBox.vgrow="ALWAYS" styleClass="VBoxParent">
                <Label fx:id="nodeNameLabel" minHeight="30" text="" />
-               <TableView fx:id="attributeTableView" prefHeight="1000">
-                   <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+               <TreeTableView fx:id="attributeTableView" prefHeight="1000">
                    <columns>
-                       <TableColumn fx:id="attributeNameCol" text="Name"/>
-                       <TableColumn fx:id="attributeValueCol"  text="Value" />
+                       <TreeTableColumn fx:id="attributeNameCol" text="Name"/>
+                       <TreeTableColumn fx:id="attributeValueCol"  text="Value" />
                    </columns>
-               </TableView>
+               </TreeTableView>
            </VBox>
            <VBox VBox.vgrow="ALWAYS" styleClass="VBoxParent">
                <Label fx:id="attributeInfoLabel" minHeight="30" text="" />

@@ -3,6 +3,8 @@ package jastaddad.api.nodeinfo;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Class that holds the terminal Attributes
@@ -16,13 +18,18 @@ public class Attribute extends NodeInfo {
     private boolean isCircular;
     private boolean isNTA;
     private HashMap<String, Object> computedValues;
+    private HashMap<String, Object[]> usedParameters;
 
     public Attribute(String name, Object value, Method m) {
         super(name, value, m, "");
+        computedValues = new HashMap<>();
+        usedParameters = new HashMap<>();
     }
 
     public Attribute(String name, Object value, Method m, Object kind) {
         super(name, value, m, kind);
+        computedValues = new HashMap<>();
+        usedParameters = new HashMap<>();
     }
 
     @Override
@@ -82,24 +89,34 @@ public class Attribute extends NodeInfo {
         if(!isParametrized() && this.value == null){
             this.value = value;
         }
-        if(computedValues == null)
-            computedValues = new HashMap<>();
 
-        computedValues.put(getKey(params), value);
+        String key = getKey(params);
+        computedValues.put(key, value);
+        usedParameters.put(key, params);
     }
 
     public boolean containsValue(Object[] params){
-        return computedValues != null && computedValues.containsKey(getKey(params));
+        return  computedValues.containsKey(getKey(params));
     }
 
     public Object getComputedValue(Object[] params){
-        return computedValues != null ? computedValues.get(getKey(params)) : null;
+        return computedValues.get(getKey(params));
+    }
+
+    public Set<Map.Entry<String, Object>> getComputedEntry(){
+        return computedValues.entrySet();
+    }
+
+    public HashMap<String, Object[]> getUsedParameters(){
+        return usedParameters;
     }
 
     private String getKey(Object[] params){
         String key = "";
-        for (Object obj : params)
-            key += obj.hashCode() + " : ";
+        for (Object obj : params){
+
+            key += (obj == null ? null : obj.hashCode()) + " : ";
+        }
         if(params.length == 0)
             key = "no-params";
         return key;

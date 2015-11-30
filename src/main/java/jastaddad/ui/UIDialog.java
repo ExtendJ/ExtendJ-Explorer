@@ -1,6 +1,7 @@
 package jastaddad.ui;
 
 import jastaddad.api.filteredtree.GenericTreeNode;
+import jastaddad.api.nodeinfo.NodeInfo;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -59,7 +60,7 @@ public abstract class UIDialog extends Stage{
     protected abstract void dialogClose();
     public abstract Object[]  getResult();
     protected abstract Parent buildDialogContent();
-    public abstract void attributeSelected(AttributeInfo info);
+    public abstract void attributeSelected(NodeInfo info);
     public void nodeSelected(GenericTreeNode node){
         if(!invokeButtonPressed)
             nodeSelectedChild(node);

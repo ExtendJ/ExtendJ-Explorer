@@ -37,6 +37,7 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
      * @return
      */
     public Object getKind(){ return kind; }
+    public String getKindString(){ return kind == null ? "" : kind.toString(); }
     public void setKind(Object kind) { this.kind = kind; }
 
     /**

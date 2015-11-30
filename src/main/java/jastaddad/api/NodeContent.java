@@ -253,4 +253,8 @@ public class NodeContent {
         return temp;
     }
 
+    public ArrayList<NodeInfo> getAttributes(){ return attributes; }
+    public ArrayList<NodeInfo> getNTAs(){ return NTAs; }
+    public ArrayList<NodeInfo> gettokens(){ return tokens; }
+
 }
