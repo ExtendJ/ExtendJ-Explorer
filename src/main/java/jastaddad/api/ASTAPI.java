@@ -375,7 +375,7 @@ public class ASTAPI {
         if(!computedNTAs.containsKey(node))
             computedNTAs.put(node, new HashSet<>());
         computedNTAs.get(node).add(astNode);
-        node.NTAChildren.put(NodeInfo.getName(info.getMethod(), params),astNode);
+        node.NTAChildren.put(NodeInfo.getName(info.getMethod(), params), astNode);
         if(filterConfig.isSet(Config.NTA_SHOW_COMPUTED)) {
             treeNodes.put(obj, new TreeNode(astNode, getTreeNode(node), filterConfig));
         }

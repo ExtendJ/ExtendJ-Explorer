@@ -80,34 +80,34 @@ public class Config{
                         error += "- " + e;
                     }
                     System.err.println(error);
-                    api.getErrors(ASTAPI.FILTER_ERROR).add(error);
+                    api.putError(ASTAPI.FILTER_ERROR, error);
                     return false;
                 }
 
                 configs = tmpFilter;
             } catch (IOException e) {
-                api.getErrors(ASTAPI.FILTER_ERROR).add("IOException when reading filter file");
+                api.putError(ASTAPI.FILTER_ERROR, "IOException when reading filter file");
                 e.printStackTrace(System.err);
                 return false;
             } catch (ConfigParser.SyntaxError e) {
-                api.getErrors(ASTAPI.FILTER_ERROR).add(e.getMessage());
+                api.putError(ASTAPI.FILTER_ERROR, e.getMessage());
                 return false;
             }catch (Exception e) {
-                api.getErrors(ASTAPI.FILTER_ERROR).add("Exception when reading filter file: " + e.toString());
+                api.putError(ASTAPI.FILTER_ERROR, "Exception when reading filter file: " + e.toString());
                 //e.printStackTrace();
                 return false;
             }
         }catch (FileNotFoundException e) {
             String errorText = "Filter file not found! Maybe the program does not have the rights to create the file for you?" +
                     "\n Create a file called filter.cfg and add -include{} inside it to get started";
-            api.getErrors(ASTAPI.FILTER_ERROR).add(errorText);
+            api.putError(ASTAPI.FILTER_ERROR, errorText);
             System.out.println(errorText);
             return false;
         }catch (UnsupportedEncodingException e) {
             String errorText = "Filter file not found! Maybe the program does not have the rights to create the file for you?" +
                     "\n Create a file called filter.cfg and add -include{} inside it to get started";
             e.printStackTrace();
-            api.getErrors(ASTAPI.FILTER_ERROR).add(errorText);
+            api.putError(ASTAPI.FILTER_ERROR, errorText);
         }
         return true;
     }
@@ -128,11 +128,11 @@ public class Config{
             writer.print(text);
             writer.close();
         } catch (FileNotFoundException e) {
-            api.getErrors(ASTAPI.FILTER_ERROR).add("File not found when writing to filter file");
+            api.putError(ASTAPI.FILTER_ERROR, "File not found when writing to filter file");
             e.printStackTrace();
             noError = false;
         } catch (UnsupportedEncodingException e) {
-            api.getErrors(ASTAPI.FILTER_ERROR).add("Unsupported encoding exception");
+            api.putError(ASTAPI.FILTER_ERROR, "Unsupported encoding exception");
             e.printStackTrace();
             noError = false;
         }
@@ -149,7 +149,7 @@ public class Config{
             }
         }catch(Exception e){
             e.printStackTrace();
-            api.getErrors(ASTAPI.FILTER_ERROR).add("Could not delete or remove new or old filter file. Permission problem?");
+            api.putError(ASTAPI.FILTER_ERROR, "Could not delete or remove new or old filter file. Permission problem?");
         }
         return noError;
     }

@@ -218,7 +218,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             addSectionToAttributeList("Tokens", n.getNodeContent().getTokens(), mainParent);
         }
 
-        mon.getController().addMessage("index: " + indexOfSelectedAttribute);
         attributeTableView.getSelectionModel().select(indexOfSelectedAttribute);
         TreeItem<NodeInfoInterface> selected = attributeTableView.getSelectionModel().getSelectedItem();
 
@@ -241,8 +240,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 return;
             }
         }
-
-
     }
 
     /**
