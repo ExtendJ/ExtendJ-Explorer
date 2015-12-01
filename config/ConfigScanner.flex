@@ -58,6 +58,7 @@ Comment = \/\*[^]*\*\/
 "]"       	    { return sym(Terminals.RSQBRACKET); }
 "{"       	    { return sym(Terminals.LBRACKET); }
 "}"       	    { return sym(Terminals.RBRACKET); }
+"not"  	        { return sym(Terminals.NOT); }
 "in"  	        { return sym(Terminals.IN); }
 {Color}  	    { return sym(Terminals.COLOR); }
 {Bool}  	    { return sym(Terminals.BOOL); }

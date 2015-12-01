@@ -20,6 +20,7 @@ Binding ::= Name:IdDecl Value;
 
 abstract BinExpr ::= Left:Value Right:Value;
 IN : BinExpr;
+NOTIN : BinExpr;
 EQ : BinExpr;
 NEQ :BinExpr;
 LEQ : BinExpr;

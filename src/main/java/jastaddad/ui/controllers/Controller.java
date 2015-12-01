@@ -175,7 +175,7 @@ public class Controller implements Initializable {
                     addMessage("Number of nodes : " + mon.getApi().getASTSize());
                 } else {
                     addError("Could not update graph: ");
-                    mon.getApi().getErrors(ASTAPI.FILTER_ERROR).forEach(this::addError);
+                    addErrors(mon.getApi().getErrors(ASTAPI.FILTER_ERROR));
                     addMessage("Filter update: something is wrong!");
                 }
 
@@ -234,15 +234,16 @@ public class Controller implements Initializable {
     }
 
     public void addErrors(Collection<String> errors){
-        for (String s : errors)
-            addError(s);
+        addConsoleTexts("consoleTextError", ConsoleFilter.ERROR, errors);
     }
 
     public void addWarnings(Collection<String> warnings){
-        for (String s : warnings)
-            addWarning(s);
+        addConsoleTexts("consoleTextWarning", ConsoleFilter.WARNING, warnings);
     }
 
+    public void addMessages(Collection<String> messages){
+        addConsoleTexts("consoleTextMessage", ConsoleFilter.MESSAGE, messages);
+    }
 
     public void addMessage(String message) {
         Platform.runLater(() -> addConsoleText(message, "consoleTextMessage", ConsoleFilter.MESSAGE));
@@ -255,6 +256,12 @@ public class Controller implements Initializable {
         Platform.runLater(() -> addConsoleText(message, "consoleTextWarning", ConsoleFilter.WARNING));
     }
 
+    private void addConsoleTexts(String console, ConsoleFilter filter, Collection<String> warnings){
+        Platform.runLater(() -> {
+            for (String s : warnings)
+                addConsoleText(s, console, filter);
+        });
+    }
     /**
      * used by the public methods addMessage, addError, addWarning
      *
@@ -300,7 +307,7 @@ public class Controller implements Initializable {
     /**
      * When a function is stopped,e.g. a dialog window is closed, this method is called.
      */
-    public void functionStoped(){
+    public void functionStopped(){
         mon.functionDone();
         attributeTabController.functionStoped();
         textTreeTabController.functionStoped();

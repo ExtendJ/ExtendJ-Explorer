@@ -89,7 +89,7 @@ aspect Values{
     eq Str.getStr() = getString().substring(1, getString().length()-1);
 
     // ============================
-    // See if an variable, var, is correct according to the filter
+    // See if an variable, var, is correct according to the filter, oohhh so much copy paste.
     // ============================
 
 
@@ -111,27 +111,35 @@ aspect Values{
     syn boolean BinExpr.validateExpression(boolean attr) = false;
     syn boolean BinExpr.validateExpression(String attr) = false;
 
-    //In for string, Integer and boolean
+    //IN and NOTIN for string, Integer and boolean
 
-    eq IN.validateExpression(String attr){
-        if(getValue().isStrArray()){
-            for(Str str : ((StrArray)getValue()).getStrList()){
-                if(str.getStr().equals(attr))
-                    return true;
+    eq IN.validateExpression(String attr) = getValue().isPartOf(getValue(), attr, true);
+    eq IN.validateExpression(int attr) = getValue().isPartOf(getValue(), attr, true);
+
+    eq NOTIN.validateExpression(String attr) = getValue().isPartOf(getValue(), attr, false);
+    eq NOTIN.validateExpression(int attr) = getValue().isPartOf(getValue(), attr, false);
+
+     syn boolean Value.isPartOf(Value val, int attr, boolean returnValue){
+        if(val.isIntArray()){
+            for(Num in : ((NumArray)val).getNumList()){
+                if(in.getInt() == attr)
+                    return returnValue;
             }
+            return !returnValue;
         }
         return false;
-    }
+     }
 
-     eq IN.validateExpression(int attr){
-            if(getValue().isIntArray()){
-                for(Num in : ((NumArray)getValue()).getNumList()){
-                    if(in.getInt() == attr)
-                        return true;
-                }
-            }
-            return false;
-        }
+     syn boolean Value.isPartOf(Value val, String attr, boolean returnValue){
+         if(val.isStrArray()){
+             for(Str str : ((StrArray)val).getStrList()){
+                 if(str.getStr().equals(attr))
+                     return returnValue;
+             }
+             return !returnValue;
+         }
+         return false;
+     }
 
     // String
     eq EQ.validateExpression(String attr) = getValue().getStr().equals(attr);
