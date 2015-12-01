@@ -52,7 +52,17 @@ java -jar jastadddebugger-exjobb.jar
 ```
 This should run a sample JastAdd project and run the JastAddAdUI program. see Lib dependencis below if it's not working.
 
-OBS! The debugger will run on the sample.cfg file in your directory. The file sample.cfg contain some Configuration Language code which is described later.
+OBS! The debugger will run on the sample.cfg file in your directory. The file sample.cfg contain some Configuration Language code which will be described later.
+
+Alternatively one can also, if they want to test JastAddAdUI, go in to the CalcASM directory and run the following command: 
+```
+ant jar
+```
+This will create a jar named compiler which contains the compiler for the CalcASM language. 
+To start the JastAddAdUI simply run:
+```
+java -jar compiler.jar testfiles/asm/mul2.calc
+```
 
 ## Running JastAddAd on your project ##
 There are a few things that must be done to run JastAddAd on your own project.
@@ -136,6 +146,8 @@ IMPLEMENTED CONFIGS:
 - filter == [Bool] // ignore all -filter parts in the code
 - global == [Bool] // ignore everything inside -global. 
 - include == [Bool // ignore everything inside -include. 
+- NTA-depth == [Integer] //Will determine the max depth of the displayed NTA:s, if they are recursive they will stop at the max depth.  
+- NTA-show-computed == [Integer] //Will determine if NTA:s created by direct user calls should be displayed. 
 
 Filter nodes on attributes
 ------------ 
@@ -147,7 +159,7 @@ NOTE: Only unparameterized attributes are currently supported.
     -filter{
       5 > x;
       y == "Hello Filter";
-      z == [1,2.5,61];
+      z in [1,2.5,61];
     }
   }
 }
@@ -161,7 +173,7 @@ Each expression in the -filter block must contain one attribute name followed by
 - Another attribute name with the same type.
     
 Values can use the following operands: ==, <, >, <=, >=. In the example above z must be one of the values specified in the array 
-[1,2.5,61]. Strings and Integers can use the array.
+[1,2.5,61]. Strings and Integers can use the array type.
 
 Here is a list of the different combinations of filter expressions: (NOTE: that the attribute, x in this case, can be either on left
 or right side of the expression)
@@ -170,7 +182,7 @@ x [==, !=, <, >, <=, >=] <Integer>;
 x [==, !=, <, >, <=, >=] y;
 x [==, !=] <String>;
 x [==, !=] <Boolean>;
-x [==, !=] Array(<String> | <Integer>);
+x [in, not in] Array(<String> | <Integer>);
 ```
 Styles
 ------------ 
@@ -215,7 +227,33 @@ inside a node. The attributes listed there will be shown directly in the graph.
 }
 ```
 If the attribute is a primitive value, it will be displayed as "name : value", but if it is a reference to another node, the reference will be 
-pointed out in the graph as an edge.
+pointed out in the graph as an edge. 
+
+Non-Terminal Attributes
+------------ 
+These works like the normal attributes, in the -display-attributes block.
+By specifying the NTA:s in the -display-attributes block, the Nodes for the NTA:s will be created. They will also be pointed out in the graph as an edge. 
+So simply do like something like this:
+```
+-configs{
+  ...
+  NTA-depth = 1;
+  NTA-show-computed = true;
+  ...
+}
+-include{
+  Stmt {
+    -filter{ ... }
+    -style{ ... }
+    -display-attributes{
+      getNum; /*NTA*/
+      getInt;
+    }
+  }
+}
+```
+
+OBS! The NTA-depth will determine the depth of the NTA-chain, if a NTA in turn creates any NTA:s. And NTA-show-computed will determine if NTA:s computed by other calls, not from the Configuration Language, are show in the graph or not.
 
 Global
 ------------ 
@@ -285,7 +323,7 @@ Here is a slightly bigger example that you should be able to understand after re
     Mul{
       -filter{
 	    x == 5;
-	    y == ["foo", "bar"];
+	    y in ["foo", "bar"];
       }
       -style{ 
 	    node-color = #00ff00;

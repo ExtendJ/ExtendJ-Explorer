@@ -14,7 +14,7 @@ import java.util.*;
  */
 public class ASTAPI {
 
-    public static final String VERSION = "alphabuild-0.1.1";
+    public static final String VERSION = "alphabuild-0.2.0";
 
     public static final String AST_STRUCTURE_WARNING = "AST structure warning";
     public static final String AST_STRUCTURE_ERROR = "AST structure error";
@@ -229,7 +229,7 @@ public class ASTAPI {
         }
 
         // travers down the tree for the Computed NTA:s
-        if(computedNTAs.containsKey(node) && filterConfig.isSet(Config.NTA_SHOW_COMPUTED)){
+        if(computedNTAs.containsKey(node) && filterConfig.hasConfig(Config.NTA_SHOW_COMPUTED)){
             for(Node child : computedNTAs.get(node)) {
                 traversTree(child, fNode, tmpCluster, firstTime, 0, futureReferences);
             }
@@ -305,7 +305,7 @@ public class ASTAPI {
     public boolean isTreeNode(Object node){ return treeNodes.containsKey(node); }
 
     public boolean isASTObject(Object node){
-        return ASTObjects.contains(node) || ASTNTAObjects.contains(node) || (filterConfig.isSet(Config.NTA_SHOW_COMPUTED) && computedNTAs.containsKey(node));
+        return ASTObjects.contains(node) || ASTNTAObjects.contains(node) || (filterConfig.hasConfig(Config.NTA_SHOW_COMPUTED) && computedNTAs.containsKey(node));
     }
 
     public boolean addASTObject(Object node, boolean nta){
@@ -376,7 +376,7 @@ public class ASTAPI {
             computedNTAs.put(node, new HashSet<>());
         computedNTAs.get(node).add(astNode);
         node.NTAChildren.put(NodeInfo.getName(info.getMethod(), params), astNode);
-        if(filterConfig.isSet(Config.NTA_SHOW_COMPUTED)) {
+        if(filterConfig.hasConfig(Config.NTA_SHOW_COMPUTED)) {
             treeNodes.put(obj, new TreeNode(astNode, getTreeNode(node), filterConfig));
         }
         return obj;

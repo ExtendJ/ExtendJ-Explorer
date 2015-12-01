@@ -69,7 +69,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
      * @throws IOException
      */
     @Override
-    public void start (Stage stage) throws IOException, Exception {
+    public void start (Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader();
         rootView = loader.load(getClass().getResource("/main.fxml").openStream());
         con = loader.<Controller>getController();
@@ -118,9 +118,6 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
                     System.err.println("- " + e);
                 }
             } else {
-                List a = new List();
-                a.add(new Include(null, new Opt<NodeConfigList>()));
-                DebuggerConfig d = new DebuggerConfig(new Opt(), a);
                 JastAddAdUI debugger = new JastAddAdUI(program);
                 debugger.run();
             }
