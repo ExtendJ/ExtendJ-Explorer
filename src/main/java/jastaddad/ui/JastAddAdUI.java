@@ -3,6 +3,7 @@ package jastaddad.ui;
 import configAST.*;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.JastAddAdAPI;
+import jastaddad.api.filteredtree.TreeNode;
 import jastaddad.tasks.JastAddAdTask;
 import jastaddad.tasks.JastAddAdXML;
 import jastaddad.ui.controllers.Controller;

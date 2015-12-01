@@ -56,11 +56,12 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     @FXML private Label attributeInfoLabel;
 
     private ArrayList<TreeItem<NodeInfo>> labelTreeItems;
-
+    private int indexOfSelectedAttribute;
     public void init(UIMonitor mon, GraphView graphView){
         this.mon = mon;
         this.graphView = graphView;
         labelTreeItems = new ArrayList<>();
+        indexOfSelectedAttribute = 0;
     }
 
     /**
@@ -71,6 +72,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         attributeTableView.getSelectionModel().selectedItemProperty().addListener(this);
+        //attributeTableView.
         attributeInfoNameCol.setCellValueFactory(new PropertyValueFactory("name"));
         attributeInfoValueCol.setCellValueFactory(new PropertyValueFactory("value"));
 
@@ -195,6 +197,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      * @param compute
      */
     public void setAttributeList(TreeNode node, boolean compute){
+        //mon.getController().addMessage("--------- new ----------");
         Node n = node.getNode();
         if(compute) {
             mon.getController().addErrors(mon.getApi().compute(n));
@@ -221,6 +224,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         if(tokens.size() > 0) {
             addSectionToAttributeList("Tokens", n.getNodeContent().gettokens(), mainParent);
         }
+
+        attributeTableView.getSelectionModel().select(indexOfSelectedAttribute);
     }
 
     /**
@@ -289,6 +294,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     @Override
     public void changed(ObservableValue<? extends TreeItem<NodeInfoInterface>> observable, TreeItem<NodeInfoInterface> oldValue, TreeItem<NodeInfoInterface> newValue) {
         if(newValue != null) {
+            indexOfSelectedAttribute = attributeTableView.getSelectionModel().getSelectedIndex();
+            mon.getController().addMessage("index: " + indexOfSelectedAttribute);
             NodeInfoInterface infoHolder = newValue.getValue();
             NodeInfo info = null;
             Object value = null;
@@ -304,6 +311,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             mon.setSelectedInfo(info);
             mon.getController().attributeInNodeSelected(info);
             setReference(value);
+
         }else{
             setAttributeInfo(null);
             setReference(null);
@@ -356,16 +364,19 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             }
 
             setText(String.valueOf(item));
+            setStyle("-fx-text-fill:#ffffff;");
 
             NodeInfo info = (getTreeTableRow().getItem()).getNodeInfoOrNull();
             if(info == null)
                 return;
             if(info == null || item != null)
                 return;
-            if (info.isParametrized())
-                setText("");
-            else if(info.isNTA())
-                setText("");
+            if (info.isParametrized() || info.isNTA()) {
+                setText("right click to compute");
+                setStyle("-fx-text-fill:#999999;");
+            }else{
+
+            }
 
             setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.SECONDARY) {

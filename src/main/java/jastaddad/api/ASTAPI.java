@@ -26,6 +26,7 @@ public class ASTAPI {
     private GenericTreeNode filteredTree;
     private Config filterConfig;
     private HashMap<String, Integer> typeHash;
+    private HashSet<Class> allTypes;
     private HashMap<String, List<TreeNode>> typeNodeHash;  // will probably be removed
     private HashMap<Object, GenericTreeNode> treeNodes;
     private HashSet<Object> ASTObjects;
@@ -43,6 +44,7 @@ public class ASTAPI {
         typeNodeHash = new HashMap<>(); // will probably be removed
         errors = new HashMap<>();
         warnings = new HashMap<>();
+        allTypes = new HashSet<>();
 
         tree = new Node(root, this);
         this.filteredTree = null;
@@ -52,6 +54,10 @@ public class ASTAPI {
 
     public String getFilterFilePath(){return directoryPath + "filter.cfg"; }
     public String getDirectoryPath(){return directoryPath;}
+
+    public boolean isTypeFromAst(Class type){
+        return allTypes.contains(type);
+    }
     /**
      * Old function, will probably be removed.
      *
@@ -115,6 +121,13 @@ public class ASTAPI {
             if(!typeNodeHash.containsKey(node.fullName))
                 typeNodeHash.put(node.fullName, new ArrayList<>());
             typeNodeHash.get(node.fullName).add(fNode);
+        }
+        if(fNode.getNode().node != null) {
+            Class subclass = fNode.getNode().node.getClass();
+            allTypes.add(subclass);
+            while ((subclass = subclass.getSuperclass()) != null) {
+                allTypes.add(subclass);
+            }
         }
     }
 
@@ -296,19 +309,19 @@ public class ASTAPI {
 
     public ArrayList<Object> getNodeReferences(Object value){
         ArrayList<Object> nodes = new ArrayList<>();
-        System.out.println("1");
+
         if(value == null)
             return nodes;
-        System.out.println("2");
+
         if(value instanceof Collection<?>) {
             for (Object n : (Iterable<Object>) value) {
                 if (isASTObject(n))
                     nodes.add(n);
             }
-            System.out.println("3");
+
         }else if (isASTObject(value))
             nodes.add(value);
-        System.out.println("4: " + nodes.size());
+
         return nodes;
     }
 
