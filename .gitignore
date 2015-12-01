@@ -11,12 +11,12 @@
 !/src
 /src/gen
 
-!/A6-CalcASM
-/A6-CalcASM/src/gen
-/A6-CalcASM/ant-bin
-/A6-CalcASM/out
-/A6-CalcASM/compiler.jar
-
+!/CalcASM
+/CalcASM/src/gen
+/CalcASM/ant-bin
+/CalcASM/out
+/CalcASM/compiler.jar
+!sample.cfg
 !/config
 !/tools
 !/tests/

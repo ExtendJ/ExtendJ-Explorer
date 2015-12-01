@@ -169,6 +169,16 @@ public class Config{
      * @param name
      * @return
      */
+    public boolean hasConfig(String name){
+        HashMap<String, Value> filterConfigs = configs.configs();
+        return filterConfigs.containsKey(name) && filterConfigs.get(name).getBool();
+    }
+
+    /**
+     * Check if a specified config is set in the -global config
+     * @param name
+     * @return
+     */
     public boolean isSet(String name){
         HashMap<String, Value> filterConfigs = configs.configs();
         return !filterConfigs.containsKey(name) || filterConfigs.get(name).getBool();
