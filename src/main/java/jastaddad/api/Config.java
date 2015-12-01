@@ -30,6 +30,7 @@ public class Config{
     public static final String STYLE_LIST = "-style";
     public static final String DISPLAY_ATTRIBUTES_LIST = "-display-attributes";
     public static final String NTA_DEPTH = "NTA-depth";
+    public static final String NTA_SHOW_COMPUTED = "NTA-show-computed";
 
     private String filterDir; //Directory of the filter file.
 
@@ -168,7 +169,7 @@ public class Config{
      * @param name
      * @return
      */
-    private boolean isSet(String name){
+    public boolean isSet(String name){
         HashMap<String, Value> filterConfigs = configs.configs();
         return !filterConfigs.containsKey(name) || filterConfigs.get(name).getBool();
     }

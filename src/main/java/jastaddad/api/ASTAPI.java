@@ -28,7 +28,7 @@ public class ASTAPI {
     private HashMap<String, Integer> typeHash;
     private HashMap<String, List<TreeNode>> typeNodeHash;  // will probably be removed
     private HashMap<Object, GenericTreeNode> treeNodes;
-    private HashMap<Node, Node> computedNTAs; //This might be a temporary solution,
+    private HashMap<Node, HashSet<Node>> computedNTAs; //This might be a temporary solution,
     private HashSet<Object> ASTObjects;
     private HashSet<Object> ASTNTAObjects;
     private HashMap<String, ArrayList<String>> errors;
@@ -193,10 +193,9 @@ public class ASTAPI {
                 filteredTree = tmpCluster;
         }
 
-        // Create the nta nodes specified by the Configuration language, and traverse down THE NTA:s
-
         HashSet<String> displayedAttributes = filterConfig.getDisplayedAttributes(node);
 
+        // Create the nta nodes specified by the Configuration language, and traverse down THE NTA:s
         if(depth > 0) {
             for (String s : displayedAttributes) {
                 if (!node.NTAChildren.containsKey(s))
@@ -205,8 +204,8 @@ public class ASTAPI {
                 if (ntaNode == null) {
                     ntaNode = new Node(node.getNodeContent().computeMethod(s, true).getValue(), true, this);
                     node.NTAChildren.put(s, ntaNode);
+                    ASTNTAObjects.add(ntaNode.node);
                 }
-                ASTNTAObjects.add(ntaNode.node);
                 traversTree(ntaNode, fNode, tmpCluster, firstTime, depth - 1, futureReferences);
             }
         }
@@ -216,9 +215,11 @@ public class ASTAPI {
             traversTree(child, fNode, tmpCluster, firstTime, depth  ,futureReferences);
         }
 
-        // travers down the tree
-        if(computedNTAs.containsKey(fNode.getNode())) {
-            traversTree(computedNTAs.get(fNode), fNode, tmpCluster, firstTime, 1, futureReferences);
+        // travers down the tree for the Computed NTA:s
+        if(computedNTAs.containsKey(node) && filterConfig.isSet(Config.NTA_SHOW_COMPUTED)){
+            for(Node child : computedNTAs.get(node)) {
+                traversTree(child, fNode, tmpCluster, firstTime, 0, futureReferences);
+            }
         }
 
         fNode.setClusterReference(tmpCluster);
@@ -237,7 +238,6 @@ public class ASTAPI {
      */
     private void clusterClusters(TreeNode fNode){
         if(fNode.isNode()) {
-            //FilteredTreeNode n = (FilteredTreeNode) fNode;
             TreeClusterParent clusterParent = new TreeClusterParent(fNode);
             clusterParent.setStyles(filterConfig);
             // get all children cluster children that have no children
@@ -255,19 +255,6 @@ public class ASTAPI {
         }
     }
 
-    public HashMap<String, Integer> getTypeHash(){ return typeHash; }
-
-    public GenericTreeNode getTreeNode(Object node){ return treeNodes.get(node); }
-    public boolean isTreeNode(Object node){ return treeNodes.containsKey(node); }
-
-    public boolean isASTObject(Object node){ return ASTObjects.contains(node) || ASTNTAObjects.contains(node);}
-    public boolean addASTObject(Object node, boolean nta){ return nta ? ASTNTAObjects.add(node) : ASTObjects.add(node); }
-
-    public void clearDisplayedReferences(){ displayedReferences.clear(); }
-    public ArrayList<NodeReference> getDisplayedReferences(){ return displayedReferences; }
-
-    public GenericTreeNode getFilteredTree() { return filteredTree; }
-
     /**
      * Write the new filter text to file and generate a new filtered AST
      * @param text
@@ -275,10 +262,11 @@ public class ASTAPI {
      */
     public boolean saveNewFilter(String text){
         boolean res = filterConfig.saveAndUpdateConfig(text);
-        if(res) {
+        if (res) {
+            for(Collection<Node> list : computedNTAs.values()){
+                list.forEach(treeNodes::remove);
+            }
             ASTNTAObjects.forEach(treeNodes::remove);
-            ASTNTAObjects.clear();
-            computedNTAs.clear();
             clearDisplayedReferences();
             filteredTree = null;
             traversTree(this.tree, null, null, false);
@@ -296,26 +284,49 @@ public class ASTAPI {
     }
 
     public Config getfilterConfig(){ return filterConfig; }
+    public GenericTreeNode getFilteredTree() { return filteredTree; }
 
-    public ArrayList<GenericTreeNode> getNodeReferences(NodeInfo info, boolean highlight){
+    public HashMap<String, Integer> getTypeHash(){ return typeHash; }
+
+    public GenericTreeNode getTreeNode(Object node){ return treeNodes.get(node); }
+    public boolean isTreeNode(Object node){ return treeNodes.containsKey(node); }
+
+    public boolean isASTObject(Object node){
+        return ASTObjects.contains(node) || ASTNTAObjects.contains(node) || (filterConfig.isSet(Config.NTA_SHOW_COMPUTED) && computedNTAs.containsKey(node));
+    }
+
+    public boolean addASTObject(Object node, boolean nta){
+        return nta ? ASTNTAObjects.add(node) : ASTObjects.add(node);
+    }
+
+    /**
+     * Returns the Size of the graph, ie the number of Nodes in the AST.
+     */
+    public int getASTSize(){ return ASTObjects.size(); }
+
+    public void clearDisplayedReferences(){ displayedReferences.clear(); }
+    public ArrayList<NodeReference> getDisplayedReferences(){ return displayedReferences; }
+
+    public ArrayList<GenericTreeNode> getNodeReferencesAndHighlightThem(Object value, boolean highlight){
         ArrayList<GenericTreeNode> nodes = new ArrayList<>();
-        for(Object o : getNodeReferences(info)){
-            nodes.add(getTreeNode(o).setReferenceHighlight(highlight));
+        for(Object o : getNodeReferences(value)){
+            if(isTreeNode(o))
+                nodes.add(getTreeNode(o).setReferenceHighlight(highlight));
         }
         return nodes;
     }
 
-    public ArrayList<Object> getNodeReferences(NodeInfo info){
+    public ArrayList<Object> getNodeReferences(Object value){
         ArrayList<Object> nodes = new ArrayList<>();
-        if(info == null)
+        if(value == null)
             return nodes;
-        if(info.getValue() instanceof Collection<?>) {
-            for (Object n : (Iterable<Object>) info.getValue()) {
+        if(value instanceof Collection<?>) {
+            for (Object n : (Iterable<Object>) value) {
                 if (isASTObject(n))
                     nodes.add(n);
             }
-        }else if (isASTObject(info.getValue()))
-            nodes.add(info.getValue());
+        }else if (isASTObject(value))
+            nodes.add(value);
         return nodes;
     }
 
@@ -347,17 +358,15 @@ public class ASTAPI {
         if(!info.isNTA() ||  obj == null || ASTNTAObjects.contains(obj))//Todo might want to add null nodes
             return obj;
         Node astNode = new Node(obj, true, this);
-        computedNTAs.put(node, astNode);
+        if(!computedNTAs.containsKey(node))
+            computedNTAs.put(node, new HashSet<>());
+        computedNTAs.get(node).add(astNode);
         node.NTAChildren.put(NodeInfo.getName(info.getMethod(), params),astNode);
-        TreeNode treeNode = new TreeNode(astNode, getTreeNode(astNode), filterConfig);
-        treeNodes.put(obj, treeNode);
+        if(filterConfig.isSet(Config.NTA_SHOW_COMPUTED)) {
+            treeNodes.put(obj, new TreeNode(astNode, getTreeNode(node), filterConfig));
+        }
         return obj;
     }
-
-    /**
-     * Returns the Size of the graph, ie the number of Nodes in the AST.
-     */
-    public int getASTSize(){ return ASTObjects.size(); }
 
 
 }

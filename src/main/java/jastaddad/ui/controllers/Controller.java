@@ -3,6 +3,7 @@ package jastaddad.ui.controllers;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.TreeNode;
+import jastaddad.api.nodeinfo.NodeInfo;
 import jastaddad.ui.AttributeInfo;
 import jastaddad.ui.UIDialog;
 import jastaddad.ui.UIMonitor;
@@ -313,7 +314,7 @@ public class Controller implements Initializable {
      * An attribute was selected for the selected node. This method tells different parts of the UI of this event.
      * @param info
      */
-    public void attributeInNodeSelected(AttributeInfo info){
+    public void attributeInNodeSelected(NodeInfo info){
         for(UIDialog subWindow : mon.getSubWindows())
             subWindow.attributeSelected(info);
     }

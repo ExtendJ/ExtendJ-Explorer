@@ -273,4 +273,8 @@ public class NodeContent {
         return temp;
     }
 
+    public Collection<NodeInfo> getAttributes(){ return attributes.values(); }
+    public Collection<NodeInfo> getNTAs(){ return NTAs.values(); }
+    public Collection<NodeInfo> getTokens(){ return tokens.values(); }
+
 }

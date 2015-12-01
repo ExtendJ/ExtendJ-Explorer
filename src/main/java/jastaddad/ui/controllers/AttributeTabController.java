@@ -4,41 +4,42 @@ import jastaddad.api.ASTAPI;
 import jastaddad.api.Node;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.TreeNode;
+import jastaddad.api.nodeinfo.Attribute;
 import jastaddad.api.nodeinfo.NodeInfo;
 import jastaddad.ui.AttributeInfo;
 import jastaddad.ui.AttributeInputDialog;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.graph.GraphView;
+import jastaddad.ui.uicomponent.nodeinfotreetableview.NodeInfoHolder;
+import jastaddad.ui.uicomponent.nodeinfotreetableview.NodeInfoInterface;
+import jastaddad.ui.uicomponent.nodeinfotreetableview.NodeInfoLabel;
+import jastaddad.ui.uicomponent.nodeinfotreetableview.NodeInfoParameter;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * This is a controller class that keeps track of the attribute tab.
  */
-public class AttributeTabController implements Initializable, ChangeListener<AttributeInfo> {
+public class AttributeTabController implements Initializable, ChangeListener<TreeItem<NodeInfoInterface>> {
     private UIMonitor mon;
     private GraphView graphView;
     private ContextMenu mouseMenu;
 
-    @FXML private TableView<AttributeInfo> attributeTableView;
-    @FXML private TableColumn<AttributeInfo, String> attributeNameCol;
-    @FXML private TableColumn<AttributeInfo, Object> attributeValueCol;
+    @FXML private TreeTableView<NodeInfoInterface> attributeTableView;
+    @FXML private TreeTableColumn<NodeInfoInterface, String> attributeNameCol;
+    @FXML private TreeTableColumn<NodeInfoInterface, Object> attributeValueCol;
 
     @FXML private TableView<AttributeInfo> attributeInfoTableView;
     @FXML private TableColumn<AttributeInfo, String> attributeInfoNameCol;
@@ -47,10 +48,12 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
     @FXML private Label nodeNameLabel;
     @FXML private Label attributeInfoLabel;
 
+    private ArrayList<TreeItem<NodeInfo>> labelTreeItems;
 
     public void init(UIMonitor mon, GraphView graphView){
         this.mon = mon;
         this.graphView = graphView;
+        labelTreeItems = new ArrayList<>();
     }
 
     /**
@@ -63,8 +66,22 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
         attributeTableView.getSelectionModel().selectedItemProperty().addListener(this);
         attributeInfoNameCol.setCellValueFactory(new PropertyValueFactory("name"));
         attributeInfoValueCol.setCellValueFactory(new PropertyValueFactory("value"));
-        attributeNameCol.setCellValueFactory(new PropertyValueFactory("name"));
-        attributeValueCol.setCellValueFactory(new PropertyValueFactory("value"));
+
+        attributeNameCol.setCellValueFactory(param -> {
+            NodeInfoInterface info = param.getValue().getValue();
+            if(info != null) {
+                return new ReadOnlyStringWrapper(param.getValue().getValue().getName());
+            }
+            return null;
+        });
+        attributeValueCol.setCellValueFactory(
+                param -> {
+                    if(param.getValue().getValue() != null)
+                        return new ReadOnlyObjectWrapper(param.getValue().getValue().getValue());
+                    return null;
+                }
+        );
+
         attributeValueCol.setCellFactory(param -> new AttributeValueCell());
 
         //Yey hiding the header for attribute info tableview, so ugly
@@ -78,15 +95,20 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
             }
         });
 
+        attributeNameCol.prefWidthProperty().bind(attributeTableView.widthProperty().multiply(0.50));
+        attributeValueCol.prefWidthProperty().bind(attributeTableView.widthProperty().multiply(0.50));
+
         mouseMenu = new ContextMenu();
         MenuItem cmItem1 = new MenuItem("Compute");
         /**
-         * This sub method will call teh invocation of the method that has been clicked on, after the values have been added
+         * This sub method will call the invocation of the method that has been clicked on, after the values have been added
          */
         cmItem1.setOnAction(e -> {
             TreeNode node = (TreeNode) mon.getSelectedNode();
-            NodeInfo info  = attributeTableView.getSelectionModel().getSelectedItem().getNodeInfo();
-
+            NodeInfoInterface selectedInfo  = attributeTableView.getSelectionModel().getSelectedItem().getValue();
+            if(!selectedInfo.isNodeInfo())
+                return;
+            NodeInfo info = selectedInfo.getNodeInfoOrNull();
             if(info.isNTA() && !info.isParametrized()){ //Handle the non-parametrized NTA:s
                 Object obj = mon.getApi().compute(node.getNode(), info);
                 if(!printToConsole(node, obj))
@@ -122,7 +144,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
     }
 
     private boolean printToConsole(TreeNode node, Object value){
-
         if(!node.getNode().getNodeContent().noErrors()) {
             mon.getController().addErrors(node.getNode().getNodeContent().getInvocationErrors());
             mon.getController().addErrors(mon.getApi().getErrors(ASTAPI.INVOCATION_ERROR));
@@ -134,7 +155,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
         mon.getController().addWarnings(mon.getApi().getWarnings(ASTAPI.INVOCATION_WARNING));
         mon.getController().addMessage("Computation successful : " + value);
         return true;
-
     }
 
     public void functionStarted(){
@@ -153,8 +173,9 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
         GenericTreeNode node = mon.getSelectedNode();
         if(node == null || !mon.getSelectedNode().isNode()) {
             nodeNameLabel.setText("");
-            attributeTableView.getItems().clear();
+            attributeTableView.getRoot().getChildren().clear();
             attributeInfoTableView.getItems().clear();
+
             return;
         }
         nodeNameLabel.setText(node.toString());
@@ -172,34 +193,86 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
             mon.getController().addErrors(mon.getApi().compute(n));
             attributeTableView.getSelectionModel().clearSelection();
         }
-        /*TreeItem<String> mainParent = new TreeItem<>("ROOT");
-        final TreeTableView<String> treeTableView = new TreeTableView<>(mainParent);
-        treeTableView.setShowRoot(false);
+        TreeItem<NodeInfoInterface> mainParent = new TreeItem<>(null);
+        //final TreeTableView<String> treeTableView = new TreeTableView<>(mainParent);
+        attributeTableView.setRoot(mainParent);
+        attributeTableView.setShowRoot(false);
+        mainParent.setExpanded(true);
 
-        for(NodeInfoContainer container : n.getNodeContentArray()){ //NTA, Attributes, token
-            TreeItem<String> parentCon = new TreeItem<>(container.getName());
-            for(Object key : container.getMainKeys()){ //Syn, Coll, inh etc
-                TreeItem<String> parent = new TreeItem<>(key.toString());
-                for(ArrayList<NodeInfo> list : container.get(key)){ //Methods and values
-                    for()
-                    TreeItem<String> child = new TreeItem<>();
-                    if(list.size() > 0)
-                        System.out.println("Con " + container.getName() + ", Key : " + key + ", Value : " + list.get(0).print());
-                    parent.getChildren().add(child);
-                }
-                parentCon.getChildren().add(parent);
-            }
-            mainParent.getChildren().add(parentCon);
-        }*/
-        attributeTableView.setItems(FXCollections.observableList(AttributeInfo.toArray(n.getNodeContentArray())));
-            if(attributeTableView.getItems().size() <= 0) {
-            attributeInfoTableView.getItems().clear();
+        Collection<NodeInfo> attr = n.getNodeContent().getAttributes();
+        Collection<NodeInfo> ntas = n.getNodeContent().getNTAs();
+        Collection<NodeInfo> tokens = n.getNodeContent().getTokens();
+
+        if(attr.size() > 0) {
+            addSectionToAttributeList("Attributes", n.getNodeContent().getAttributes(), mainParent);
         }
 
+        if(ntas.size() > 0) {
+            addSectionToAttributeList("Nonterminal attributes", n.getNodeContent().getNTAs(), mainParent);
+        }
+
+        if(tokens.size() > 0) {
+            addSectionToAttributeList("Tokens", n.getNodeContent().getTokens(), mainParent);
+        }
     }
 
     /**
-     * Listener for the attribute tableview, sets the attributeInfoTableView for the selected attribute.
+     * Add all NodeInfos from list to the parent with the name label.
+     * @param label
+     * @param list
+     * @param parent
+     */
+    private void addSectionToAttributeList(String label, Collection<NodeInfo> list, TreeItem parent){
+        NodeInfoInterface fucker = new NodeInfoLabel(label);
+        TreeItem<NodeInfoInterface> tokensItem = new TreeItem<>(fucker);
+        tokensItem.setExpanded(true);
+
+        // go through all methods and sort them on kind
+        HashMap<String, ArrayList<NodeInfo>> methods = new HashMap<>();
+        for (NodeInfo info : list) {
+            if(!methods.containsKey(info.getKindString())){
+                methods.put(info.getKindString(), new ArrayList<>());
+            }
+            methods.get(info.getKindString()).add(info);
+        }
+
+        // Add all methods to the list
+        for(Map.Entry<String, ArrayList<NodeInfo>> entry : methods.entrySet()){
+            if(entry.getValue().size() > 0) {
+
+                TreeItem<NodeInfoInterface> kindLabel = new TreeItem<>(new NodeInfoLabel(entry.getKey()));
+                kindLabel.setExpanded(true);
+                tokensItem.getChildren().add(kindLabel);
+
+                for (NodeInfo info : entry.getValue()) {
+                    TreeItem<NodeInfoInterface> methodItem = new TreeItem<>(new NodeInfoHolder(info));
+                    kindLabel.getChildren().add(methodItem);
+                    if(!info.isAttribute() || !info.isParametrized()){
+                        continue;
+                    }
+                    Attribute attr = (Attribute) info;
+                    methodItem.setExpanded(true);
+                    for(Map.Entry<String, Object> computedEntry : attr.getComputedEntry()){
+                        String name = "";
+                        Object[] params = attr.getUsedParameters().get(computedEntry.getKey());
+                        int i = params.length;
+                        for(Object param : params){
+                            name += param == null ? "null" : param.toString();
+                            if(--i > 0){
+                                name += ",";
+                            }
+                        }
+                        TreeItem<NodeInfoInterface> computedItem = new TreeItem<>(new NodeInfoParameter(name, computedEntry.getValue(), info));
+                        methodItem.getChildren().add(computedItem);
+                    }
+                }
+            }
+        }
+        parent.getChildren().add(tokensItem);
+    }
+
+    /**
+     * Listener for the attribute treetableview, sets the attributeInfoTableView for the selected attribute.
      * It will also remove old references, and add new references if the value of selected attribute is a AST node.
      * Also tells the main controller that an attribute was selected.
      * @param observable
@@ -207,71 +280,97 @@ public class AttributeTabController implements Initializable, ChangeListener<Att
      * @param newValue
      */
     @Override
-    public void changed(ObservableValue<? extends AttributeInfo> observable, AttributeInfo oldValue, AttributeInfo newValue) {
-        setAttributeInfo(newValue);
-        mon.setSelectedInfo(newValue);
-        mon.getController().attributeInNodeSelected(newValue);
-        if(oldValue != null)
-            mon.getApi().getNodeReferences(oldValue.getNodeInfo(), false);
-        setReference(newValue);
+    public void changed(ObservableValue<? extends TreeItem<NodeInfoInterface>> observable, TreeItem<NodeInfoInterface> oldValue, TreeItem<NodeInfoInterface> newValue) {
+        if(newValue != null) {
+            NodeInfoInterface infoHolder = newValue.getValue();
+            NodeInfo info = null;
+            Object value = null;
+            if(infoHolder.isNodeInfo()) {
+                info = newValue.getValue().getNodeInfoOrNull();
+                value = info.getValue();
+            } else if(infoHolder.isParameter()){
+                NodeInfoParameter paramHolder = ((NodeInfoParameter)newValue.getValue());
+                info = paramHolder.info;
+                value = paramHolder.getValue();
+            }
+            setAttributeInfo(info);
+            mon.setSelectedInfo(info);
+            mon.getController().attributeInNodeSelected(info);
+            setReference(value);
+        }else{
+            setAttributeInfo(null);
+            setReference(null);
+        }
+
+        if(oldValue != null && oldValue.getValue() != null) {
+            if(oldValue.getValue().isNodeInfo())
+                mon.getApi().getNodeReferencesAndHighlightThem(oldValue.getValue().getNodeInfoOrNull().getValue(), false);
+            else if(oldValue.getValue().isParameter())
+                mon.getApi().getNodeReferencesAndHighlightThem((oldValue.getValue()).getValue(), false);
+        }
     }
 
     /**
      * Fill the attributeInfoTableView with information about the attribute
      * @param info
      */
-    private void setAttributeInfo(AttributeInfo info){
-        if(info == null || info.getNodeInfo() == null) {
+    private void setAttributeInfo(NodeInfo info){
+        if(info == null ) {
             attributeInfoLabel.setText("");
+            attributeInfoTableView.getItems().clear();
             return;
         }
-        attributeInfoLabel.setText(info.getNodeInfo().print());
-        attributeInfoTableView.setItems(FXCollections.observableArrayList(AttributeInfo.toArray(info.getNodeInfo().getInfo())));
+        attributeInfoLabel.setText(info.print());
+        attributeInfoTableView.setItems(FXCollections.observableArrayList(AttributeInfo.toArray(info.getInfo())));
     }
 
     /**
      * Adds references from the selected node in the monitor and the values found in the AttributeInfo supplied.
-     * @param info
+     * @param value
      */
-    public void setReference(AttributeInfo info){
+    public void setReference(Object value){
         ArrayList<GenericTreeNode> newRefs = null;
-        if(info != null)
-            newRefs = mon.getApi().getNodeReferences(info.getNodeInfo(), true);
+        if(value != null)
+            newRefs = mon.getApi().getNodeReferencesAndHighlightThem(value, true);
         graphView.setReferenceEdges(newRefs, mon.getSelectedNode());
     }
 
     /**
      * Class for the cells in the tableviews
      */
-    private class AttributeValueCell extends TableCell<AttributeInfo, Object>{
+    private class AttributeValueCell extends TreeTableCell<NodeInfoInterface, Object>{
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
-            if (getTableRow().getItem() == null || empty) {
+
+            if (getTreeTableRow().getItem() == null || empty) {
                 setText(null);
                 return;
             }
 
             setText(String.valueOf(item));
 
-            NodeInfo info = ((AttributeInfo) getTableRow().getItem()).getNodeInfo();
+            NodeInfo info = (getTreeTableRow().getItem()).getNodeInfoOrNull();
+            if(info == null)
+                return;
             if(info == null || item != null)
                 return;
             if (info.isParametrized())
-                setText("Need input form user");
+                setText("");
             else if(info.isNTA())
-                setText("NTA, need to be run by user");
+                setText("");
 
             setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.SECONDARY) {
-                    if(getTableRow().getItem() != null &&
-                            ((AttributeInfo )getTableRow().getItem()).hasCompute() &&
-                            !mon.isFunctionRunning()) {
+                    boolean yep = (info.isNTA() || info.isParametrized()) && info.getValue() == null;
+                    if(getTreeTableRow().getItem() != null &&
+                            (yep && !mon.isFunctionRunning())) {
                         mouseMenu.show(this, event.getScreenX(), event.getScreenY());
                     }
                 }
             });
         }
-
     }
+
+
 }

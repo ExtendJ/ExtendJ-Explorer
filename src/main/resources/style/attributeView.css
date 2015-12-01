@@ -1,0 +1,56 @@
+.tree-table-view, .table-view {
+    -fx-fit-to-height:true;
+    -fx-fit-to-width:true;
+    -fx-base: #606060;
+    -fx-control-inner-background: #606060;
+    -fx-background-color: #606060;
+    -fx-padding: 0;
+}
+
+.info-table-view .info-column-header-background {
+    visibility: hidden;
+    -fx-padding: -1em;
+ }
+
+.tree-table-view .column-header-background {
+    -fx-background-color: #808080;
+}
+
+.tree-table-view .column-header, .table-view .filler {
+    -fx-size: 35;
+    -fx-border-width: 0 0 0 0;
+    -fx-border-insets: 0 10 1 0;
+}
+
+.tree-table-view .column-header .label {
+    -fx-font-size: 12px;
+    -fx-alignment: CENTER;
+    -fx-text-fill: #eeeeee;
+}
+
+/* trying to make the treetableview cell look like a table view */
+.tree-table-row-cell {
+    -fx-background-color: -fx-table-cell-border-color, -fx-control-inner-background;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: 0.0em;
+    -fx-text-fill: -fx-text-inner-color;
+}
+
+.tree-table-row-cell:expanded, .tree-table-row-cell:sub-tree-item, .tree-table-row-cell:expanded:odd{
+    -fx-background-color:#555555;
+}
+
+.tree-table-row-cell:selected {
+    -fx-background-color: -fx-focus-color, -fx-cell-focus-inner-border, -fx-focus-color;
+    -fx-background-insets: 0, 1, 2;
+}
+
+.tree-table-row-cell:odd {
+    -fx-background-color: -fx-table-cell-border-color, derive(-fx-control-inner-background,-2%);
+    -fx-background-insets: 0, 0 0 1 0;
+}
+
+.tree-table-row-cell:selected:odd {
+    -fx-background-color: -fx-focus-color, -fx-cell-focus-inner-border, -fx-focus-color;
+    -fx-background-insets: 0, 1, 2;
+}
