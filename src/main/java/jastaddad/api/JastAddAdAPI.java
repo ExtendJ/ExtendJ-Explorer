@@ -71,7 +71,7 @@ public class JastAddAdAPI {
      */
 	public static void main(String[] args) {
 		try{
-			String filename = "sample.cfg";
+			String filename = "testInput.cfg";
 			ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
 			ConfigParser parser = new ConfigParser();
 			DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);

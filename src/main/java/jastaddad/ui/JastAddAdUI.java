@@ -69,7 +69,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
      * @throws IOException
      */
     @Override
-    public void start (Stage stage) throws IOException, Exception {
+    public void start (Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader();
         rootView = loader.load(getClass().getResource("/main.fxml").openStream());
         con = loader.<Controller>getController();
@@ -107,7 +107,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
      */
     public static void main(String[] args) {
         try{
-            String filename = "sample.cfg";
+            String filename = "testInput.cfg";
             ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
             ConfigParser parser = new ConfigParser();
             DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);
