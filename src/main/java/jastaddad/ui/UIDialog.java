@@ -37,7 +37,7 @@ public abstract class UIDialog extends Stage{
         setOnHidden(event -> {
             mon.removeSubWindow(this);
             dialogClose();
-            mon.getController().functionStoped();
+            mon.getController().functionStopped();
         });
     }
 

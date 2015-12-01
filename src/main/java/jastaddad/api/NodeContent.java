@@ -53,21 +53,6 @@ public class NodeContent {
     public boolean noErrors(){ return invocationErrors.size() == 0; }
 
     /**
-     * Will return the errors that may have been cast during the invocation of a method or methods.
-     * NOTE: Will also clear the list.
-     * @return
-     */
-    public void resetNTAValue(String method){
-        try{
-            NodeInfo info = NTAs.get(nodeObject.getClass().getMethod(method));
-            if(info != null)
-                info.setValue(null);
-        }  catch (NoSuchMethodException e) {
-            //e.printStackTrace();
-        }
-    }
-
-    /**
      * Computes the method in the NodeInfo, with the given parameters, and adds it to the cached list of the Attribute.
      * If the params == null and the method is not parametrized it will compute the method will 0 arguments, otherwise it will return null and add a error to the api.
      * @param nodeInfo

@@ -105,7 +105,8 @@ List decl_list =
 IdDecl decl_tmp = iddecl.a SEMI {: return a; :};
 
 BinExpr binexpr =
-	 value.a IN listValue.b {:return new IN(a,b); :}
+	 value.a NOT IN listValue.b {:return new NOTIN(a,b); :}
+	| value.a IN listValue.b {:return new IN(a,b); :}
 	| value.a EQ value.b {:return new EQ(a,b); :}
 	| value.a NEQ value.b {:return new NEQ(a,b); :}
 	| value.a LEQ value.b  {:return new LEQ(a,b); :}
