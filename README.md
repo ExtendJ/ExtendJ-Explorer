@@ -146,6 +146,8 @@ IMPLEMENTED CONFIGS:
 - filter == [Bool] // ignore all -filter parts in the code
 - global == [Bool] // ignore everything inside -global. 
 - include == [Bool // ignore everything inside -include. 
+- NTA-depth == [Integer] //Will determine the max depth of the displayed NTA:s, if they are recursive they will stop at the max depth.  
+- NTA-show-computed == [Integer] //Will determine if NTA:s created by direct user calls should be displayed. 
 
 Filter nodes on attributes
 ------------ 
@@ -225,7 +227,33 @@ inside a node. The attributes listed there will be shown directly in the graph.
 }
 ```
 If the attribute is a primitive value, it will be displayed as "name : value", but if it is a reference to another node, the reference will be 
-pointed out in the graph as an edge.
+pointed out in the graph as an edge. 
+
+Non-Terminal Attributes
+------------ 
+These works like the normal attributes, in the -display-attributes block.
+By specifying the NTA:s in the -display-attributes block, the Nodes for the NTA:s will be created. They will also be pointed out in the graph as an edge. 
+So simply do like something like this:
+```
+-configs{
+  ...
+  NTA-depth = 1;
+  NTA-show-computed = true;
+  ...
+}
+-include{
+  Stmt {
+    -filter{ ... }
+    -style{ ... }
+    -display-attributes{
+      getNum; /*NTA*/
+      getInt;
+    }
+  }
+}
+```
+
+OBS! The NTA-depth will determine the depth of the NTA-chain, if a NTA in turn creates any NTA:s. And NTA-show-computed will determine if NTA:s computed by other calls, not from the Configuration Language, are show in the graph or not.
 
 Global
 ------------ 
