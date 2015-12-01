@@ -248,7 +248,6 @@ public class Controller implements Initializable {
     }
 
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
-        System.out.println("patt: " + PATTERN);
         Matcher matcher = PATTERN.matcher(text);
 
         int lastKwEnd = 0;
