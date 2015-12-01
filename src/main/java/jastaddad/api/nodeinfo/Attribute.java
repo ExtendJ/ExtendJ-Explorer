@@ -19,7 +19,7 @@ public class Attribute extends NodeInfo {
     private boolean isNTA;
     private HashMap<String, Object> computedValues;
     private HashMap<String, Object[]> usedParameters;
-
+    private String lastComputedkey;
     public Attribute(String name, Object value, Method m) {
         super(name, value, m, "");
         computedValues = new HashMap<>();
@@ -92,6 +92,7 @@ public class Attribute extends NodeInfo {
         if(computedValues == null)
             computedValues = new HashMap<>();
         String key = getKey(params);
+        lastComputedkey = key;
         computedValues.put(key, value);
         usedParameters.put(key, params);
     }
@@ -112,6 +113,7 @@ public class Attribute extends NodeInfo {
         return usedParameters;
     }
 
+    public String getLastComputedkey(){return lastComputedkey;}
     private String getKey(Object[] params){
         if(params.length == 0)
             return  "no-params";
