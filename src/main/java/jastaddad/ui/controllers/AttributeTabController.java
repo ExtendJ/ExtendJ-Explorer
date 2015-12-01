@@ -225,7 +225,31 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             addSectionToAttributeList("Tokens", n.getNodeContent().gettokens(), mainParent);
         }
 
+        mon.getController().addMessage("index: " + indexOfSelectedAttribute);
         attributeTableView.getSelectionModel().select(indexOfSelectedAttribute);
+        TreeItem<NodeInfoInterface> selected = attributeTableView.getSelectionModel().getSelectedItem();
+
+        // Below code is for setting the selected position to the last computed value, in case the selected row
+        // is a parameterized attribute
+        if(selected == null)
+            return;
+        if(!selected.getValue().isNodeInfo())
+            return;
+        NodeInfo info = selected.getValue().getNodeInfoOrNull();
+        if(!info.isAttribute() && !info.isParametrized())
+            return;
+        Attribute attribute = (Attribute)info;
+        int i = 0;
+        for(Map.Entry<String, Object> entry : attribute.getComputedEntry()){
+            i++;
+            if(entry.getKey().equals(attribute.getLastComputedkey())) {
+                indexOfSelectedAttribute += i;
+                attributeTableView.getSelectionModel().select(indexOfSelectedAttribute);
+                return;
+            }
+        }
+
+
     }
 
     /**
@@ -271,7 +295,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                         for(Object param : params){
                             name += param == null ? "null" : param.toString();
                             if(--i > 0){
-                                name += ",";
+                                name += ", ";
                             }
                         }
                         TreeItem<NodeInfoInterface> computedItem = new TreeItem<>(new NodeInfoParameter(name, computedEntry.getValue(), info));
@@ -295,7 +319,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     public void changed(ObservableValue<? extends TreeItem<NodeInfoInterface>> observable, TreeItem<NodeInfoInterface> oldValue, TreeItem<NodeInfoInterface> newValue) {
         if(newValue != null) {
             indexOfSelectedAttribute = attributeTableView.getSelectionModel().getSelectedIndex();
-            mon.getController().addMessage("index: " + indexOfSelectedAttribute);
             NodeInfoInterface infoHolder = newValue.getValue();
             NodeInfo info = null;
             Object value = null;
