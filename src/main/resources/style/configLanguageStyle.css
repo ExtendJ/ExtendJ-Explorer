@@ -1,0 +1,51 @@
+.styled-text-area .text.keyword {
+    -fx-fill: #FF8923;
+    -fx-font-weight: bold;
+}
+.styled-text-area .text.semicolon {
+    -fx-font-weight: bold;
+}
+.styled-text-area .text.paren {
+    -fx-fill: firebrick;
+    -fx-font-weight: bold;
+}
+.styled-text-area .text.bracket {
+    -fx-fill: #aaaaaa;
+}
+.styled-text-area .text.brace {
+    -fx-fill: #FF8923;
+}
+.styled-text-area .text.string {
+    -fx-fill: blue;
+}
+
+.styled-text-area .text.comment {
+	-fx-fill: cadetblue;
+}
+
+.styled-text-area .text.whiteText{
+    -fx-fill: white;
+}
+
+.textAreaConfig .lineno{
+    -fx-background-color:#505050;
+    -fx-text-fill:#505050;
+}
+
+.styled-text-area .text.lineno{
+    -fx-text-fill:#505050;
+}
+
+.textAreaConfig {
+    -fx-pref-height:1000;
+    -fx-fill: #FFFFFF ;
+    -fx-background-color: #363636;
+}
+
+.styled-text-area .text{
+    -fx-fill: #ffffff ;
+}
+
+.styled-text-area .caret {
+    -fx-stroke: #ffffff;
+}

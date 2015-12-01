@@ -3,6 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.TextFlow?>
+<?import org.fxmisc.richtext.CodeArea?>
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="jastaddad.ui.controllers.Controller" fx:id="root">
     <top>
@@ -94,7 +95,7 @@
                                             <Tooltip text="Update the graph with the new filter."/>
                                         </tooltip>
                                     </Button>
-                                    <TextArea styleClass="textAreaConfig" fx:id="filteredConfigTextArea"/>
+                                    <VBox fx:id="codeAreaContainer"></VBox>
 
                                 </VBox>
                             </Tab>
@@ -115,4 +116,5 @@
     <stylesheets>style/invokeAttributeDialog.css</stylesheets>
     <stylesheets>style/topmenu.css</stylesheets>
     <stylesheets>style/attributeView.css</stylesheets>
+    <stylesheets>style/configLanguageStyle.css</stylesheets>
 </BorderPane>
