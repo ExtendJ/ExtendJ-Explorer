@@ -52,7 +52,17 @@ java -jar jastadddebugger-exjobb.jar
 ```
 This should run a sample JastAdd project and run the JastAddAdUI program. see Lib dependencis below if it's not working.
 
-OBS! The debugger will run on the sample.cfg file in your directory. The file sample.cfg contain some Configuration Language code which is described later.
+OBS! The debugger will run on the sample.cfg file in your directory. The file sample.cfg contain some Configuration Language code which will be described later.
+
+Alternatively one can also, if they want to test JastAddAdUI, go in to the CalcASM directory and run the following command: 
+```
+ant jar
+```
+This will create a jar named compiler which contains the compiler for the CalcASM language. 
+To start the JastAddAdUI simply run:
+```
+java -jar compiler.jar testfiles/asm/mul2.calc
+```
 
 ## Running JastAddAd on your project ##
 There are a few things that must be done to run JastAddAd on your own project.
@@ -147,7 +157,7 @@ NOTE: Only unparameterized attributes are currently supported.
     -filter{
       5 > x;
       y == "Hello Filter";
-      z == [1,2.5,61];
+      z in [1,2.5,61];
     }
   }
 }
@@ -161,7 +171,7 @@ Each expression in the -filter block must contain one attribute name followed by
 - Another attribute name with the same type.
     
 Values can use the following operands: ==, <, >, <=, >=. In the example above z must be one of the values specified in the array 
-[1,2.5,61]. Strings and Integers can use the array.
+[1,2.5,61]. Strings and Integers can use the array type.
 
 Here is a list of the different combinations of filter expressions: (NOTE: that the attribute, x in this case, can be either on left
 or right side of the expression)
@@ -170,7 +180,7 @@ x [==, !=, <, >, <=, >=] <Integer>;
 x [==, !=, <, >, <=, >=] y;
 x [==, !=] <String>;
 x [==, !=] <Boolean>;
-x [==, !=] Array(<String> | <Integer>);
+x [in, not in] Array(<String> | <Integer>);
 ```
 Styles
 ------------ 
@@ -285,7 +295,7 @@ Here is a slightly bigger example that you should be able to understand after re
     Mul{
       -filter{
 	    x == 5;
-	    y == ["foo", "bar"];
+	    y in ["foo", "bar"];
       }
       -style{ 
 	    node-color = #00ff00;
