@@ -97,6 +97,20 @@ public class Node{
         init(root, isList, isOpt, isNTA, level, api);
     }
 
+    public boolean isChildClassOf(Class parent){
+        return isChildClassOf(parent, node.getClass());
+
+    }
+
+    private boolean isChildClassOf(Class parent, Class child){
+
+        if(child == null)
+            return false;
+        if(child == parent)
+            return true;
+        return isChildClassOf(parent, child.getSuperclass());
+    }
+
     /**
      * Continues the traversal.
      * If the isList is true, this method will iterate over all the children in the "List"

@@ -105,7 +105,8 @@ List decl_list =
 IdDecl decl_tmp = iddecl.a SEMI {: return a; :};
 
 BinExpr binexpr =
-	 value.a EQ value.b {:return new EQ(a,b); :}
+	 value.a IN listValue.b {:return new IN(a,b); :}
+	| value.a EQ value.b {:return new EQ(a,b); :}
 	| value.a NEQ value.b {:return new NEQ(a,b); :}
 	| value.a LEQ value.b  {:return new LEQ(a,b); :}
 	| value.a GEQ value.b {:return new GEQ(a,b); :}
@@ -113,12 +114,14 @@ BinExpr binexpr =
 	| value.a GT value.b {:return new GT(a,b); :};
 
 Value value =
-	LSQBRACKET empty_list.a RSQBRACKET {: return a; :}
-	| BOOL.a {: return new Bool(a); :}
+	 BOOL.a {: return new Bool(a); :}
 	| num
 	| str
 	| iddecl
 	| color;
+
+Value listValue =
+	LSQBRACKET empty_list.a RSQBRACKET {: return a; :};
 
 Value empty_list =
 	/*EmptyList*/ {: return new EmptyArray(); :}

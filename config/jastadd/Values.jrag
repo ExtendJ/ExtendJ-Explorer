@@ -111,59 +111,40 @@ aspect Values{
     syn boolean BinExpr.validateExpression(boolean attr) = false;
     syn boolean BinExpr.validateExpression(String attr) = false;
 
-    // String
-    eq EQ.validateExpression(String attr){
+    //In for string, Integer and boolean
+
+    eq IN.validateExpression(String attr){
         if(getValue().isStrArray()){
             for(Str str : ((StrArray)getValue()).getStrList()){
                 if(str.getStr().equals(attr))
                     return true;
             }
-            return false;
-        }else{
-            return getValue().getStr().equals(attr);
         }
+        return false;
     }
 
-    eq NEQ.validateExpression(String attr) {
-        if(getValue().isStrArray()){
-            for(Str str : ((StrArray)getValue()).getStrList()){
-                if(str.getStr().equals(attr))
-                    return false;
+     eq IN.validateExpression(int attr){
+            if(getValue().isIntArray()){
+                for(Num in : ((NumArray)getValue()).getNumList()){
+                    if(in.getInt() == attr)
+                        return true;
+                }
             }
-            return true;
-        }else{
-            return !(getValue().getStr().equals(attr));
+            return false;
         }
-    }
+
+    // String
+    eq EQ.validateExpression(String attr) = getValue().getStr().equals(attr);
+    eq NEQ.validateExpression(String attr) = !(getValue().getStr().equals(attr));
 
     //Boolean
     eq EQ.validateExpression(boolean attr) = (getValue().getBool() && attr) || (!getValue().getBool() && !attr);
     eq NEQ.validateExpression(boolean attr) = (getValue().getBool() && !attr) || (!getValue().getBool() && attr);
 
     // Integer
-    eq EQ.validateExpression(int attr){
-        if(getValue().isIntArray()){
-            for(Num in : ((NumArray)getValue()).getNumList()){
-                if(in.getInt() == attr)
-                    return true;
-            }
-            return false;
-        }else{
-            return getValue().getInt() == attr;
-        }
-    }
+    eq EQ.validateExpression(int attr) = getValue().getInt() == attr;
+    eq NEQ.validateExpression(int attr) = !(getValue().getInt() == attr);
 
-    eq NEQ.validateExpression(int attr) {
-        if(getValue().isIntArray()){
-            for(Num in : ((NumArray)getValue()).getNumList()){
-                if(in.getInt() == attr)
-                    return false;
-            }
-            return true;
-        }else{
-            return !(getValue().getInt() == attr);
-        }
-    }
     eq LEQ.validateExpression(int attr) = getValue().getInt() >= attr;
     eq GEQ.validateExpression(int attr) = getValue().getInt() <= attr;
     eq LT.validateExpression(int attr) = getValue().getInt() > attr;

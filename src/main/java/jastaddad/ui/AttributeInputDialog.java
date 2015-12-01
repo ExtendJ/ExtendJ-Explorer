@@ -1,6 +1,7 @@
 package jastaddad.ui;
 
 import configAST.Bool;
+import configAST.Value;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.TreeNode;
 import jastaddad.api.nodeinfo.NodeInfo;
@@ -347,7 +348,7 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
             focusedNodeParameter.label.setStyle(prefWidthInput + paramSelectedTextColor);
         }
         attributeSelected(mon.getSelectedInfo());
-        if(mon.getSelectedNode().isNode())
+        if(mon.getSelectedNode() != null && mon.getSelectedNode().isNode())
             trySelectNode((TreeNode)mon.getSelectedNode());
         mon.getGraphView().repaint();
     }
@@ -367,13 +368,12 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
         <hbox>
         </hbox>
     </vbox>
-
-
-
-
      */
     private boolean isNodeParam(Class type){
-        return mon.getApi().getTypeHash().containsKey(type.getSimpleName());
+        boolean direct = mon.getApi().getTypeHash().containsKey(type.getSimpleName());
+        boolean indirect = mon.getApi().isTypeFromAst(type);
+
+        return direct || indirect;
     }
 
     public Object[] getResult(){
@@ -397,10 +397,11 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
     }
 
     private void trySelectNode(TreeNode fNode){
-        mon.getController().addMessage(fNode.getNode().simpleNameClass);
+        //mon.getController().addMessage(fNode.getNode().simpleNameClass);
         if(fNode == focusedNodeParameter.getNode())
             return;
-        if (focusedNodeParameter.type.getSimpleName().equals(fNode.getNode().simpleNameClass)) {
+        if (focusedNodeParameter.type.getSimpleName().equals(fNode.getNode().simpleNameClass) ||
+                fNode.getNode().isChildClassOf(focusedNodeParameter.type)) {
             int index = nodeParameters.indexOf(focusedNodeParameter);
             mon.getController().addMessage("index: " + index);
             if(index >= 0){

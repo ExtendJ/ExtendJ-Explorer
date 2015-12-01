@@ -4,7 +4,7 @@ import configAST.List;
 import configAST.Opt;
 import jastaddad.api.JastAddAdAPI;
 import jastaddad.tasks.JastAddAdXML;
-import org.junit.Test;pokhead
+import org.junit.Test;
 
 /**
  * Created by gda10jth on 11/18/15.

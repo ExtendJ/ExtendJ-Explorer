@@ -5,6 +5,7 @@ import jastaddad.api.nodeinfo.NodeInfo;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -45,16 +46,26 @@ public abstract class UIDialog extends Stage{
         buttonTypeOk.setOnMouseClicked(event -> {
             if(yesButtonClicked()) {
                 invokeButtonPressed = true;
-                fireEvent(
-                        new WindowEvent(
-                                this,
-                                WindowEvent.WINDOW_CLOSE_REQUEST
-                        )
-                );
+                closeDialog();
             }
 
         });
-        setScene(new Scene(buildDialogContent()));
+        Parent parent = buildDialogContent();
+        parent.setOnKeyPressed(ke -> {
+            if (ke.getCode().equals(KeyCode.ESCAPE)){
+                closeDialog();
+            }
+        });
+        setScene(new Scene(parent));
+    }
+
+    public void closeDialog(){
+        fireEvent(
+            new WindowEvent(
+                    this,
+                    WindowEvent.WINDOW_CLOSE_REQUEST
+            )
+        );
     }
     protected abstract boolean yesButtonClicked();
     protected abstract void dialogClose();

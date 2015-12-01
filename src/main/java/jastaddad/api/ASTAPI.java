@@ -26,6 +26,7 @@ public class ASTAPI {
     private GenericTreeNode filteredTree;
     private Config filterConfig;
     private HashMap<String, Integer> typeHash;
+    private HashSet<Class> allTypes;
     private HashMap<String, List<TreeNode>> typeNodeHash;  // will probably be removed
     private HashMap<Object, GenericTreeNode> treeNodes;
     private HashMap<Node, HashSet<Node>> computedNTAs; //This might be a temporary solution,
@@ -40,13 +41,14 @@ public class ASTAPI {
         directoryPath = filterDir;
         displayedReferences = new ArrayList<>();
         treeNodes = new HashMap<>();
-        computedNTAs = new HashMap<>();
         typeHash = new HashMap<>();
         typeNodeHash = new HashMap<>(); // will probably be removed
         errors = new HashMap<>();
         warnings = new HashMap<>();
+        computedNTAs = new HashMap<>();
         ASTObjects = new HashSet<>();
         ASTNTAObjects = new HashSet<>();
+        allTypes = new HashSet<>();
 
         tree = new Node(root, this);
         this.filteredTree = null;
@@ -56,6 +58,10 @@ public class ASTAPI {
 
     public String getFilterFilePath(){return directoryPath + "filter.cfg"; }
     public String getDirectoryPath(){return directoryPath;}
+
+    public boolean isTypeFromAst(Class type){
+        return allTypes.contains(type);
+    }
 
     public ArrayList<String> getErrors(String type){ return getMessageLine(errors, type); }
 
@@ -102,6 +108,13 @@ public class ASTAPI {
             if(!typeNodeHash.containsKey(node.fullName))
                 typeNodeHash.put(node.fullName, new ArrayList<>());
             typeNodeHash.get(node.fullName).add(fNode);
+        }
+        if(fNode.getNode().node != null) {
+            Class subclass = fNode.getNode().node.getClass();
+            allTypes.add(subclass);
+            while ((subclass = subclass.getSuperclass()) != null) {
+                allTypes.add(subclass);
+            }
         }
     }
 
@@ -320,6 +333,7 @@ public class ASTAPI {
         ArrayList<Object> nodes = new ArrayList<>();
         if(value == null)
             return nodes;
+
         if(value instanceof Collection<?>) {
             for (Object n : (Iterable<Object>) value) {
                 if (isASTObject(n))

@@ -10,7 +10,7 @@
                <TreeTableView fx:id="attributeTableView" prefHeight="1000">
                    <columns>
                        <TreeTableColumn fx:id="attributeNameCol" text="Name"/>
-                       <TreeTableColumn fx:id="attributeValueCol"  text="Value" />
+                       <TreeTableColumn fx:id="attributeValueCol" text="Value" />
                    </columns>
                </TreeTableView>
            </VBox>

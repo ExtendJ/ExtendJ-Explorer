@@ -119,22 +119,19 @@ public class Controller implements Initializable {
         setConsoleScrollHeightListener(consoleHeightMessage, consoleScrollPaneMessage, consoleTextFlowMessage);
 
         // hide/show sidebars
-        centerSplitPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent ke) {
-                if (ke.getCode().equals(KeyCode.F)){
-                    if(centerSplitPane.getDividers().get(0).getPosition() < 0.05 &&
-                            centerSplitPane.getDividers().get(1).getPosition() > 0.95 &&
-                            consoleAndGraphSplitPane.getDividers().get(0).getPosition() > 0.95){
-                        centerSplitPane.setDividerPosition(0, 0.2);
-                        centerSplitPane.setDividerPosition(1, 0.8);
-                        consoleAndGraphSplitPane.setDividerPosition(0, 0.8);
-                    }else {
-                        centerSplitPane.setDividerPosition(0, 0);
-                        centerSplitPane.setDividerPosition(1, 1);
-                        consoleAndGraphSplitPane.setDividerPosition(0, 1);
-                    }
+        centerSplitPane.setOnKeyPressed(ke -> {
+            if (ke.getCode().equals(KeyCode.F)){
+                if(centerSplitPane.getDividers().get(0).getPosition() < 0.05 &&
+                        centerSplitPane.getDividers().get(1).getPosition() > 0.95 &&
+                        consoleAndGraphSplitPane.getDividers().get(0).getPosition() > 0.95){
+                    centerSplitPane.setDividerPosition(0, 0.2);
+                    centerSplitPane.setDividerPosition(1, 0.8);
+                    consoleAndGraphSplitPane.setDividerPosition(0, 0.8);
+                }else {
+                    centerSplitPane.setDividerPosition(0, 0);
+                    centerSplitPane.setDividerPosition(1, 1);
+                    consoleAndGraphSplitPane.setDividerPosition(0, 1);
                 }
-
             }
         });
 
@@ -385,7 +382,7 @@ public class Controller implements Initializable {
         mon.setSelectedNode(node);
         graphView.setSelectedNode(node.getClusterNode());
         if(mon.getSelectedInfo() != null)
-            attributeTabController.setReference(mon.getSelectedInfo());
+            attributeTabController.setReference(mon.getSelectedInfo().getValue());
     }
 
     private void loadClassTreeView(){

@@ -3,6 +3,7 @@ aspect Print{
     syn String BinExpr.print() =  getLeft().print()  + getOp() + getRight().print();
     syn String BinExpr.getOp();
 
+    eq IN.getOp() = " in ";
     eq EQ.getOp() = "==";
     eq NEQ.getOp() = "!=";
     eq GT.getOp() = ">";

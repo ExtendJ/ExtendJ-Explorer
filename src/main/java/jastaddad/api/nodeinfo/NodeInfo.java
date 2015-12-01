@@ -109,7 +109,7 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
         al.add(new NodeInfoHolder("Return type", method.getReturnType()));
         for (int i = 0; i < method.getParameterCount(); i++)
             al.add(new NodeInfoHolder("Parameter type: " + i, method.getParameterTypes()[i]));
-        al.add(new NodeInfoHolder("Is parameterized", isParametrized()));
+        al.add(new NodeInfoHolder("Is parametrized", isParametrized()));
         setChildInfo(al);;
         al.add(new NodeInfoHolder("Kind", kind));
         return al;

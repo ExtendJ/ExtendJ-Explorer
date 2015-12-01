@@ -41,7 +41,7 @@ Comment = \/\*[^]*\*\/
 // discard whitespace information
 {WhiteSpace}  { }
 {Comment} {   }
-//token definitions
+//token definitions, TODO remove the -include and -global
 "-include"       { return sym(Terminals.INCLUDE); }
 "-global"       { return sym(Terminals.GLOBAL); }
 "="        		{ return sym(Terminals.ASSIGNMENT); }
@@ -58,6 +58,7 @@ Comment = \/\*[^]*\*\/
 "]"       	    { return sym(Terminals.RSQBRACKET); }
 "{"       	    { return sym(Terminals.LBRACKET); }
 "}"       	    { return sym(Terminals.RBRACKET); }
+"in"  	        { return sym(Terminals.IN); }
 {Color}  	    { return sym(Terminals.COLOR); }
 {Bool}  	    { return sym(Terminals.BOOL); }
 {ID}        	{ return sym(Terminals.ID); }
