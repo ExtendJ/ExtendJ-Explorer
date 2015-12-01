@@ -2,6 +2,7 @@ import configAST.ConfigParser;
 import configAST.ConfigScanner;
 import configAST.DebuggerConfig;
 import configAST.ErrorMessage;
+import jastaddad.api.ASTAPI;
 import jastaddad.api.JastAddAdAPI;
 import jastaddad.tasks.JastAddAdXML;
 import org.junit.Test;
@@ -12,6 +13,9 @@ import org.junit.runners.Parameterized.Parameters;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 
 @RunWith(Parameterized.class)
@@ -48,6 +52,7 @@ public class InputFileTreeTest extends AbstractParameterizedTest {
 					for (ErrorMessage e: program.errors()) {
 						System.err.println("- " + e);
 					}
+					assertEquals("Error while parsing input file. ", program.errors().isEmpty(), true);
 				} else {
 					// everything went well!
 					JastAddAdAPI debugger = new JastAddAdAPI(program);
@@ -55,18 +60,23 @@ public class InputFileTreeTest extends AbstractParameterizedTest {
 					debugger.run();
 					JastAddAdXML xmlPrinter = new JastAddAdXML(debugger);
 					xmlPrinter.printXml(inDirectory, OUT_EXTENSION);
+					int numberOfErrors = debugger.api().getErrors(ASTAPI.FILTER_ERROR).size();
+					assertEquals("Errors parsing filter language", numberOfErrors, 0);
 					new OutoutXMLcomparer().checkOutput(debugger.getFilteredTree(), expectedFile, inDirectory);
 				}
 			} catch (FileNotFoundException e) {
-				System.out.println("File not found!");
+				fail("FileNotFoundException: " + e.getMessage());
 				//System.exit(1);
 			} catch (IOException e) {
+				fail("IOException: " + e.getMessage());
 				e.printStackTrace(System.err);
 			} catch (Exception e) {
+				fail("Exception: " + e.getMessage());
 				e.printStackTrace();
 			}
 		} catch (Exception e) {
-			//fail(e.getMessage());
+			fail("- Excetion: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 

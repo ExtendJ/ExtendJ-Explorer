@@ -35,9 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.testfx.api.FxAssert.verifyThat;
 
 /**
@@ -58,18 +56,23 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
                     for (ErrorMessage e: program.errors()) {
                         System.err.println("- " + e);
                     }
+                    fail("Language specific error");
                 } else {
                     return program;
                 }
             } catch (FileNotFoundException e) {
-                System.out.println("File not found!");
-                //System.exit(1);
+                fail("FileNotFoundException: " + e.getMessage());
+                e.printStackTrace();
             } catch (IOException e) {
-                e.printStackTrace(System.err);
+                fail("IOException: " + e.getMessage());
+                e.printStackTrace();
             } catch (Exception e) {
+                fail("Exception: " + e.getMessage());
                 e.printStackTrace();
             }
         } catch (Exception e) {
+            fail("- Exception: " + e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }
