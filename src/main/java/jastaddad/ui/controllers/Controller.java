@@ -26,12 +26,18 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.StyleSpans;
+import org.fxmisc.richtext.StyleSpansBuilder;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This is the main controller of the UI. It holds references to all sub controllers. If some part of the UI does
@@ -64,6 +70,8 @@ public class Controller implements Initializable {
     private SplitPane centerSplitPane;
     @FXML
     private SplitPane consoleAndGraphSplitPane;
+    @FXML
+    private VBox codeAreaContainer;
 
     // Console stuff
     @FXML private TextFlow consoleTextFlowAll;
@@ -76,6 +84,8 @@ public class Controller implements Initializable {
     @FXML private ScrollPane consoleScrollPaneMessage;
     @FXML private ScrollPane consoleScrollPaneWarning;
 
+    private CodeArea codeArea;
+
     private DoubleProperty consoleHeightAll;
     private DoubleProperty consoleHeightError;
     private DoubleProperty consoleHeightWarning;
@@ -87,8 +97,43 @@ public class Controller implements Initializable {
     private enum ConsoleFilter {
         ALL, ERROR, WARNING, MESSAGE
     }
+
+    private static final String[] KEYWORDS = new String[] {
+            "-filter", "-global", "display-attributes", "-include", "-configs",
+            "-style", "in", "not"
+    };
+
+    private static final String KEYWORD_PATTERN = "(" + String.join("|", KEYWORDS) + ")( |\\{)";
+    private static final String PAREN_PATTERN = "\\(|\\)";
+    private static final String BRACE_PATTERN = "\\{|\\}";
+    private static final String BRACKET_PATTERN = "\\[|\\]";
+    private static final String SEMICOLON_PATTERN = "\\;";
+    private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
+    private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
+
+    private static final Pattern PATTERN = Pattern.compile(
+            "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
+                    + "|(?<PAREN>" + PAREN_PATTERN + ")"
+                    + "|(?<BRACE>" + BRACE_PATTERN + ")"
+                    + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
+                    + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
+                    + "|(?<STRING>" + STRING_PATTERN + ")"
+                    + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
+    );
+
+
     @Override
-    public void initialize(URL url, ResourceBundle rb) { }
+    public void initialize(URL url, ResourceBundle rb) {
+
+
+        codeArea = new CodeArea();
+        codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+        codeArea.richChanges().subscribe(change -> {
+            codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
+        });
+
+        codeAreaContainer.getChildren().add(codeArea);
+    }
 
     /**
      * Called by JastAddAdUI when the UI is created to initialize fields and event listeners in the UI.
@@ -168,7 +213,8 @@ public class Controller implements Initializable {
                 addMessage("Filter update: starting");
                 graphView.getJungGraph();
                 long timeStart = System.currentTimeMillis();
-                boolean noError = mon.getApi().saveNewFilter(filteredConfigTextArea.getText());
+                String filter = codeArea.getText();
+                boolean noError = mon.getApi().saveNewFilter(filter);
                 if (noError) {
                     updateUI();
                     addMessage("Filter update: done after, " + (System.currentTimeMillis() - timeStart) + " ms");
@@ -199,6 +245,31 @@ public class Controller implements Initializable {
                 addWarnings(mon.getApi().getWarnings(ASTAPI.AST_STRUCTURE_WARNING));
                 addErrors(mon.getApi().getErrors(ASTAPI.AST_STRUCTURE_ERROR));
             });
+    }
+
+    private static StyleSpans<Collection<String>> computeHighlighting(String text) {
+        Matcher matcher = PATTERN.matcher(text);
+
+        int lastKwEnd = 0;
+        StyleSpansBuilder<Collection<String>> spansBuilder
+                = new StyleSpansBuilder<>();
+        spansBuilder.add(Collections.singleton("whiteText"), 0);
+        while(matcher.find()) {
+            String styleClass =
+                    matcher.group("KEYWORD") != null ? "keyword" :
+                    matcher.group("PAREN") != null ? "paren" :
+                    matcher.group("BRACE") != null ? "brace" :
+                    matcher.group("BRACKET") != null ? "bracket" :
+                    matcher.group("SEMICOLON") != null ? "semicolon" :
+                    matcher.group("STRING") != null ? "string" :
+                    matcher.group("COMMENT") != null ? "comment" :
+                    null; /* never happens */ assert styleClass != null;
+            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
+            spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
+            lastKwEnd = matcher.end();
+        }
+        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
+        return spansBuilder.create();
     }
 
     public void updateUI(){
@@ -273,7 +344,9 @@ public class Controller implements Initializable {
         Text text1 = new Text(message + "\n");
         Text text2 = new Text(message + "\n");
         text1.getStyleClass().add(style);
+        text1.getStyleClass().add("consoleText");
         text2.getStyleClass().add(style);
+        text2.getStyleClass().add("consoleText");
         getConsoleArray(filterType).getChildren().add(text1);
         if(filterType != ConsoleFilter.ALL)
             consoleTextFlowAll.getChildren().add(text2);
@@ -373,8 +446,11 @@ public class Controller implements Initializable {
             textContent = "Can not read the configuration file!";
         }
 
-        filteredConfigTextArea.setText(textContent);
-        filteredConfigTextArea.setPrefColumnCount(lineCount);
+        codeArea.replaceText(0,0, textContent);
+        codeArea.getStyleClass().add("textAreaConfig");
+
+        //filteredConfigTextArea.setText(textContent);
+        //filteredConfigTextArea.setPrefColumnCount(lineCount);
 
     }
 

@@ -54,6 +54,7 @@ sourceSets {
 
 dependencies { //Todo clean this up, many unnecessary things.
 	compile fileTree(dir: 'libs', include: '*.jar')
+	compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6.10'
 	compile name: 'jastadd2'
 	compile name: 'beaver-rt'
 	compile 'org.apache.ant:ant:1.9.4'

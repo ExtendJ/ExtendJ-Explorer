@@ -100,18 +100,6 @@
 
 }
 
-.textAreaConfig{
-    -fx-pref-row-count:600;
-    -fx-text-fill: #ffffff ;
-    -fx-background-insets: 0;
-    -fx-focus-color: transparent;
-    -fx-background-color: #363636;
-}
-
-.textAreaConfig .content{
-    -fx-background-color: #363636;
-}
-
 .label {
     -fx-text-fill: #ffffff;
     -fx-font-size: 12px;
@@ -208,6 +196,11 @@
 .consoleTextMessage{
     -fx-fill: white;
     -fx-font-size:13;
+}
+
+.consoleText:hover{
+    -fx-font-size:16;
+    -fx-width:600;
 }
 
 .consoleScrollPane{
