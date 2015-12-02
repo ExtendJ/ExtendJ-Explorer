@@ -10,7 +10,7 @@ import javax.swing.*;
 
 /**
  * NOTE from JastAddAd developers
- * We did not implement this class themselves. We found this class on this page:
+ * We did not implement this class. We found this class on this page:
  *
  * 		https://tips4java.wordpress.com/2008/10/13/screen-image/
  */
