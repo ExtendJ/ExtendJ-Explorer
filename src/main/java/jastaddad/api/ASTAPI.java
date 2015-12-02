@@ -14,7 +14,7 @@ import java.util.*;
  */
 public class ASTAPI {
 
-    public static final String VERSION = "alphabuild-0.2.0";
+    public static final String VERSION = "alphabuild-0.2.1";
 
     public static final String AST_STRUCTURE_WARNING = "AST structure warning";
     public static final String AST_STRUCTURE_ERROR = "AST structure error";
