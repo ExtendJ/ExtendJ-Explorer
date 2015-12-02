@@ -107,7 +107,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
      */
     public static void main(String[] args) {
         try{
-            String filename = "testInput.cfg";
+            String filename = "sample.cfg";
             ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
             ConfigParser parser = new ConfigParser();
             DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);

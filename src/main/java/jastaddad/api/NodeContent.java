@@ -189,7 +189,7 @@ public class NodeContent {
      * @return
      */
     private Attribute computeAttribute(Object obj, Method m, Object[] params, boolean forceComputation){
-        Attribute attribute = new Attribute(getName(m), null, m);
+        Attribute attribute = new Attribute(m.getName(), null, m);
         attribute.setParametrized(m.getParameterCount() > 0);
         for(Annotation a : m.getAnnotations()) { //To many attribute specific methods so I decided to iterate through the Annotations again instead of sending them as parameters.
             if (ASTAnnotation.isAttribute(a)){
@@ -225,7 +225,7 @@ public class NodeContent {
      * @return
      */
     private Token computeToken(Object obj, Method m){
-        String name = getName(m);
+        String name = m.getName();
         try{
             return new Token(name, m.invoke(obj), m);
         } catch (Throwable e) {
@@ -233,8 +233,6 @@ public class NodeContent {
             return new Token(name, e.getCause().toString(), m);
         }
     }
-
-    private String getName(Method m){ return NodeInfo.getName(m, null); }
 
     /**
      *

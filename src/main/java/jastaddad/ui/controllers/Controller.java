@@ -99,7 +99,7 @@ public class Controller implements Initializable {
     }
 
     private static final String[] KEYWORDS = new String[] {
-            "-filter", "-global", "display-attributes", "-include", "-configs",
+            "-filter", "-global", "-display-attributes", "-include", "-configs",
             "-style", "in", "not"
     };
 

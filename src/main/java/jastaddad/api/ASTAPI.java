@@ -315,7 +315,7 @@ public class ASTAPI {
     /**
      * Returns the Size of the graph, ie the number of Nodes in the AST.
      */
-    public int getASTSize(){ return ASTObjects.size(); }
+    public int getASTSize(){ return ASTObjects.size() + ASTNTAObjects.size() + computedNTAs.size(); }
 
     public void clearDisplayedReferences(){ displayedReferences.clear(); }
     public ArrayList<NodeReference> getDisplayedReferences(){ return displayedReferences; }

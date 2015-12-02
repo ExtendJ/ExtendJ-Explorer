@@ -4,17 +4,14 @@ import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.DirectedOrderedSparseMultigraph;
 import edu.uci.ics.jung.graph.Forest;
-import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.visualization.BasicVisualizationServer;
-import edu.uci.ics.jung.visualization.RenderContext;
-import edu.uci.ics.jung.visualization.VisualizationImageServer;
-import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.*;
 import edu.uci.ics.jung.visualization.control.*;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.picking.PickedInfo;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 import edu.uci.ics.jung.visualization.renderers.VertexLabelAsShapeRenderer;
+import edu.uci.ics.jung.visualization.transform.MutableTransformer;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.NodeReference;
 import jastaddad.api.filteredtree.TreeNode;
@@ -214,6 +211,11 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         }
     }
 
+    private final static float dash[] = {5.0f};
+    private final static Stroke refStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
+    private final static Stroke dashedStroke = new BasicStroke(0.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
+    private final static Stroke normalStroke = new BasicStroke(1.0f);
+
     public void setVisualizationTransformers(BasicVisualizationServer<GenericTreeNode, UIEdge> bvs){
 
         // Vertex text transformer
@@ -222,10 +224,6 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         Transformer<UIEdge, Paint> edgePaintTransformer = edge -> edge.getColor();
 
         // Edge stroke transformer
-        float dash[] = {5.0f};
-        final Stroke refStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
-        final Stroke dashedStroke = new BasicStroke(0.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
-        final Stroke normalStroke = new BasicStroke(1.0f);
         Transformer<UIEdge, Stroke> edgeStrokeTransformer = edge -> {
             switch (edge.getType()){
                 case UIEdge.STANDARD :
@@ -242,25 +240,21 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
 
         // Vertex border style transformer
         Transformer<GenericTreeNode, Stroke> vertexStrokeTransformer = item -> {
-            String border = item.getStyles().get("border-style").getStr();
-            if(border.equals("dashed"))
-                return dashedStroke;
+            if(item.getStyles().get("border-style").getStr().equals("dashed"))
+               return dashedStroke; //Todo returning the dashedStroke crashes the graph
             return normalStroke;
         };
 
         // Build the VisualizationViewer that holds the graph and all transformers.
-        ScalingControl visualizationViewerScalingControl = new CrossoverScalingControl();
-
-
         bvs.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
-        bvs.scaleToLayout(visualizationViewerScalingControl);
+        bvs.scaleToLayout(new CrossoverScalingControl());
 
         bvs.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
         bvs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
-        bvs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.QuadCurve<>());
+        bvs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<>());
         bvs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<>());
         bvs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
-        bvs.getRenderContext().setVertexShapeTransformer(new VertexShapeTransformer(mon, vs.getRenderContext()));
+        bvs.getRenderContext().setVertexShapeTransformer(new VertexShapeTransformer(vs.getRenderContext()));
         bvs.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
         bvs.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
     }
@@ -296,9 +290,8 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         gm.add(new TranslatingGraphMousePlugin(MouseEvent.BUTTON2_MASK));
         gm.add(new PopupGraphMousePlugin(vs, mon, this));
         gm.add(new PickingGraphMousePlugin());
-        gm.add(new ScalingGraphMousePlugin(new CrossoverScalingControl(), 0, 1.1f, 0.9f));
+        gm.add(new ScalingGraphMousePlugin(new MaxScaled(0.025), 0, 1.1f, 0.9f));
         vs.setGraphMouse(gm);
-
     }
 
     public void repaint(){
@@ -340,6 +333,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
             }
         });
     }
+
 
     /**
      * A transformer Class for setting the color of a vertex in the graph.
@@ -394,12 +388,9 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
      * A transformer Class for setting the shape of a vertex in the graph.
      */
     private class VertexShapeTransformer extends VertexLabelAsShapeRenderer<GenericTreeNode, UIEdge> {
-        private final UIMonitor mon;
 
-        VertexShapeTransformer ( UIMonitor mon , RenderContext<GenericTreeNode, UIEdge> rc) {
+        VertexShapeTransformer (RenderContext<GenericTreeNode, UIEdge> rc) {
             super(rc);
-            this.mon = mon;
-
         }
 
         /**
@@ -443,6 +434,45 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
                     return new RoundRectangle2D.Double(centerX, centerY, width, height, 10, 10);
             }
             return new RoundRectangle2D.Double(-50, -20, 130, 40,40,40);
+        }
+    }
+
+    private class MaxScaled extends CrossoverScalingControl{
+        private final double scaleLimit;
+
+        public MaxScaled(double scaleLimit){
+            super();
+            this.scaleLimit = scaleLimit;
+        }
+
+        @Override
+        public void scale(VisualizationServer<?,?> vv, float amount, Point2D at) {
+            MutableTransformer layoutTransformer = vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT);
+            MutableTransformer viewTransformer = vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW);
+            double modelScale = layoutTransformer.getScale();
+            double viewScale = viewTransformer.getScale();
+            double inverseModelScale = Math.sqrt(crossover)/modelScale;
+            double inverseViewScale = Math.sqrt(crossover)/viewScale;
+            double scale = modelScale * viewScale;
+
+            if(scale < scaleLimit && amount < 1)
+                return;
+
+            Point2D transformedAt = vv.getRenderContext().getMultiLayerTransformer().inverseTransform(Layer.VIEW, at);
+            if((scale*amount - crossover)*(scale*amount - crossover) < 0.001) {
+                // close to the control point, return both transformers to a scale of sqrt crossover value
+                layoutTransformer.scale(inverseModelScale, inverseModelScale, transformedAt);
+                viewTransformer.scale(inverseViewScale, inverseViewScale, at);
+            } else if(scale*amount < crossover) {
+                // scale the viewTransformer, return the layoutTransformer to sqrt crossover value
+                viewTransformer.scale(amount, amount, at);
+                layoutTransformer.scale(inverseModelScale, inverseModelScale, transformedAt);
+            } else {
+                // scale the layoutTransformer, return the viewTransformer to crossover value
+                layoutTransformer.scale(amount, amount, transformedAt);
+                viewTransformer.scale(inverseViewScale, inverseViewScale, at);
+            }
+            vv.repaint();
         }
     }
 }
