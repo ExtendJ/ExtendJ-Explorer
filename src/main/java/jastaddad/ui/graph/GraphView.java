@@ -140,15 +140,16 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
 
         setVisualizationTransformers(vis);
 
-        // Create the buffered image
-        BufferedImage image = (BufferedImage) vis.getImage(
-                new Point2D.Double(vs.getGraphLayout().getSize().getWidth() / 2,
-                        vs.getGraphLayout().getSize().getHeight() / 2),
-                new Dimension(vs.getGraphLayout().getSize()));
-        // Write image to a png file
-        File outputfile = new File(filename + "." + ext);
-
         try {
+
+            // Create the buffered image
+            BufferedImage image = (BufferedImage) vis.getImage(
+                    new Point2D.Double(vs.getGraphLayout().getSize().getWidth() / 2,
+                            vs.getGraphLayout().getSize().getHeight() / 2),
+                    new Dimension(vs.getGraphLayout().getSize()));
+            // Write image to a png file
+            File outputfile = new File(filename + "." + ext);
+
             ImageIO.write(image, ext, outputfile);
         } catch (IOException e) {
             // Exception handling
@@ -216,6 +217,15 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
     private final static Stroke dashedStroke = new BasicStroke(0.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
     private final static Stroke normalStroke = new BasicStroke(1.0f);
 
+    /**
+     * This method sets all the transformers on the layout
+     *
+     * Transformers in Jung2 are used to define the shape, size, color etc on vertexes and edges. A Transformer have two
+     * generics that defines what (the first generic) will be transformed to what (the second generic). An example:
+     * to define a color on a vertex, a Transformer<GenericTreeNode, Color> is used. it "transform" a GenericTreeNode to
+     * a Color.
+     * @param bvs
+     */
     public void setVisualizationTransformers(BasicVisualizationServer<GenericTreeNode, UIEdge> bvs){
 
         // Vertex text transformer
@@ -260,12 +270,8 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
     }
 
     /**
-     * This function creates the VisualizationViewer Object and defines all Transformers.
+     * This function creates the VisualizationViewer Object.
      *
-     * Transformers in Jung2 are used to define the shape, size, color etc on vertexes and edges. A Transformer have two
-     * generics that defines what (the first generic) will be transformed to what (the second generic). An example:
-     * to define a color on a vertex, a Transformer<GenericTreeNode, Color> is used. it "transform" a GenericTreeNode to
-     * a Color.
      * @param g
      */
     public void createLayout(Forest<GenericTreeNode, UIEdge> g){
@@ -437,6 +443,9 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         }
     }
 
+    /**
+     * Scaling class for the zoom, has a limit in how much it is allowed to scale down the view and layout
+     */
     private class MaxScaled extends CrossoverScalingControl{
         private final double scaleLimit;
 
