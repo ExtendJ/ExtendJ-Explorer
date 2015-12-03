@@ -9,6 +9,8 @@ import edu.uci.ics.jung.visualization.control.*;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.picking.PickedInfo;
+import edu.uci.ics.jung.visualization.renderers.BasicEdgeLabelRenderer;
+import edu.uci.ics.jung.visualization.renderers.EdgeLabelRenderer;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 import edu.uci.ics.jung.visualization.renderers.VertexLabelAsShapeRenderer;
 import edu.uci.ics.jung.visualization.transform.MutableTransformer;
@@ -288,6 +290,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         vs.getPickedVertexState().addItemListener(this);
         PluggableGraphMouse gm = new PluggableGraphMouse();
         gm.add(new TranslatingGraphMousePlugin(MouseEvent.BUTTON2_MASK));
+        gm.add(new TranslatingGraphMousePlugin(MouseEvent.BUTTON1_MASK+MouseEvent.CTRL_MASK));
         gm.add(new PopupGraphMousePlugin(vs, mon, this));
         gm.add(new PickingGraphMousePlugin());
         gm.add(new ScalingGraphMousePlugin(new MaxScaled(0.025), 0, 1.1f, 0.9f));
