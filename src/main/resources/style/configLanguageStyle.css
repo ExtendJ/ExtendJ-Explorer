@@ -16,7 +16,7 @@
     -fx-fill: #FF8923;
 }
 .styled-text-area .text.string {
-    -fx-fill: blue;
+    -fx-fill: #55ff55;
 }
 
 .styled-text-area .text.comment {

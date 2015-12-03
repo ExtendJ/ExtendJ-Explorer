@@ -250,10 +250,9 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         // Build the VisualizationViewer that holds the graph and all transformers.
         bvs.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
         bvs.scaleToLayout(new CrossoverScalingControl());
-
         bvs.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
         bvs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
-        bvs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<>());
+        bvs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.QuadCurve<>());
         bvs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<>());
         bvs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
         bvs.getRenderContext().setVertexShapeTransformer(new VertexShapeTransformer(vs.getRenderContext()));

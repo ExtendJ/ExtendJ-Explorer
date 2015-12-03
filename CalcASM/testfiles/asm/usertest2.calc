@@ -1,0 +1,11 @@
+let
+	a = 3
+	b = 2
+	c = a / b
+	d = a / 5 * c / a * 6
+	e = a * c
+	f = a * 2
+in
+	a * 5 * b / f / e * 2
+end
+
