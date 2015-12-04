@@ -40,7 +40,7 @@ public class Compiler {
 					System.err.println("- " + e);
 				}
 			} else {
-                JastAddAdUI debugger = new JastAddAdUI(program);
+				JastAddAdUI debugger = new JastAddAdUI(program);
 				debugger.run();
 				//program.genCode(System.out);
 			}
