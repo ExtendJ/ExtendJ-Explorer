@@ -33,7 +33,17 @@
                     <TabPane tabClosingPolicy="UNAVAILABLE" fx:id="graphViewTabs">
                         <tabs>
                             <Tab text="Graph" fx:id="graphViewTabNode">
-                                <ScrollPane styleClass="graphView" fx:id="graphViewScrollPane"/>
+                                <VBox>
+                                    <HBox styleClass="paneParent">
+                                        <Label text="show: " styleClass="our_label"/>
+                                        <Button styleClass="our_button" text="Root node" fx:id="showRootNodeButton"/>
+                                        <Label text=""/>
+                                        <Button styleClass="our_button" text="Selected node" fx:id="showSelectedNodeButton"/>
+                                        <Label text=""/>
+                                        <Button styleClass="our_button" text="Whole Graph" fx:id="showWholeGraphButton"/>
+                                    </HBox>
+                                    <ScrollPane styleClass="graphView" fx:id="graphViewScrollPane"/>
+                                </VBox>
                             </Tab>
                             <Tab text="Tree" fx:id="treeViewTabNode">
                                 <fx:include fx:id="textTreeTab" source="/treeViewTab.fxml"/>

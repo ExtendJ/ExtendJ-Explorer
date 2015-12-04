@@ -71,6 +71,8 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         mon.setParentStage(stage);
         mon.setController(con);
         GraphView graphview = new GraphView(mon);
+        graphview.setOnMouseClicked(event -> graphview.getParent().requestFocus());
+
         mon.setGraphView(graphview);
         con.init(mon, graphview);
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();

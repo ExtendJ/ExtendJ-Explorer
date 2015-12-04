@@ -196,14 +196,14 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
 
     protected boolean yesButtonClicked(){
         Object[] tmpParam = params.clone();
+        /*
         for(Object param : tmpParam){
             mon.getController().addMessage(param == null ? "null" : param.toString());
         }
-        mon.getController().addMessage("---------------");
         for(Object param : params){
             mon.getController().addMessage(param == null ? "null" : param.toString());
         }
-
+*/
         VBox grid = (VBox)getScene().getRoot();
         for (int i = 0; i < m.getParameterCount(); i++) {
             HBox fieldContainer = (HBox)((HBox)grid.getChildren().get(i+1)).getChildren().get(1);
@@ -269,10 +269,10 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
                     tmpParam[i] = field.getText();
             }
         }
-        mon.getController().addMessage("==============");
+        /*
         for(Object param : tmpParam){
             mon.getController().addMessage(param == null ? "null" : param.toString());
-        }
+        }*/
 
         boolean done = true;
         for(int i=0;i<tmpParam.length;i++){

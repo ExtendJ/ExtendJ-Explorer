@@ -1,10 +1,12 @@
 package jastaddad.ui.graph;
 
+import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.DirectedOrderedSparseMultigraph;
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
+import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationImageServer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.PickingGraphMousePlugin;
@@ -101,9 +103,28 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         vs.setGraphLayout(layout);
         //vs.getGraphLayout().setGraph(graph);
         addDisplayedReferences();
+        showWholeGraphOnScreen();
         vs.repaint();
     }
 
+    public void showWholeGraphOnScreen(){
+        vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT).setToIdentity();
+        vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW).setToIdentity();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        vs.setPreferredSize(screenSize);
+        vs.scaleToLayout(new ScalingControllerMinLimit());
+    }
+
+
+    public void panToNode(GenericTreeNode node){
+        Layout<GenericTreeNode,UIEdge> layout = vs.getGraphLayout();
+        Point2D q = layout.transform(node);
+        Point2D lvc =
+                vs.getRenderContext().getMultiLayerTransformer().inverseTransform(vs.getCenter());
+        final double dx = (lvc.getX() - q.getX());
+        final double dy = (lvc.getY() - q.getY());
+        vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT).translate(dx, dy);
+    }
 
     /**
      * Add edges from the vertex from and to all vertexes in newRefs.
@@ -140,7 +161,6 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         setVisualizationTransformers(vis);
 
         try {
-
             // Create the buffered image
             BufferedImage image = (BufferedImage) vis.getImage(
                     new Point2D.Double(vs.getGraphLayout().getSize().getWidth() / 2,
@@ -258,6 +278,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
 
         bvs.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
         bvs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
+        bvs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
         bvs.getRenderContext().setVertexShapeTransformer(new VertexShapeTransformer(vs.getRenderContext()));
         bvs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
 

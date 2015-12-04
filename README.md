@@ -6,6 +6,7 @@ This readme has the following content
     - Building the project
     - Create jar file
     - See if things are working
+    - Try out an example project
     - Running JastAddAd on your project
     - Lib dependencies for Linux
 * Filtering the AST
@@ -21,9 +22,11 @@ This readme has the following content
 
 # Getting started #
 ## Get the project on you machine ##
+### Important! This tool is based on Java 8. If you have an older version installed the tool will not work. ###
+
 Start of by cloning 
 ```
-git clone https://[yourUserName]@bitbucket.org/jastadd/jastadddebugger-exjobb.git
+git clone https://git@bitbucket.org/jastadd/jastadddebugger-exjobb.git
 ```
 Then go to the directory where you cloned the project, with your terminal
 
@@ -34,11 +37,11 @@ There are two ways to assemble the project. Either just assemble:
 ```
 ./gradlew assemble
 ```
-or build which will run some tests:
+or build which will additionally run tests:
 ```
 ./gradlew build
 ```
-OBS! The second one will run both normal and UI tests.
+Note! The second one will run both normal and UI tests.
 
 ## Create jar file ##
 After assembling the project, create the jar by writing the following command:
@@ -52,9 +55,12 @@ java -jar jastadddebugger-exjobb.jar
 ```
 This should run a sample JastAdd project and run the JastAddAdUI program. see Lib dependencis below if it's not working.
 
-OBS! The debugger will run on the sample.cfg file in your directory. The file sample.cfg contain some Configuration Language code which will be described later.
+Note! The debugger will run on the sample.cfg file in your directory. The file sample.cfg contain some Configuration Language code which will be described later.
 
-Alternatively one can also, if they want to test JastAddAdUI, go in to the CalcASM directory and run the following command: 
+## Try out an example project ##
+Alternatively you can look at the small project CaclASM, that follows when you clone this project. This version of CalcASM is configured to run JastAddUI after its parsing. See row 43-44 in the file CalcASM/src/java/lang/compiler.java to see how it works. 
+
+To run this version of CalcASM go to the directory and run the following command: 
 ```
 ant jar
 ```
@@ -77,7 +83,7 @@ And then add the jar to the to the scripts jar target:
 ```
 <zipfileset includes="**/*.*" src="/[path to debugger .jar]"/> 
 ```
-OBS! The jastadddebugger-exjobb.jar contatins a number of .fxml and .css files, these are required to run the UI. The include="\*\*/\*.\*" above does this, for ant. 
+Note! The jastadddebugger-exjobb.jar contatins a number of .fxml and .css files, these are required to run the UI. The include="\*\*/\*.\*" above does this, for ant. 
 
 Now JastAddAd is ready to run! In your own java code (typically the same class as you run your parser) add the following code when the AST is created: 
 ```
@@ -105,7 +111,7 @@ When running the debugger on Linux the following library dependencies are requir
 
 Filtering the AST
 ------------ 
-In order to view the nodes your interested in, a filter configuration language have been implemented into JastAddAd. 
+In order to view the nodes you are interested in, a filter configuration language has been implemented into JastAddAd. 
 
 Basic example
 ------------ 
@@ -116,7 +122,7 @@ Basic example
 }
 ```
 
-The node names inside the "-include" block will not be filtered out by JastAddAd. 
+The node names inside the "-include" block will pass the JastAddAd filter. 
 In this case Stmt and Div nodes will be visible, the other nodes will be clustered together in to so called cluster nodes. 
 
 NOTE: 
@@ -130,16 +136,16 @@ This example will achieve the exact same result, but with a slight different syn
 Configurations
 ------------ 
 It is possible to add another section before the "-include". This is "-configs", and it can contain a number of different
-configurations:
+configurations that decide how the filter will behave:0
 ```
 -configs{
-  include = true;
+  include = false;
 }
 -include{
   ...
 }
 ```
-In this example the "include" is set to true and therefore the "-include" block will be ignored.
+In this example the "include" is set to false and therefore the "-include" block will be ignored.
 
 IMPLEMENTED CONFIGS:
 
@@ -159,13 +165,13 @@ NOTE: Only unparameterized attributes are currently supported.
     -filter{
       5 > x;
       y == "Hello Filter";
-      z in [1,2.5,61];
+      z in [1,2,5,61];
     }
   }
 }
 ```
-Ok, now this is what happens. Only Expr nodes with the name Right will be visible. The Expr node must also contain all attributes
-listed within -filter {} and be set to the specified values. 
+Ok, now this is what happens. Only Expr nodes named Right by their parent will be visible. The Expr node must also contain all attributes
+listed within -filter {} and all the expressions must be true.
 
 Each expression in the -filter block must contain one attribute name followed by either one of these:
 - A Boolean-, Integer- or String value.
@@ -173,7 +179,7 @@ Each expression in the -filter block must contain one attribute name followed by
 - Another attribute name with the same type.
     
 Values can use the following operands: ==, <, >, <=, >=. In the example above z must be one of the values specified in the array 
-[1,2.5,61]. Strings and Integers can use the array type.
+[1,2,5,61]. Strings and Integers can use the array type.
 
 Here is a list of the different combinations of filter expressions: (NOTE: that the attribute, x in this case, can be either on left
 or right side of the expression)
@@ -253,7 +259,7 @@ So simply do like something like this:
 }
 ```
 
-OBS! The NTA-depth will determine the depth of the NTA-chain, if a NTA in turn creates any NTA:s. And NTA-show-computed will determine if NTA:s computed by other calls, not from the Configuration Language, are show in the graph or not.
+Note! The NTA-depth will determine the depth of the NTA-chain, if a NTA in turn creates any NTA:s. And NTA-show-computed will determine if NTA:s computed by other calls, not from the Configuration Language, are show in the graph or not.
 
 Global
 ------------ 
