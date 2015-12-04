@@ -22,11 +22,11 @@ public class Config{
     private final String filterFileName = "filter.cfg";
     private final String filterTmpFileName = "filter-tmp.cfg";
 
-    public static final String CONFIG_FILTER = "filter";
+    public static final String CONFIG_WHEN = "when";
     public static final String CONFIG_GLOBAL = "global";
     public static final String CONFIG_INCLUDE = "include";
 
-    public static final String FILTER_LIST = "-filter";
+    public static final String WHEN_LIST = "-when";
     public static final String STYLE_LIST = "-style";
     public static final String DISPLAY_ATTRIBUTES_LIST = "-display-attributes";
     public static final String NTA_DEPTH = "NTA-depth";
@@ -59,8 +59,8 @@ public class Config{
             PrintWriter writer = null;
             if(!f.exists()) {
                 writer = new PrintWriter(fullFilePath, "UTF-8");
-                writer.print("-configs{\n\tfilter = true;\n\tglobal = false;\n\tinclude = false;\n}" +
-                        "\n-global{\n\t-filter{}\n\t-style{}\n\t-display-attributes{}\n}\n" +
+                writer.print("-configs{\n\twhen = true;\n\tglobal = false;\n\tinclude = false;\n}" +
+                        "\n-global{\n\t-when{}\n\t-style{}\n\t-display-attributes{}\n}\n" +
                         "-include{\n\n}\n");
                 writer.close();
             }
@@ -195,15 +195,15 @@ public class Config{
         if(!noError)
             return false;
 
-        if(!isSet(CONFIG_FILTER))
+        if(!isSet(CONFIG_WHEN))
             return true;
 
         // Add all bin expressions to one hashmap. This will allow expressions to override each other
         HashMap<String, BinExpr> binExprs = new HashMap<>();
 
         // If there a global filter add it to the hashmap
-        if (isSet(CONFIG_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBinExprList(FILTER_LIST) != null) {
-            for (BinExpr be : configs.getGlobal().getBinExprList(FILTER_LIST).getBinExprList()) {
+        if (isSet(CONFIG_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBinExprList(WHEN_LIST) != null) {
+            for (BinExpr be : configs.getGlobal().getBinExprList(WHEN_LIST).getBinExprList()) {
                 binExprs.put(be.getDecl().getID(), be);
             }
         }
@@ -220,16 +220,16 @@ public class Config{
 
             // First add class specific bin expressions
             NodeConfig cNode = configs.getNodes().get(node.simpleNameClass);
-            if (className && cNode.getBinExprList(FILTER_LIST) != null) {
-                for (BinExpr be : cNode.getBinExprList(FILTER_LIST).getBinExprList()) {
+            if (className && cNode.getBinExprList(WHEN_LIST) != null) {
+                for (BinExpr be : cNode.getBinExprList(WHEN_LIST).getBinExprList()) {
                     binExprs.put(be.getDecl().getID(), be);
                 }
             }
 
             // then add class name specific bin expressions, eventual overriding of class expressions
             NodeConfig tNode = configs.getNodes().get(node.fullName);
-            if (tellingName && tNode.getBinExprList(FILTER_LIST) != null) {
-                for (BinExpr be : tNode.getBinExprList(FILTER_LIST).getBinExprList()) {
+            if (tellingName && tNode.getBinExprList(WHEN_LIST) != null) {
+                for (BinExpr be : tNode.getBinExprList(WHEN_LIST).getBinExprList()) {
                     binExprs.put(be.getDecl().getID(), be);
                 }
             }
