@@ -21,8 +21,10 @@ This readme has the following content
     - Standard configuration file
 
 # Getting started #
+### Important 1: This tool is based on Java 8. If you have an older version installed the tool will not work. ###
+### Important 2: This tool is based on a new JastAdd version that is not in production yet. It is included in this project at tools/jastadd2.jar. ###
 ## Get the project on you machine ##
-### Important! This tool is based on Java 8. If you have an older version installed the tool will not work. ###
+
 
 Start of by cloning 
 ```
