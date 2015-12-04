@@ -5,14 +5,12 @@ import jastaddad.ui.UIMonitor;
 import jastaddad.ui.graph.GraphView;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
 import javafx.scene.control.Menu;
-import javafx.stage.StageStyle;
+import javafx.scene.control.MenuItem;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**

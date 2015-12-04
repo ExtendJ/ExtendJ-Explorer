@@ -2,8 +2,6 @@ package jastaddad.tasks;
 
 import jastaddad.api.JastAddAdAPI;
 
-import java.awt.image.BufferedImage;
-
 /**
  * Created by gda10jth on 11/20/15.
  */

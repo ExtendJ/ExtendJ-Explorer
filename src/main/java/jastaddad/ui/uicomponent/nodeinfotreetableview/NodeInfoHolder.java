@@ -2,8 +2,6 @@ package jastaddad.ui.uicomponent.nodeinfotreetableview;
 
 import jastaddad.api.nodeinfo.NodeInfo;
 
-import java.util.ArrayList;
-
 /**
  * Created by gda10jth on 11/30/15.
  */

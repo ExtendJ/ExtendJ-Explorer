@@ -4,22 +4,17 @@ import jastaddad.api.ASTAPI;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.TreeNode;
 import jastaddad.api.nodeinfo.NodeInfo;
-import jastaddad.ui.AttributeInfo;
 import jastaddad.ui.UIDialog;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.graph.GraphView;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -277,9 +272,7 @@ public class Controller implements Initializable {
         textTreeTabController.updateTree();
         resetReferences();
         if (mon.getSelectedNode() != null) {
-            Platform.runLater(() -> {
-                textTreeTabController.newNodeSelected(mon.getSelectedNode());
-            });
+            Platform.runLater(() -> textTreeTabController.newNodeSelected(mon.getSelectedNode()));
         }
     }
 
@@ -382,7 +375,7 @@ public class Controller implements Initializable {
      */
     public void functionStopped(){
         mon.functionDone();
-        attributeTabController.functionStoped();
+        attributeTabController.functionStopped();
         textTreeTabController.functionStoped();
         topMenuController.functionStoped();
     }
@@ -410,7 +403,7 @@ public class Controller implements Initializable {
         if(fromGraph)
             textTreeTabController.newNodeSelected(node);
         else
-            graphView.newNodeSelected(node);
+            graphView.setSelectedNode(node);
     }
 
     /**
@@ -448,9 +441,6 @@ public class Controller implements Initializable {
 
         codeArea.replaceText(0,0, textContent);
         codeArea.getStyleClass().add("textAreaConfig");
-
-        //filteredConfigTextArea.setText(textContent);
-        //filteredConfigTextArea.setPrefColumnCount(lineCount);
 
     }
 

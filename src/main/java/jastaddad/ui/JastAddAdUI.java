@@ -1,31 +1,26 @@
 package jastaddad.ui;
 
-import configAST.*;
+import configAST.ConfigParser;
+import configAST.ConfigScanner;
+import configAST.DebuggerConfig;
+import configAST.ErrorMessage;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.JastAddAdAPI;
-import jastaddad.api.filteredtree.TreeNode;
 import jastaddad.tasks.JastAddAdTask;
-import jastaddad.tasks.JastAddAdXML;
 import jastaddad.ui.controllers.Controller;
 import jastaddad.ui.graph.GraphView;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ScrollPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Optional;
 
 /**
  * This is the main class for the JastAddAd system if the user wants the UI. This class will create an jastAddAd

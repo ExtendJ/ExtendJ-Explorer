@@ -7,7 +7,9 @@ import jastaddad.api.nodeinfo.Token;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 /**

@@ -1,7 +1,5 @@
 package jastaddad.ui;
 
-import configAST.Bool;
-import configAST.Value;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.TreeNode;
 import jastaddad.api.nodeinfo.NodeInfo;
@@ -13,13 +11,15 @@ import javafx.animation.Timeline;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.util.Duration;
 
-import java.awt.geom.RoundRectangle2D;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -34,6 +34,7 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
     private Method m;
     private nodeParameter focusedNodeParameter;
     private ArrayList<nodeParameter> nodeParameters;
+    private int nodeInfoPos;
 
     private boolean blinkAnimationWhite;
     Object[]  params;
@@ -226,7 +227,7 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
                     }catch (NumberFormatException e){
                         mon.getController().addError("The number is out of bounds. Integer should be between " + Integer.MIN_VALUE + " and " + Integer.MAX_VALUE);
                     }
-                } else if (type == byte.class || type == Integer.class) {
+                } else if (type == byte.class || type == Byte.class) {
                     try {
                         tmpParam[i] = field.getText().length() <= 0 ? null : Byte.parseByte(field.getText());
                     }catch (NumberFormatException e){
@@ -383,6 +384,10 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
     public NodeInfo getInfo(){
         return info;
     }
+
+    public void setNodeInfoPos(int pos){ this.nodeInfoPos = pos; }
+
+    public int getNodeInfoPos(){ return nodeInfoPos; }
 
     public TreeNode getTreeNode(){return node;}
     public boolean invokeButtonPressed(){

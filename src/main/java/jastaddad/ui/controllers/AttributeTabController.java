@@ -48,13 +48,9 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     @FXML private Label nodeNameLabel;
     @FXML private Label attributeInfoLabel;
 
-    private ArrayList<TreeItem<NodeInfo>> labelTreeItems;
-    private int indexOfSelectedAttribute;
     public void init(UIMonitor mon, GraphView graphView){
         this.mon = mon;
         this.graphView = graphView;
-        labelTreeItems = new ArrayList<>();
-        indexOfSelectedAttribute = 0;
     }
 
     /**
@@ -122,23 +118,46 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             }
 
             AttributeInputDialog dialog = new AttributeInputDialog(info, node, mon);
+            dialog.setNodeInfoPos(attributeTableView.getSelectionModel().getSelectedIndex());
             dialog.init();
-            dialog.setOnCloseRequest(event -> {
-                if(dialog.invokeButtonPressed()) {
-                    Object[] result = dialog.getResult();
-                    if(result == null ||  mon.getLastRealNode() == null)
-                        return;
-                    Object value = mon.getApi().compute(dialog.getTreeNode().getNode(), dialog.getInfo(), result);
-                    if(!printToConsole(node, value))
-                        return;
 
-                    if(info.isNTA()){
-                        mon.getApi().buildFilteredTree();
-                        mon.getController().updateUI();
-                    }
-                    setAttributeList(node, false);
-                }
+            dialog.setOnCloseRequest(event -> {
                 mon.getController().nodeSelected(dialog.getTreeNode(), false);
+                if(!dialog.invokeButtonPressed())
+                    return;
+
+                Object[] result = dialog.getResult();
+                if(result == null ||  mon.getLastRealNode() == null)
+                    return;
+                Object value = mon.getApi().compute(dialog.getTreeNode().getNode(), dialog.getInfo(), result);
+                if(!printToConsole(node, value))
+                    return;
+
+                if(info.isNTA()){
+                    mon.getApi().buildFilteredTree();
+                    mon.getController().updateUI();
+                }
+                setAttributeList(node, false);
+
+                // Below code is for setting the selected position to the last computed value, in case the selected row
+                // is a parameterized attribute
+                attributeTableView.getSelectionModel().select(dialog.getNodeInfoPos());
+                TreeItem<NodeInfoInterface> selected = attributeTableView.getSelectionModel().getSelectedItem();
+
+                if(selected == null || !selected.getValue().isNodeInfo())
+                    return;
+                NodeInfo infoSelected = selected.getValue().getNodeInfoOrNull();
+                if(!info.isAttribute() && !info.isParametrized())
+                    return;
+                Attribute attribute = (Attribute) infoSelected;
+                int i = 0;
+                for(Map.Entry<String, Object> entry : attribute.getComputedEntry()){
+                    i++;
+                    if(entry.getKey().equals(attribute.getLastComputedkey())) {
+                        attributeTableView.getSelectionModel().select(dialog.getNodeInfoPos() + i);
+                        break;
+                    }
+                }
             });
             dialog.show();
         });
@@ -163,7 +182,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     }
 
-    public void functionStoped(){
+    public void functionStopped(){
 
     }
 
@@ -177,7 +196,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             nodeNameLabel.setText("");
             attributeTableView.getRoot().getChildren().clear();
             attributeInfoTableView.getItems().clear();
-
             return;
         }
         nodeNameLabel.setText(node.toString());
@@ -190,7 +208,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      * @param compute
      */
     public void setAttributeList(TreeNode node, boolean compute){
-        //mon.getController().addMessage("--------- new ----------");
         Node n = node.getNode();
         if(compute) {
             mon.getController().addErrors(mon.getApi().compute(n));
@@ -202,44 +219,9 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         attributeTableView.setShowRoot(false);
         mainParent.setExpanded(true);
 
-        Collection<NodeInfo> attr = n.getNodeContent().getAttributes();
-        Collection<NodeInfo> ntas = n.getNodeContent().getNTAs();
-        Collection<NodeInfo> tokens = n.getNodeContent().getTokens();
-
-        if(attr.size() > 0) {
-            addSectionToAttributeList("Attributes", n.getNodeContent().getAttributes(), mainParent);
-        }
-
-        if(ntas.size() > 0) {
-            addSectionToAttributeList("Nonterminal attributes", n.getNodeContent().getNTAs(), mainParent);
-        }
-
-        if(tokens.size() > 0) {
-            addSectionToAttributeList("Tokens", n.getNodeContent().getTokens(), mainParent);
-        }
-
-        attributeTableView.getSelectionModel().select(indexOfSelectedAttribute);
-        TreeItem<NodeInfoInterface> selected = attributeTableView.getSelectionModel().getSelectedItem();
-
-        // Below code is for setting the selected position to the last computed value, in case the selected row
-        // is a parameterized attribute
-        if(selected == null)
-            return;
-        if(!selected.getValue().isNodeInfo())
-            return;
-        NodeInfo info = selected.getValue().getNodeInfoOrNull();
-        if(!info.isAttribute() && !info.isParametrized())
-            return;
-        Attribute attribute = (Attribute)info;
-        int i = 0;
-        for(Map.Entry<String, Object> entry : attribute.getComputedEntry()){
-            i++;
-            if(entry.getKey().equals(attribute.getLastComputedkey())) {
-                indexOfSelectedAttribute += i;
-                attributeTableView.getSelectionModel().select(indexOfSelectedAttribute);
-                return;
-            }
-        }
+        addSectionToAttributeList("Attributes", n.getNodeContent().getAttributes(), mainParent);
+        addSectionToAttributeList("Nonterminal attributes", n.getNodeContent().getNTAs(), mainParent);
+        addSectionToAttributeList("Tokens", n.getNodeContent().getTokens(), mainParent);
     }
 
     /**
@@ -249,6 +231,9 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      * @param parent
      */
     private void addSectionToAttributeList(String label, Collection<NodeInfo> list, TreeItem parent){
+        if(list.size() == 0)
+            return;
+
         NodeInfoInterface fucker = new NodeInfoLabel(label);
         TreeItem<NodeInfoInterface> tokensItem = new TreeItem<>(fucker);
         tokensItem.setExpanded(true);
@@ -308,7 +293,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     @Override
     public void changed(ObservableValue<? extends TreeItem<NodeInfoInterface>> observable, TreeItem<NodeInfoInterface> oldValue, TreeItem<NodeInfoInterface> newValue) {
         if(newValue != null) {
-            indexOfSelectedAttribute = attributeTableView.getSelectionModel().getSelectedIndex();
             NodeInfoInterface infoHolder = newValue.getValue();
             NodeInfo info = null;
             Object value = null;

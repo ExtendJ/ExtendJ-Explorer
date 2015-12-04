@@ -4,21 +4,25 @@ import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.DirectedOrderedSparseMultigraph;
 import edu.uci.ics.jung.graph.Forest;
-import edu.uci.ics.jung.visualization.*;
-import edu.uci.ics.jung.visualization.control.*;
+import edu.uci.ics.jung.visualization.BasicVisualizationServer;
+import edu.uci.ics.jung.visualization.VisualizationImageServer;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.control.PickingGraphMousePlugin;
+import edu.uci.ics.jung.visualization.control.PluggableGraphMouse;
+import edu.uci.ics.jung.visualization.control.ScalingGraphMousePlugin;
+import edu.uci.ics.jung.visualization.control.TranslatingGraphMousePlugin;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
-import edu.uci.ics.jung.visualization.picking.PickedInfo;
-import edu.uci.ics.jung.visualization.renderers.BasicEdgeLabelRenderer;
-import edu.uci.ics.jung.visualization.renderers.EdgeLabelRenderer;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
-import edu.uci.ics.jung.visualization.renderers.VertexLabelAsShapeRenderer;
-import edu.uci.ics.jung.visualization.transform.MutableTransformer;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.NodeReference;
 import jastaddad.api.filteredtree.TreeNode;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.controllers.Controller;
+import jastaddad.ui.graph.jungcomponents.EdgeLabelRenderer;
+import jastaddad.ui.graph.jungcomponents.ScalingControllerMinLimit;
+import jastaddad.ui.graph.jungcomponents.VertexPaintTransformer;
+import jastaddad.ui.graph.jungcomponents.VertexShapeTransformer;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import org.apache.commons.collections15.Transformer;
@@ -28,9 +32,7 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -102,11 +104,6 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         vs.repaint();
     }
 
-    public void setSelectedNode(GenericTreeNode node){
-        vs.getPickedVertexState().removeItemListener(this);
-        vs.getPickedVertexState().pick(node, true);
-        vs.getPickedVertexState().addItemListener(this);
-    }
 
     /**
      * Add edges from the vertex from and to all vertexes in newRefs.
@@ -149,10 +146,9 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
                     new Point2D.Double(vs.getGraphLayout().getSize().getWidth() / 2,
                             vs.getGraphLayout().getSize().getHeight() / 2),
                     new Dimension(vs.getGraphLayout().getSize()));
-            // Write image to a png file
-            File outputfile = new File(filename + "." + ext);
 
-            ImageIO.write(image, ext, outputfile);
+            // Write image to a png file
+            ImageIO.write(image, ext, new File(filename + "." + ext));
         } catch (IOException e) {
             // Exception handling
             e.printStackTrace();
@@ -164,8 +160,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
 
         BufferedImage bufImage = ScreenImage.createImage(getContent());
         try {
-            File outputfile = new File(filename + "." + ext);
-            ImageIO.write(bufImage, ext, outputfile);
+            ImageIO.write(bufImage, ext, new File(filename + "." + ext));
         } catch (Exception e) {
             System.out.println("writeToImageFile(): " + e.getMessage());
         }
@@ -253,22 +248,27 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         // Vertex border style transformer
         Transformer<GenericTreeNode, Stroke> vertexStrokeTransformer = item -> {
             if(item.getStyles().get("border-style").getStr().equals("dashed"))
-               return dashedStroke; //Todo returning the dashedStroke crashes the graph
+               return dashedStroke;
             return normalStroke;
         };
 
         // Build the VisualizationViewer that holds the graph and all transformers.
         bvs.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
-        bvs.scaleToLayout(new CrossoverScalingControl());
+        bvs.scaleToLayout(new ScalingControllerMinLimit());
 
         bvs.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
         bvs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
-        bvs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<>());
-        bvs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<>());
-        bvs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
         bvs.getRenderContext().setVertexShapeTransformer(new VertexShapeTransformer(vs.getRenderContext()));
+        bvs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
+
         bvs.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
         bvs.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
+        bvs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.QuadCurve<>());
+        bvs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<>());
+        bvs.getRenderContext().setLabelOffset(15);
+
+        //Override the default renderers
+        bvs.getRenderer().setEdgeLabelRenderer(new EdgeLabelRenderer<>());
     }
 
     /**
@@ -299,12 +299,19 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         gm.add(new TranslatingGraphMousePlugin(MouseEvent.BUTTON1_MASK+MouseEvent.CTRL_MASK));
         gm.add(new PopupGraphMousePlugin(vs, mon, this));
         gm.add(new PickingGraphMousePlugin());
-        gm.add(new ScalingGraphMousePlugin(new MaxScaled(0.025), 0, 1.1f, 0.9f));
+        gm.add(new ScalingGraphMousePlugin(new ScalingControllerMinLimit(), 0, 1.1f, 0.9f));
         vs.setGraphMouse(gm);
     }
 
     public void repaint(){
         vs.repaint();
+    }
+
+    public void setSelectedNode(GenericTreeNode node){
+        vs.getPickedVertexState().removeItemListener(this);
+        vs.getPickedVertexState().clear();
+        vs.getPickedVertexState().pick(node, true);
+        vs.getPickedVertexState().addItemListener(this);
     }
 
     /**
@@ -343,148 +350,4 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         });
     }
 
-
-    /**
-     * A transformer Class for setting the color of a vertex in the graph.
-     */
-    private static class VertexPaintTransformer implements Transformer<GenericTreeNode,Paint> {
-        private final PickedInfo<GenericTreeNode> pi;
-        private final UIMonitor mon;
-
-        VertexPaintTransformer ( PickedInfo<GenericTreeNode> pi, UIMonitor mon ) {
-            super();
-            this.mon = mon;
-            if (pi == null)
-                throw new IllegalArgumentException("PickedInfo instance must be non-null");
-            this.pi = pi;
-
-        }
-
-        /**
-         * Sets the color of the vertex fNode based on picked state, highlight or a vertex specific color.
-         * @param fNode
-         * @return
-         */
-        @Override
-        public Paint transform(GenericTreeNode fNode) {
-            String color = fNode.getStyles().get("node-color").getColor();
-            if(mon.getDialogSelectedNodes().contains(fNode))
-                return new Color(255, 197, 115);
-            if(fNode.isNode() && mon.gethighlightedSimpleClassNames().contains(((TreeNode)fNode).getNode().simpleNameClass))
-                return new Color(255, 140, 140);
-            if (pi.isPicked(fNode)) {
-                return new Color(240, 240, 200);
-            }
-            if(fNode.isNullNode()){
-                return new Color(254, 160, 160);
-            }
-            if(fNode.isReferenceHighlight()) {
-                return new Color(80, 180, 80);
-            }
-            if(fNode.isNTANode()){
-                return new Color(120, 160, 200);
-            }
-            try{
-                return Color.decode(color);
-            }catch (NumberFormatException e){
-                e.printStackTrace();
-                return new Color(200, 240, 230);
-            }
-        }
-    }
-
-    /**
-     * A transformer Class for setting the shape of a vertex in the graph.
-     */
-    private class VertexShapeTransformer extends VertexLabelAsShapeRenderer<GenericTreeNode, UIEdge> {
-
-        VertexShapeTransformer (RenderContext<GenericTreeNode, UIEdge> rc) {
-            super(rc);
-        }
-
-        /**
-         * Sets the shape of the vertex fNode based on style or type of the vertex (cluster or whatever)
-         * @param fNode
-         * @return
-         */
-        @Override
-        public Shape transform(GenericTreeNode fNode) {
-            Component component = prepareRenderer(rc, rc.getVertexLabelRenderer(), rc.getVertexLabelTransformer().transform(fNode),
-                    rc.getPickedVertexState().isPicked(fNode), fNode);
-            Dimension size = component.getPreferredSize();
-
-            int centerX = -size.width/2 -10;
-            int centerY = -size.height/2 -10;
-            int height = size.height+20;
-            int width = size.width+20;
-
-            // make sure nodes have a minimum width
-            if(fNode.isNode() && !fNode.isNullNode() && width < 130){
-                width = 130;
-                centerX = -65;
-            }else if(!fNode.isNode()){
-                width = 40;
-                height = 40;
-                centerX = -20;
-                centerY = -20;
-            }
-
-            if(fNode.isNullNode())
-                return new Ellipse2D.Float(centerX, centerY, width, height);
-            //Rectangle bounds = new Rectangle(-size.width/2 -2, -size.height/2 -2, size.width+4, size.height);
-
-            String shape = fNode.getStyles().get("node-shape").getStr();
-            if(shape != null) {
-                if (shape.equals("rounded_rectangle"))
-                    return new RoundRectangle2D.Double(centerX, centerY, width, height, 40, 40);
-                if (shape.equals("small_circle"))
-                    return new Ellipse2D.Float(centerX, centerY, width, height);
-                if (shape.equals("rectangle"))
-                    return new RoundRectangle2D.Double(centerX, centerY, width, height, 10, 10);
-            }
-            return new RoundRectangle2D.Double(-50, -20, 130, 40,40,40);
-        }
-    }
-
-    /**
-     * Scaling class for the zoom, has a limit in how much it is allowed to scale down the view and layout
-     */
-    private class MaxScaled extends CrossoverScalingControl{
-        private final double scaleLimit;
-
-        public MaxScaled(double scaleLimit){
-            super();
-            this.scaleLimit = scaleLimit;
-        }
-
-        @Override
-        public void scale(VisualizationServer<?,?> vv, float amount, Point2D at) {
-            MutableTransformer layoutTransformer = vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT);
-            MutableTransformer viewTransformer = vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW);
-            double modelScale = layoutTransformer.getScale();
-            double viewScale = viewTransformer.getScale();
-            double inverseModelScale = Math.sqrt(crossover)/modelScale;
-            double inverseViewScale = Math.sqrt(crossover)/viewScale;
-            double scale = modelScale * viewScale;
-
-            if(scale < scaleLimit && amount < 1)
-                return;
-
-            Point2D transformedAt = vv.getRenderContext().getMultiLayerTransformer().inverseTransform(Layer.VIEW, at);
-            if((scale*amount - crossover)*(scale*amount - crossover) < 0.001) {
-                // close to the control point, return both transformers to a scale of sqrt crossover value
-                layoutTransformer.scale(inverseModelScale, inverseModelScale, transformedAt);
-                viewTransformer.scale(inverseViewScale, inverseViewScale, at);
-            } else if(scale*amount < crossover) {
-                // scale the viewTransformer, return the layoutTransformer to sqrt crossover value
-                viewTransformer.scale(amount, amount, at);
-                layoutTransformer.scale(inverseModelScale, inverseModelScale, transformedAt);
-            } else {
-                // scale the layoutTransformer, return the viewTransformer to crossover value
-                layoutTransformer.scale(amount, amount, transformedAt);
-                viewTransformer.scale(inverseViewScale, inverseViewScale, at);
-            }
-            vv.repaint();
-        }
-    }
 }

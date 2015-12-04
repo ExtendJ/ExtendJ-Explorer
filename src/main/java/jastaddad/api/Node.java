@@ -1,7 +1,6 @@
 package jastaddad.api;
 
 
-import jastaddad.api.nodeinfo.NodeInfo;
 import jastaddad.api.nodeinfo.NodeInfoHolder;
 
 import java.lang.annotation.Annotation;
@@ -86,7 +85,7 @@ public class Node{
             this.simpleNameClass = "Null";
         this.node = root;
 
-        if(name == simpleNameClass || name.length() == 0){
+        if(name.equals(simpleNameClass) || name.length() == 0){
             this.nameFromParent = "";
             fullName = simpleNameClass;
         }else {

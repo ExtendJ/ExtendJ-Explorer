@@ -1,7 +1,5 @@
 package jastaddad.api.nodeinfo;
 
-import jastaddad.api.NodeContent;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 

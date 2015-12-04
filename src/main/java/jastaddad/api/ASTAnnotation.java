@@ -1,7 +1,5 @@
 package jastaddad.api;
 
-import configAST.Bool;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 

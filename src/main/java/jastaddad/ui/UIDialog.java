@@ -11,8 +11,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
-import java.util.ArrayList;
-
 /**
  * Created by gda10jth on 11/24/15.
  */
