@@ -1,3 +1,5 @@
+### Work in progress. please contact gda10jth@student.lu.se and gda10jli@student.lu.se if you want to try it out. ###
+
 # JastAddAd readme #
 This readme has the following content
 
@@ -151,7 +153,7 @@ In this example the "include" is set to false and therefore the "-include" block
 
 IMPLEMENTED CONFIGS:
 
-- filter == [Bool] // ignore all -filter parts in the code
+- when == [Bool] // ignore all -when parts in the code
 - global == [Bool] // ignore everything inside -global. 
 - include == [Bool // ignore everything inside -include. 
 - NTA-depth == [Integer] //Will determine the max depth of the displayed NTA:s, if they are recursive they will stop at the max depth.  
@@ -164,7 +166,7 @@ NOTE: Only unparameterized attributes are currently supported.
 ```
 -include{
   Expr:Right {
-    -filter{
+    -when{
       5 > x;
       y == "Hello Filter";
       z in [1,2,5,61];
@@ -173,9 +175,9 @@ NOTE: Only unparameterized attributes are currently supported.
 }
 ```
 Ok, now this is what happens. Only Expr nodes named Right by their parent will be visible. The Expr node must also contain all attributes
-listed within -filter {} and all the expressions must be true.
+listed within -when {} and all the expressions must be true.
 
-Each expression in the -filter block must contain one attribute name followed by either one of these:
+Each expression in the -when block must contain one attribute name followed by either one of these:
 - A Boolean-, Integer- or String value.
 - An array of Integers or Strings.
 - Another attribute name with the same type.
@@ -199,7 +201,7 @@ can be done by adding a -style{} inside a node block. See example:
 ```
 -include{
   Stmt {
-    -filter{
+    -when{
       ...
     }
     -style{
@@ -224,7 +226,7 @@ inside a node. The attributes listed there will be shown directly in the graph.
 ```
 -include{
   Stmt {
-    -filter{ ... }
+    -when{ ... }
     -style{ ... }
     -display-attributes{
       Value; 
@@ -251,7 +253,7 @@ So simply do like something like this:
 }
 -include{
   Stmt {
-    -filter{ ... }
+    -when{ ... }
     -style{ ... }
     -display-attributes{
       getNum; /*NTA*/
@@ -273,7 +275,7 @@ block, but is applied on every node.
   ...
 }
 -global{
-    -filter{ ... }
+    -when{ ... }
     -style{ ... }
     -display-attributes{ ... }
 }MENTED CONFIGS:
@@ -292,13 +294,13 @@ Answer: The attribute value inside the -include block has higher precedence than
 In the example below, the attribute Value must be set to 2 in every node, except the Stmt node were the value must be 1.
 ```
 -global{
-    -filter{ 
+    -when{ 
 	  Value == 2; 
     }
 }
 -include{
     Stmt {
-      -filter{
+      -when{
 	    Value == 1;
       }
     }
@@ -313,7 +315,7 @@ Here is a slightly bigger example that you should be able to understand after re
   filter = true;
 }
 -global{
-      -filter{
+      -when{
 	  x == 9;
       }
       -style{ 
@@ -326,10 +328,10 @@ Here is a slightly bigger example that you should be able to understand after re
 -include{
     div {}
     IdDecl:ClassName {
-      -filter{ }
+      -when{ }
     }
     Mul{
-      -filter{
+      -when{
 	    x == 5;
 	    y in ["foo", "bar"];
       }
@@ -357,14 +359,14 @@ This can be copy and pasted in to a "filter.cfg" file.
 }
 -global{
 	-style{}
-	-filter{getString == print;}
+	-when{getString == print;}
 	-display-attributes{}
 }
 -include{
 	Opt;
 	List{
 		-display-attributes{}
-		-filter{ }
+		-when{ }
 		-style{ node-color = #FF8000; }
 	}
 }
