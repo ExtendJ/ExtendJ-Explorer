@@ -10,6 +10,7 @@
     -fx-border-width:0px;
     -fx-border-color:#404040;
     -fx-border-radius: 0 0 0 0;
+    -fx-pref-height:30px;
     -fx-background-radius: 0 0 0 0;
 }
 
@@ -114,6 +115,12 @@
     -fx-padding: 0 0 0 0;
     -fx-border-width:1 0 1 0;
     -fx-border-color:#AAAAAA transparent #404040 transparent;
+}
+
+.our_label{
+    -fx-text-alignment:center;
+    -fx-height:paneParent;
+    -fx-pref-height:30px;
 }
 
 .tab-pane

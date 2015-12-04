@@ -1,5 +1,6 @@
 package jastaddad.ui.graph;
 
+import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.DirectedOrderedSparseMultigraph;
@@ -99,13 +100,34 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         vs.setGraphLayout(layout);
         //vs.getGraphLayout().setGraph(graph);
         addDisplayedReferences();
+        showWholeGraphOnScreen();
         vs.repaint();
+    }
+
+    public void showWholeGraphOnScreen(){
+        vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT).setToIdentity();
+        vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW).setToIdentity();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        vs.setPreferredSize(screenSize);
+        vs.scaleToLayout(new MaxScaled(0.025));
     }
 
     public void setSelectedNode(GenericTreeNode node){
         vs.getPickedVertexState().removeItemListener(this);
         vs.getPickedVertexState().pick(node, true);
         vs.getPickedVertexState().addItemListener(this);
+    }
+
+    public void panToNode(GenericTreeNode node){
+        Layout<GenericTreeNode,UIEdge> layout = vs.getGraphLayout();
+        Point2D q = layout.transform(node);
+        Point2D lvc =
+                vs.getRenderContext().getMultiLayerTransformer().inverseTransform(vs.getCenter());
+        final double dx = (lvc.getX() - q.getX());
+        final double dy = (lvc.getY() - q.getY());
+        vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT).translate(dx, dy);
+
+
     }
 
     /**

@@ -56,11 +56,17 @@ public class Controller implements Initializable {
     @FXML
     private Button saveNewFilterButton;
     @FXML
+    private Button showRootNodeButton;
+    @FXML
+    private Button showSelectedNodeButton;
+    @FXML
     private Button minimizeLeftSide;
     @FXML
     private Button minimizeRightSide;
     @FXML
     private Button minimizeConsole;
+    @FXML
+    private Button showWholeGraphButton;
     @FXML
     private TextArea filteredConfigTextArea;
     @FXML
@@ -245,6 +251,16 @@ public class Controller implements Initializable {
                 addWarnings(mon.getApi().getWarnings(ASTAPI.AST_STRUCTURE_WARNING));
                 addErrors(mon.getApi().getErrors(ASTAPI.AST_STRUCTURE_ERROR));
             });
+        showRootNodeButton.setOnAction(click -> {
+            graphView.panToNode(mon.getRootNode());
+        });
+        showSelectedNodeButton.setOnAction(click -> {
+            if (mon.getSelectedNode() != null)
+                graphView.panToNode(mon.getSelectedNode());
+        });
+        showWholeGraphButton.setOnAction(click -> {
+            graphView.showWholeGraphOnScreen();
+        });
     }
 
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
