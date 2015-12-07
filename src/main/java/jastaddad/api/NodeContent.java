@@ -93,8 +93,9 @@ public class NodeContent {
             attribute.addComputedValue(params, obj);
             return obj;
         }catch(Throwable e){
-            e.printStackTrace();
-            addInvocationErrors(e);
+            //e.printStackTrace();
+            if(attribute != null)
+                addInvocationErrors(e, attribute.getMethod());
             return null;
         }
     }
@@ -218,7 +219,7 @@ public class NodeContent {
             else if(obj != null)
                 attribute.setValue(m.invoke(obj));
         } catch (Throwable e) {
-            addInvocationErrors(e);
+            addInvocationErrors(e, m);
             attribute.setValue(e.getCause());
         }
         return attribute;
@@ -235,7 +236,7 @@ public class NodeContent {
         try{
             return new Token(name, m.invoke(obj), m);
         } catch (Throwable e) {
-            addInvocationErrors(e);
+            addInvocationErrors(e, m);
             return new Token(name, e.getCause().toString(), m);
         }
     }
@@ -244,10 +245,10 @@ public class NodeContent {
      *
      * @param e
      */
-    private void addInvocationErrors(Throwable e){
-        String message = e.getCause() != null ? e.getCause().toString() : e.getMessage();
+    private void addInvocationErrors(Throwable e, Method m){
+        String message = String.format("Error while computing %s, cause : %s", m.getName(), e.getCause() != null ? e.getCause().toString() : e.getMessage());
         invocationErrors.add(message);
-        e.printStackTrace();
+        //e.printStackTrace();
     }
 
     /**
