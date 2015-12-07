@@ -205,11 +205,6 @@
     -fx-font-size:13;
 }
 
-.consoleText:hover{
-    -fx-font-size:16;
-    -fx-width:600;
-}
-
 .consoleScrollPane{
     -fx-fit-to-height:true;
     -fx-fit-to-width:true;
