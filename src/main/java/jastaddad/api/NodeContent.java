@@ -27,6 +27,10 @@ public class NodeContent {
     private Node node; //The node the content is a part of
     private Object nodeObject; //The node the content is a part of
 
+    /**
+     * Constructor for the NodeContent, which will init the HashSet/HashMap
+     * @param node
+     */
     public NodeContent(Node node){
         attributes = new HashMap<>();
         tokens = new HashMap<>();
