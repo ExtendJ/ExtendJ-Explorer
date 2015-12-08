@@ -102,7 +102,6 @@ public class Node{
     }
 
     private boolean isChildClassOf(Class parent, Class child){
-
         if(child == null)
             return false;
         if(child == parent)
