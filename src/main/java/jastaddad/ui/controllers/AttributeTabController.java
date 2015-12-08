@@ -2,6 +2,7 @@ package jastaddad.ui.controllers;
 
 import jastaddad.api.ASTAPI;
 import jastaddad.api.Node;
+import jastaddad.api.filteredtree.GenericTreeCluster;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.TreeNode;
 import jastaddad.api.nodeinfo.Attribute;
@@ -19,13 +20,18 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
+import javax.swing.plaf.synth.Region;
 import java.net.URL;
 import java.util.*;
 
@@ -47,6 +53,12 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     @FXML private Label nodeNameLabel;
     @FXML private Label attributeInfoLabel;
+
+    @FXML private VBox clickedNodeInfoPane;
+    @FXML private VBox nodeInfoView;
+    @FXML private VBox clusterInfoView;
+    @FXML private ListView clusterInfoListView;
+
 
     public void init(UIMonitor mon, GraphView graphView){
         this.mon = mon;
@@ -162,6 +174,12 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             dialog.show();
         });
         mouseMenu.getItems().add(cmItem1);
+        showThisInAttributeTab(nodeInfoView);
+    }
+
+    private void showThisInAttributeTab(VBox child){
+        clickedNodeInfoPane.getChildren().clear();
+        clickedNodeInfoPane.getChildren().add(child);
     }
 
     private boolean printToConsole(TreeNode node, Object value){
@@ -194,8 +212,10 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         GenericTreeNode node = mon.getSelectedNode();
         if(node == null || !mon.getSelectedNode().isNode()) {
             nodeNameLabel.setText("");
-            attributeTableView.getRoot().getChildren().clear();
-            attributeInfoTableView.getItems().clear();
+            if(attributeTableView.getRoot() != null && attributeTableView.getRoot().getChildren() != null) {
+                attributeTableView.getRoot().getChildren().clear();
+                attributeInfoTableView.getItems().clear();
+            }
             return;
         }
         nodeNameLabel.setText(node.toString());
@@ -345,6 +365,24 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         if(value != null)
             newRefs = mon.getApi().getNodeReferencesAndHighlightThem(value, true);
         graphView.setReferenceEdges(newRefs, mon.getSelectedNode());
+    }
+
+    public void nodeSelected() {
+        GenericTreeNode node = mon.getSelectedNode();
+        if(node.isNode()) {
+            showThisInAttributeTab(nodeInfoView);
+            setAttributes();
+        }else{
+            showThisInAttributeTab(clusterInfoView);
+            setClusterInfo();
+        }
+
+    }
+
+    private void setClusterInfo(){
+        GenericTreeCluster cluster = (GenericTreeCluster)mon.getSelectedNode();
+        ObservableList<String> items =FXCollections.observableArrayList (cluster.getTypeList());
+        clusterInfoListView.setItems(items);
     }
 
     /**

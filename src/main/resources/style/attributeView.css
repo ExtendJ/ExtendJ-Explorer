@@ -29,7 +29,7 @@
 }
 
 /* trying to make the treetableview cell look like a table view */
-.tree-table-row-cell {
+.tree-table-row-cell{
     -fx-background-color: -fx-table-cell-border-color, -fx-control-inner-background;
     -fx-background-insets: 0, 0 0 1 0;
     -fx-padding: 0.0em;
@@ -39,8 +39,6 @@
 .tree-table-row-cell:expanded, .tree-table-row-cell:sub-tree-item, .tree-table-row-cell:expanded:odd {
     -fx-background-color:#555555;
 }
-
-
 
 .tree-table-row-cell:selected {
     -fx-background-color: -fx-focus-color, -fx-cell-focus-inner-border, -fx-focus-color;
@@ -55,4 +53,27 @@
 .tree-table-row-cell:selected:odd {
     -fx-background-color: -fx-focus-color, -fx-cell-focus-inner-border, -fx-focus-color;
     -fx-background-insets: 0, 1, 2;
+}
+
+.clickedNodeInfoPane{
+    -fx-background-color: red;
+}
+
+.clusterInfoListView{
+    -fx-base:#606060;
+    -fx-background-color: #606060;
+    -fx-background-insets: 0;
+    -fx-border-width:0px;
+    -fx-border-color:#404040;
+    -fx-border-radius: 0 0 0 0;
+    -fx-pref-height:3000;
+}
+
+.clusterInfoListView .list-cell{
+    -fx-background-color:#606060;
+    -fx-background-insets: 0 0 1 0;
+}
+
+.clusterInfoListView .list-cell:odd{
+    -fx-background-color:#595959;
 }

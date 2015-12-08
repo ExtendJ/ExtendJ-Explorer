@@ -152,6 +152,8 @@ public abstract class GenericTreeNode {
      * Sets a reference to which cluster the node is gonna be a part of.
      * @param clusterRef
      */
-    public void setClusterReference(GenericTreeNode clusterRef){ this.clusterRef = clusterRef; }
+    public void setClusterReference(GenericTreeCluster clusterRef){
+        this.clusterRef = clusterRef;
+    }
 
 }

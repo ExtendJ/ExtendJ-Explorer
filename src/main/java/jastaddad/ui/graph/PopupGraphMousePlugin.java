@@ -270,7 +270,7 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
      * @param cluster
      * @param node
      */
-    private void setClusterRef(GenericTreeNode cluster, GenericTreeNode node){
+    private void setClusterRef(TreeCluster cluster, GenericTreeNode node){
         node.setClusterReference(cluster);
         for(GenericTreeNode child : node.getChildren())
             setClusterRef(cluster, child);

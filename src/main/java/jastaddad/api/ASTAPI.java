@@ -236,6 +236,8 @@ public class ASTAPI {
         }
 
         fNode.setClusterReference(tmpCluster);
+        if(tmpCluster != null)
+            tmpCluster.addToTypelist(fNode);
         clusterClusters(fNode);
 
         if(addToParent != null)

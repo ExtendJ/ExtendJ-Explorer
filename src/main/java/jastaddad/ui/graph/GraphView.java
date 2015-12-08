@@ -115,7 +115,6 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         vs.scaleToLayout(new ScalingControllerMinLimit());
     }
 
-
     public void panToNode(GenericTreeNode node){
         Layout<GenericTreeNode,UIEdge> layout = vs.getGraphLayout();
         Point2D q = layout.transform(node);

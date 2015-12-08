@@ -7,9 +7,24 @@ package jastaddad.api.filteredtree;
 public class TreeCluster extends GenericTreeCluster {
 
     private GenericTreeNode node;
+    private int nodeCount;
+
     public TreeCluster(GenericTreeNode node, GenericTreeNode parent){
         super(parent);
         this.node = node;
+        nodeCount = 0;
+    }
+
+    public void addToTypelist(GenericTreeNode child) {
+        nodeCount++;
+        if(!child.isNode())
+            return;
+        TreeNode node = (TreeNode) child;
+        typeList.add(node.getNode().simpleNameClass);
+    }
+
+    public int getNodeCount(){
+        return nodeCount;
     }
 
     /**
@@ -29,5 +44,4 @@ public class TreeCluster extends GenericTreeCluster {
     public boolean isClusterParent() {
         return false;
     }
-
 }

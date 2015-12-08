@@ -4,6 +4,8 @@ import configAST.Color;
 import configAST.Str;
 import jastaddad.api.Config;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -13,9 +15,13 @@ import java.util.HashSet;
  */
 public abstract  class GenericTreeCluster extends GenericTreeNode{
 
+    protected ArrayList<String> typeList;
+
     public GenericTreeCluster(GenericTreeNode parent) {
         super(parent);
+        typeList = new ArrayList<>();
     }
+    public abstract int getNodeCount();
 
     @Override
     public boolean isNode() {
@@ -26,7 +32,7 @@ public abstract  class GenericTreeCluster extends GenericTreeNode{
     public String toString(){ return "..."; }
 
     @Override
-    public String toGraphString(){return ""; }
+    public String toGraphString(){return getNodeCount()+""; }
 
     @Override
     public void setStyles(Config filter) {
@@ -73,4 +79,8 @@ public abstract  class GenericTreeCluster extends GenericTreeNode{
      */
     @Override
     public boolean addInWardNodeReference(NodeReference ref){ return false; }
+
+    public Collection<? extends String> getTypeList() {
+        return typeList;
+    }
 }

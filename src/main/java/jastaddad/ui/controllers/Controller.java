@@ -415,7 +415,7 @@ public class Controller implements Initializable {
         for(UIDialog subWindow : mon.getSubWindows())
             subWindow.nodeSelected(node);
         mon.setSelectedNode(node);
-        attributeTabController.setAttributes();
+        attributeTabController.nodeSelected();
         if(fromGraph)
             textTreeTabController.newNodeSelected(node);
         else
