@@ -468,6 +468,8 @@ public class Controller implements Initializable {
         if(node == null)
             return;
         node = mon.getApi().getTreeNode(((TreeNode) node).getNode().node);
+        if(node == null)
+            return;
         mon.setSelectedNode(node);
         graphView.setSelectedNode(node.getClusterNode());
         if(mon.getSelectedInfo() != null)

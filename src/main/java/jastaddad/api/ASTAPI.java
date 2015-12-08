@@ -143,21 +143,8 @@ public class ASTAPI {
         traversTree(node, parent, cluster, firstTime, filterConfig.getInt(Config.NTA_DEPTH), futureReferences);
 
         // Add reference edges that is defined in the filter language
-        for (NodeReference ref : futureReferences){
-            ArrayList<GenericTreeNode> nodeRefs = new ArrayList<>();
-            GenericTreeNode to;
-            if(!ref.getReferenceFrom().isNode())
-                continue;
-            for (Object obj : ref.getFutureReferences()){
-                if(isTreeNode(obj)){
-                    to = getTreeNode(obj);
-                    nodeRefs.add(to);
-                    to.addInWardNodeReference(ref);
-                }
-            }
-            ref.setReferences(nodeRefs);
-        }
-        displayedReferences = futureReferences;
+        addReferences(futureReferences, false);
+
     }
 
     private void traversTree(Node node, GenericTreeNode parent, TreeCluster cluster, boolean firstTime, int depth, ArrayList<NodeReference> futureReferences){
@@ -223,25 +210,47 @@ public class ASTAPI {
             }
         }
 
+        // travers down the tree for the Computed NTA:s
+        if(computedNTAs.containsKey(node) && filterConfig.hasConfig(Config.NTA_SHOW_COMPUTED)){
+            for(Node child : computedNTAs.get(node)) {
+                if(!treeNodes.containsKey(child.node))
+                    traversTree(child, fNode, tmpCluster, firstTime, 0, futureReferences);
+            }
+        }
+
         // travers down the tree
         for(Node child : node.children){
             traversTree(child, fNode, tmpCluster, firstTime, depth  ,futureReferences);
         }
 
-        // travers down the tree for the Computed NTA:s
-        if(computedNTAs.containsKey(node) && filterConfig.hasConfig(Config.NTA_SHOW_COMPUTED)){
-            for(Node child : computedNTAs.get(node)) {
-                traversTree(child, fNode, tmpCluster, firstTime, 0, futureReferences);
-            }
-        }
+        if(addToParent != null)
+            parent.addChild(addToParent);
 
         fNode.setClusterReference(tmpCluster);
         clusterClusters(fNode);
 
-        if(addToParent != null)
-            parent.addChild(addToParent);
-
         fNode.setDisplayedAttributes(futureReferences, displayedAttributes, this);
+    }
+
+    private void addReferences(ArrayList<NodeReference> futureReferences, boolean appendList){
+        for (NodeReference ref : futureReferences){
+            ArrayList<GenericTreeNode> nodeRefs = new ArrayList<>();
+            GenericTreeNode to;
+            if(!ref.getReferenceFrom().isNode())
+                continue;
+            for (Object obj : ref.getFutureReferences()){
+                if(isTreeNode(obj)){
+                    to = getTreeNode(obj);
+                    nodeRefs.add(to);
+                    to.addInWardNodeReference(ref);
+                }
+            }
+            ref.setReferences(nodeRefs);
+        }
+        if(!appendList)
+            displayedReferences = futureReferences;
+        else
+            displayedReferences.addAll(futureReferences);
     }
 
     /**
@@ -276,9 +285,6 @@ public class ASTAPI {
     public boolean saveNewFilter(String text){
         boolean res = filterConfig.saveAndUpdateConfig(text);
         if (res) {
-            for(Collection<Node> list : computedNTAs.values()){
-                list.forEach(treeNodes::remove);
-            }
             ASTNTAObjects.forEach(treeNodes::remove);
             clearDisplayedReferences();
             filteredTree = null;
@@ -290,10 +296,11 @@ public class ASTAPI {
     /**
      * Reevaluates the API:s filtered tree
      */
-    public void buildFilteredTree(){
-        clearDisplayedReferences();
-        filteredTree = null;
-        traversTree(this.tree, null, null, false);
+    public void buildFilteredSubTree(Node node, TreeNode parent){
+        ArrayList<NodeReference> futureReferences = new ArrayList<>();
+        parent.setDisplayedAttributes(futureReferences, filterConfig.getDisplayedAttributes(node), this);
+        traversTree(node, parent, null, true, 0, displayedReferences);
+        addReferences(futureReferences, true);
     }
 
     public Config getfilterConfig(){ return filterConfig; }
@@ -305,7 +312,7 @@ public class ASTAPI {
     public boolean isTreeNode(Object node){ return treeNodes.containsKey(node); }
 
     public boolean isASTObject(Object node){
-        return ASTObjects.contains(node) || ASTNTAObjects.contains(node) || (filterConfig.hasConfig(Config.NTA_SHOW_COMPUTED) && computedNTAs.containsKey(node));
+        return ASTObjects.contains(node) || ASTNTAObjects.contains(node);
     }
 
     public boolean addASTObject(Object node, boolean nta){
@@ -315,7 +322,7 @@ public class ASTAPI {
     /**
      * Returns the Size of the graph, ie the number of Nodes in the AST.
      */
-    public int getASTSize(){ return ASTObjects.size() + ASTNTAObjects.size() + computedNTAs.size(); }
+    public int getASTSize(){ return ASTObjects.size() + ASTNTAObjects.size(); }
 
     public void clearDisplayedReferences(){ displayedReferences.clear(); }
     public ArrayList<NodeReference> getDisplayedReferences(){ return displayedReferences; }
@@ -369,16 +376,15 @@ public class ASTAPI {
         if (info == null)
             return null;
         Object obj = node.getNodeContent().compute(info, params, this);
-        if(!info.isNTA() ||  obj == null || ASTNTAObjects.contains(obj))//Todo might want to add null nodes
+        if(!info.isNTA() ||  obj == null || ASTNTAObjects.contains(obj))
             return obj;
         Node astNode = new Node(obj, true, this);
         if(!computedNTAs.containsKey(node))
             computedNTAs.put(node, new HashSet<>());
         computedNTAs.get(node).add(astNode);
         node.NTAChildren.put(NodeInfo.getName(info.getMethod(), params), astNode);
-        if(filterConfig.hasConfig(Config.NTA_SHOW_COMPUTED)) {
-            treeNodes.put(obj, new TreeNode(astNode, getTreeNode(node), filterConfig));
-        }
+        if(filterConfig.hasConfig(Config.NTA_SHOW_COMPUTED))
+            buildFilteredSubTree(astNode, (TreeNode) treeNodes.get(node.node));
         return obj;
     }
 

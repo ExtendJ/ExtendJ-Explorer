@@ -112,7 +112,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 if(!printToConsole(node, obj))
                     return;
                 setAttributeList(node, false);
-                mon.getApi().buildFilteredTree();
                 mon.getController().updateUI();
                 return;
             }
@@ -133,10 +132,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 if(!printToConsole(node, value))
                     return;
 
-                if(info.isNTA()){
-                    mon.getApi().buildFilteredTree();
+                if(info.isNTA())
                     mon.getController().updateUI();
-                }
                 setAttributeList(node, false);
 
                 // Below code is for setting the selected position to the last computed value, in case the selected row
@@ -172,7 +169,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             mon.getController().addMessage("Computation unsuccessful");
             return false;
         }
-
         mon.getController().addWarnings(mon.getApi().getWarnings(ASTAPI.INVOCATION_WARNING));
         mon.getController().addMessage("Computation successful : " + value);
         return true;
@@ -310,6 +306,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             setReference(value);
 
         }else{
+            mon.setSelectedInfo(null);
             setAttributeInfo(null);
             setReference(null);
         }
