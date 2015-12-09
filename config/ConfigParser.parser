@@ -34,6 +34,7 @@
 
 DebuggerConfig debuggerconfig =
 	CONFIGS LBRACKET filter_config.a RBRACKET filter_list.b {: return new DebuggerConfig(a, b); :};
+	CONFIGS LBRACKET filter_config.a RBRACKET filter_list.b {: return new DebuggerConfig(a, b); :};
 
 FilterConfig filter_config =
 	use.a binding_list.b {: return new FilterConfig(new Opt(a), b); :}
@@ -68,7 +69,7 @@ List node_config_list =
  	| node_config.a {: return new List(a); :}
 	| node_config_list.a node_config.b {: return a.add(b); :};
 
-NodeConfig node_config =
+NodeConfigBlock node_config =
 	 WHEN LBRACKET expr_list.a RBRACKET {: return new When(a); :}
 	| STYLE LBRACKET binding_list.a RBRACKET {: return new Style(a); :}
 	| SHOW LBRACKET lang_decl_list.a RBRACKET {: return new Show(a); :};
@@ -88,7 +89,7 @@ Binding binding =
 
 List lang_decl_list =
 	/*EmptyList*/ {: return new List(); :}
-	lang_id_decl_tmp.a {: return new List(a); :}
+	| lang_id_decl_tmp.a {: return new List(a); :}
 	| lang_decl_list.a lang_id_decl_tmp.b {: return a.add(b); :};
 
 LangDecl lang_id_decl_tmp = lang_id_decl.a SEMI {: return a; :};
