@@ -31,8 +31,8 @@ import configAST.ConfigParser.SyntaxError;
 WhiteSpace = [ ] | \t | \f | \n | \r
 Bool = (false|true)
 OnOff = (on|off)
+LangID = \:[a-zA-Z][a-zA-Z0-9]*
 ID = [a-zA-Z][\-a-zA-Z0-9]*
-IDConfig = \-[a-zA-Z\-][\-a-zA-Z0-9]*
 Numeral = [0-9]+
 Color = #[0-9a-fA-F]{6}
 String = \"[^\"]*\"
@@ -68,8 +68,8 @@ Comment = (\/\/[^\n]*|\/\*[^]*\*\/)
 {Color}  	    { return sym(Terminals.COLOR); }
 {Bool}  	    { return sym(Terminals.BOOL); }
 {OnOff}	        { return sym(Terminals.ONOFF); }
+{LangID}      { return sym(Terminals.LANGID); }
 {ID}        	{ return sym(Terminals.ID); }
-{IDConfig}      { return sym(Terminals.IDCONFIG); }
 {Numeral}  	    { return sym(Terminals.NUMERAL); }
 {String}  	    { return sym(Terminals.STRING); }
 <<EOF>>     	{ return sym(Terminals.EOF); }
