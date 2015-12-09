@@ -1,40 +1,45 @@
-DebuggerConfig ::= [Config] Block*;
+DebuggerConfig ::= FilterConfig Filter*;
 
-abstract Block;
-Include : Block ::= ConfigDecl [NodeConfigList];
-Global : Block ::= ConfigDecl [ConfigList];
+FilterConfig ::= [Use] Binding*;
+Filter ::= FilterDecl Node*;
 
-NodeConfigList ::= NodeConfig*;
-NodeConfig ::= NodeName [ConfigList];
-NodeName ::= ClassName:IdDecl [Name:IdDecl];
+Node ::= ClassName:IdDecl NodeConfig*;
 
-ConfigList ::= Config*;
-Config ::= Name:ConfigDecl [ConfigBlock];
+NodeConfig ::= Name:ConfigDecl NodeConfigBlock;
 
-abstract ConfigBlock;
-BinExprList : ConfigBlock ::= BinExpr*;
-BindingList : ConfigBlock ::= Binding*;
-IdDeclList : ConfigBlock ::= IdDecl*;
+abstract NodeConfigBlock;
+When : NodeConfigBlock ::= Expr*;
+Style : NodeConfigBlock ::= Binding*;
+Show : NodeConfigBlock ::= IdDecl*;
 
+/*Stand alone expr, cause reasons*/
+Use ::= IdDecl*;
 Binding ::= Name:IdDecl Value;
 
-abstract BinExpr ::= Left:Value Right:Value;
-IN : BinExpr;
-NOTIN : BinExpr;
+abstract Expr;
+ChildOf : Expr ::= IdDecl;
+ParentOf : Expr ::= IdDecl;
+
+abstract BinExpr : Expr ::= Left:Value Right:Value;
+In : BinExpr;
+NotIn : BinExpr;
 EQ : BinExpr;
-NEQ :BinExpr;
-LEQ : BinExpr;
 LT : BinExpr;
 GT : BinExpr;
+NEQ : BinExpr;
+LEQ : BinExpr;
 GEQ : BinExpr;
 
 abstract Value;
 Num : Value ::= <NUMERAL>;
 Str : Value ::= <String>;
-Bool : Value ::= <BOOL>;
 Color : Value ::= <Color>;
 StrArray : Value ::= Str*;
 NumArray : Value ::= Num*;
 EmptyArray : Value;
 IdDecl : Value ::= <ID:String>;
 ConfigDecl : Value ::= <ID:String>;
+
+abstract Boolean : Value;
+Bool : Boolean ::= <BOOL>;
+OnOff : Boolean ::= <ONOFF>;

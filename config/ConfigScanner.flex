@@ -30,8 +30,9 @@ import configAST.ConfigParser.SyntaxError;
 // macros
 WhiteSpace = [ ] | \t | \f | \n | \r
 Bool = (false|true)
+OnOff = (on|off)
 ID = [a-zA-Z][\-a-zA-Z0-9]*
-IDCONFIG = \-[a-zA-Z\-][\-a-zA-Z0-9]*
+IDConfig = \-[a-zA-Z\-][\-a-zA-Z0-9]*
 Numeral = [0-9]+
 Color = #[0-9a-fA-F]{6}
 String = \"[^\"]*\"
@@ -41,9 +42,9 @@ Comment = (\/\/[^\n]*|\/\*[^]*\*\/)
 // discard whitespace information
 {WhiteSpace}  { }
 {Comment} {   }
-//token definitions, TODO remove the -include and -global
-"-include"       { return sym(Terminals.INCLUDE); }
-"-global"       { return sym(Terminals.GLOBAL); }
+//token definitions
+"configs"       { return sym(Terminals.CONFIGS); }
+"filter"       { return sym(Terminals.FILTER); }
 "="        		{ return sym(Terminals.ASSIGNMENT); }
 "<"        		{ return sym(Terminals.LT); }
 ">"             { return sym(Terminals.GT); }
@@ -58,12 +59,17 @@ Comment = (\/\/[^\n]*|\/\*[^]*\*\/)
 "]"       	    { return sym(Terminals.RSQBRACKET); }
 "{"       	    { return sym(Terminals.LBRACKET); }
 "}"       	    { return sym(Terminals.RBRACKET); }
+"use"  	        { return sym(Terminals.USE); }
+"child"  	    { return sym(Terminals.CHILD); }
+"parent"  	    { return sym(Terminals.PARENT); }
+"of"  	        { return sym(Terminals.OF); }
 "not"  	        { return sym(Terminals.NOT); }
 "in"  	        { return sym(Terminals.IN); }
 {Color}  	    { return sym(Terminals.COLOR); }
 {Bool}  	    { return sym(Terminals.BOOL); }
+{OnOff}	        { return sym(Terminals.ONOFF); }
 {ID}        	{ return sym(Terminals.ID); }
-{IDCONFIG}      { return sym(Terminals.IDCONFIG); }
+{IDConfig}      { return sym(Terminals.IDCONFIG); }
 {Numeral}  	    { return sym(Terminals.NUMERAL); }
 {String}  	    { return sym(Terminals.STRING); }
 <<EOF>>     	{ return sym(Terminals.EOF); }
