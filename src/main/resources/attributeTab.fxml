@@ -33,8 +33,15 @@
                </SplitPane>
            </VBox>
            <VBox fx:id="clusterInfoView" styleClass="VBoxParent">
-               <Label text="Information about the cluster" ></Label>
-               <ListView fx:id="clusterInfoListView" styleClass="clusterInfoListView"></ListView>
+               <Label text="Cluster. 0 nodes" fx:id="clusterInfoNumberLabel" minHeight="30"></Label>
+
+               <TableView fx:id="clusterInfoTableView" styleClass="info-table-view" prefHeight="1000">
+                   <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+                   <columns>
+                       <TableColumn fx:id="clusterInfoNameCol" text="Name"/>
+                       <TableColumn fx:id="clusterInfoCountCol"  text="Count"  />
+                   </columns>
+               </TableView>
            </VBox>
     </children>
 </VBox>

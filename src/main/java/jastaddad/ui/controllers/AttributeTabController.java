@@ -51,6 +51,10 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     @FXML private TableColumn<AttributeInfo, String> attributeInfoNameCol;
     @FXML private TableColumn<AttributeInfo, Object> attributeInfoValueCol;
 
+    @FXML private TableView<ClusterInfo> clusterInfoTableView;
+    @FXML private TableColumn<ClusterInfo, String> clusterInfoNameCol;
+    @FXML private TableColumn<ClusterInfo, Object> clusterInfoCountCol;
+
     @FXML private Label nodeNameLabel;
     @FXML private Label attributeInfoLabel;
 
@@ -58,6 +62,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     @FXML private VBox nodeInfoView;
     @FXML private VBox clusterInfoView;
     @FXML private ListView clusterInfoListView;
+    @FXML private Label clusterInfoNumberLabel;
 
 
     public void init(UIMonitor mon, GraphView graphView){
@@ -76,6 +81,9 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         //attributeTableView.
         attributeInfoNameCol.setCellValueFactory(new PropertyValueFactory("name"));
         attributeInfoValueCol.setCellValueFactory(new PropertyValueFactory("value"));
+
+        clusterInfoNameCol.setCellValueFactory(new PropertyValueFactory("typeName"));
+        clusterInfoCountCol.setCellValueFactory(new PropertyValueFactory("count"));
 
         attributeNameCol.setCellValueFactory(param -> {
             NodeInfoInterface info = param.getValue().getValue();
@@ -378,8 +386,14 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     private void setClusterInfo(){
         GenericTreeCluster cluster = (GenericTreeCluster)mon.getSelectedNode();
-        ObservableList<String> items =FXCollections.observableArrayList (cluster.getTypeList());
-        clusterInfoListView.setItems(items);
+        clusterInfoNumberLabel.setText("Cluster. " + cluster.getNodeCount() + " node" + (cluster.getNodeCount() == 1 ? "" : "s"));
+
+        ArrayList<ClusterInfo> itemList = new ArrayList<>();
+        for(Map.Entry<String, Integer> type : cluster.getTypeList().entrySet()){
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+        }
+        ObservableList<ClusterInfo> items = FXCollections.observableArrayList (itemList);
+        clusterInfoTableView.setItems(items);
     }
 
     /**
@@ -422,5 +436,16 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         }
     }
 
+    public class ClusterInfo{
+        private String typeName;
+        private int count;
 
+        public ClusterInfo(String typeName, int count){
+            this.typeName = typeName;
+            this.count = count;
+        }
+
+        public String getTypeName(){return typeName;}
+        public int getCount(){return count;}
+    }
 }

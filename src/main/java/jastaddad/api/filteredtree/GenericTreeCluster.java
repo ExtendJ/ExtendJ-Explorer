@@ -15,11 +15,11 @@ import java.util.HashSet;
  */
 public abstract  class GenericTreeCluster extends GenericTreeNode{
 
-    protected ArrayList<String> typeList;
+    protected HashMap<String, Integer> typeList;
 
     public GenericTreeCluster(GenericTreeNode parent) {
         super(parent);
-        typeList = new ArrayList<>();
+        typeList = new HashMap<>();
     }
     public abstract int getNodeCount();
 
@@ -80,7 +80,7 @@ public abstract  class GenericTreeCluster extends GenericTreeNode{
     @Override
     public boolean addInWardNodeReference(NodeReference ref){ return false; }
 
-    public Collection<? extends String> getTypeList() {
+    public HashMap<String, Integer> getTypeList() {
         return typeList;
     }
 }

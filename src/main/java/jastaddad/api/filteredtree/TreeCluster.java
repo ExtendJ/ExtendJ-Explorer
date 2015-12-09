@@ -20,7 +20,11 @@ public class TreeCluster extends GenericTreeCluster {
         if(!child.isNode())
             return;
         TreeNode node = (TreeNode) child;
-        typeList.add(node.getNode().simpleNameClass);
+        Integer nbr = typeList.get(node.getNode().simpleNameClass);
+        if(nbr == null)
+            nbr = 0;
+        nbr++;
+        typeList.put(node.getNode().simpleNameClass, nbr);
     }
 
     public int getNodeCount(){
