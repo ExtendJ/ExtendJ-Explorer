@@ -33,7 +33,7 @@
 %goal debuggerconfig;
 
 DebuggerConfig debuggerconfig =
-	CONFIGS LBRACKET filter_config.a RBRACKET filter_list.b {: return new DebuggerConfig(a, b); :};
+	CONFIGS LBRACKET filter_config.a RBRACKET filterBlock {: return new DebuggerConfig(a, b); :};
 
 FilterConfig filter_config =
 	use.a binding_list.b {: return new FilterConfig(new Opt(a), b); :}
@@ -46,48 +46,51 @@ List decl_list =
 	id_decl.a {: return new List(a); :}
 	| decl_list.a COMMA id_decl.b {: return a.add(b); :};
 
+List filterBlock =
+	 /* Empty list */ {: return new List(); :}
+	 | filter_list;
+
 List filter_list =
-	/*EmptyList*/ {: return new List(); :}
-    | filter.a {: return new List(a); :}
+	filter.a {: return new List(a); :}
     | filter_list.a filter.b {: return a.add(b); :};
 
 Filter filter =
-	FILTER id_decl.a LBRACKET node_list.b RBRACKET {: return new Filter(a, b); :};
+	FILTER id_decl.a LBRACKET node_list.b RBRACKET {: return new Filter(a, b); :}
+	| FILTER id_decl.a LBRACKET RBRACKET {: return new Filter(a, new List()); :};
 
 List node_list =
-	/*EmptyList*/ {: return new List(); :}
-	| node.a {: return new List(a); :}
+	  node.a {: return new List(a); :}
 	| node_list.a node.b {: return a.add(b); :};
 
 Node node =
 	lang_id_decl.a SEMI {: return new NodeConfig(a, new List()); :}
-	| lang_id_decl.a LBRACKET node_config_list.b RBRACKET {: return new NodeConfig(a, b); :};
+	| lang_id_decl.a LBRACKET node_config_list.b RBRACKET {: return new NodeConfig(a, b); :}
+	| lang_id_decl.a LBRACKET RBRACKET {: return new NodeConfig(a, new List()); :};
 
 List node_config_list =
-	/*EmptyList*/ {: return new List(); :}
- 	| node_config.a {: return new List(a); :}
+	node_config.a {: return new List(a); :}
 	| node_config_list.a node_config.b {: return a.add(b); :};
 
 NodeConfig node_config =
 	 WHEN LBRACKET expr_list.a RBRACKET {: return new When(a); :}
+	| WHEN LBRACKET RBRACKET {: return new When(new List()); :}
 	| STYLE LBRACKET binding_list.a RBRACKET {: return new Style(a); :}
-	| SHOW LBRACKET lang_decl_list.a RBRACKET {: return new Show(a); :};
+	| STYLE LBRACKET RBRACKET {: return new Style(new List()); :}
+	| SHOW LBRACKET lang_decl_list.a RBRACKET {: return new Show(a); :}
+	| SHOW LBRACKET RBRACKET {: return new Show(new List()); :};
 
 List expr_list =
-	/*EmptyList*/ {: return new List(); :}
-	| expr.a {: return new List(a); :}
+	expr.a {: return new List(a); :}
 	| expr_list.a expr.b {: return new a.add(b); :};
 
 List binding_list =
-	/*EmptyList*/ {: return new List(); :}
- 	| binding.a {: return new List(a); :}
+	binding.a {: return new List(a); :}
  	| binding_list.a binding.b {: return a.add(b); :};
 
 Binding binding =
 	id_decl.a ASSIGNMENT value.b SEMI {: return new Binding(a, b); :};
 
 List lang_decl_list =
-	/*EmptyList*/ {: return new List(); :}
 	lang_id_decl_tmp.a {: return new List(a); :}
 	| lang_decl_list.a lang_id_decl_tmp.b {: return a.add(b); :};
 
