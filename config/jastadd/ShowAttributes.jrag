@@ -1,3 +1,51 @@
 aspect ShowAttributes{
 
+    syn HashSet<String> DebuggerConfig.getShow(jastaddad.api.Node node){
+        HashSet<String> attrs = new HashSet<>();
+        return getShow(node.node.getClass(), attrs);
+    }
+
+    private HashSet<String> DebuggerConfig.getShow(Class nodeClass, HashSet<String> attrs){
+        if(nodeClass == null)
+            return attrs;
+        for(NodeFilter filter : nodeFilters()){
+            if(filter.getClassName().equals(nodeClass.getSimpleName())){
+                for(LangDecl d : filter.shows()){
+                    if(!attrs.contains(d.getID())){
+                        attrs.add(d.getID());
+                    }
+            	}
+                break;
+            }
+        }
+        return getShow(nodeClass.getSuperclass(), attrs);
+    }
+
+    // Arraylist with all shown attributes for each NodeFilter
+    coll ArrayList<LangDecl> NodeFilter.shows() [new ArrayList<LangDecl> ()] with addAll root DebuggerConfig;
+    Node contributes getShows()
+        when isThisFilterActive()
+        to NodeFilter.shows()
+        for debuggerConfig().nodeFilter(getClassName().getID());
+
+    // ArrayList with all When expressions
+    syn ArrayList<LangDecl> Node.getShows(){
+        ArrayList<LangDecl> list = new ArrayList<>();
+        Show show = getShow();
+        if(show == null)
+            return list;
+
+        for(LangDecl thing : show.getLangDecls()){
+            list.add(thing);
+        }
+        return list;
+    }
+
+    syn Show Node.getShow(){
+        for(NodeConfig config : getNodeConfigs()){
+            if(config.isShow())
+                return (Show) config;
+        }
+        return null;
+    }
 }

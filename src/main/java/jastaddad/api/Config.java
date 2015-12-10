@@ -23,18 +23,12 @@ public class Config{
     private final String filterFileName = "filter.cfg";
     private final String filterTmpFileName = "filter-tmp.cfg";
 
-    public static final String CONFIG_WHEN = "when";
-    public static final String CONFIG_GLOBAL = "global";
-    public static final String CONFIG_INCLUDE = "include";
-
-    public static final String WHEN_LIST = "-when";
-    public static final String STYLE_LIST = "-style";
-    public static final String DISPLAY_ATTRIBUTES_LIST = "-display-attributes";
     public static final String NTA_DEPTH = "NTA-depth";
     public static final String NTA_SHOW_COMPUTED = "NTA-show-computed";
 
     private HashMap<String, ArrayList<Expr>> filterCache;
     private HashMap<String, HashMap<String, Value>> styleCache;
+    private HashMap<String, HashSet<String>> showCache;
 
     private String filterDir; //Directory of the filter file.
 
@@ -43,6 +37,7 @@ public class Config{
         this.filterDir = filterDir;
         filterCache = new HashMap<>();
         styleCache = new HashMap<>();
+        showCache = new HashMap<>();
         noError = readFilter(filterFileName);
     }
 
@@ -164,6 +159,7 @@ public class Config{
     private void clearCaches(){
         filterCache.clear();
         styleCache.clear();
+        showCache.clear();
     }
 
    /* /**
@@ -195,6 +191,7 @@ public class Config{
        //HashMap<String, Value> filterConfigs = configs.configs();
         return false; // !filterConfigs.containsKey(name) || filterConfigs.get(name).getBool();
     }
+
 
     /**
      * This method will determine if the given node is filtered or not.
@@ -244,69 +241,6 @@ public class Config{
                 return false;
             }
         return success;
-        /*
-        if(!noError)
-            return false;
-
-        if(!isSet(CONFIG_WHEN))
-            return true;
-
-        // Add all bin expressions to one hashmap. This will allow expressions to override each other
-        HashMap<String, BinExpr> binExprs = new HashMap<>();
-
-        // If there a global filter add it to the hashmap
-        if (isSet(CONFIG_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBinExprList(WHEN_LIST) != null) {
-            for (BinExpr be : configs.getGlobal().getBinExprList(WHEN_LIST).getBinExprList()) {
-                binExprs.put(be.getDecl().getID(), be);
-            }
-        }
-
-        // don't do this if the -include is set to false
-        if (isSet(CONFIG_INCLUDE)) {
-            // try to find the node in the Include.
-            boolean className = configs.getNodes().containsKey(node.simpleNameClass); // Div;
-            boolean tellingName = configs.getNodes().containsKey(node.fullName); // Div:Left
-
-            // not found
-            if(!tellingName && !className)
-                return false;
-
-            // First add class specific bin expressions
-            NodeConfig cNode = configs.getNodes().get(node.simpleNameClass);
-            if (className && cNode.getBinExprList(WHEN_LIST) != null) {
-                for (BinExpr be : cNode.getBinExprList(WHEN_LIST).getBinExprList()) {
-                    binExprs.put(be.getDecl().getID(), be);
-                }
-            }
-
-            // then add class name specific bin expressions, eventual overriding of class expressions
-            NodeConfig tNode = configs.getNodes().get(node.fullName);
-            if (tellingName && tNode.getBinExprList(WHEN_LIST) != null) {
-                for (BinExpr be : tNode.getBinExprList(WHEN_LIST).getBinExprList()) {
-                    binExprs.put(be.getDecl().getID(), be);
-                }
-            }
-        }
-
-        // Loop through the whole map to see if the node is enabled
-        for(Map.Entry<String, BinExpr> entry : binExprs.entrySet()){
-
-            String decl = entry.getKey();
-            BinExpr be = entry.getValue();
-
-            NodeInfo a = node.getNodeContent().computeMethod(decl);
-            if(a == null)
-                return false;
-            if(be.isDoubleDecl()){
-                String decl2 = ((IdDecl)be.getValue()).getID();
-                NodeInfo b = node.getNodeContent().computeMethod(decl2);
-                if(b == null)
-                    return false;
-                return a.getReturnType().equals(b.getReturnType()) && be.validateExpr(a.getValue(), b.getValue(), a.getReturnType(), decl);
-            }else
-                return be.validateExpr(a.getValue());
-        }
-        return true;*/
     }
 
     /**
@@ -315,45 +249,13 @@ public class Config{
      * @return
      */
     public HashMap<String, Value> getNodeStyle(Node node){
-
-        HashMap<String, Value> map = null;
+        HashMap<String, Value> map;
         if(styleCache.containsKey(node.simpleNameClass))
             return styleCache.get(node.simpleNameClass);
 
         map = configs.getNodeStyles(node);
         styleCache.put(node.simpleNameClass, map);
         return map;
-        /*// If there a global style add it to the hashmap if -ignore-global == false;
-        if (isSet(CONFIG_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBindingList(STYLE_LIST) != null) {
-            for(Binding b : configs.getGlobal().getBindingList(STYLE_LIST).getBindingList()){
-              map.put(b.getName().print(), b.getValue());
-            }
-        }
-
-        if (!isSet(CONFIG_INCLUDE))
-            return map;
-
-        boolean className = configs.getNodes().containsKey(node.simpleNameClass); // Div;
-        boolean tellingName = configs.getNodes().containsKey(node.fullName); // Div:Left
-
-        if(!tellingName && !className)
-            return map;
-
-        // Add all class and telling bin expressions to one hashmap. this will let the telling expressions to override
-
-        NodeConfig cNode = configs.getNodes().get(node.simpleNameClass);
-        if(className && cNode.getBindingList(STYLE_LIST) != null) {
-            for(Binding b : cNode.getBindingList(STYLE_LIST).getBindingList()){
-                map.put(b.getName().print(), b.getValue());
-            }
-        }
-        cNode = configs.getNodes().get(node.fullName);
-        if(tellingName && cNode.getBindingList(STYLE_LIST) != null) {
-            for(Binding b : cNode.getBindingList(STYLE_LIST).getBindingList()){
-                map.put(b.getName().print(), b.getValue());
-            }
-        }
-        return map;*/
     }
 
     /**
@@ -362,35 +264,13 @@ public class Config{
      * @return
      */
     public HashSet<String> getDisplayedAttributes(Node node){
-        HashSet<String> set = new HashSet();
-        return set;
-        /*if (isSet(CONFIG_GLOBAL) && configs.getGlobal().getIdDeclList(DISPLAY_ATTRIBUTES_LIST) != null){
-            for (IdDecl decl : configs.getGlobal().getIdDeclList(DISPLAY_ATTRIBUTES_LIST).getIdDeclList()){
-                set.add(decl.getID());
-            }
+        HashSet<String> show;
+        if(showCache.containsKey(node.simpleNameClass))
+            show = showCache.get(node.simpleNameClass);
+        else{
+            show = configs.getShow(node);
+            showCache.put(node.simpleNameClass, show);
         }
-
-        if (!isSet(CONFIG_INCLUDE))
-            return set;
-
-        boolean className = configs.getNodes().containsKey(node.simpleNameClass); // Div;
-        boolean tellingName = configs.getNodes().containsKey(node.fullName); // Div:Left
-
-        if(!tellingName && !className)
-            return set;
-
-        NodeConfig cNode = configs.getNodes().get(node.simpleNameClass);
-        if(className && cNode.getIdDeclList(DISPLAY_ATTRIBUTES_LIST) != null) {
-            for(IdDecl decl : cNode.getIdDeclList(DISPLAY_ATTRIBUTES_LIST).getIdDeclList()){
-                set.add(decl.getID());
-            }
-        }
-        cNode = configs.getNodes().get(node.fullName);
-        if(tellingName && cNode.getIdDeclList(DISPLAY_ATTRIBUTES_LIST) != null) {
-            for(IdDecl decl : cNode.getIdDeclList(DISPLAY_ATTRIBUTES_LIST).getIdDeclList()){
-                set.add(decl.getID());
-            }
-        }
-        return set;*/
+        return show;
     }
 }

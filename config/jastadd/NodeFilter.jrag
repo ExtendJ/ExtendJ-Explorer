@@ -3,6 +3,7 @@ import java.util.HashSet;
 import java.util.HashMap;
 
 aspect NodeFilter {
+
 	syn nta NodeFilter DebuggerConfig.nodeFilter(String name) = new NodeFilter(name);
 
 	syn boolean Node.isThisFilterActive() = filter().isActive();

@@ -1,4 +1,5 @@
 aspect StyleAttributes{
+
 	syn HashMap<String, Value> DebuggerConfig.getNodeStyles(jastaddad.api.Node node){
 		HashMap<String, Value> bindings = new HashMap<>();
 		return getNodeStyles(node.node.getClass(), bindings);
@@ -8,7 +9,6 @@ aspect StyleAttributes{
 		if(nodeClass == null)
 			return styles;
 		for(NodeFilter filter : nodeFilters()){
-			//System.out.println(filter.getClassName() + " " + nodeClass.getSimpleName());
 			if(filter.getClassName().equals(nodeClass.getSimpleName())){
 				for(Binding b : filter.styles()){
 					if(!styles.containsKey(b.getName().getID())){

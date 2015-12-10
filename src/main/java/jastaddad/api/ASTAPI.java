@@ -194,7 +194,6 @@ public class ASTAPI {
         }
 
         HashSet<String> displayedAttributes = filterConfig.getDisplayedAttributes(node);
-
         // Create the nta nodes specified by the Configuration language, and traverse down THE NTA:s
         if(depth > 0) {
             for (String s : displayedAttributes) {
