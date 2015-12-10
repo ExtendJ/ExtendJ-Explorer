@@ -1,6 +1,5 @@
 aspect Test{
     syn int ASTNode.aValue(){ return 5;}
-    syn IdDecl NodeName.getTestName() = getClassName();
     syn Bool DebuggerConfig.lotNodePar(IdDecl a, NodeConfig b, String c, boolean d, Value e){
         return (Bool)e;
        }
@@ -12,8 +11,8 @@ aspect Test{
 
     syn nta Num DebuggerConfig.getNum() = new Num("1");
 
-    syn nta DebuggerConfig DebuggerConfig.getDebuggerNTA() = new DebuggerConfig(new Opt(), new List());
-    syn nta List DebuggerConfig.getDebuggerNTAList() {
+    //syn nta DebuggerConfig DebuggerConfig.getDebuggerNTA() = new DebuggerConfig(new Opt(), new List());
+    /*syn nta List DebuggerConfig.getDebuggerNTAList() {
         List list = new List();
         list.add(new DebuggerConfig(new Opt(), new List()));
         list.add(new DebuggerConfig(new Opt(), new List()));
@@ -21,5 +20,5 @@ aspect Test{
         list.add(new DebuggerConfig(new Opt(), new List()));
         list.add(new DebuggerConfig(new Opt(), new List()));
         return list;
-    }
+    }*/
 }

@@ -53,7 +53,7 @@ public class VertexShapeTransformer extends VertexLabelAsShapeRenderer<GenericTr
             return new Ellipse2D.Float(centerX, centerY, width, height);
         //Rectangle bounds = new Rectangle(-size.width/2 -2, -size.height/2 -2, size.width+4, size.height);
 
-        String shape = fNode.getStyles().get("node-shape").getStr();
+        String shape = null; //fNode.getStyles().get("node-shape").getStr();
         if(shape != null) {
             if (shape.equals("rounded_rectangle"))
                 return new RoundRectangle2D.Double(centerX, centerY, width, height, 40, 40);

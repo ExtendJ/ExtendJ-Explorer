@@ -2,34 +2,35 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.HashMap;
 
-aspect Collections {
+aspect NodeFilter {
+	syn nta NodeFilter DebuggerConfig.nodeFilter(String name) = new NodeFilter(name);
 
-	syn HashMap<String, Value> DebuggerConfig.configs(){
-		HashMap<String, Value> map = new HashMap();
-		if(!hasConfig() || !getConfig().hasConfigBlock() || !getConfig().getConfigBlock().isBindingList())
-			return map;
-		for(Binding b : ((BindingList) getConfig().getConfigBlock()).getBindingList()){
-			map.put(b.getName().print(), b.getValue());
+	syn boolean Node.isThisFilterActive() = filter().isActive();
+
+	syn Filter Filter.filter() = this;
+	eq Filter.getChild(int i).filter() = this;
+	inh Filter Node.filter();
+
+	syn boolean Filter.isActive(){
+		return debuggerConfig().isFilterActive(getFilterName());
+	}
+
+	syn lazy boolean DebuggerConfig.isFilterActive(IdDecl filterName){
+		if(!getConfigs().hasUse())
+			return false;
+		for(IdDecl useFilterName : getConfigs().getUse().getIdDecls()){
+			if(useFilterName.getID().equals(filterName.getID()))
+				return true;
 		}
-		return map;
+		return false;
 	}
 
-    coll ArrayList<IdDecl> DebuggerConfig.IdDecls() [new ArrayList<IdDecl> ()] with add root DebuggerConfig;
-
-	IdDecl contributes this
-		to DebuggerConfig.IdDecls()
-		for debuggerConfig ();
-	coll HashSet DebuggerConfig.nodes() [new HashSet()] with add root DebuggerConfig;
-	NodeConfig contributes this to DebuggerConfig.nodes() for debuggerConfig();
-
-	syn HashMap<String, NodeConfig> DebuggerConfig.getNodes(){
-		HashMap<String, NodeConfig> map = new HashMap();
-		for(NodeConfig node : ((HashSet<NodeConfig>) nodes()))
-			map.put(node.getNodeName().print(), node);
-		return map;
-	}
-
-
+	syn boolean NodeConfig.isWhen() = false;
+	syn boolean NodeConfig.isStyle() = false;
+	syn boolean NodeConfig.isShow() = false;
+	eq When.isWhen() = true;
+	eq Style.isStyle() = true;
+	eq Show.isShow() = true;
 
 }
 

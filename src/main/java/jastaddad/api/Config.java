@@ -4,6 +4,7 @@ import configAST.*;
 import jastaddad.api.nodeinfo.NodeInfo;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -32,11 +33,14 @@ public class Config{
     public static final String NTA_DEPTH = "NTA-depth";
     public static final String NTA_SHOW_COMPUTED = "NTA-show-computed";
 
+    private HashMap<String, ArrayList<Expr>> filterCache;
+
     private String filterDir; //Directory of the filter file.
 
     public Config(ASTAPI api, String filterDir){
         this.api = api;
         this.filterDir = filterDir;
+        filterCache = new HashMap<>();
         noError = readFilter(filterFileName);
     }
 
@@ -143,6 +147,7 @@ public class Config{
                 File newFilter = new File(fullTmpFilePath);
                 oldFilter.delete();
                 newFilter.renameTo(oldFilter);
+                clearCaches();
             } else {
                 File newFilter = new File(fullTmpFilePath);
                 newFilter.delete();
@@ -154,14 +159,18 @@ public class Config{
         return noError;
     }
 
-    /**
+    private void clearCaches(){
+        filterCache.clear();
+    }
+
+   /* /**
      * Check if a specified config is set in the -global config
      * @param name
      * @return
      */
     public int getInt(String name){
-        HashMap<String, Value> filterConfigs = configs.configs();
-        return filterConfigs.containsKey(name) ? filterConfigs.get(name).getInt() : 0;
+        //HashMap<String, Value> filterConfigs = configs.configs();
+        return 0; //filterConfigs.containsKey(name) ? filterConfigs.get(name).getInt() : 0;
     }
 
     /**
@@ -170,8 +179,8 @@ public class Config{
      * @return
      */
     public boolean hasConfig(String name){
-        HashMap<String, Value> filterConfigs = configs.configs();
-        return filterConfigs.containsKey(name) && filterConfigs.get(name).getBool();
+        //HashMap<String, Value> filterConfigs = configs.configs();
+        return  false; //filterConfigs.containsKey(name) && filterConfigs.get(name).getBool();
     }
 
     /**
@@ -180,8 +189,8 @@ public class Config{
      * @return
      */
     public boolean isSet(String name){
-        HashMap<String, Value> filterConfigs = configs.configs();
-        return !filterConfigs.containsKey(name) || filterConfigs.get(name).getBool();
+       //HashMap<String, Value> filterConfigs = configs.configs();
+        return false; // !filterConfigs.containsKey(name) || filterConfigs.get(name).getBool();
     }
 
     /**
@@ -192,6 +201,47 @@ public class Config{
      * @return true if not filtered.
      */
     public boolean isEnabled(Node node){
+        if(!configs.getConfigs().hasUse())
+            return true;
+        ArrayList<Expr> exprs = null;
+        if(filterCache.containsKey(node.simpleNameClass))
+            exprs = filterCache.get(node.simpleNameClass);
+        else{
+            exprs = configs.getFilterExpressions(node);
+            filterCache.put(node.simpleNameClass, exprs);
+        }
+        if(exprs == null)
+            return false;
+
+        boolean success = true;
+        for(Expr expr : exprs){
+            String decl = expr.getDecl().getID();
+
+            if(!expr.isBinExpression()){
+                success =  expr.validateExpr(node);
+            }else {
+                BinExpr be = (BinExpr) expr;
+
+                NodeInfo a = node.getNodeContent().computeMethod(decl);
+                if (a != null) {
+                    if (be.isDoubleDecl()) {
+                        String decl2 = ((LangDecl) be.getValue()).getID();
+                        NodeInfo b = node.getNodeContent().computeMethod(decl2);
+                        if (b == null)
+                            success =  false;
+                        else
+                            success = a.getReturnType().equals(b.getReturnType()) && be.validateExpr(a.getValue(), b.getValue(), a.getReturnType(), decl);
+                    } else
+                        success = be.validateExpr(a.getValue());
+                } else {
+                    success = false;
+                }
+            }
+            if(!success)
+                return false;
+            }
+        return success;
+        /*
         if(!noError)
             return false;
 
@@ -253,7 +303,7 @@ public class Config{
             }else
                 return be.validateExpr(a.getValue());
         }
-        return true;
+        return true;*/
     }
 
     /**
@@ -263,8 +313,8 @@ public class Config{
      */
     public HashMap<String, Value> getNodeStyle(Node node){
         HashMap<String, Value> map = new HashMap<>();
-
-        // If there a global style add it to the hashmap if -ignore-global == false;
+    return map;
+        /*// If there a global style add it to the hashmap if -ignore-global == false;
         if (isSet(CONFIG_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBindingList(STYLE_LIST) != null) {
             for(Binding b : configs.getGlobal().getBindingList(STYLE_LIST).getBindingList()){
               map.put(b.getName().print(), b.getValue());
@@ -294,7 +344,7 @@ public class Config{
                 map.put(b.getName().print(), b.getValue());
             }
         }
-        return map;
+        return map;*/
     }
 
     /**
@@ -304,8 +354,8 @@ public class Config{
      */
     public HashSet<String> getDisplayedAttributes(Node node){
         HashSet<String> set = new HashSet();
-
-        if (isSet(CONFIG_GLOBAL) && configs.getGlobal().getIdDeclList(DISPLAY_ATTRIBUTES_LIST) != null){
+        return set;
+        /*if (isSet(CONFIG_GLOBAL) && configs.getGlobal().getIdDeclList(DISPLAY_ATTRIBUTES_LIST) != null){
             for (IdDecl decl : configs.getGlobal().getIdDeclList(DISPLAY_ATTRIBUTES_LIST).getIdDeclList()){
                 set.add(decl.getID());
             }
@@ -332,6 +382,6 @@ public class Config{
                 set.add(decl.getID());
             }
         }
-        return set;
+        return set;*/
     }
 }

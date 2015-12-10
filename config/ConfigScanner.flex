@@ -31,7 +31,6 @@ import configAST.ConfigParser.SyntaxError;
 WhiteSpace = [ ] | \t | \f | \n | \r
 Bool = (false|true)
 OnOff = (on|off)
-LangID = \:[a-zA-Z][a-zA-Z0-9]*
 ID = [a-zA-Z][\-a-zA-Z0-9]*
 Numeral = [0-9]+
 Color = #[0-9a-fA-F]{6}
@@ -45,6 +44,9 @@ Comment = (\/\/[^\n]*|\/\*[^]*\*\/)
 //token definitions
 "configs"       { return sym(Terminals.CONFIGS); }
 "filter"       { return sym(Terminals.FILTER); }
+"when"       { return sym(Terminals.WHEN); }
+"style"       { return sym(Terminals.STYLE); }
+"show"       { return sym(Terminals.SHOW); }
 "="        		{ return sym(Terminals.ASSIGNMENT); }
 "<"        		{ return sym(Terminals.LT); }
 ">"             { return sym(Terminals.GT); }
@@ -52,8 +54,8 @@ Comment = (\/\/[^\n]*|\/\*[^]*\*\/)
 ">="            { return sym(Terminals.GEQ); }
 "<="            { return sym(Terminals.LEQ); }
 "!="            { return sym(Terminals.NEQ); }
-":"           	{ return sym(Terminals.COL); }
 ";"           	{ return sym(Terminals.SEMI); }
+":"           	{ return sym(Terminals.COL); }
 ","         	{ return sym(Terminals.COMMA); }
 "["       	    { return sym(Terminals.LSQBRACKET); }
 "]"       	    { return sym(Terminals.RSQBRACKET); }
@@ -68,7 +70,6 @@ Comment = (\/\/[^\n]*|\/\*[^]*\*\/)
 {Color}  	    { return sym(Terminals.COLOR); }
 {Bool}  	    { return sym(Terminals.BOOL); }
 {OnOff}	        { return sym(Terminals.ONOFF); }
-{LangID}      { return sym(Terminals.LANGID); }
 {ID}        	{ return sym(Terminals.ID); }
 {Numeral}  	    { return sym(Terminals.NUMERAL); }
 {String}  	    { return sym(Terminals.STRING); }

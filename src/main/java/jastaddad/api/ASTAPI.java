@@ -202,7 +202,7 @@ public class ASTAPI {
                     continue;
                 Node ntaNode = node.NTAChildren.get(s);
                 if (ntaNode == null) {
-                    ntaNode = new Node(node.getNodeContent().computeMethod(s, true).getValue(), true, this);
+                    ntaNode = new Node(node.getNodeContent().computeMethod(s, true).getValue(),node, true, this);
                     node.NTAChildren.put(s, ntaNode);
                     ASTNTAObjects.add(ntaNode.node);
                 }
@@ -380,7 +380,7 @@ public class ASTAPI {
         Object obj = node.getNodeContent().compute(info, params, this);
         if(!info.isNTA() ||  obj == null || ASTNTAObjects.contains(obj))
             return obj;
-        Node astNode = new Node(obj, true, this);
+        Node astNode = new Node(obj, node, true, this);
         if(!computedNTAs.containsKey(node))
             computedNTAs.put(node, new HashSet<>());
         computedNTAs.get(node).add(astNode);

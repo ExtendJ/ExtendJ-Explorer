@@ -1,73 +1,18 @@
-aspect Values{
+aspect ValidateExpressions{
+    syn boolean Expr.isDoubleDecl() = false;
+    syn boolean Expr.isBinExpression() = false;
+    eq BinExpr.isBinExpression() = true;
 
+    eq BinExpr.isDoubleDecl() = getLeft().isIdDecl() && getRight().isIdDecl();
 
-    syn lazy Include DebuggerConfig.getInclude(){
-        for(Block block : getBlockList()){
-            if(block.isInclude())
-                return (Include)block;
-        }
-        return null;
-    }
+    syn LangDecl Expr.getDecl() = null;
+    eq ChildOf.getDecl() = getLangDecl();
+    eq ParentOf.getDecl() = getLangDecl();
 
-    syn lazy Global DebuggerConfig.getGlobal(){
-        for(Block block : getBlockList()){
-            if(block.isGlobal())
-                return (Global)block;
-        }
-        return null;
-    }
-
-    syn boolean Block.isInclude() = false;
-    syn boolean Block.isGlobal() = false;
-    eq Include.isInclude() = true;
-    eq Global.isGlobal() = true;
-
-    syn BinExprList NodeConfig.getBinExprList(String name) { return hasConfigList() ? getConfigList().getBinExprList(name) : null;}
-    syn BindingList NodeConfig.getBindingList(String name) { return hasConfigList() ? getConfigList().getBindingList(name) : null;}
-    syn IdDeclList NodeConfig.getIdDeclList(String name)  { return hasConfigList() ? getConfigList().getIdDeclList(name) : null;}
-
-    syn BinExprList Global.getBinExprList(String name){ return hasConfigList() ? getConfigList().getBinExprList(name) : null;}
-    syn BindingList Global.getBindingList(String name){ return hasConfigList() ? getConfigList().getBindingList(name) : null;}
-    syn IdDeclList Global.getIdDeclList(String name){ return hasConfigList() ? getConfigList().getIdDeclList(name) : null;}
-
-    syn BinExprList ConfigList.getBinExprList(String name){
-        for(Config config : getConfigList()){
-            if(config.isConfigBlock(name) && config.getConfigBlock().isBinExprList())
-                return (BinExprList) config.getConfigBlock();
-        }
-        return null;
-    }
-
-    syn BindingList ConfigList.getBindingList(String name){
-        for(Config config : getConfigList()){
-            if(config.isConfigBlock(name) && config.getConfigBlock().isBindingList() )
-                return (BindingList) config.getConfigBlock();
-        }
-        return null;
-    }
-
-    syn IdDeclList ConfigList.getIdDeclList(String name){
-        for(Config config : getConfigList()){
-            if(config.isConfigBlock(name) && config.getConfigBlock().isIdDeclList())
-                return (IdDeclList) config.getConfigBlock();
-        }
-        return null;
-    }
-
-    syn boolean Config.isConfigBlock(String name){ return getName().getID().equals(name) && hasConfigBlock();}
-
-    syn boolean ConfigBlock.isBinExprList() = false;
-    syn boolean ConfigBlock.isBindingList() = false;
-    syn boolean ConfigBlock.isIdDeclList() = false;
-    eq BinExprList.isBinExprList() = true;
-    eq BindingList.isBindingList() = true;
-    eq IdDeclList.isIdDeclList() = true;
-
-    syn boolean BinExpr.isDoubleDecl() = getLeft().isIdDecl() && getRight().isIdDecl();
-    syn IdDecl BinExpr.getDecl(){
+    eq BinExpr.getDecl(){
         if(getLeft().isIdDecl())
-            return (IdDecl) getLeft();
-        return (IdDecl) getRight();
+            return (LangDecl) getLeft();
+        return (LangDecl) getRight();
     }
 
     syn Value BinExpr.getValue(){
@@ -75,9 +20,6 @@ aspect Values{
             return  getLeft();
         return getRight();
     }
-
-    inh NodeConfig NodeName.getNode();
-    eq NodeConfig.getNodeName().getNode() = this;
 
     syn String Value.getStr() = null;
     syn int Value.getInt() = 0;
@@ -92,8 +34,14 @@ aspect Values{
     // See if an variable, var, is correct according to the filter, oohhh so much copy paste.
     // ============================
 
+    syn boolean Expr.validateExpr(Object attr) = false;
+    syn boolean Expr.validateExpr(jastaddad.api.Node node) = false;
 
-    syn boolean BinExpr.validateExpr(Object attr){
+    eq ChildOf.validateExpr(jastaddad.api.Node node) = isChildOf(node);
+    eq ParentOf.validateExpr(jastaddad.api.Node node) = isParentOf(node);
+
+
+    eq BinExpr.validateExpr(Object attr){
         try{
             if(getValue().isBool())
                 return validateExpression((boolean) attr);
@@ -107,17 +55,17 @@ aspect Values{
         return false;
     }
 
-    syn boolean BinExpr.validateExpression(int attr) = false;
-    syn boolean BinExpr.validateExpression(boolean attr) = false;
-    syn boolean BinExpr.validateExpression(String attr) = false;
+    syn boolean Expr.validateExpression(int attr) = false;
+    syn boolean Expr.validateExpression(boolean attr) = false;
+    syn boolean Expr.validateExpression(String attr) = false;
 
     //IN and NOTIN for string, Integer and boolean
 
-    eq IN.validateExpression(String attr) = getValue().isPartOf(getValue(), attr, true);
-    eq IN.validateExpression(int attr) = getValue().isPartOf(getValue(), attr, true);
+    eq In.validateExpression(String attr) = getValue().isPartOf(getValue(), attr, true);
+    eq In.validateExpression(int attr) = getValue().isPartOf(getValue(), attr, true);
 
-    eq NOTIN.validateExpression(String attr) = getValue().isPartOf(getValue(), attr, false);
-    eq NOTIN.validateExpression(int attr) = getValue().isPartOf(getValue(), attr, false);
+    eq NotIn.validateExpression(String attr) = getValue().isPartOf(getValue(), attr, false);
+    eq NotIn.validateExpression(int attr) = getValue().isPartOf(getValue(), attr, false);
 
      syn boolean Value.isPartOf(Value val, int attr, boolean returnValue){
         if(val.isIntArray()){

@@ -35,7 +35,6 @@ public class VertexPaintTransformer implements Transformer<GenericTreeNode,Paint
      */
     @Override
     public Paint transform(GenericTreeNode fNode) {
-        String color = fNode.getStyles().get("node-color").getColor();
         if(mon.getDialogSelectedNodes().contains(fNode))
             return new Color(255, 197, 115);
         if(fNode.isNode() && mon.gethighlightedSimpleClassNames().contains(((TreeNode)fNode).getNode().simpleNameClass))
@@ -53,11 +52,12 @@ public class VertexPaintTransformer implements Transformer<GenericTreeNode,Paint
             return new Color(120, 160, 200);
         }
         try{
-            return Color.decode(color);
+            //return Color.decode( fNode.getStyles().get("node-color").getColor(););
         }catch (NumberFormatException e){
             e.printStackTrace();
             return new Color(200, 240, 230);
         }
+        return new Color(200, 240, 230);
     }
 }
 

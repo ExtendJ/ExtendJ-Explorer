@@ -25,18 +25,20 @@ aspect Errors {
 
 	coll Set<ErrorMessage> DebuggerConfig.errors() [new TreeSet<ErrorMessage>()] with add root DebuggerConfig;
 
-	inh DebuggerConfig ASTNode.debuggerConfig();
 	syn DebuggerConfig DebuggerConfig.debuggerConfig() = this;
 	eq DebuggerConfig.getChild().debuggerConfig() = this;
+	inh DebuggerConfig ASTNode.debuggerConfig();
 }
 
 
 aspect ErrorContributions {
-	BinExpr contributes error("In a expresion, one argument must be an ID: " + print())
+	/*BinExpr contributes error("In a expresion, one argument must be an ID: " + print())
 		when !getLeft().isIdDecl() && !getRight().isIdDecl()
-		to DebuggerConfig.errors() for debuggerConfig();
+		to DebuggerConfig.errors()
+		for debuggerConfig();
 
 	NodeConfig contributes error("Node :" + getNodeName().getClassName().print() + " is already declared")
     		when multipleDeclared()
-    		to DebuggerConfig.errors() for debuggerConfig();
+    		to DebuggerConfig.errors()
+    		for debuggerConfig();*/
 }

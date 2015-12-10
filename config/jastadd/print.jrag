@@ -1,10 +1,13 @@
 aspect Print{
+    syn String Expr.print() = "expr";
 
-    syn String BinExpr.print() =  getLeft().print()  + getOp() + getRight().print();
+    eq ChildOf.print() = (isNot() ? "not" : "") + " child of " + getLangDecl().getID();
+    eq ParentOf.print() = (isNot() ? "not" : "") + " parent of " + getLangDecl().getID();
+    eq BinExpr.print() =  getLeft().print()  + getOp() + getRight().print();
     syn String BinExpr.getOp();
 
-    eq NOTIN.getOp() = " not in ";
-    eq IN.getOp() = " in ";
+    eq NotIn.getOp() = " not in ";
+    eq In.getOp() = " in ";
     eq EQ.getOp() = "==";
     eq NEQ.getOp() = "!=";
     eq GT.getOp() = ">";
@@ -42,11 +45,11 @@ aspect Print{
     }
 
     eq Color.print() = getColor();
+    eq OnOff.print() = getONOFF();
     eq Bool.print() = getBOOL();
     eq IdDecl.print() = getID();
-    eq ConfigDecl.print() = getID();
+    eq LangDecl.print() = getID();
 
     syn String Binding.print() = getName().getID() + " = " + getValue().print();
 
-    syn String NodeName.print() = getClassName().print() + (hasName() ? ":" + getName().print() : "");
 }

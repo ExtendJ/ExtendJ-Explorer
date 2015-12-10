@@ -33,12 +33,13 @@
 %goal debuggerconfig;
 
 DebuggerConfig debuggerconfig =
-	CONFIGS LBRACKET filter_config.a RBRACKET filter_list.b {: return new DebuggerConfig(a, b); :};
-	CONFIGS LBRACKET filter_config.a RBRACKET filter_list.b {: return new DebuggerConfig(a, b); :};
+	CONFIGS LBRACKET filter_config.a RBRACKET filterBlock.b {: return new DebuggerConfig(a, b); :};
 
 FilterConfig filter_config =
 	use.a binding_list.b {: return new FilterConfig(new Opt(a), b); :}
-	| binding_list.b {: return new FilterConfig(new Opt(), b); :};
+	| binding_list.b {: return new FilterConfig(new Opt(), b); :}
+	| use.a {: return new FilterConfig(new Opt(a), new List()); :}
+	| {: return new FilterConfig(new Opt(), new List()); :};
 
 Use use =
 	USE ASSIGNMENT decl_list.a SEMI{: return new Use(a); :};
@@ -47,73 +48,77 @@ List decl_list =
 	id_decl.a {: return new List(a); :}
 	| decl_list.a COMMA id_decl.b {: return a.add(b); :};
 
+List filterBlock =
+	 /* Empty list */ {: return new List(); :}
+	 | filter_list;
+
 List filter_list =
-	/*EmptyList*/ {: return new List(); :}
-    | filter.a {: return new List(a); :}
+	filter.a {: return new List(a); :}
     | filter_list.a filter.b {: return a.add(b); :};
 
 Filter filter =
-	FILTER id_decl.a LBRACKET node_list.b RBRACKET {: return new Filter(a, b); :};
+	FILTER id_decl.a LBRACKET node_list.b RBRACKET {: return new Filter(a, b); :}
+	| FILTER id_decl.a LBRACKET RBRACKET {: return new Filter(a, new List()); :};
 
 List node_list =
-	/*EmptyList*/ {: return new List(); :}
-	| node.a {: return new List(a); :}
+	  node.a {: return new List(a); :}
 	| node_list.a node.b {: return a.add(b); :};
 
 Node node =
-	lang_id_decl.a SEMI {: return new NodeConfig(a, new List()); :}
-	| lang_id_decl.a LBRACKET node_config_list.b RBRACKET {: return new NodeConfig(a, b); :};
+	lang_id_decl.a SEMI {: return new Node(a, new List()); :}
+	| lang_id_decl.a LBRACKET node_config_list.b RBRACKET {: return new Node(a, b); :}
+	| lang_id_decl.a LBRACKET RBRACKET {: return new Node(a, new List()); :};
 
 List node_config_list =
-	/*EmptyList*/ {: return new List(); :}
- 	| node_config.a {: return new List(a); :}
+	node_config.a {: return new List(a); :}
 	| node_config_list.a node_config.b {: return a.add(b); :};
 
-NodeConfigBlock node_config =
+NodeConfig node_config =
 	 WHEN LBRACKET expr_list.a RBRACKET {: return new When(a); :}
+	| WHEN LBRACKET RBRACKET {: return new When(new List()); :}
 	| STYLE LBRACKET binding_list.a RBRACKET {: return new Style(a); :}
-	| SHOW LBRACKET lang_decl_list.a RBRACKET {: return new Show(a); :};
+	| STYLE LBRACKET RBRACKET {: return new Style(new List()); :}
+	| SHOW LBRACKET lang_decl_list.a RBRACKET {: return new Show(a); :}
+	| SHOW LBRACKET RBRACKET {: return new Show(new List()); :};
 
 List expr_list =
-	/*EmptyList*/ {: return new List(); :}
-	| expr.a {: return new List(a); :}
-	| expr_list.a expr.b {: return new a.add(b); :};
+	expr.a {: return new List(a); :}
+	| expr_list.a expr.b {: return a.add(b); :};
 
 List binding_list =
-	/*EmptyList*/ {: return new List(); :}
- 	| binding.a {: return new List(a); :}
+	binding.a {: return new List(a); :}
  	| binding_list.a binding.b {: return a.add(b); :};
 
 Binding binding =
 	id_decl.a ASSIGNMENT value.b SEMI {: return new Binding(a, b); :};
 
 List lang_decl_list =
-	/*EmptyList*/ {: return new List(); :}
-	| lang_id_decl_tmp.a {: return new List(a); :}
+	lang_id_decl_tmp.a {: return new List(a); :}
 	| lang_decl_list.a lang_id_decl_tmp.b {: return a.add(b); :};
 
 LangDecl lang_id_decl_tmp = lang_id_decl.a SEMI {: return a; :};
 
 Expr expr =
-	  CHILD OF lang_id_decl.a SEMI {: return ChildOf(new Opt(new Bool("false"), a); :}
-	| NOT CHILD OF lang_id_decl.a SEMI {: return ChildOf(new Opt(new Bool("true"), a); :}
-	| PARENT OF lang_id_decl.a SEMI {: return ParentOf(new Opt(new Bool("false"), a); :}
-	| NOT PARENT OF lang_id_decl.a SEMI {: return ParentOf(, new Opt(new Bool("false"), a); :}
+	  CHILD OF lang_id_decl.a SEMI {: return new ChildOf(new Bool("false"), a); :}
+	| NOT CHILD OF lang_id_decl.a SEMI {: return new ChildOf(new Bool("true"), a); :}
+	| PARENT OF lang_id_decl.a SEMI {: return new ParentOf(new Bool("false"), a); :}
+	| NOT PARENT OF lang_id_decl.a SEMI {: return new ParentOf(new Bool("true"), a); :}
 	| lang_id_decl.a SEMI {: return new EQ(a, new Bool("true")); :}
 	| binexpr;
 
 BinExpr binexpr =
-	 value.a NOT IN listValue.b {:return new NotIn(a,b); :}
-	| value.a IN listValue.b {:return new In(a,b); :}
-	| value.a EQ value.b {:return new EQ(a,b); :}
-	| value.a NEQ value.b {:return new NEQ(a,b); :}
-	| value.a LEQ value.b  {:return new LEQ(a,b); :}
-	| value.a GEQ value.b {:return new GEQ(a,b); :}
-	| value.a LT value.b {:return new LT(a,b); :}
-	| value.a GT value.b {:return new GT(a,b); :};
+	 value.a NOT IN listValue.b SEMI {:return new NotIn(a,b); :}
+	| value.a IN listValue.b SEMI {:return new In(a,b); :}
+	| value.a EQ value.b SEMI {:return new EQ(a,b); :}
+	| value.a NEQ value.b SEMI {:return new NEQ(a,b); :}
+	| value.a LEQ value.b SEMI {:return new LEQ(a,b); :}
+	| value.a GEQ value.b SEMI {:return new GEQ(a,b); :}
+	| value.a LT value.b SEMI {:return new LT(a,b); :}
+	| value.a GT value.b SEMI {:return new GT(a,b); :};
 
 Value value =
 	 BOOL.a {: return new Bool(a); :}
+	| ONOFF.a {: return new OnOff(a); :}
 	| num
 	| str
 	| lang_id_decl
@@ -139,5 +144,5 @@ List num_list =
 Num num = NUMERAL.a {: return new Num(a); :};
 Str str = STRING.a {: return new Str(a); :};
 IdDecl id_decl = ID.a {: return new IdDecl(a); :};
-LandDecl lang_id_decl = LANGID.a {: return new LangDecl(a); :};
+LangDecl lang_id_decl = COL ID.a {: return new LangDecl(a); :};
 Color color = COLOR.a {: return new Color(a); :};

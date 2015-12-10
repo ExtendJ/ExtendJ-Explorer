@@ -1,16 +1,16 @@
-DebuggerConfig ::= FilterConfig Filter*;
+NodeFilter ::= <ClassName:String>;
+
+DebuggerConfig ::= Configs:FilterConfig Filter*;
 
 FilterConfig ::= [Use] Binding*;
-Filter ::= IdDecl Node*;
+Filter ::= FilterName:IdDecl Nodes:Node*;
 
 Node ::= ClassName:LangDecl NodeConfig*;
 
-NodeConfig ::= Name:IdDecl NodeConfigBlock;
-
-abstract NodeConfigBlock;
-When : NodeConfigBlock ::= Expr*;
-Style : NodeConfigBlock ::= Binding*;
-Show : NodeConfigBlock ::= LangDecl*;
+abstract NodeConfig;
+When : NodeConfig ::= Expr*;
+Style : NodeConfig ::= Binding*;
+Show : NodeConfig ::= LangDecl*;
 
 /*Stand alone expr, cause reasons*/
 Use ::= IdDecl*;
@@ -18,8 +18,8 @@ Use ::= IdDecl*;
 Binding ::= Name:IdDecl Value;
 
 abstract Expr;
-ChildOf : Expr ::= [Not:Bool] LangDecl;
-ParentOf : Expr ::= [Not:Bool] LangDecl;
+ChildOf : Expr ::= Not:Bool LangDecl;
+ParentOf : Expr ::= Not:Bool LangDecl;
 
 abstract BinExpr : Expr ::= Left:Value Right:Value;
 In : BinExpr;
@@ -40,6 +40,5 @@ NumArray : Value ::= Num*;
 EmptyArray : Value;
 IdDecl : Value ::= <ID:String>;
 LangDecl : Value ::= <ID:String>;
-abstract Boolean : Value;
-Bool : Boolean ::= <BOOL>;
-OnOff : Boolean ::= <ONOFF>;
+Bool : Value ::= <BOOL>;
+OnOff : Value ::= <ONOFF>;

@@ -15,6 +15,7 @@ import java.util.HashMap;
  */
 public class Node{
     public final Object node;
+    public final Node parent;
     public final int id;
     public final String nameFromParent;
     public final String simpleNameClass;
@@ -36,6 +37,7 @@ public class Node{
         this.children = new ArrayList<>();
         this.NTAChildren = new HashMap<>();
         this.nameFromParent = "";
+        this.parent = null;
         if(root != null)
             this.simpleNameClass = root.getClass().getSimpleName();
         else
@@ -52,7 +54,7 @@ public class Node{
      * @param root
      * @param api
      */
-    public Node(Object root, boolean NTA, ASTAPI api){
+    public Node(Object root, Node parent, boolean NTA, ASTAPI api){
         this.children = new ArrayList<>();
         this.NTAChildren = new HashMap<>();
         this.nameFromParent = "";
@@ -62,6 +64,7 @@ public class Node{
         else
             this.simpleNameClass = "Null";
         this.node = root;
+        this.parent = parent;
         fullName = simpleNameClass;
         id = System.identityHashCode(this.toString());
         init(root, true, false, true,  1, api);
@@ -76,9 +79,10 @@ public class Node{
      * @param level
      * @param api
      */
-    public Node(Object root, String name, boolean isList, boolean isOpt, boolean isNTA, int level, ASTAPI api){
+    public Node(Object root, Node parent, String name, boolean isList, boolean isOpt, boolean isNTA, int level, ASTAPI api){
         this.children = new ArrayList<>();
         this.NTAChildren = new HashMap<>();
+        this.parent = parent;
         if(root != null)
             this.simpleNameClass = root.getClass().getSimpleName();
         else
@@ -129,7 +133,7 @@ public class Node{
                 for (Object child : (Iterable<?>) root) {
                     if (child instanceof Collection && child.getClass().getSimpleName().equals("List") && isOpt)
                         api.putWarning(ASTAPI.AST_STRUCTURE_WARNING, "A List is a direct child to a Opt parent, parent : " + root + ", -> child : " + child);
-                    children.add(new Node(child, isOpt ? nameFromParent : "", child instanceof Collection, false, isNTA, 1, api));
+                    children.add(new Node(child, this, isOpt ? nameFromParent : "", child instanceof Collection, false, isNTA, 1, api));
                 }
             }
             traversDown(root, api);
@@ -149,7 +153,7 @@ public class Node{
                         Object obj = m.invoke(root, new Object[m.getParameterCount()]);
                         String name = ASTAnnotation.getString(a, ASTAnnotation.AST_METHOD_NAME);
                         nullCheck(obj, api, name);
-                        children.add(new Node(obj, name,
+                        children.add(new Node(obj, this, name,
                                 !ASTAnnotation.isSingleChild(a),
                                 ASTAnnotation.isOptChild(a),
                                 isNTA, level + 1, api));
@@ -176,6 +180,7 @@ public class Node{
 
     public boolean isNTA(){ return isNTA; }
 
+    public String getSimpleNameClass() { return simpleNameClass; }
     public String toString() { return simpleNameClass; }
     public int getLevel(){ return level;}
 

@@ -266,8 +266,8 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
 
         // Vertex border style transformer
         Transformer<GenericTreeNode, Stroke> vertexStrokeTransformer = item -> {
-            if(item.getStyles().get("border-style").getStr().equals("dashed"))
-               return dashedStroke;
+            //if(item.getStyles().get("border-style").getStr().equals("dashed"))
+              // return dashedStroke;
             return normalStroke;
         };
 

@@ -1,11 +1,6 @@
 aspect NameAnalysis {
-    // is alone
-    eq DebuggerConfig.getBlock(int i).isDeclared(NodeConfig node){
-        return getBlock(i).exists(node);
-    }
 
-    syn boolean Block.exists(NodeConfig node) = true;
-    eq Include.exists(NodeConfig node){
+    /*eq Include.exists(NodeConfig node){
         int until = getNodeConfigList().getNumNodeConfig()-1;
 
         for (int i = 0; i < until; i++) {
@@ -24,9 +19,9 @@ aspect NameAnalysis {
             }
         }
         return true;
-    }
-    syn boolean NodeConfig.multipleDeclared() = !isDeclared(this);
-    inh boolean NodeConfig.isDeclared(NodeConfig node);
+    }*/
+    //syn boolean NodeConfig.multipleDeclared() = !isDeclared(this);
+    //inh boolean NodeConfig.isDeclared(NodeConfig node);
 
     // is idIdDecl
     syn boolean Value.isIdDecl() = false;
