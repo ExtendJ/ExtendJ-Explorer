@@ -34,6 +34,7 @@ public class Config{
     public static final String NTA_SHOW_COMPUTED = "NTA-show-computed";
 
     private HashMap<String, ArrayList<Expr>> filterCache;
+    private HashMap<String, HashMap<String, Value>> styleCache;
 
     private String filterDir; //Directory of the filter file.
 
@@ -41,6 +42,7 @@ public class Config{
         this.api = api;
         this.filterDir = filterDir;
         filterCache = new HashMap<>();
+        styleCache = new HashMap<>();
         noError = readFilter(filterFileName);
     }
 
@@ -161,6 +163,7 @@ public class Config{
 
     private void clearCaches(){
         filterCache.clear();
+        styleCache.clear();
     }
 
    /* /**
@@ -312,8 +315,14 @@ public class Config{
      * @return
      */
     public HashMap<String, Value> getNodeStyle(Node node){
-        HashMap<String, Value> map = new HashMap<>();
-    return map;
+
+        HashMap<String, Value> map = null;
+        if(styleCache.containsKey(node.simpleNameClass))
+            return styleCache.get(node.simpleNameClass);
+
+        map = configs.getNodeStyles(node);
+        styleCache.put(node.simpleNameClass, map);
+        return map;
         /*// If there a global style add it to the hashmap if -ignore-global == false;
         if (isSet(CONFIG_GLOBAL) && configs.getGlobal() != null && configs.getGlobal().getBindingList(STYLE_LIST) != null) {
             for(Binding b : configs.getGlobal().getBindingList(STYLE_LIST).getBindingList()){

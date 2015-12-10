@@ -25,12 +25,11 @@ aspect NodeFilter {
 		return false;
 	}
 
-	syn boolean NodeConfig.isWhen() = false;
-	syn boolean NodeConfig.isStyle() = false;
-	syn boolean NodeConfig.isShow() = false;
-	eq When.isWhen() = true;
-	eq Style.isStyle() = true;
-	eq Show.isShow() = true;
-
+	// set with all NodeFiltes
+	coll ArrayList<NodeFilter> DebuggerConfig.nodeFilters() [new ArrayList<NodeFilter> ()] with add root DebuggerConfig;
+	Node contributes debuggerConfig().nodeFilter(getClassName().getID())
+		when isThisFilterActive()
+		to DebuggerConfig.nodeFilters()
+		for debuggerConfig();
 }
 

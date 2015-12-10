@@ -3,31 +3,9 @@ import jastaddad.api.filteredtree.TreeNode;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.*;
 aspect WhenAttributes{
-    syn boolean ChildOf.isNot() = getNot().getBool();
-    syn boolean ParentOf.isNot() = getNot().getBool();
-
-    syn boolean ChildOf.isChildOf(jastaddad.api.Node node){
-        jastaddad.api.Node parent = node.parent;
-        if(parent == null)
-            return false;
-        boolean ret = parent.getSimpleNameClass().equals(getLangDecl().getID());
-        return isNot() ? !ret : ret;
-    }
-
-    syn boolean ParentOf.isParentOf(jastaddad.api.Node node){
-        boolean ret;
-        for(jastaddad.api.Node child : node.children){
-            ret = child.getSimpleNameClass().equals(getLangDecl().getID());
-            if(ret)
-                return isNot() ? !ret : ret;
-        }
-        return isNot();
-    }
-
     syn ArrayList<Expr> DebuggerConfig.getFilterExpressions(jastaddad.api.Node node){
     		ArrayList<Expr> exprs = new ArrayList<>();
-    		boolean found = getFilterExpressions(node.node.getClass(), exprs, false);
-    		return found ? exprs : null;
+    		boolean found = getFilterExpressions(node.node.getClass(), exprs, false);  		return found ? exprs : null;
     	}
 
     	private boolean DebuggerConfig.getFilterExpressions(Class nodeClass, ArrayList<Expr> exprs, boolean found){
@@ -37,28 +15,22 @@ aspect WhenAttributes{
     			//System.out.println(filter.getClassName() + " " + nodeClass.getSimpleName());
     			if(filter.getClassName().equals(nodeClass.getSimpleName())){
     				found = true;
-    				exprs.addAll(filter.expressions());
+    				exprs.addAll(filter.whenExpressions());
     				break;
     			}
     		}
     		return getFilterExpressions(nodeClass.getSuperclass(), exprs, found);
     	}
 
-    	// set with all NodeFiltes
-    	coll ArrayList<NodeFilter> DebuggerConfig.nodeFilters() [new ArrayList<NodeFilter> ()] with add root DebuggerConfig;
-    	Node contributes debuggerConfig().nodeFilter(getClassName().getID())
-    		when isThisFilterActive()
-    		to DebuggerConfig.nodeFilters()
-    		for debuggerConfig();
-
     	// ArrayList with all expressions for each NodeFilter
-    	coll ArrayList<Expr> NodeFilter.expressions() [new ArrayList<Expr> ()] with addAll root DebuggerConfig;
-    	Node contributes getExprs()
-    		to NodeFilter.expressions()
+    	coll ArrayList<Expr> NodeFilter.whenExpressions() [new ArrayList<Expr> ()] with addAll root DebuggerConfig;
+    	Node contributes getWhenExprs()
+			when isThisFilterActive()
+    		to NodeFilter.whenExpressions()
     		for debuggerConfig().nodeFilter(getClassName().getID());
 
     	// ArrayList with all When expressions
-    	syn ArrayList<Expr> Node.getExprs(){
+    	syn ArrayList<Expr> Node.getWhenExprs(){
     		ArrayList<Expr> list = new ArrayList<>();
     		When when = getWhen();
     		if(when == null)

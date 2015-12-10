@@ -100,8 +100,8 @@ public class Controller implements Initializable {
     }
 
     private static final String[] KEYWORDS = new String[] {
-            "-when", "-global", "-display-attributes", "-include", "-configs",
-            "-style", "in", "not"
+            "when", "style", "show", "use", "configs",
+            "child", "parent", "of", "in", "not", "filter"
     };
 
     private static final String KEYWORD_PATTERN = "(" + String.join("|", KEYWORDS) + ")( |\\{)";

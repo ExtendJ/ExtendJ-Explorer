@@ -23,9 +23,9 @@ aspect NameAnalysis {
     //syn boolean NodeConfig.multipleDeclared() = !isDeclared(this);
     //inh boolean NodeConfig.isDeclared(NodeConfig node);
 
-    // is idIdDecl
-    syn boolean Value.isIdDecl() = false;
-    eq IdDecl.isIdDecl() = true;
+    // is LangDecl
+    syn boolean Value.isLangDecl() = false;
+    eq LangDecl.isLangDecl() = true;
 
     // is array
     syn boolean Value.isArray() = false;
@@ -45,5 +45,12 @@ aspect NameAnalysis {
     eq StrArray.isStrArray() = true;
     eq NumArray.isIntArray() = true;
 
+    // is When, style, show
+	syn boolean NodeConfig.isWhen() = false;
+	syn boolean NodeConfig.isStyle() = false;
+	syn boolean NodeConfig.isShow() = false;
 
+	eq When.isWhen() = true;
+	eq Style.isStyle() = true;
+	eq Show.isShow() = true;
 }

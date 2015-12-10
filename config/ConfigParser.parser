@@ -104,6 +104,7 @@ Expr expr =
 	| PARENT OF lang_id_decl.a SEMI {: return new ParentOf(new Bool("false"), a); :}
 	| NOT PARENT OF lang_id_decl.a SEMI {: return new ParentOf(new Bool("true"), a); :}
 	| lang_id_decl.a SEMI {: return new EQ(a, new Bool("true")); :}
+	| NOT lang_id_decl.a SEMI {: return new EQ(a, new Bool("false")); :}
 	| binexpr;
 
 BinExpr binexpr =
