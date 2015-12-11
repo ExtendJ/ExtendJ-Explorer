@@ -75,13 +75,18 @@ public class Config{
 
                 if (!tmpFilter.errors().isEmpty()) {
                     // something went wrong, tell the user the error.
-                    String error = "\n";
+                    String error = "";
                     error += "Errors: ";
+                    if(tmpFilter.errors().size() > 1 )
+                        api.putError(ASTAPI.FILTER_ERROR, "Multiple errors: ");
+                    else
+                        api.putError(ASTAPI.FILTER_ERROR, "");
                     for (ErrorMessage e: tmpFilter.errors()) {
-                        error += "- " + e;
+                        api.putError(ASTAPI.FILTER_ERROR, e.toString());
+                        error += "\n " + e;
                     }
                     System.err.println(error);
-                    api.putError(ASTAPI.FILTER_ERROR, error);
+
                     return false;
                 }
 
@@ -201,6 +206,11 @@ public class Config{
      * @return true if not filtered.
      */
     public boolean isEnabled(Node node){
+        if(configs == null){
+            //api.putWarning(ASTAPI.FILTER_WARNING, "Filter is null! Will enable all nodes.");
+            return false;
+        }
+
         if(!configs.getConfigs().hasUse())
             return true;
         ArrayList<Expr> exprs = null;
@@ -250,6 +260,10 @@ public class Config{
      */
     public HashMap<String, Value> getNodeStyle(Node node){
         HashMap<String, Value> map;
+        if(configs == null){
+            //api.putWarning(ASTAPI.FILTER_WARNING, "Filter is null! No styles will be applied.");
+            return new HashMap<>();
+        }
         if(styleCache.containsKey(node.simpleNameClass))
             return styleCache.get(node.simpleNameClass);
 
@@ -265,6 +279,9 @@ public class Config{
      */
     public HashSet<String> getDisplayedAttributes(Node node){
         HashSet<String> show;
+        if(configs == null){
+            return new HashSet<>();
+        }
         if(showCache.containsKey(node.simpleNameClass))
             show = showCache.get(node.simpleNameClass);
         else{

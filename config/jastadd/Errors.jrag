@@ -32,13 +32,32 @@ aspect Errors {
 
 
 aspect ErrorContributions {
-	/*BinExpr contributes error("In a expresion, one argument must be an ID: " + print())
-		when !getLeft().isIdDecl() && !getRight().isIdDecl()
+    // Multiple when-, show- och style.
+	Node contributes error("Node :" + getClassName().getID() + " in filter " + getFilter().getFilterName().getID() + " has multiple when blocks declared.")
+		when isMultipleWhen()
 		to DebuggerConfig.errors()
 		for debuggerConfig();
 
-	NodeConfig contributes error("Node :" + getNodeName().getClassName().print() + " is already declared")
-    		when multipleDeclared()
-    		to DebuggerConfig.errors()
-    		for debuggerConfig();*/
+	Node contributes error("Node :" + getClassName().getID() + " in filter " + getFilter().getFilterName().getID() + " has multiple show blocks declared.")
+		when isMultipleShow()
+		to DebuggerConfig.errors()
+		for debuggerConfig();
+
+	Node contributes error("Node :" + getClassName().getID() + " in filter " + getFilter().getFilterName().getID() + " has multiple style blocks declared.")
+		when isMultipleStyle()
+		to DebuggerConfig.errors()
+		for debuggerConfig();
+
+    // Node multiple declared
+	Node contributes error("Node :" + getClassName().getID() + " in filter " + getFilter().getFilterName().getID() + " is already declared in this filter.")
+		when isMultipleDeclared()
+		to DebuggerConfig.errors()
+		for debuggerConfig();
+
+    // Filter multiple declared
+	Filter contributes error("Filter " + getFilterName().getID() + " is already declared.")
+		when isMultipleDeclared()
+		to DebuggerConfig.errors()
+		for debuggerConfig();
+
 }

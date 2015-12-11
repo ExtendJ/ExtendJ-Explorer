@@ -56,7 +56,7 @@ public class VertexShapeTransformer extends VertexLabelAsShapeRenderer<GenericTr
         if(shape != null) {
             if (shape.equals("rounded_rectangle"))
                 return new RoundRectangle2D.Double(centerX, centerY, width, height, 40, 40);
-            if (shape.equals("small_circle"))
+            if (shape.equals("circle"))
                 return new Ellipse2D.Float(centerX, centerY, width, height);
             if (shape.equals("rectangle"))
                 return new RoundRectangle2D.Double(centerX, centerY, width, height, 10, 10);

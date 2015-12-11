@@ -19,6 +19,7 @@ public class ASTAPI {
     public static final String AST_STRUCTURE_WARNING = "AST structure warning";
     public static final String AST_STRUCTURE_ERROR = "AST structure error";
     public static final String FILTER_ERROR = "filter error";
+    public static final String FILTER_WARNING = "filter warning";
     public static final String INVOCATION_WARNING = "invocation warning";
     public static final String INVOCATION_ERROR = "invocation error";
 

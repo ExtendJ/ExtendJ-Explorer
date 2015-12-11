@@ -211,7 +211,7 @@ public class Controller implements Initializable {
 
             // update the new filter. This is done in the API
             saveNewFilterButton.setOnAction((event) -> {
-                addMessage("Filter update: starting");
+                //addMessage("Filter update: starting");
                 graphView.getJungGraph();
                 long timeStart = System.currentTimeMillis();
                 String filter = codeArea.getText();
@@ -221,9 +221,10 @@ public class Controller implements Initializable {
                     addMessage("Filter update: done after, " + (System.currentTimeMillis() - timeStart) + " ms");
                     addMessage("Number of nodes : " + mon.getApi().getASTSize());
                 } else {
-                    addError("Could not update graph: ");
+                    //addError("Could not update graph: ");
                     addErrors(mon.getApi().getErrors(ASTAPI.FILTER_ERROR));
-                    addMessage("Filter update: something is wrong!");
+                    addWarning("New filter is not applied, old filter is enabled. ");
+                    //addMessage("Filter update: something is wrong!");
                 }
 
             });
@@ -244,7 +245,11 @@ public class Controller implements Initializable {
 
             Platform.runLater(() -> {
                 addWarnings(mon.getApi().getWarnings(ASTAPI.AST_STRUCTURE_WARNING));
+                addWarnings(mon.getApi().getWarnings(ASTAPI.INVOCATION_WARNING));
+                addWarnings(mon.getApi().getWarnings(ASTAPI.FILTER_WARNING));
                 addErrors(mon.getApi().getErrors(ASTAPI.AST_STRUCTURE_ERROR));
+                addErrors(mon.getApi().getErrors(ASTAPI.INVOCATION_ERROR));
+                addErrors(mon.getApi().getErrors(ASTAPI.FILTER_ERROR));
             });
         showRootNodeButton.setOnAction(click -> {
             graphView.panToNode(mon.getRootNode());

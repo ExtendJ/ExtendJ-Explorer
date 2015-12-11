@@ -1,0 +1,32 @@
+aspect typeCheck{
+    // is LangDecl
+    syn boolean Value.isLangDecl() = false;
+    eq LangDecl.isLangDecl() = true;
+
+    // is array
+    syn boolean Value.isArray() = false;
+    eq StrArray.isArray() = true;
+    eq NumArray.isArray() = true;
+
+    // is type
+    syn boolean Value.isBool() = false;
+    syn boolean Value.isInt() = false;
+    syn boolean Value.isString() = false;
+    syn boolean Value.isStrArray() = false;
+    syn boolean Value.isIntArray() = false;
+
+    eq Bool.isBool() = true;
+    eq Num.isInt() = true;
+    eq Str.isString() = true;
+    eq StrArray.isStrArray() = true;
+    eq NumArray.isIntArray() = true;
+
+    // is When, style, show
+	syn boolean NodeConfig.isWhen() = false;
+	syn boolean NodeConfig.isStyle() = false;
+	syn boolean NodeConfig.isShow() = false;
+
+	eq When.isWhen() = true;
+	eq Style.isStyle() = true;
+	eq Show.isShow() = true;
+}

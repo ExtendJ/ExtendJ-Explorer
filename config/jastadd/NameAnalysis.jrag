@@ -1,56 +1,83 @@
 aspect NameAnalysis {
+    syn Filter Filter.getFilter() = this;
+    eq Filter.getNodes(int i).getFilter() = this;
+    inh Filter Node.getFilter();
 
-    /*eq Include.exists(NodeConfig node){
-        int until = getNodeConfigList().getNumNodeConfig()-1;
-
-        for (int i = 0; i < until; i++) {
-            NodeConfig child = getNodeConfigList().getNodeConfig(i);
-            if(child != node){
-                String childName = child.getNodeName().getClassName().getID();
-                if(child.getNodeName().hasName())
-                    childName += child.getNodeName().getName().getID();
-
-                String nodeName = node.getNodeName().getClassName().getID();
-                if(node.getNodeName().hasName())
-                    nodeName += node.getNodeName().getName().getID();
-
-                if(nodeName.equals(childName))
-                    return false;
-            }
+// multiple declared when-, show- and style blocks.
+    syn boolean Node.isMultipleWhen(){
+        int count = 0;
+        for(NodeConfig config : getNodeConfigs()){
+            count += config.isWhen() ? 1 : 0;
         }
-        return true;
-    }*/
-    //syn boolean NodeConfig.multipleDeclared() = !isDeclared(this);
-    //inh boolean NodeConfig.isDeclared(NodeConfig node);
+        return count > 1;
+    }
 
-    // is LangDecl
-    syn boolean Value.isLangDecl() = false;
-    eq LangDecl.isLangDecl() = true;
+    syn boolean Node.isMultipleShow(){
+        int count = 0;
+        for(NodeConfig config : getNodeConfigs()){
+            count += config.isShow() ? 1 : 0;
+        }
+        return count > 1;
+    }
 
-    // is array
-    syn boolean Value.isArray() = false;
-    eq StrArray.isArray() = true;
-    eq NumArray.isArray() = true;
+    syn boolean Node.isMultipleStyle(){
+        int count = 0;
+        for(NodeConfig config : getNodeConfigs()){
+            count += config.isStyle() ? 1 : 0;
+        }
+        return count > 1;
+    }
 
-    // is type
-    syn boolean Value.isBool() = false;
-    syn boolean Value.isInt() = false;
-    syn boolean Value.isString() = false;
-    syn boolean Value.isStrArray() = false;
-    syn boolean Value.isIntArray() = false;
+// Node is multiple declared
+    eq Filter.getNodes(int i).isDeclared(Node node) = exists(node, i);
+    private boolean Filter.exists(Node node, int until){
+        for (int i = 0; i < until; i++) {
+            Node child = getNodes(i);
+            boolean sameName = child.getClassName().getID().equals(node.getClassName().getID());
+            if(sameName)
+                return true;
+        }
+        return false;
+    }
+    syn boolean Node.isMultipleDeclared() = isDeclared(this);
+    inh boolean Node.isDeclared(Node node);
 
-    eq Bool.isBool() = true;
-    eq Num.isInt() = true;
-    eq Str.isString() = true;
-    eq StrArray.isStrArray() = true;
-    eq NumArray.isIntArray() = true;
+// filter is multiple declared
+    eq DebuggerConfig.getFilter(int i).isDeclared(Filter filter) = exists(filter, i);
+    private boolean DebuggerConfig.exists(Filter filter, int until){
+        for (int i = 0; i < until; i++) {
+            Filter child = getFilter(i);
+            boolean sameName = child.getFilterName().getID().equals(filter.getFilterName().getID());
+            if(sameName)
+                return true;
+        }
+        return false;
+    }
+    syn boolean Filter.isMultipleDeclared() = isDeclared(this);
+    inh boolean Filter.isDeclared(Filter filter);
 
-    // is When, style, show
-	syn boolean NodeConfig.isWhen() = false;
-	syn boolean NodeConfig.isStyle() = false;
-	syn boolean NodeConfig.isShow() = false;
+    /*
+    eq Include.exists(NodeConfig node){
+            int until = getNodeConfigList().getNumNodeConfig()-1;
 
-	eq When.isWhen() = true;
-	eq Style.isStyle() = true;
-	eq Show.isShow() = true;
+            for (int i = 0; i < until; i++) {
+                NodeConfig child = getNodeConfigList().getNodeConfig(i);
+                if(child != node){
+                    String childName = child.getNodeName().getClassName().getID();
+                    if(child.getNodeName().hasName())
+                        childName += child.getNodeName().getName().getID();
+
+                    String nodeName = node.getNodeName().getClassName().getID();
+                    if(node.getNodeName().hasName())
+                        nodeName += node.getNodeName().getName().getID();
+
+                    if(nodeName.equals(childName))
+                        return false;
+                }
+            }
+            return true;
+        }
+        syn boolean NodeConfig.multipleDeclared() = !isDeclared(this);
+        inh boolean NodeConfig.isDeclared(NodeConfig node);
+*/
 }
