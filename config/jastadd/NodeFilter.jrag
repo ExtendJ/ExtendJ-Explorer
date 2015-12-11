@@ -12,9 +12,7 @@ aspect NodeFilter {
 	eq Filter.getChild(int i).filter() = this;
 	inh Filter Node.filter();
 
-	syn boolean Filter.isActive(){
-		return debuggerConfig().isFilterActive(getFilterName());
-	}
+	syn boolean Filter.isActive() = debuggerConfig().isFilterActive(getFilterName());
 
 	syn lazy boolean DebuggerConfig.isFilterActive(IdDecl filterName){
 		if(!getConfigs().hasUse())

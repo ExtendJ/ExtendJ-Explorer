@@ -24,11 +24,12 @@ public class Config{
     private final String filterTmpFileName = "filter-tmp.cfg";
 
     public static final String NTA_DEPTH = "NTA-depth";
-    public static final String NTA_SHOW_COMPUTED = "NTA-show-computed";
+    public static final String NTA_COMPUTED = "NTA-computed";
 
     private HashMap<String, ArrayList<Expr>> filterCache;
     private HashMap<String, HashMap<String, Value>> styleCache;
     private HashMap<String, HashSet<String>> showCache;
+    private HashMap<String, Value> configsCache;
 
     private String filterDir; //Directory of the filter file.
 
@@ -38,11 +39,12 @@ public class Config{
         filterCache = new HashMap<>();
         styleCache = new HashMap<>();
         showCache = new HashMap<>();
+        configsCache = new HashMap<>();
         noError = readFilter(filterFileName);
     }
 
     /**
-     * Scanns and parses the file with the given filename.
+     * Scans and parses the file with the given filename.
      * If no such file can found it will create a standard Configuration file, and then parse that one.
      * Sets the configuration to the new one if no errors are thrown.
      * @param fileName
@@ -60,9 +62,7 @@ public class Config{
             PrintWriter writer = null;
             if(!f.exists()) {
                 writer = new PrintWriter(fullFilePath, "UTF-8");
-                writer.print("-configs{\n\twhen = true;\n\tglobal = false;\n\tinclude = false;\n}" +
-                        "\n-global{\n\t-when{}\n\t-style{}\n\t-display-attributes{}\n}\n" +
-                        "-include{\n\n}\n");
+                writer.print("configs{\n\tuse = f1;\n}\nfilter f1{\n\t/*\n\t:ASTNode{\n\t\twhen{}\n\t\tshow{}\n\t\tstyle{}\n\t}\n\t*/\n}");
                 writer.close();
             }
             // create the scanner
@@ -165,38 +165,45 @@ public class Config{
         filterCache.clear();
         styleCache.clear();
         showCache.clear();
+        configsCache.clear();
     }
 
-   /* /**
-     * Check if a specified config is set in the -global config
+    /**
+     * Get the int value for the config with the name "name"
      * @param name
      * @return
      */
     public int getInt(String name){
-        //HashMap<String, Value> filterConfigs = configs.configs();
-        return 0; //filterConfigs.containsKey(name) ? filterConfigs.get(name).getInt() : 0;
+        Value v = getConfigValue(name);
+        return v != null && v.isInt() ? v.getInt() : 0;
     }
 
     /**
-     * Check if a specified config is set in the -global config
+     * Get the boolean value for the config with the name "name"
      * @param name
      * @return
      */
-    public boolean hasConfig(String name){
-        //HashMap<String, Value> filterConfigs = configs.configs();
-        return  false; //filterConfigs.containsKey(name) && filterConfigs.get(name).getBool();
+    public boolean getBoolean(String name){
+        Value v = getConfigValue(name);
+        return v != null && v.isBool() ? v.getBool() : false;
     }
 
     /**
-     * Check if a specified config is set in the -global config
+     * Call to the debuggerConfig to get the config value, and caches the config
      * @param name
      * @return
      */
-    public boolean isSet(String name){
-       //HashMap<String, Value> filterConfigs = configs.configs();
-        return false; // !filterConfigs.containsKey(name) || filterConfigs.get(name).getBool();
-    }
 
+    public Value getConfigValue(String name) {
+        Value v;
+        if (configsCache.containsKey(name))
+            v = configsCache.get(name);
+        else {
+            v = configs.getConfigs(name);
+            configsCache.put(name, v);
+        }
+        return v;
+    }
 
     /**
      * This method will determine if the given node is filtered or not.
@@ -213,13 +220,14 @@ public class Config{
 
         if(!configs.getConfigs().hasUse())
             return true;
-        ArrayList<Expr> exprs = null;
+        ArrayList<Expr> exprs;
         if(filterCache.containsKey(node.simpleNameClass))
             exprs = filterCache.get(node.simpleNameClass);
         else{
             exprs = configs.getFilterExpressions(node);
             filterCache.put(node.simpleNameClass, exprs);
         }
+
         if(exprs == null)
             return false;
 

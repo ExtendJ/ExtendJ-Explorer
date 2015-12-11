@@ -26,6 +26,7 @@ aspect ValidateExpressions{
     syn boolean Value.getBool() = false;
     syn String Value.getColor() = "#000000";
 
+    eq OnOff.getBool() = getONOFF().equals("on");
     eq Bool.getBool() = Boolean.parseBoolean(getBOOL());
     eq Num.getInt() = Integer.parseInt(getNUMERAL());
     eq Str.getStr() = getString().substring(1, getString().length()-1);

@@ -1,0 +1,11 @@
+
+aspect ConfigsAttributes{
+    syn Value DebuggerConfig.getConfigs(String name){
+        for(Binding b : getConfigs().getBindings()){
+            if(b.getName().getID().equals(name))
+                return b.getValue();
+        }
+        return null;
+    }
+
+}

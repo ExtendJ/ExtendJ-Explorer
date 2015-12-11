@@ -1,4 +1,4 @@
-aspect typeCheck{
+aspect TypeCheck{
     // is LangDecl
     syn boolean Value.isLangDecl() = false;
     eq LangDecl.isLangDecl() = true;
@@ -15,6 +15,7 @@ aspect typeCheck{
     syn boolean Value.isStrArray() = false;
     syn boolean Value.isIntArray() = false;
 
+    eq OnOff.isBool() = true;
     eq Bool.isBool() = true;
     eq Num.isInt() = true;
     eq Str.isString() = true;
