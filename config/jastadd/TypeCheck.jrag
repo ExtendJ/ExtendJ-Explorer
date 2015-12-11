@@ -30,4 +30,12 @@ aspect TypeCheck{
 	eq When.isWhen() = true;
 	eq Style.isStyle() = true;
 	eq Show.isShow() = true;
+
+	//Child- and Parent Of
+	syn boolean Expr.isChildOf() = false;
+	syn boolean Expr.isParentOf() = false;
+	eq ChildOf.isChildOf() = true;
+	eq ParentOf.isParentOf() = true;
+
+
 }

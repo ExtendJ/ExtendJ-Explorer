@@ -218,10 +218,12 @@ public class Controller implements Initializable {
                 boolean noError = mon.getApi().saveNewFilter(filter);
                 if (noError) {
                     updateUI();
+                    addWarnings(mon.getApi().getWarnings(ASTAPI.FILTER_WARNING));
                     addMessage("Filter update: done after, " + (System.currentTimeMillis() - timeStart) + " ms");
                     addMessage("Number of nodes : " + mon.getApi().getASTSize());
                 } else {
                     //addError("Could not update graph: ");
+                    addWarnings(mon.getApi().getWarnings(ASTAPI.FILTER_WARNING));
                     addErrors(mon.getApi().getErrors(ASTAPI.FILTER_ERROR));
                     addWarning("New filter is not applied, old filter is enabled. ");
                     //addMessage("Filter update: something is wrong!");

@@ -7,16 +7,18 @@ aspect WhenAttributes{
     }
 
     private boolean DebuggerConfig.getFilterExpressions(Class nodeClass, ArrayList<Expr> exprs, boolean found){
-        if(nodeClass == null)
-            return found;
-        for(NodeFilter filter : nodeFilters()){
-            if(filter.getClassName().equals(nodeClass.getSimpleName())){
-                found = true;
-                exprs.addAll(filter.whenExpressions());
-                break;
+        Class clazz = nodeClass;
+        while(clazz != null){
+            for(NodeFilter filter : nodeFilters()){
+                if(filter.getClassName().equals(clazz.getSimpleName())){
+                    exprs.addAll(filter.whenExpressions());
+                    found = true;
+                    break;
+                }
             }
+            clazz = clazz.getSuperclass();
         }
-        return getFilterExpressions(nodeClass.getSuperclass(), exprs, found);
+        return found;
     }
 
     // ArrayList with all expressions for each NodeFilter

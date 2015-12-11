@@ -232,6 +232,11 @@ public class Config{
             return false;
 
         boolean success = true;
+
+        HashMap<String, Boolean> childOfs = new HashMap<>();
+        HashMap<String, Boolean> parentOfs = new HashMap<>();
+        HashMap<String, Boolean> normals = new HashMap<>();
+
         for(Expr expr : exprs){
             String decl = expr.getDecl().getID();
 
@@ -255,9 +260,10 @@ public class Config{
                     success = false;
                 }
             }
+
             if(!success)
                 return false;
-            }
+        }
         return success;
     }
 
