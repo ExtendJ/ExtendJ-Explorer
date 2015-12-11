@@ -134,6 +134,7 @@ public class Controller implements Initializable {
         });
 
         codeAreaContainer.getChildren().add(codeArea);
+
     }
 
     /**
@@ -259,6 +260,7 @@ public class Controller implements Initializable {
                 graphView.panToNode(mon.getSelectedNode());
         });
         showWholeGraphButton.setOnAction(click -> {
+
             graphView.showWholeGraphOnScreen();
         });
     }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 aspect NodeFilter {
 
 	syn nta NodeFilter DebuggerConfig.nodeFilter(String name) = new NodeFilter(name);
+	syn nta NodeFilter DebuggerConfig.nullNTA() = null;
 
 	syn boolean Node.isThisFilterActive() = filter().isActive();
 
