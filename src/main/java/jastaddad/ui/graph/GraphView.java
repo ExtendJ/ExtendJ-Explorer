@@ -113,6 +113,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         vs.setPreferredSize(screenSize);
         vs.scaleToLayout(new ScalingControllerMinLimit());
+        repaint();
     }
 
     public void panToNode(GenericTreeNode node){
@@ -297,12 +298,10 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
      * @param g
      */
     public void createLayout(Forest<GenericTreeNode, UIEdge> g){
-
         TreeLayout<GenericTreeNode, UIEdge> layout = new TreeLayout<>(g, 150, 100);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         vs = new VisualizationViewer<>(layout, screenSize);
         setVisualizationTransformers(vs);
-
     }
 
     public DelegateForest<GenericTreeNode, UIEdge> getJungGraph(){
