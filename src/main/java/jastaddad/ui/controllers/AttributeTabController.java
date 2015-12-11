@@ -220,6 +220,10 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 attributeTableView.getRoot().getChildren().clear();
                 attributeInfoTableView.getItems().clear();
             }
+            clusterInfoNumberLabel.setText("");
+            if(clusterInfoTableView != null){
+                clusterInfoTableView.getItems().clear();
+            }
             return;
         }
         nodeNameLabel.setText(node.toString());

@@ -4,10 +4,7 @@ import configAST.Color;
 import configAST.Str;
 import jastaddad.api.Config;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * Abstract class which contains the similarities between Cluster and ClusterParent
@@ -16,12 +13,44 @@ import java.util.HashSet;
 public abstract  class GenericTreeCluster extends GenericTreeNode{
 
     protected HashMap<String, Integer> typeList;
+    protected int nodeCount;
 
     public GenericTreeCluster(GenericTreeNode parent) {
         super(parent);
         typeList = new HashMap<>();
+        nodeCount = 0;
     }
-    public abstract int getNodeCount();
+
+    public void setNodeCount(int count){ nodeCount=count; }
+    public void addToTypeList(GenericTreeNode node, String addToName){
+        if(node.isNode()) {
+            String name = ((TreeNode)node).getNode().simpleNameClass + addToName;
+            if (typeList.containsKey(name)) {
+                typeList.put(name, typeList.get(name) + 1);
+            } else {
+                typeList.put(name, 1);
+            }
+        }else{
+            GenericTreeCluster cluster = (GenericTreeCluster) node;
+            typeList.put("Cluster" + addToName, cluster.getNodeCount());
+            // Below code adds all nodes in a cluster to the type list, but have been removed because filtered nodes
+            // should stay "hidden".
+            /*
+            for(Map.Entry<String, Integer> type : cluster.getTypeList().entrySet()){
+                String name = type.getKey();
+                if (typeList.containsKey(name)) {
+                    typeList.put(name, typeList.get(name) + 1);
+                } else {
+                    typeList.put(name, 1);
+                }
+            }
+            */
+        }
+    }
+
+    public int getNodeCount(){
+        return nodeCount;
+    }
 
     @Override
     public boolean isNode() {

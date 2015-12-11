@@ -8,18 +8,11 @@ import java.util.List;
  * Created by gda10jth on 10/21/15.
  */
 public class TreeClusterParent extends GenericTreeCluster {
-    private int nodeCount;
 
     private List<TreeCluster> clusters; //The clusters the cluster contains
     public TreeClusterParent(GenericTreeNode parent){
         super(parent);
         clusters = new ArrayList<>();
-        nodeCount = 0;
-    }
-
-    @Override
-    public int getNodeCount(){
-        return nodeCount;
     }
 
     @Override
