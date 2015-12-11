@@ -2,7 +2,8 @@
 aspect WhenAttributes{
     syn ArrayList<Expr> DebuggerConfig.getFilterExpressions(jastaddad.api.Node node){
         ArrayList<Expr> exprs = new ArrayList<>();
-        boolean found = getFilterExpressions(node.node.getClass(), exprs, false);  		return found ? exprs : null;
+        boolean found = getFilterExpressions(node.node.getClass(), exprs, false);
+        return found ? exprs : null;
     }
 
     private boolean DebuggerConfig.getFilterExpressions(Class nodeClass, ArrayList<Expr> exprs, boolean found){

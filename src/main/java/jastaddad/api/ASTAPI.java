@@ -210,7 +210,7 @@ public class ASTAPI {
         }
 
         // travers down the tree for the Computed NTA:s
-        if(computedNTAs.containsKey(node) && filterConfig.hasConfig(Config.NTA_SHOW_COMPUTED)){
+        if(computedNTAs.containsKey(node) && filterConfig.getBoolean(Config.NTA_COMPUTED)){
             for(Node child : computedNTAs.get(node)) {
                 if(!treeNodes.containsKey(child.node))
                     traversTree(child, fNode, tmpCluster, firstTime, 0, futureReferences);
@@ -384,7 +384,7 @@ public class ASTAPI {
             computedNTAs.put(node, new HashSet<>());
         computedNTAs.get(node).add(astNode);
         node.NTAChildren.put(NodeInfo.getName(info.getMethod(), params), astNode);
-        if(filterConfig.hasConfig(Config.NTA_SHOW_COMPUTED))
+        if(filterConfig.getBoolean(Config.NTA_COMPUTED))
             buildFilteredSubTree(astNode, (TreeNode) treeNodes.get(node.node));
         return obj;
     }
