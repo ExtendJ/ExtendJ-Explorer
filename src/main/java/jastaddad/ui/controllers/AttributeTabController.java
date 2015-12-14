@@ -1,7 +1,6 @@
 package jastaddad.ui.controllers;
 
 import com.sun.javafx.scene.control.skin.TreeTableViewSkin;
-import com.sun.javafx.scene.control.skin.TreeViewSkin;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.Node;
 import jastaddad.api.filteredtree.GenericTreeCluster;
@@ -32,6 +31,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import org.reactfx.Subscription;
 
 import javax.swing.plaf.synth.Region;
@@ -58,7 +59,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     @FXML private TableColumn<ClusterInfo, String> clusterInfoNameCol;
     @FXML private TableColumn<ClusterInfo, Object> clusterInfoCountCol;
 
-    @FXML private Label nodeNameLabel;
+    @FXML private TextFlow nodeNameLabel;
     @FXML private Label attributeInfoLabel;
 
     @FXML private VBox clickedNodeInfoPane;
@@ -219,8 +220,9 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      */
     public void setAttributes(){
         GenericTreeNode node = mon.getSelectedNode();
+
+        nodeNameLabel.getChildren().clear();
         if(node == null || !mon.getSelectedNode().isNode()) {
-            nodeNameLabel.setText("");
             if(attributeTableView.getRoot() != null && attributeTableView.getRoot().getChildren() != null) {
                 attributeTableView.getRoot().getChildren().clear();
                 attributeInfoTableView.getItems().clear();
@@ -231,7 +233,31 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             }
             return;
         }
-        nodeNameLabel.setText(node.toString());
+
+        if(node.isNode()){
+            LinkedList list = new LinkedList(mon.getApi().getInheritanceChain(((TreeNode)node).getNode().simpleNameClass));
+            Iterator<Class> it = list.descendingIterator();
+            Class type;
+            Text parent = null;
+            String indent = "....";
+            int i = 0;
+            while (it.hasNext()){
+                if(i == list.size()-1)
+                    parent = new Text("   " + it.next().toString() + "\n");
+                else
+                    parent = new Text(" " + new String(new char[i]).replace("\0", indent) + it.next().toString() + "\n");
+
+                i++;
+                parent.getStyleClass().add("class-parent-type-text");
+                //indent += "\t";
+                nodeNameLabel.getChildren().add(parent);
+            }
+            if(parent != null)
+                parent.getStyleClass().add("class-type-text");
+        }else{
+            nodeNameLabel.getChildren().add(new Text(node.toString()));
+        }
+
         setAttributeList((TreeNode) node, true);
     }
 
