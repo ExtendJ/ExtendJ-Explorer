@@ -7,6 +7,7 @@ import jastaddad.api.nodeinfo.NodeInfo;
 import jastaddad.ui.UIDialog;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.graph.GraphView;
+import jastaddad.ui.uicomponent.FilterEditor;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -21,18 +22,14 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
-import org.fxmisc.richtext.StyleSpans;
-import org.fxmisc.richtext.StyleSpansBuilder;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
 
 /**
  * This is the main controller of the UI. It holds references to all sub controllers. If some part of the UI does
@@ -85,7 +82,12 @@ public class Controller implements Initializable {
     @FXML private ScrollPane consoleScrollPaneMessage;
     @FXML private ScrollPane consoleScrollPaneWarning;
 
-    private CodeArea codeArea;
+    private FilterEditor codeArea;
+
+    private enum ConsoleFilter {
+        ALL, ERROR, WARNING, MESSAGE
+    }
+
 
     private DoubleProperty consoleHeightAll;
     private DoubleProperty consoleHeightError;
@@ -95,44 +97,9 @@ public class Controller implements Initializable {
     private UIMonitor mon;
     private GraphView graphView;
 
-    private enum ConsoleFilter {
-        ALL, ERROR, WARNING, MESSAGE
-    }
-
-    private static final String[] KEYWORDS = new String[] {
-            "when", "style", "show", "use", "configs",
-            "child", "parent", "of", "in", "not", "filter"
-    };
-
-    private static final String KEYWORD_PATTERN = "(" + String.join("|", KEYWORDS) + ")( |\\{)";
-    private static final String PAREN_PATTERN = "\\(|\\)";
-    private static final String BRACE_PATTERN = "\\{|\\}";
-    private static final String BRACKET_PATTERN = "\\[|\\]";
-    private static final String SEMICOLON_PATTERN = "\\;";
-    private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
-    private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
-
-    private static final Pattern PATTERN = Pattern.compile(
-            "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
-                    + "|(?<PAREN>" + PAREN_PATTERN + ")"
-                    + "|(?<BRACE>" + BRACE_PATTERN + ")"
-                    + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
-                    + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
-                    + "|(?<STRING>" + STRING_PATTERN + ")"
-                    + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
-    );
-
-
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
-
-        codeArea = new CodeArea();
-        codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
-        codeArea.richChanges().subscribe(change -> {
-            codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText()));
-        });
-
+        codeArea = new FilterEditor();
         codeAreaContainer.getChildren().add(codeArea);
 
     }
@@ -263,31 +230,6 @@ public class Controller implements Initializable {
 
             graphView.showWholeGraphOnScreen();
         });
-    }
-
-    private static StyleSpans<Collection<String>> computeHighlighting(String text) {
-        Matcher matcher = PATTERN.matcher(text);
-
-        int lastKwEnd = 0;
-        StyleSpansBuilder<Collection<String>> spansBuilder
-                = new StyleSpansBuilder<>();
-        spansBuilder.add(Collections.singleton("whiteText"), 0);
-        while(matcher.find()) {
-            String styleClass =
-                    matcher.group("KEYWORD") != null ? "keyword" :
-                    matcher.group("PAREN") != null ? "paren" :
-                    matcher.group("BRACE") != null ? "brace" :
-                    matcher.group("BRACKET") != null ? "bracket" :
-                    matcher.group("SEMICOLON") != null ? "semicolon" :
-                    matcher.group("STRING") != null ? "string" :
-                    matcher.group("COMMENT") != null ? "comment" :
-                    null; /* never happens */ assert styleClass != null;
-            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
-            spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
-            lastKwEnd = matcher.end();
-        }
-        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
-        return spansBuilder.create();
     }
 
     public void updateUI(){
