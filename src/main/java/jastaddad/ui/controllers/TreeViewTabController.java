@@ -39,7 +39,7 @@ public class TreeViewTabController implements Initializable, ChangeListener {
 
     }
 
-    public void functionStoped(){
+    public void functionStopped(){
 
     }
 

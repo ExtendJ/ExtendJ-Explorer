@@ -343,8 +343,8 @@ public class Controller implements Initializable {
     public void functionStopped(){
         mon.functionDone();
         attributeTabController.functionStopped();
-        textTreeTabController.functionStoped();
-        topMenuController.functionStoped();
+        textTreeTabController.functionStopped();
+        topMenuController.functionStopped();
     }
 
     /**

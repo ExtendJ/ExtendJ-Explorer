@@ -27,7 +27,7 @@ public class ASTAPI {
     private GenericTreeNode filteredTree;
     private Config filterConfig;
     private HashSet<Class> allTypes;
-    private HashMap<String, LinkedHashSet<String>> typeInh;
+    private HashMap<String, LinkedHashSet<Class>> inheritedTypes;
     private HashMap<Class, HashSet<Class>> parentChain;
     private HashMap<Object, GenericTreeNode> treeNodes;
     private HashMap<Node, HashSet<Node>> computedNTAs; //This might be a temporary solution,
@@ -43,7 +43,7 @@ public class ASTAPI {
         displayedReferences = new ArrayList<>();
         treeNodes = new HashMap<>();
         allTypes = new HashSet<>();
-        typeInh = new HashMap<>();
+        inheritedTypes = new HashMap<>();
         parentChain = new HashMap<>();
         errors = new HashMap<>();
         warnings = new HashMap<>();
@@ -98,16 +98,16 @@ public class ASTAPI {
      */
     private void addTypeInheritance(Node node){
         // Add the type and it superclasses
-        if(node.isNull() || typeInh.containsKey(node.getSimpleNameClass()))
+        if(node.isNull() || inheritedTypes.containsKey(node.getSimpleNameClass()))
             return;
-        LinkedHashSet<String> set = new LinkedHashSet<>();
+        LinkedHashSet<Class> set = new LinkedHashSet<>();
         Class c = node.node.getClass();
         while(c != null){
-            set.add(c.getSimpleName());
+            set.add(c);
             allTypes.add(c);
             c = c.getSuperclass();
         }
-        typeInh.put(node.getSimpleNameClass(), set);
+        inheritedTypes.put(node.getSimpleNameClass(), set);
     }
 
     /**
@@ -300,7 +300,9 @@ public class ASTAPI {
     public Config getfilterConfig(){ return filterConfig; }
     public GenericTreeNode getFilteredTree() { return filteredTree; }
 
-    public boolean isASTType(String className){ return typeInh.containsKey(className); }
+    public LinkedHashSet<Class> getInheritanceChain(String simpleClassName){ return inheritedTypes.get(simpleClassName); }
+    
+    public boolean isASTType(String className){ return inheritedTypes.containsKey(className); }
     public boolean isASTType(Class type){ return allTypes.contains(type); }
     public HashMap<Class, HashSet<Class>> getParentChains(){ return parentChain; }
 
