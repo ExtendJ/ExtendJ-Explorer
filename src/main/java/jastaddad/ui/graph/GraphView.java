@@ -9,10 +9,7 @@ import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationImageServer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.control.PickingGraphMousePlugin;
-import edu.uci.ics.jung.visualization.control.PluggableGraphMouse;
-import edu.uci.ics.jung.visualization.control.ScalingGraphMousePlugin;
-import edu.uci.ics.jung.visualization.control.TranslatingGraphMousePlugin;
+import edu.uci.ics.jung.visualization.control.*;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
@@ -21,10 +18,7 @@ import jastaddad.api.filteredtree.NodeReference;
 import jastaddad.api.filteredtree.TreeNode;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.controllers.Controller;
-import jastaddad.ui.graph.jungcomponents.EdgeLabelRenderer;
-import jastaddad.ui.graph.jungcomponents.ScalingControllerMinLimit;
-import jastaddad.ui.graph.jungcomponents.VertexPaintTransformer;
-import jastaddad.ui.graph.jungcomponents.VertexShapeTransformer;
+import jastaddad.ui.graph.jungcomponents.*;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import org.apache.commons.collections15.Transformer;
@@ -51,7 +45,7 @@ import java.util.HashMap;
  *
  * Created by gda10jli on 10/15/15.
  */
-public class GraphView extends SwingNode implements ItemListener { //TODO needs a performance overhaul when it comes to HUGE graphs
+public class GraphView extends SwingNode implements ItemListener, GraphMouseListener<GenericTreeNode> { //TODO needs a performance overhaul when it comes to HUGE graphs
     private UIMonitor mon;
     private Controller con;
     private VisualizationViewer<GenericTreeNode, UIEdge> vs;
@@ -170,7 +164,6 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
             // Write image to a png file
             ImageIO.write(image, ext, new File(filename + "." + ext));
         } catch (IOException e) {
-            // Exception handling
             e.printStackTrace();
             mon.getController().addError("Error while capturing graph: " + e.getCause());
         }
@@ -314,8 +307,8 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
     public void setListeners(){
         vs.getPickedVertexState().addItemListener(this);
         PluggableGraphMouse gm = new PluggableGraphMouse();
-        gm.add(new TranslatingGraphMousePlugin(MouseEvent.BUTTON2_MASK));
-        gm.add(new TranslatingGraphMousePlugin(MouseEvent.BUTTON1_MASK+MouseEvent.CTRL_MASK));
+        gm.add(new DraggingGraphMousePlugin(MouseEvent.BUTTON2_MASK));
+        gm.add(new DraggingGraphMousePlugin(MouseEvent.BUTTON1_MASK + MouseEvent.CTRL_MASK));
         gm.add(new PopupGraphMousePlugin(vs, mon, this));
         gm.add(new PickingGraphMousePlugin());
         gm.add(new ScalingGraphMousePlugin(new ScalingControllerMinLimit(), 0, 1.1f, 0.9f));
@@ -369,4 +362,17 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         });
     }
 
+    @Override
+    public void graphClicked(GenericTreeNode genericTreeNode, MouseEvent me) {
+
+    }
+
+    @Override
+    public void graphPressed(GenericTreeNode genericTreeNode, MouseEvent me) {
+    }
+
+    @Override
+    public void graphReleased(GenericTreeNode genericTreeNode, MouseEvent me) {
+
+    }
 }

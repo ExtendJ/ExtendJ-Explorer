@@ -65,7 +65,7 @@ public class Controller implements Initializable {
     @FXML
     private TextArea filteredConfigTextArea;
     @FXML
-    private TreeView<TmpTreeItem> typeListView;
+    private TreeView<String> typeListView;
 
     @FXML
     private SplitPane centerSplitPane;
@@ -451,12 +451,10 @@ public class Controller implements Initializable {
     private void loadFilterFileText() {
         String line;
         String textContent = "";
-        int lineCount = 0;
         try {
             BufferedReader reader = new BufferedReader(new FileReader(mon.getApi().getFilterFilePath()));
             while ((line = reader.readLine()) != null) {
                 textContent += line + "\n";
-                lineCount++;
             }
             reader.close();
         } catch (IOException e) {
@@ -486,66 +484,19 @@ public class Controller implements Initializable {
     }
 
     private void loadClassTreeView(){
-        ArrayList<TmpTreeItem> treeItems = new ArrayList<>();
-        for (Map.Entry<String, Integer> config : mon.getApi().getTypeHash().entrySet()) {
-            treeItems.add(new TmpTreeItem(config.getKey(), config.getValue()));
-        }
 
-        Collections.sort(treeItems);
-
-        CheckBoxTreeItem<TmpTreeItem> root = new CheckBoxTreeItem<>(new TmpTreeItem("kuk", 1));
+        TreeItem<String> root = new TreeItem<>("ROOT");
         root.setExpanded(true);
 
-        CheckBoxTreeItem parent = root;
-        for(TmpTreeItem item : treeItems){
-            final CheckBoxTreeItem<TmpTreeItem> treeItem = new CheckBoxTreeItem<>(item);
-            treeItem.setIndependent(true);
-            treeItem.setSelected(item.enabled);
-
-            treeItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                addMessage("Type list view called update");
-            });
-
-            if(item.name.length() <= 0) {
-                parent.setExpanded(false);
-                parent = treeItem;
-                root.getChildren().add(treeItem);
-            }else{
-                parent.getChildren().add(treeItem);
+        for (Map.Entry<Class, HashSet<Class>> chains : mon.getApi().getParentChains().entrySet()) {
+            TreeItem<String> parent = new TreeItem<>(chains.getKey().getSimpleName());
+            for(Class parentClass : chains.getValue()){
+                parent.getChildren().add(new TreeItem<>(parentClass.getSimpleName()));
             }
+            root.getChildren().add(parent);
         }
-
         typeListView.setRoot(root);
         typeListView.setShowRoot(false);
     }
 
-    // a holder AST node in the tree view
-    private class TmpTreeItem implements Comparable<TmpTreeItem>{
-        public final String name;
-        public final String className;
-        public final String fullName;
-        public final Boolean enabled;
-
-        public TmpTreeItem(String name, int enabled){
-            this.enabled = enabled == 1;
-            String[] parts = name.split(":");
-            className = parts[0];
-            if(parts.length > 1) {
-                this.name = parts[1];
-                fullName = name;
-            }else {
-                this.name = "";
-                fullName = className;
-            }
-        }
-
-        @Override
-        public String toString() {
-            return name.length() <= 0 ? className : name;
-        }
-
-        public int compareTo(TmpTreeItem item) {
-            return (fullName).compareTo(item.fullName) ;
-        }
-    }
 }

@@ -1,5 +1,7 @@
 package jastaddad.ui.controllers;
 
+import com.sun.javafx.scene.control.skin.TreeTableViewSkin;
+import com.sun.javafx.scene.control.skin.TreeViewSkin;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.Node;
 import jastaddad.api.filteredtree.GenericTreeCluster;
@@ -30,6 +32,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import org.reactfx.Subscription;
 
 import javax.swing.plaf.synth.Region;
 import java.net.URL;
@@ -112,6 +115,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 header.setVisible(false);
             }
         });
+        TreeViewSkinRefresher<AttributeInfo> a = new TreeViewSkinRefresher(attributeTableView);
+        this.attributeTableView.setSkin(a);
 
         attributeNameCol.prefWidthProperty().bind(attributeTableView.widthProperty().multiply(0.50));
         attributeValueCol.prefWidthProperty().bind(attributeTableView.widthProperty().multiply(0.50));
@@ -241,8 +246,10 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             mon.getController().addErrors(mon.getApi().compute(n));
             attributeTableView.getSelectionModel().clearSelection();
         }
+
+        ((TreeViewSkinRefresher)attributeTableView.getSkin()).refresh(); //Refreshing the css.
+
         TreeItem<NodeInfoInterface> mainParent = new TreeItem<>(null);
-        //final TreeTableView<String> treeTableView = new TreeTableView<>(mainParent);
         attributeTableView.setRoot(mainParent);
         attributeTableView.setShowRoot(false);
         mainParent.setExpanded(true);
@@ -410,6 +417,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
             if (getTreeTableRow().getItem() == null || empty) {
                 setText(null);
+                setGraphic(null);
                 return;
             }
 
@@ -451,5 +459,16 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
         public String getTypeName(){return typeName;}
         public int getCount(){return count;}
+    }
+
+    private class TreeViewSkinRefresher<AttributeInfo> extends TreeTableViewSkin {
+
+        public TreeViewSkinRefresher(TreeTableView treeView) {
+            super(treeView);
+        }
+
+        public void refresh(){
+            super.flow.recreateCells();
+        }
     }
 }

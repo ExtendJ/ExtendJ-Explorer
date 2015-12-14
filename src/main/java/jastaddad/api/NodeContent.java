@@ -48,7 +48,7 @@ public class NodeContent {
      */
     public ArrayList<String> getInvocationErrors(){
         ArrayList<String> temp = invocationErrors;
-        invocationErrors.clear();
+        invocationErrors = new ArrayList<>();
         return temp;
     }
 
@@ -93,9 +93,7 @@ public class NodeContent {
             attribute.addComputedValue(params, obj);
             return obj;
         }catch(Throwable e){
-            //e.printStackTrace();
-            if(attribute != null)
-                addInvocationErrors(e, attribute.getMethod());
+            addInvocationErrors(e, attribute.getMethod());
             return null;
         }
     }

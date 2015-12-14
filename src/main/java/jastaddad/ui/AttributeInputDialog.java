@@ -354,27 +354,8 @@ public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
         mon.getGraphView().repaint();
     }
 
-
-    /*
-    <vbox>
-        <hbox>
-            <Label></label>
-            <Hbox>
-                <Label></label>
-                <[field]></[field]>
-            </hbox>
-        </hbox>
-        <hbox>
-        </hbox>
-        <hbox>
-        </hbox>
-    </vbox>
-     */
     private boolean isNodeParam(Class type){
-        boolean direct = mon.getApi().getTypeHash().containsKey(type.getSimpleName());
-        boolean indirect = mon.getApi().isTypeFromAst(type);
-
-        return direct || indirect;
+        return mon.getApi().isASTType(type);
     }
 
     public Object[] getResult(){

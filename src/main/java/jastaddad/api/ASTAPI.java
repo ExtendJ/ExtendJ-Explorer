@@ -26,9 +26,9 @@ public class ASTAPI {
     private Node tree;
     private GenericTreeNode filteredTree;
     private Config filterConfig;
-    private HashMap<String, Integer> typeHash;
     private HashSet<Class> allTypes;
-    private HashMap<String, List<TreeNode>> typeNodeHash;  // will probably be removed
+    private HashMap<String, LinkedHashSet<String>> typeInh;
+    private HashMap<Class, HashSet<Class>> parentChain;
     private HashMap<Object, GenericTreeNode> treeNodes;
     private HashMap<Node, HashSet<Node>> computedNTAs; //This might be a temporary solution,
     private HashSet<Object> ASTObjects;
@@ -42,14 +42,14 @@ public class ASTAPI {
         directoryPath = filterDir;
         displayedReferences = new ArrayList<>();
         treeNodes = new HashMap<>();
-        typeHash = new HashMap<>();
-        typeNodeHash = new HashMap<>(); // will probably be removed
+        allTypes = new HashSet<>();
+        typeInh = new HashMap<>();
+        parentChain = new HashMap<>();
         errors = new HashMap<>();
         warnings = new HashMap<>();
         computedNTAs = new HashMap<>();
         ASTObjects = new HashSet<>();
         ASTNTAObjects = new HashSet<>();
-        allTypes = new HashSet<>();
 
         tree = new Node(root, this);
         this.filteredTree = null;
@@ -59,10 +59,6 @@ public class ASTAPI {
 
     public String getFilterFilePath(){return directoryPath + "filter.cfg"; }
     public String getDirectoryPath(){return directoryPath;}
-
-    public boolean isTypeFromAst(Class type){
-        return allTypes.contains(type);
-    }
 
     public ArrayList<String> getErrors(String type){ return getMessageLine(errors, type); }
 
@@ -96,40 +92,36 @@ public class ASTAPI {
     }
 
     /**
-     * Old function, will probably be removed.
-     * @param fNode
+     * Saves all types and their class inheritance chain
+     *
+     * @param node
      */
-    private void addToTypes(TreeNode fNode){
-        // add the node to the hashmap of types
-        Node node = fNode.getNode();
-        if(!typeNodeHash.containsKey(node.simpleNameClass))
-            typeNodeHash.put(node.simpleNameClass, new ArrayList<>());
-        typeNodeHash.get(node.simpleNameClass).add(fNode);
-        if(!node.nameFromParent.equals("")) {
-            if(!typeNodeHash.containsKey(node.fullName))
-                typeNodeHash.put(node.fullName, new ArrayList<>());
-            typeNodeHash.get(node.fullName).add(fNode);
+    private void addTypeInheritance(Node node){
+        // Add the type and it superclasses
+        if(node.isNull() || typeInh.containsKey(node.getSimpleNameClass()))
+            return;
+        LinkedHashSet<String> set = new LinkedHashSet<>();
+        Class c = node.node.getClass();
+        while(c != null){
+            set.add(c.getSimpleName());
+            allTypes.add(c);
+            c = c.getSuperclass();
         }
-        if(fNode.getNode().node != null) {
-            Class subclass = fNode.getNode().node.getClass();
-            allTypes.add(subclass);
-            while ((subclass = subclass.getSuperclass()) != null) {
-                allTypes.add(subclass);
-            }
-        }
+        typeInh.put(node.getSimpleNameClass(), set);
     }
 
     /**
-     * Old function, will probably be removed.
+     * Saves the direct parent of all nodes
      *
-     * @param fNode
+     * @param node
      */
-    private void addToConfigs(TreeNode fNode){
-        // Add the node to the config hash
-        Node node = fNode.getNode();
-        if(node.nameFromParent != "")
-            typeHash.put(node.fullName, fNode.isEnabled() ? 1:0);
-        typeHash.put(node.simpleNameClass, fNode.isEnabled() ? 1:0);
+    private void setParentChain(Node node){
+        if(node.isNull() || node.parent == null) //Null node or Root node
+            return;
+        Class c = node.node.getClass();
+        if(!parentChain.containsKey(c))
+            parentChain.put(c, new HashSet<>());
+        parentChain.get(c).add(node.parent.node.getClass());
     }
 
     /**
@@ -159,8 +151,8 @@ public class ASTAPI {
         TreeCluster tmpCluster = cluster;
 
         if(firstTime) {
-            addToTypes(fNode);
-            addToConfigs(fNode);
+            addTypeInheritance(node);
+            setParentChain(node);
         }
 
         // if the class is not filtered
@@ -308,7 +300,9 @@ public class ASTAPI {
     public Config getfilterConfig(){ return filterConfig; }
     public GenericTreeNode getFilteredTree() { return filteredTree; }
 
-    public HashMap<String, Integer> getTypeHash(){ return typeHash; }
+    public boolean isASTType(String className){ return typeInh.containsKey(className); }
+    public boolean isASTType(Class type){ return allTypes.contains(type); }
+    public HashMap<Class, HashSet<Class>> getParentChains(){ return parentChain; }
 
     public GenericTreeNode getTreeNode(Object node){ return treeNodes.get(node); }
     public boolean isTreeNode(Object node){ return treeNodes.containsKey(node); }
@@ -378,7 +372,7 @@ public class ASTAPI {
         if (info == null)
             return null;
         Object obj = node.getNodeContent().compute(info, params, this);
-        if(!info.isNTA() ||  obj == null || ASTNTAObjects.contains(obj))
+        if(!info.isNTA() || ASTNTAObjects.contains(obj))
             return obj;
         Node astNode = new Node(obj, node, true, this);
         if(!computedNTAs.containsKey(node))

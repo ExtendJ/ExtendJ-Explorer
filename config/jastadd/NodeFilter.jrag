@@ -7,11 +7,7 @@ aspect NodeFilter {
 	syn nta NodeFilter DebuggerConfig.nodeFilter(String name) = new NodeFilter(name);
 	syn nta NodeFilter DebuggerConfig.nullNTA() = null;
 
-	syn boolean Node.isThisFilterActive() = filter().isActive();
-
-	syn Filter Filter.filter() = this;
-	eq Filter.getChild(int i).filter() = this;
-	inh Filter Node.filter();
+	syn boolean Node.isThisFilterActive() = getFilter().isActive();
 
 	syn boolean Filter.isActive() = debuggerConfig().isFilterActive(getFilterName());
 

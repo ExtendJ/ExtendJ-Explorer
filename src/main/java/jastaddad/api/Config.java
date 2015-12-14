@@ -213,7 +213,7 @@ public class Config{
      * @return true if not filtered.
      */
     public boolean isEnabled(Node node){
-        if(configs == null){
+        if(configs == null || node.isNull()){
             //api.putWarning(ASTAPI.FILTER_WARNING, "Filter is null! Will enable all nodes.");
             return false;
         }
@@ -232,10 +232,6 @@ public class Config{
             return false;
 
         boolean success = true;
-
-        HashMap<String, Boolean> childOfs = new HashMap<>();
-        HashMap<String, Boolean> parentOfs = new HashMap<>();
-        HashMap<String, Boolean> normals = new HashMap<>();
 
         for(Expr expr : exprs){
             String decl = expr.getDecl().getID();
@@ -274,7 +270,7 @@ public class Config{
      */
     public HashMap<String, Value> getNodeStyle(Node node){
         HashMap<String, Value> map;
-        if(configs == null){
+        if(configs == null || node.isNull()){
             //api.putWarning(ASTAPI.FILTER_WARNING, "Filter is null! No styles will be applied.");
             return new HashMap<>();
         }
@@ -293,7 +289,7 @@ public class Config{
      */
     public HashSet<String> getDisplayedAttributes(Node node){
         HashSet<String> show;
-        if(configs == null){
+        if(configs == null || node.isNull()){
             return new HashSet<>();
         }
         if(showCache.containsKey(node.simpleNameClass))
