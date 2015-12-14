@@ -105,6 +105,7 @@ public class FilterEditor extends CodeArea {
     }
 
     private void tabClicked(KeyEvent event){
+        // First see if anything is selected and act accordingly
         if (getSelection().getLength() != 0) {
             int start = getSelection().getStart();
             int end = getSelection().getEnd();
@@ -136,7 +137,7 @@ public class FilterEditor extends CodeArea {
                 subFirstLine = subFirstLine.replaceFirst(CODE_AREA_TAB, "");
                 selected = subFirstLine + rest;
             }else {
-                selected = CODE_AREA_TAB + selected.replace("\n", "\n" + CODE_AREA_TAB);
+            selected = CODE_AREA_TAB + selected.replace("\n", "\n" + CODE_AREA_TAB);
             }
 
             // Replece the selection with the new string
@@ -151,7 +152,25 @@ public class FilterEditor extends CodeArea {
             }
 
         } else {
-            replaceSelection(CODE_AREA_TAB);
+            if(event.isShiftDown()){
+                int posExtra = 0;
+                int pos = getCaretPosition();
+                lineStart(SelectionPolicy.CLEAR);
+                lineEnd(SelectionPolicy.EXTEND);
+                String newRow = getSelectedText().replaceFirst(CODE_AREA_TAB, "");
+                if(!newRow.equals(getSelectedText())){
+                    replaceSelection(newRow);
+                    System.out.println("diff: " + (pos - getSelection().getStart()));
+                    lineStart(SelectionPolicy.CLEAR);
+                    if(pos - getCaretPosition() >= 3)
+                        posExtra = 4;
+                }
+                int newPos = pos - posExtra;
+                selectRange(newPos, newPos);
+                positionCaret(newPos);
+            }else {
+                replaceSelection(CODE_AREA_TAB);
+            }
         }
         event.consume();
     }
