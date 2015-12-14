@@ -66,7 +66,7 @@ public class TopMenuController implements Initializable {
 
     }
 
-    public void functionStoped(){
+    public void functionStopped(){
 
     }
 
