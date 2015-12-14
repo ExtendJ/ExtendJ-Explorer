@@ -101,7 +101,7 @@ public class Controller implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         codeArea = new FilterEditor();
         codeAreaContainer.getChildren().add(codeArea);
-
+        codeArea.getStyleClass().add("textAreaConfig");
     }
 
     /**
@@ -403,9 +403,7 @@ public class Controller implements Initializable {
             e.printStackTrace();
             textContent = "Can not read the configuration file!";
         }
-
-        codeArea.replaceText(0,0, textContent);
-        codeArea.getStyleClass().add("textAreaConfig");
+        codeArea.setText(textContent);
 
     }
 
