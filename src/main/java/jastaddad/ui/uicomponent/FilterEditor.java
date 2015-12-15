@@ -1,8 +1,10 @@
 package jastaddad.ui.uicomponent;
 
 import javafx.event.EventHandler;
+import javafx.scene.control.IndexRange;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import org.fxmisc.richtext.*;
 import org.fxmisc.wellbehaved.event.EventHandlerHelper;
 
@@ -62,6 +64,26 @@ public class FilterEditor extends CodeArea {
                 }
             }
         );
+
+        /* TODO: This should be remevode in the future when a new release for richtextfx comes.
+            The problem: When double clicking a word, the word is selected PLUS 1+ white spaces before it.
+            Apperently it is fixed but not pushed in a release at this time.
+
+            The richtextfx version used here when writing this is: 0.6.10
+        */
+        addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if (event.getClickCount() == 2) {
+                IndexRange range = getSelection();
+                String selectedText = getSelectedText();
+                int i;
+                for(i=0;i<selectedText.length();i++){
+                    if(selectedText.charAt(i) != ' ')
+                        break;
+                }
+                selectRange(range.getStart()+i, range.getEnd());
+
+            }
+        });
     }
 
     public void setText(String filter){

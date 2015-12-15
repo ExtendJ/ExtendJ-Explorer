@@ -242,16 +242,20 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             String indent = "....";
             int i = 0;
             while (it.hasNext()){
-                if(i == list.size()-1)
-                    parent = new Text("   " + it.next().toString() + "\n");
-                else
-                    parent = new Text(" " + new String(new char[i]).replace("\0", indent) + it.next().toString() + "\n");
+                Class p = it.next();
+                if(i == list.size()-1) {
+                    parent = new Text("   " + p.getTypeName() + "\n");
+                }else {
+                    parent = new Text(" " + new String(new char[i]).replace("\0", indent) + p.getTypeName() + "\n");
+                }
 
                 i++;
                 parent.getStyleClass().add("class-parent-type-text");
                 //indent += "\t";
                 nodeNameLabel.getChildren().add(parent);
             }
+
+
             if(parent != null)
                 parent.getStyleClass().add("class-type-text");
         }else{
