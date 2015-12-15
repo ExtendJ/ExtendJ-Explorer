@@ -3,6 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.Group?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
 <VBox VBox.vgrow="ALWAYS"
       xmlns="http://javafx.com/javafx/8"
       xmlns:fx="http://javafx.com/fxml/1"
@@ -12,7 +14,7 @@
            <VBox fx:id="nodeInfoView">
                <SplitPane fx:id="attributeSplitPane" orientation="VERTICAL" dividerPositions="0.7" styleClass="clickedNodeInfoPane">
                    <VBox VBox.vgrow="ALWAYS" styleClass="VBoxParent">
-                       <Label fx:id="nodeNameLabel" minHeight="30" text="" />
+                       <TextFlow fx:id="nodeNameLabel" />
                        <TreeTableView fx:id="attributeTableView" prefHeight="1000">
                            <columns>
                                <TreeTableColumn fx:id="attributeNameCol" text="Name"/>

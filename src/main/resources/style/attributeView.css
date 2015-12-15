@@ -81,3 +81,13 @@
 .table-view .column-header, .table-view .filler {
     -fx-size: 35;
 }
+
+.class-parent-type-text{
+    -fx-fill:#aaaaaa;
+}
+
+.class-type-text{
+    -fx-fill: white;
+    -fx-font-size:14;
+    -fx-font-weight:bold;
+}
