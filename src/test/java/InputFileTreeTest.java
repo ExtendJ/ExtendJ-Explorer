@@ -1,3 +1,7 @@
+import CalcASM.src.gen.lang.ast.LangParser;
+import CalcASM.src.gen.lang.ast.LangScanner;
+import CalcASM.src.gen.lang.ast.Program;
+import beaver.Parser;
 import configAST.ConfigParser;
 import configAST.ConfigScanner;
 import configAST.DebuggerConfig;
@@ -5,6 +9,7 @@ import configAST.ErrorMessage;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.JastAddAdAPI;
 import jastaddad.tasks.JastAddAdXML;
+import jastaddad.ui.JastAddAdUI;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -34,9 +39,46 @@ public class InputFileTreeTest extends AbstractParameterizedTest {
 	}
 
 
+	@Test
+	public void runInputTests() {
+		System.out.println("start test in: " + inDirectory);
+		try {
+			String filename = inDirectory + "/input.calc";
+			LangScanner scanner = new LangScanner(new FileReader(filename));
+			LangParser parser = new LangParser();
+			Program program = (Program) parser.parse(scanner);
+			if (!program.errors().isEmpty()) {
+				System.err.println();
+				System.err.println("Errors: ");
+				for (CalcASM.src.gen.lang.ast.ErrorMessage e : program.errors()) {
+					System.err.println("- " + e);
+				}
+			} else {
+				JastAddAdAPI debugger = new JastAddAdAPI(program);
+				debugger.setFilterDir(inDirectory + "/");
+				debugger.run();
+
+				JastAddAdXML xmlPrinter = new JastAddAdXML(debugger);
+				xmlPrinter.printXml(inDirectory, OUT_EXTENSION);
+				int numberOfErrors = debugger.api().getErrors(ASTAPI.FILTER_ERROR).size();
+
+				assertEquals("Errors parsing filter language", numberOfErrors, 0);
+
+				new OutoutXMLcomparer().checkOutput(debugger.getFilteredTree(), expectedFile, inDirectory);
+			}
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found!");
+			System.exit(1);
+		} catch (IOException e) {
+			e.printStackTrace(System.err);
+		} catch (Parser.Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * Run the JastAdd test
-	 */
+
 	@Test
 	public void runTest() {
 		try {
@@ -78,7 +120,7 @@ public class InputFileTreeTest extends AbstractParameterizedTest {
 			fail("- Excetion: " + e.getMessage());
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 	@SuppressWarnings("javadoc")
 	@Parameters(name = "{0}")

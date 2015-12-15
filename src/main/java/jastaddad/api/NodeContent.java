@@ -23,7 +23,8 @@ public class NodeContent {
     private HashMap<Method,NodeInfo> tokens;
     private HashMap<Method,NodeInfo> NTAs;
     private HashMap<Method, NodeInfo> computedMethods; //Error list for invoke calls
-    private ArrayList<String> invocationErrors; //Error list for invoke calls
+    // TODO: ta bort????
+    private ArrayList<AlertMessage> invocationErrors; //Error list for invoke calls
     private Node node; //The node the content is a part of
     private Object nodeObject; //The node the content is a part of
 
@@ -46,8 +47,8 @@ public class NodeContent {
      * NOTE: Will also clear the list.
      * @return
      */
-    public ArrayList<String> getInvocationErrors(){
-        ArrayList<String> temp = invocationErrors;
+    public ArrayList<AlertMessage> getInvocationErrors(){
+        ArrayList<AlertMessage> temp = invocationErrors;
         invocationErrors = new ArrayList<>();
         return temp;
     }
@@ -71,7 +72,7 @@ public class NodeContent {
         Method method = nodeInfo.getMethod();
         if ((par != null && par.length != method.getParameterCount()) || (par == null && method.getParameterCount() != 0)) {
             api.putError(ASTAPI.INVOCATION_ERROR, "Wrong number of arguments for the method: " + method);
-            invocationErrors.add("Wrong number of arguments for the method: " + method);
+            invocationErrors.add(new AlertMessage(ASTAPI.INVOCATION_ERROR, "Wrong number of arguments for the method: " + method));
             return null;
         }
         if(par == null)
@@ -104,7 +105,7 @@ public class NodeContent {
      * If forceComputation is true it will compute the non-parametrized NTA:s
      * @return
      */
-    protected ArrayList<String> compute(boolean reComputeNode, boolean forceComputation){
+    protected ArrayList<AlertMessage> compute(boolean reComputeNode, boolean forceComputation){
         invocationErrors.clear();
         if(reComputeNode){
             NTAs.clear();
@@ -245,7 +246,7 @@ public class NodeContent {
      */
     private void addInvocationErrors(Throwable e, Method m){
         String message = String.format("Error while computing %s, cause : %s", m.getName(), e.getCause() != null ? e.getCause().toString() : e.getMessage());
-        invocationErrors.add(message);
+        invocationErrors.add(new AlertMessage(ASTAPI.INVOCATION_ERROR, message));
         //e.printStackTrace();
     }
 

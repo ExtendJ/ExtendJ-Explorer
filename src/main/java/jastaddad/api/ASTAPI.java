@@ -18,10 +18,10 @@ public class ASTAPI {
 
     public static final String AST_STRUCTURE_WARNING = "AST structure warning";
     public static final String AST_STRUCTURE_ERROR = "AST structure error";
-    public static final String FILTER_ERROR = "filter error";
-    public static final String FILTER_WARNING = "filter warning";
-    public static final String INVOCATION_WARNING = "invocation warning";
-    public static final String INVOCATION_ERROR = "invocation error";
+    public static final String FILTER_ERROR = "FILTER ERROR";
+    public static final String FILTER_WARNING = "FILTER WARNING";
+    public static final String INVOCATION_WARNING = "INVOCATION WARNING";
+    public static final String INVOCATION_ERROR = "INVOCATION ERROR";
 
     private Node tree;
     private GenericTreeNode filteredTree;
@@ -33,8 +33,8 @@ public class ASTAPI {
     private HashMap<Node, HashSet<Node>> computedNTAs; //This might be a temporary solution,
     private HashSet<Object> ASTObjects;
     private HashSet<Object> ASTNTAObjects;
-    private HashMap<String, ArrayList<String>> errors;
-    private HashMap<String, ArrayList<String>> warnings;
+    private HashMap<String, ArrayList<AlertMessage>> errors;
+    private HashMap<String, ArrayList<AlertMessage>> warnings;
     private ArrayList<NodeReference> displayedReferences;
     private String directoryPath;
 
@@ -60,9 +60,9 @@ public class ASTAPI {
     public String getFilterFilePath(){return directoryPath + "filter.cfg"; }
     public String getDirectoryPath(){return directoryPath;}
 
-    public ArrayList<String> getErrors(String type){ return getMessageLine(errors, type); }
+    public ArrayList<AlertMessage> getErrors(String type){ return getMessageLine(errors, type); }
 
-    public ArrayList<String> getWarnings(String type){ return getMessageLine(warnings, type); }
+    public ArrayList<AlertMessage> getWarnings(String type){ return getMessageLine(warnings, type); }
 
     public void putWarning(String type, String message){ putMessageLine(warnings, type, message); }
 
@@ -75,20 +75,20 @@ public class ASTAPI {
      * @param type
      * @return
      */
-    private ArrayList<String> getMessageLine(HashMap<String, ArrayList<String>> map, String type){
+    private ArrayList<AlertMessage> getMessageLine(HashMap<String, ArrayList<AlertMessage>> map, String type){
         if(!map.containsKey(type)) {
             map.put(type, new ArrayList<>());
             return map.get(type);
         }
-        ArrayList<String> ret = map.get(type);
+        ArrayList<AlertMessage> ret = map.get(type);
         map.put(type, new ArrayList<>());
         return ret;
     }
 
-    private void putMessageLine(HashMap<String, ArrayList<String>> map, String type, String message){
+    private void putMessageLine(HashMap<String, ArrayList<AlertMessage>> map, String type, String message){
         if(!map.containsKey(type))
             map.put(type, new ArrayList<>());
-        map.get(type).add(message);
+        map.get(type).add(new AlertMessage(type,message));
     }
 
     /**
@@ -351,9 +351,9 @@ public class ASTAPI {
 
     public NodeInfo computeMethod(Node node, String method) { return node.getNodeContent().computeMethod(method); }
 
-    public ArrayList<String> compute(Node node, boolean force) { return node.getNodeContent().compute(false, force); }
+    public ArrayList<AlertMessage> compute(Node node, boolean force) { return node.getNodeContent().compute(false, force); }
 
-    public ArrayList<String> compute(Node node) { return node.getNodeContent().compute(false, false); }
+    public ArrayList<AlertMessage> compute(Node node) { return node.getNodeContent().compute(false, false); }
 
     /**
      * Computes the method for the NodeInfo,

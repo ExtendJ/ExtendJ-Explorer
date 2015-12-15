@@ -194,8 +194,11 @@ public class Config{
      * @return
      */
 
-    public Value getConfigValue(String name) {
-        Value v;
+    private Value getConfigValue(String name) {
+        Value v = null;
+
+        if(configs == null)
+            return null;
         if (configsCache.containsKey(name))
             v = configsCache.get(name);
         else {
