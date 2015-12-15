@@ -317,8 +317,8 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             if(nodeToNode && !((TreeNode)parent).getNode().isOpt())
                 edge.setLabel(((TreeNode) child).getNode().nameFromParent);
 
-            if(nodeToNode)
-                edge.setType(child.isNTANode() ? UIEdge.ATTRIBUTE_NTA : UIEdge.STANDARD);
+            if(nodeToNode && child.isNTANode())
+                edge.setType(UIEdge.ATTRIBUTE_NTA);
             else
                 edge.setType(UIEdge.CLUSTER);
 

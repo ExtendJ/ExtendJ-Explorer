@@ -49,8 +49,9 @@ public class VertexShapeTransformer extends VertexLabelAsShapeRenderer<GenericTr
             centerY = -20;
         }
 
-        if(fNode.isNullNode())
+        if(fNode.isNullNode()){
             return new Ellipse2D.Float(centerX, centerY, width, height);
+        }
 
         String shape = fNode.getStyles().get("node-shape").getStr();
         if(shape != null) {

@@ -4,6 +4,7 @@ import configAST.Color;
 import configAST.Str;
 import configAST.Value;
 import jastaddad.api.Config;
+import jastaddad.api.Node;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,13 +67,22 @@ public abstract class GenericTreeNode {
         return this;
     }
 
-    public boolean isNTANode(){
-        return isNode() && ((TreeNode)this).getNode().isNTA();
-    }
+    /**
+     * Returns the api.Node of the filterNode, the Node containing the AST object
+     * @return
+     */
+    public abstract Node getNode();
 
-    public boolean isNullNode(){
-        return isNode() && ((TreeNode)this).getNode().isNull();
-    }
+    /**
+     *  Check if the node is an NTA
+     */
+    public abstract boolean isNTANode();
+
+    /**
+     * Check if the node is a null node, i.e. if the object for the node is null
+     * @return
+     */
+    public abstract boolean isNullNode();
 
     /**
      * Check if the a reference flag is set
@@ -96,13 +106,6 @@ public abstract class GenericTreeNode {
      * @return
      */
     public abstract boolean isClusterParent();
-
-    /**
-     * Checks if the child is a "real" node.
-     * @param child
-     * @return
-     */
-    public abstract boolean isRealChild(GenericTreeNode child);
 
     /**
      * Creates the string containing the nodes name and the displayed attributes

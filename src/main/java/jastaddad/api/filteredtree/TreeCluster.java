@@ -13,7 +13,7 @@ public class TreeCluster extends GenericTreeCluster {
         this.node = node;
     }
 
-    public void addToTypelist(GenericTreeNode child) {
+    public void addToTypeList(GenericTreeNode child) {
         nodeCount++;
         if(!child.isNode())
             return;

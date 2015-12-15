@@ -1,9 +1,6 @@
 package jastaddad.ui;
 
-import configAST.ConfigParser;
-import configAST.ConfigScanner;
-import configAST.DebuggerConfig;
-import configAST.ErrorMessage;
+import configAST.*;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.JastAddAdAPI;
 import jastaddad.tasks.JastAddAdTask;
@@ -115,7 +112,8 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
                     System.err.println("- " + e);
                 }
             } else {
-                JastAddAdUI debugger = new JastAddAdUI(program);
+                DebuggerConfig config = new DebuggerConfig(new FilterConfig(new Opt<>(null), new List<>()), new List<>());
+                JastAddAdUI debugger = new JastAddAdUI(config);
                 debugger.run();
             }
         } catch (FileNotFoundException e) {

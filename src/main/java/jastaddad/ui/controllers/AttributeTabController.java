@@ -222,7 +222,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         GenericTreeNode node = mon.getSelectedNode();
 
         nodeNameLabel.getChildren().clear();
-        if(node == null || !mon.getSelectedNode().isNode()) {
+        if(node == null || !node.isNode() || node.isNullNode()) {
             if(attributeTableView.getRoot() != null && attributeTableView.getRoot().getChildren() != null) {
                 attributeTableView.getRoot().getChildren().clear();
                 attributeInfoTableView.getItems().clear();
@@ -234,29 +234,24 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             return;
         }
 
-        if(node.isNode()){
-            LinkedList list = new LinkedList(mon.getApi().getInheritanceChain(((TreeNode)node).getNode().simpleNameClass));
-            Iterator<Class> it = list.descendingIterator();
-            Class type;
-            Text parent = null;
-            String indent = "....";
-            int i = 0;
-            while (it.hasNext()){
-                if(i == list.size()-1)
-                    parent = new Text("   " + it.next().toString() + "\n");
-                else
-                    parent = new Text(" " + new String(new char[i]).replace("\0", indent) + it.next().toString() + "\n");
+        LinkedList list = new LinkedList(mon.getApi().getInheritanceChain(node.getNode().simpleNameClass));
+        Iterator<Class> it = list.descendingIterator();
+        Text parent = null;
+        String indent = "....";
+        int i = 0;
+        while (it.hasNext()){
+            if(i == list.size()-1)
+                parent = new Text("   " + it.next().toString() + "\n");
+            else
+                parent = new Text(" " + new String(new char[i]).replace("\0", indent) + it.next().toString() + "\n");
 
-                i++;
-                parent.getStyleClass().add("class-parent-type-text");
-                //indent += "\t";
-                nodeNameLabel.getChildren().add(parent);
-            }
-            if(parent != null)
-                parent.getStyleClass().add("class-type-text");
-        }else{
-            nodeNameLabel.getChildren().add(new Text(node.toString()));
+            i++;
+            parent.getStyleClass().add("class-parent-type-text");
+            //indent += "\t";
+            nodeNameLabel.getChildren().add(parent);
         }
+        if(parent != null)
+            parent.getStyleClass().add("class-type-text");
 
         setAttributeList((TreeNode) node, true);
     }
@@ -353,6 +348,13 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      */
     @Override
     public void changed(ObservableValue<? extends TreeItem<NodeInfoInterface>> observable, TreeItem<NodeInfoInterface> oldValue, TreeItem<NodeInfoInterface> newValue) {
+        if(oldValue != null && oldValue.getValue() != null) {
+            if(oldValue.getValue().isNodeInfo())
+                mon.getApi().getNodeReferencesAndHighlightThem(oldValue.getValue().getNodeInfoOrNull().getValue(), false);
+            else if(oldValue.getValue().isParameter())
+                mon.getApi().getNodeReferencesAndHighlightThem(oldValue.getValue().getValue(), false);
+        }
+
         if(newValue != null) {
             NodeInfoInterface infoHolder = newValue.getValue();
             NodeInfo info = null;
@@ -365,22 +367,15 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 info = paramHolder.info;
                 value = paramHolder.getValue();
             }
-            setAttributeInfo(info);
             mon.setSelectedInfo(info);
             mon.getController().attributeInNodeSelected(info);
+            setAttributeInfo(info);
             setReference(value);
 
         }else{
             mon.setSelectedInfo(null);
             setAttributeInfo(null);
             setReference(null);
-        }
-
-        if(oldValue != null && oldValue.getValue() != null) {
-            if(oldValue.getValue().isNodeInfo())
-                mon.getApi().getNodeReferencesAndHighlightThem(oldValue.getValue().getNodeInfoOrNull().getValue(), false);
-            else if(oldValue.getValue().isParameter())
-                mon.getApi().getNodeReferencesAndHighlightThem((oldValue.getValue()).getValue(), false);
         }
     }
 

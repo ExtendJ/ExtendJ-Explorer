@@ -37,11 +37,11 @@ public class TreeNode extends GenericTreeNode {
      * @return
      */
     public Node getNode(){ return node; }
-
     /**
      * Sets the flag which determine that if the node is filtered of not.
      * @param enabled
      */
+
     public void setEnabled(boolean enabled){ this.enabled = enabled; }
 
     /**
@@ -72,9 +72,11 @@ public class TreeNode extends GenericTreeNode {
         children.add(child);
     }
 
-    public boolean isRealChild(GenericTreeNode child){
-        return child.isNode() && realChildEdge.get(((TreeNode)child).node.id);
-    }
+    @Override
+    public boolean isNTANode(){ return node.isNTA(); }
+
+    @Override
+    public boolean isNullNode(){ return node.isNull(); }
 
     /**
      * Returns a iterator for the children
@@ -83,7 +85,7 @@ public class TreeNode extends GenericTreeNode {
     public Iterator<GenericTreeNode> iterator(){ return children.iterator(); }
 
     public boolean isNode(){ return true; }
-    public boolean isCluster(){return false;}
+    public boolean isCluster(){ return false;}
     public boolean isClusterParent(){return false;}
 
     @Override

@@ -3,6 +3,7 @@ package jastaddad.api.filteredtree;
 import configAST.Color;
 import configAST.Str;
 import jastaddad.api.Config;
+import jastaddad.api.Node;
 
 import java.util.*;
 
@@ -73,11 +74,24 @@ public abstract  class GenericTreeCluster extends GenericTreeNode{
         styles.put("border-style", new Str("\"dashed\""));
     }
 
-    @Override
-    public boolean isRealChild(GenericTreeNode child) {
-        return false;
-    }
+    /**
+    * Cluster has not "real" node
+    */
+    public Node getNode(){ return null; }
 
+    /**
+     * Clusters can't be a NTANode
+     * @return
+     */
+    @Override
+    public boolean isNTANode(){ return false; }
+
+    /**
+     * Clusters can't be nullNodes
+     * @return
+     */
+    @Override
+    public boolean isNullNode(){ return false; }
     /**
      * Clusters contains no references
      * @return
