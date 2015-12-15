@@ -59,8 +59,8 @@
 			<batchtest>
 				<fileset dir="${src.dir}/java">
 					<include name="tests/*.java" />
-					<exclude name="tests/AbstractTestSuite.java" />
-					<exclude name="tests/AbstractParameterizedTest.java" />
+					<exclude name="tests/inputtest/AbstractTestSuite.java" />
+					<exclude name="tests/inputtest/AbstractParameterizedTest.java" />
 				</fileset>
 			</batchtest>
 		</junit>

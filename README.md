@@ -117,12 +117,20 @@ Filtering the AST
 ------------ 
 In order to view the nodes you are interested in, a filter configuration language has been implemented into JastAddAd. 
 
-Basic example
+The following sections will explain how this is used. 
+
+Basic structure
 ------------ 
-```
--include{
-  Stmt;
-  Div;
+The structure of the language is quite basic, it contains of a configs block and a number of filters. These will be explained later on in more detail.
+
+configs{
+  use = f1, f2;
+}
+filter f1{
+  ...
+}
+filter f2{
+...
 }
 ```
 
