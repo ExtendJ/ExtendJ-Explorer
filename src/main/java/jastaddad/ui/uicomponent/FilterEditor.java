@@ -10,6 +10,7 @@ import org.fxmisc.wellbehaved.event.EventHandlerHelper;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,6 +62,10 @@ public class FilterEditor extends CodeArea {
                     tabClicked(event);
                 } else if(event.getCode() == KeyCode.DELETE){
                     deleteClicked(event);
+                } else if(event.getCode() == KeyCode.ENTER){
+                    enterClicked(event);
+                } else if (event.isControlDown() && event.getCode() == KeyCode.V){
+                    pastePerformed(event);
                 }
             }
         );
@@ -86,6 +91,40 @@ public class FilterEditor extends CodeArea {
         });
     }
 
+    private void enterClicked(KeyEvent event) {
+        List<StyledText<Collection<String>>> segments = getParagraph(getCurrentParagraph()).getSegments();
+        if(segments.size() <= 0)
+            return;
+
+        StyledText<Collection<String>> indentSegment = segments.get(0);
+
+        String indent = "";
+        for(int i=0;i<indentSegment.length();i++){
+            if(i%4 == 3)
+                indent += CODE_AREA_TAB;
+            if(indentSegment.charAt(i) != ' ' || i == indentSegment.length()-1) {
+                if(segments.get(segments.size()-1).charAt(0) == '{' || (segments.size() > 2 && segments.get(segments.size()-2).charAt(0) == '{')) {
+                    indent += CODE_AREA_TAB;
+                }
+                break;
+            }
+        }
+        replaceSelection("\n" + indent);
+        event.consume();
+    }
+
+    private void pastePerformed(KeyEvent event){
+        paste();
+        refract();
+        event.consume();
+    }
+
+    public void refract(){
+        int pos = getCaretPosition();
+        replaceText(getText().replace("\t", CODE_AREA_TAB));
+        positionCaret(pos);
+    }
+
     public void setText(String filter){
         replaceText(filter.replace("\t", CODE_AREA_TAB));
     }
@@ -96,6 +135,7 @@ public class FilterEditor extends CodeArea {
             String things = getText().substring(caretPos, caretPos + 4);
             boolean tabDel = true;
             boolean lineBreak = false;
+
             for (int i = 3; i >= 0; i--) {
                 if (things.charAt(i) != ' ') {
                     tabDel = false;
@@ -110,6 +150,14 @@ public class FilterEditor extends CodeArea {
 
     private void backSpaceClicked(KeyEvent event){
         if (getSelection().getLength() == 0) {
+
+            if(getParagraph(getCurrentParagraph()).toString().matches("^[\\s]+$")){
+                lineEnd(SelectionPolicy.CLEAR);
+                lineStart(SelectionPolicy.EXTEND);
+                replaceSelection("");
+                return;
+            }
+
             int caretPos = getCaretPosition();
             String things = getText().substring(caretPos - 4, caretPos);
             boolean tab = true;
