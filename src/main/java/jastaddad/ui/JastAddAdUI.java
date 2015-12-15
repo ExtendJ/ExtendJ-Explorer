@@ -52,6 +52,11 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         launch(new String[0]);
     }
 
+    @Override
+    public JastAddAdAPI getAPI() {
+        return jastAddAd;
+    }
+
     public void setFilterDir(String dir){jastAddAd.setFilterDir(dir);}
 
     /**
@@ -112,8 +117,8 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
                     System.err.println("- " + e);
                 }
             } else {
-                DebuggerConfig config = new DebuggerConfig(new FilterConfig(new Opt<>(null), new List<>()), new List<>());
-                JastAddAdUI debugger = new JastAddAdUI(config);
+                //DebuggerConfig config = new DebuggerConfig(new FilterConfig(new Opt<>(null), new List<>()), new List<>());
+                JastAddAdUI debugger = new JastAddAdUI(program);
                 debugger.run();
             }
         } catch (FileNotFoundException e) {

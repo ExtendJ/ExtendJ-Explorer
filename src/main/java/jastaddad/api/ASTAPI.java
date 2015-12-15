@@ -150,9 +150,13 @@ public class ASTAPI {
         treeNodes.put(node.node, fNode);
         TreeCluster tmpCluster = cluster;
 
-        if(parent != null && node.isNull()){
+        if(node.isNull()){
             fNode.setEnabled(true);
-            parent.addChild(fNode);
+            if(parent != null)
+
+                parent.addChild(fNode);
+            else
+                filteredTree = fNode;
             return;
         }
 

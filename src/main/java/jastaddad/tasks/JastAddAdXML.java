@@ -111,7 +111,11 @@ public class JastAddAdXML extends DecoratorTask {
      * @param doc
      */
     private void traversTreeXML(GenericTreeNode root, Document doc){
-        Element element = doc.createElement(root.toString());
+        Element element;
+        if(!root.isNode())
+            element = doc.createElement(JastAddAdAPI.CLUSTER_STRING);
+        else
+            element = doc.createElement(root.toString());
         doc.appendChild(element);
         for(GenericTreeNode child : root.getChildren())
             traversTreeXML(child, element, doc);
@@ -126,6 +130,7 @@ public class JastAddAdXML extends DecoratorTask {
      */
     private void traversTreeXML(GenericTreeNode parent, Element parentElement, Document doc){
         Element element;
+
         if(!parent.isNode())
             element = doc.createElement(JastAddAdAPI.CLUSTER_STRING);
         else
