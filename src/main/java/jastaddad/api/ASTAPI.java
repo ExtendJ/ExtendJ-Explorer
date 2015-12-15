@@ -301,7 +301,7 @@ public class ASTAPI {
     public GenericTreeNode getFilteredTree() { return filteredTree; }
 
     public LinkedHashSet<Class> getInheritanceChain(String simpleClassName){ return inheritedTypes.get(simpleClassName); }
-    
+
     public boolean isASTType(String className){ return inheritedTypes.containsKey(className); }
     public boolean isASTType(Class type){ return allTypes.contains(type); }
     public HashMap<Class, HashSet<Class>> getParentChains(){ return parentChain; }

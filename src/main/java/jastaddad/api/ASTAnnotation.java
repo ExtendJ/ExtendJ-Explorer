@@ -32,7 +32,6 @@ public class ASTAnnotation{
   public static final int ATTRIBUTE = 0;
   public static final int TOKEN = 1;
 
-  //Todo might wanna change so it's only one or two methods, it will lower the readability of the code though
 
   public static boolean isChild(Annotation a){ return isListChild(a) || isOptChild(a) || isSingleChild(a); }
 

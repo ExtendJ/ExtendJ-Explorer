@@ -1,6 +1,7 @@
 package jastaddad.ui.graph;
 
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
 import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.DirectedOrderedSparseMultigraph;
@@ -45,7 +46,7 @@ import java.util.HashMap;
  *
  * Created by gda10jli on 10/15/15.
  */
-public class GraphView extends SwingNode implements ItemListener, GraphMouseListener<GenericTreeNode> { //TODO needs a performance overhaul when it comes to HUGE graphs
+public class GraphView extends SwingNode implements ItemListener { //TODO needs a performance overhaul when it comes to HUGE graphs
     private UIMonitor mon;
     private Controller con;
     private VisualizationViewer<GenericTreeNode, UIEdge> vs;
@@ -89,18 +90,39 @@ public class GraphView extends SwingNode implements ItemListener, GraphMouseList
         }
     }
 
+    /**
+     * This function creates the VisualizationViewer Object.
+     *
+     * @param g
+     */
+    public void createLayout(Forest<GenericTreeNode, UIEdge> g){
+        TreeLayout<GenericTreeNode, UIEdge> layout = new TreeLayout<>(g, 150, 100);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        vs = new VisualizationViewer<>(layout, screenSize);
+        setVisualizationTransformers(vs);
+    }
+
+    public DelegateForest<GenericTreeNode, UIEdge> getJungGraph(){
+        return (DelegateForest<GenericTreeNode, UIEdge> )vs.getGraphLayout().getGraph();
+    }
+
+    /**
+     *
+     */
     public void updateGraph(){
         DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge>();
         graph = new DelegateForest<>(n);
         createTree(graph, mon.getRootNode(), true);
         TreeLayout<GenericTreeNode, UIEdge> layout = new TreeLayout<>(graph, 150, 100);
         vs.setGraphLayout(layout);
-        //vs.getGraphLayout().setGraph(graph);
         addDisplayedReferences();
         showWholeGraphOnScreen();
         vs.repaint();
     }
 
+    /**
+     *
+     */
     public void showWholeGraphOnScreen(){
         vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT).setToIdentity();
         vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW).setToIdentity();
@@ -110,6 +132,10 @@ public class GraphView extends SwingNode implements ItemListener, GraphMouseList
         repaint();
     }
 
+    /**
+     *
+     * @param node
+     */
     public void panToNode(GenericTreeNode node){
         Layout<GenericTreeNode,UIEdge> layout = vs.getGraphLayout();
         Point2D q = layout.transform(node);
@@ -280,25 +306,8 @@ public class GraphView extends SwingNode implements ItemListener, GraphMouseList
         bvs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.QuadCurve<>());
         bvs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<>());
         bvs.getRenderContext().setLabelOffset(15);
-
         //Override the default renderers
         bvs.getRenderer().setEdgeLabelRenderer(new EdgeLabelRenderer<>());
-    }
-
-    /**
-     * This function creates the VisualizationViewer Object.
-     *
-     * @param g
-     */
-    public void createLayout(Forest<GenericTreeNode, UIEdge> g){
-        TreeLayout<GenericTreeNode, UIEdge> layout = new TreeLayout<>(g, 150, 100);
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        vs = new VisualizationViewer<>(layout, screenSize);
-        setVisualizationTransformers(vs);
-    }
-
-    public DelegateForest<GenericTreeNode, UIEdge> getJungGraph(){
-        return (DelegateForest<GenericTreeNode, UIEdge> )vs.getGraphLayout().getGraph();
     }
 
     /**
@@ -327,17 +336,6 @@ public class GraphView extends SwingNode implements ItemListener, GraphMouseList
     }
 
     /**
-     * Sets the selected vertex if the tree. This method is used if the selected vertex is defined by some other part
-     * of the UI, e.g. the Tree view.
-     * @param node
-     */
-    public void newNodeSelected(GenericTreeNode node) {
-        vs.getPickedVertexState().clear();
-        vs.getPickedVertexState().pick(node, true);
-        vs.repaint();
-    }
-
-    /**
      * Deselects all vertexes in the tree. This method is used if the selected node is defined by some other part
      * of the UI, e.g. the Tree view.
      */
@@ -360,19 +358,5 @@ public class GraphView extends SwingNode implements ItemListener, GraphMouseList
                     con.nodeDeselected(true);
             }
         });
-    }
-
-    @Override
-    public void graphClicked(GenericTreeNode genericTreeNode, MouseEvent me) {
-
-    }
-
-    @Override
-    public void graphPressed(GenericTreeNode genericTreeNode, MouseEvent me) {
-    }
-
-    @Override
-    public void graphReleased(GenericTreeNode genericTreeNode, MouseEvent me) {
-
     }
 }

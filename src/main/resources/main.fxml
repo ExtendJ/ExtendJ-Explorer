@@ -105,7 +105,6 @@
                                         </tooltip>
                                     </Button>
                                     <VBox fx:id="codeAreaContainer"></VBox>
-
                                 </VBox>
                             </Tab>
                             <Tab text="Classes">

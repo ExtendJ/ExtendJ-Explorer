@@ -28,7 +28,7 @@ import java.util.ArrayList;
  * The values will be caught by the AttributeTabController.
  * When the dialog is closed the resulting parameters can be fetched with getResult().
  */
-public class AttributeInputDialog extends UIDialog { //Todo redesign this dialog
+public class AttributeInputDialog extends UIDialog {
     private NodeInfo info;
     private TreeNode node;
     private Method m;
