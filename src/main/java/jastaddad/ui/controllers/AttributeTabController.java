@@ -82,7 +82,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         attributeTableView.getSelectionModel().selectedItemProperty().addListener(this);
-        //attributeTableView.
         attributeInfoNameCol.setCellValueFactory(new PropertyValueFactory("name"));
         attributeInfoValueCol.setCellValueFactory(new PropertyValueFactory("value"));
 
@@ -135,7 +134,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             NodeInfo info = selectedInfo.getNodeInfoOrNull();
             if(info.isNTA() && !info.isParametrized()){ //Handle the non-parametrized NTA:s
                 Object obj = mon.getApi().compute(node.getNode(), info);
-                if(!printToConsole(node, obj))
+                if(!printToConsole(obj))
                     return;
                 setAttributeList(node, false);
                 mon.getController().updateUI();
@@ -155,7 +154,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 if(result == null ||  mon.getLastRealNode() == null)
                     return;
                 Object value = mon.getApi().compute(dialog.getTreeNode().getNode(), dialog.getInfo(), result);
-                if(!printToConsole(node, value))
+                if(!printToConsole(value))
                     return;
 
                 if(info.isNTA())
@@ -193,9 +192,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         clickedNodeInfoPane.getChildren().add(child);
     }
 
-    private boolean printToConsole(TreeNode node, Object value){
-        if(!node.getNode().getNodeContent().noErrors()) {
-            mon.getController().addErrors(node.getNode().getNodeContent().getInvocationErrors());
+    private boolean printToConsole(Object value){
+        if(mon.getApi().containsError(ASTAPI.INVOCATION_ERROR)) {
             mon.getController().addErrors(mon.getApi().getErrors(ASTAPI.INVOCATION_ERROR));
             mon.getController().addWarnings(mon.getApi().getWarnings(ASTAPI.INVOCATION_WARNING));
             mon.getController().addMessage("Computation unsuccessful");
@@ -220,7 +218,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      */
     public void setAttributes(){
         GenericTreeNode node = mon.getSelectedNode();
-
         nodeNameLabel.getChildren().clear();
         if(node == null || !node.isNode() || node.isNullNode()) {
             if(attributeTableView.getRoot() != null && attributeTableView.getRoot().getChildren() != null) {
@@ -240,10 +237,12 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         String indent = "....";
         int i = 0;
         while (it.hasNext()){
-            if(i == list.size()-1)
-                parent = new Text("   " + it.next().toString() + "\n");
-            else
-                parent = new Text(" " + new String(new char[i]).replace("\0", indent) + it.next().toString() + "\n");
+            Class p = it.next();
+            if(i == list.size()-1) {
+                parent = new Text("   " + p.getTypeName() + "\n");
+            }else {
+                parent = new Text(" " + new String(new char[i]).replace("\0", indent) + p.getTypeName() + "\n");
+            }
 
             i++;
             parent.getStyleClass().add("class-parent-type-text");
@@ -264,7 +263,9 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     public void setAttributeList(TreeNode node, boolean compute){
         Node n = node.getNode();
         if(compute) {
-            mon.getController().addErrors(mon.getApi().compute(n));
+            mon.getApi().compute(n);
+            if(mon.getApi().containsError(ASTAPI.INVOCATION_ERROR))
+                mon.getController().addErrors(mon.getApi().getErrors(ASTAPI.INVOCATION_ERROR));
             attributeTableView.getSelectionModel().clearSelection();
         }
 

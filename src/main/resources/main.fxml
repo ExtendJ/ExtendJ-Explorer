@@ -22,7 +22,7 @@
                 </VBox>
                 <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                     <tabs>
-                        <Tab text="Attributes">
+                        <Tab text="Node data">
                             <fx:include fx:id="attributeTab" source="/attributeTab.fxml"/>
                         </Tab>
                     </tabs>
@@ -47,6 +47,13 @@
                             </Tab>
                             <Tab text="Tree" fx:id="treeViewTabNode">
                                 <fx:include fx:id="textTreeTab" source="/treeViewTab.fxml"/>
+                            </Tab>
+                            <Tab text="Class overview"  fx:id="classOverviewTabNode">
+                                <VBox styleClass="paneParent" VBox.vgrow="ALWAYS">
+                                    <ScrollPane styleClass="typeListView" fx:id="scrollPaneClassFilter" prefHeight="1000">
+                                        <TreeView styleClass="typeTreeView" fx:id="typeListView"/>
+                                    </ScrollPane>
+                                </VBox>
                             </Tab>
                         </tabs>
                     </TabPane>
@@ -105,13 +112,6 @@
                                         </tooltip>
                                     </Button>
                                     <VBox fx:id="codeAreaContainer"></VBox>
-                                </VBox>
-                            </Tab>
-                            <Tab text="Classes">
-                                <VBox styleClass="paneParent" VBox.vgrow="ALWAYS">
-                                    <ScrollPane styleClass="typeListView" fx:id="scrollPaneClassFilter" prefHeight="1000">
-                                        <TreeView styleClass="typeTreeView" fx:id="typeListView"/>
-                                    </ScrollPane>
                                 </VBox>
                             </Tab>
                         </tabs>

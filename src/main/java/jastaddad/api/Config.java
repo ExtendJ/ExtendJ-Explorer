@@ -194,8 +194,11 @@ public class Config{
      * @return
      */
 
-    public Value getConfigValue(String name) {
-        Value v;
+    private Value getConfigValue(String name) {
+        Value v = null;
+
+        if(configs == null)
+            return null;
         if (configsCache.containsKey(name))
             v = configsCache.get(name);
         else {
@@ -241,11 +244,11 @@ public class Config{
             }else {
                 BinExpr be = (BinExpr) expr;
 
-                NodeInfo a = node.getNodeContent().computeMethod(decl);
+                NodeInfo a = node.getNodeContent().computeMethod(api, decl);
                 if (a != null) {
                     if (be.isDoubleDecl()) {
                         String decl2 = ((LangDecl) be.getValue()).getID();
-                        NodeInfo b = node.getNodeContent().computeMethod(decl2);
+                        NodeInfo b = node.getNodeContent().computeMethod(api, decl2);
                         if (b == null)
                             success =  false;
                         else

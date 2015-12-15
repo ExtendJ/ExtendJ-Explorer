@@ -15,7 +15,6 @@ import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.NodeReference;
-import jastaddad.api.filteredtree.TreeNode;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.controllers.Controller;
 import jastaddad.ui.graph.jungcomponents.*;
@@ -81,7 +80,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
 
             if(nodeToNode && child.isNTANode())
                 edge.setType(UIEdge.ATTRIBUTE_NTA);
-            else
+            else if(!nodeToNode)
                 edge.setType(UIEdge.CLUSTER);
 
             g.addEdge(edge, parent, child);

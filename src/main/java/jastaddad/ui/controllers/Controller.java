@@ -1,6 +1,7 @@
 package jastaddad.ui.controllers;
 
 import jastaddad.api.ASTAPI;
+import jastaddad.api.AlertMessage;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.TreeNode;
 import jastaddad.api.nodeinfo.NodeInfo;
@@ -264,15 +265,15 @@ public class Controller implements Initializable {
         }) ;
     }
 
-    public void addErrors(Collection<String> errors){
+    public void addErrors(Collection<AlertMessage> errors){
         addConsoleTexts("consoleTextError", ConsoleFilter.ERROR, errors);
     }
 
-    public void addWarnings(Collection<String> warnings){
+    public void addWarnings(Collection<AlertMessage> warnings){
         addConsoleTexts("consoleTextWarning", ConsoleFilter.WARNING, warnings);
     }
 
-    public void addMessages(Collection<String> messages){
+    public void addMessages(Collection<AlertMessage> messages){
         addConsoleTexts("consoleTextMessage", ConsoleFilter.MESSAGE, messages);
     }
 
@@ -287,10 +288,10 @@ public class Controller implements Initializable {
         Platform.runLater(() -> addConsoleText(message, "consoleTextWarning", ConsoleFilter.WARNING));
     }
 
-    private void addConsoleTexts(String console, ConsoleFilter filter, Collection<String> warnings){
+    private void addConsoleTexts(String console, ConsoleFilter filter, Collection<AlertMessage> warnings){
         Platform.runLater(() -> {
-            for (String s : warnings)
-                addConsoleText(s, console, filter);
+            for (AlertMessage warning : warnings)
+                addConsoleText(warning.type + ": " + warning.message, console, filter);
         });
     }
     /**

@@ -314,12 +314,12 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             UIEdge edge = new UIEdge();
             boolean nodeToNode = parent.isNode() && child.isNode();
 
-            if(nodeToNode && !((TreeNode)parent).getNode().isOpt())
-                edge.setLabel(((TreeNode) child).getNode().nameFromParent);
+            if(nodeToNode && !parent.getNode().isOpt())
+                edge.setLabel(child.getNode().nameFromParent);
 
             if(nodeToNode && child.isNTANode())
                 edge.setType(UIEdge.ATTRIBUTE_NTA);
-            else
+            else if(!nodeToNode)
                 edge.setType(UIEdge.CLUSTER);
 
             g.addEdge(edge, parent, child);

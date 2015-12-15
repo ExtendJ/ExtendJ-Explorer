@@ -23,7 +23,6 @@ public class NodeContent {
     private HashMap<Method,NodeInfo> tokens;
     private HashMap<Method,NodeInfo> NTAs;
     private HashMap<Method, NodeInfo> computedMethods; //Error list for invoke calls
-    private ArrayList<String> invocationErrors; //Error list for invoke calls
     private Node node; //The node the content is a part of
     private Object nodeObject; //The node the content is a part of
 
@@ -36,27 +35,10 @@ public class NodeContent {
         tokens = new HashMap<>();
         NTAs = new HashMap<>();
         computedMethods = new HashMap<>();
-        invocationErrors = new ArrayList<>();
         this.node = node;
         this.nodeObject = node.node;
     }
 
-    /**
-     * Will return the errors that may have been cast during the invocation of a method or methods.
-     * NOTE: Will also clear the list.
-     * @return
-     */
-    public ArrayList<String> getInvocationErrors(){
-        ArrayList<String> temp = invocationErrors;
-        invocationErrors = new ArrayList<>();
-        return temp;
-    }
-
-    /**
-     * Will check if any error have been cast during some invocation.
-     * @return
-     */
-    public boolean noErrors(){ return invocationErrors.size() == 0; }
 
     /**
      * Computes the method in the NodeInfo, with the given parameters, and adds it to the cached list of the Attribute.
@@ -66,12 +48,10 @@ public class NodeContent {
      * @return true if the invocation was successful.
      */
     protected Object compute(NodeInfo nodeInfo, Object[] par, ASTAPI api) {
-        invocationErrors.clear();
         Object[] params;
         Method method = nodeInfo.getMethod();
         if ((par != null && par.length != method.getParameterCount()) || (par == null && method.getParameterCount() != 0)) {
             api.putError(ASTAPI.INVOCATION_ERROR, "Wrong number of arguments for the method: " + method);
-            invocationErrors.add("Wrong number of arguments for the method: " + method);
             return null;
         }
         if(par == null)
@@ -93,7 +73,7 @@ public class NodeContent {
             attribute.addComputedValue(params, obj);
             return obj;
         }catch(Throwable e){
-            addInvocationErrors(e, attribute.getMethod());
+            addInvocationErrors(api, e, attribute.getMethod());
             return null;
         }
     }
@@ -104,15 +84,13 @@ public class NodeContent {
      * If forceComputation is true it will compute the non-parametrized NTA:s
      * @return
      */
-    protected ArrayList<String> compute(boolean reComputeNode, boolean forceComputation){
-        invocationErrors.clear();
+    protected void compute(ASTAPI api, boolean reComputeNode, boolean forceComputation){
         if(reComputeNode){
             NTAs.clear();
             attributes.clear();
             tokens.clear();
         }
-        compute(nodeObject, forceComputation);
-        return invocationErrors;
+        compute(api, nodeObject, forceComputation);
     }
 
     /**
@@ -121,11 +99,11 @@ public class NodeContent {
      * If forceComputation is true it will compute the non-parametrized NTA:s
      * @param obj
      */
-    protected void compute(Object obj, boolean forceComputation){
+    protected void compute(ASTAPI api, Object obj, boolean forceComputation){
         if(node.isNull())
             return;
         for(Method m : obj.getClass().getMethods()){
-            compute(m, null, forceComputation);
+            compute(api, m, null, forceComputation);
         }
     }
 
@@ -135,8 +113,8 @@ public class NodeContent {
      * @param method
      * @return
      */
-    protected NodeInfo computeMethod(String method){
-        return computeMethod(method, false);
+    protected NodeInfo computeMethod(ASTAPI api, String method){
+        return computeMethod(api, method, false);
     }
 
     /**
@@ -145,12 +123,12 @@ public class NodeContent {
      * @param method
      * @return
      */
-    protected NodeInfo computeMethod(String method, boolean forceComputation){
+    protected NodeInfo computeMethod(ASTAPI api, String method, boolean forceComputation){
         try{
             Method m = nodeObject.getClass().getMethod(method);
-            return compute(m, null, forceComputation);
+            return compute(api, m, null, forceComputation);
         }  catch (NoSuchMethodException e) {
-            //e.printStackTrace();
+            //api.putError(ASTAPI.INVOCATION_ERROR, "No such Method : " + e.getCause());
         }
         return null;
     }
@@ -161,20 +139,20 @@ public class NodeContent {
      * @param m
      * @return
      */
-    protected NodeInfo compute(Method m, Object[] params, boolean forceComputation){
+    protected NodeInfo compute(ASTAPI api, Method m, Object[] params, boolean forceComputation){
         if(computedMethods.containsKey(m) && !forceComputation)
             return computedMethods.get(m);
         NodeInfo info = null;
         for (Annotation a : m.getAnnotations()) {
             if (ASTAnnotation.isAttribute(a)) {
-                info = computeAttribute(nodeObject, m, params, forceComputation);
+                info = computeAttribute(api, nodeObject, m, params, forceComputation);
                 if(info.isNTA())
                     NTAs.put(m, info);
                 else
                     attributes.put(m ,info);
                 break;
             } else if (ASTAnnotation.isToken(a)) {
-                info = computeToken(nodeObject, m);
+                info = computeToken(api, nodeObject, m);
                 tokens.put(m, info);
                 break;
             }
@@ -193,7 +171,7 @@ public class NodeContent {
      * @param forceComputation
      * @return
      */
-    private Attribute computeAttribute(Object obj, Method m, Object[] params, boolean forceComputation){
+    private Attribute computeAttribute(ASTAPI api, Object obj, Method m, Object[] params, boolean forceComputation){
         Attribute attribute = new Attribute(m.getName(), null, m);
         attribute.setParametrized(m.getParameterCount() > 0);
         for(Annotation a : m.getAnnotations()) { //To many attribute specific methods so I decided to iterate through the Annotations again instead of sending them as parameters.
@@ -217,7 +195,7 @@ public class NodeContent {
             else if(obj != null)
                 attribute.setValue(m.invoke(obj));
         } catch (Throwable e) {
-            addInvocationErrors(e, m);
+            addInvocationErrors(api, e, m);
             attribute.setValue(e.getCause());
         }
         return attribute;
@@ -229,12 +207,12 @@ public class NodeContent {
      * @param m
      * @return
      */
-    private Token computeToken(Object obj, Method m){
+    private Token computeToken(ASTAPI api, Object obj, Method m){
         String name = m.getName();
         try{
             return new Token(name, m.invoke(obj), m);
         } catch (Throwable e) {
-            addInvocationErrors(e, m);
+            addInvocationErrors(api, e, m);
             return new Token(name, e.getCause().toString(), m);
         }
     }
@@ -243,9 +221,9 @@ public class NodeContent {
      *
      * @param e
      */
-    private void addInvocationErrors(Throwable e, Method m){
+    private void addInvocationErrors(ASTAPI api, Throwable e, Method m){
         String message = String.format("Error while computing %s, cause : %s", m.getName(), e.getCause() != null ? e.getCause().toString() : e.getMessage());
-        invocationErrors.add(message);
+        api.putError(ASTAPI.INVOCATION_ERROR, message);
         //e.printStackTrace();
     }
 

@@ -25,27 +25,11 @@ public abstract  class GenericTreeCluster extends GenericTreeNode{
     public void setNodeCount(int count){ nodeCount=count; }
     public void addToTypeList(GenericTreeNode node, String addToName){
         if(node.isNode()) {
-            String name = ((TreeNode)node).getNode().simpleNameClass + addToName;
-            if (typeList.containsKey(name)) {
-                typeList.put(name, typeList.get(name) + 1);
-            } else {
-                typeList.put(name, 1);
-            }
+            String name = node.getNode().simpleNameClass + addToName;
+            typeList.put(name, typeList.containsKey(name) ? typeList.get(name) + 1 : 1);
         }else{
             GenericTreeCluster cluster = (GenericTreeCluster) node;
             typeList.put("Cluster" + addToName, cluster.getNodeCount());
-            // Below code adds all nodes in a cluster to the type list, but have been removed because filtered nodes
-            // should stay "hidden".
-            /*
-            for(Map.Entry<String, Integer> type : cluster.getTypeList().entrySet()){
-                String name = type.getKey();
-                if (typeList.containsKey(name)) {
-                    typeList.put(name, typeList.get(name) + 1);
-                } else {
-                    typeList.put(name, 1);
-                }
-            }
-            */
         }
     }
 
