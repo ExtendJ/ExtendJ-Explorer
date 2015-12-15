@@ -424,6 +424,24 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         ArrayList<ClusterInfo> itemList = new ArrayList<>();
         for(Map.Entry<String, Integer> type : cluster.getTypeList().entrySet()){
             itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
+            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
         }
         ObservableList<ClusterInfo> items = FXCollections.observableArrayList (itemList);
         clusterInfoTableView.setItems(items);

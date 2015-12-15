@@ -72,7 +72,6 @@ public class Config{
                 ConfigParser parser = new ConfigParser();
                 // parse the config file
                 tmpFilter = (DebuggerConfig) parser.parse(scanner);
-
                 if (!tmpFilter.errors().isEmpty()) {
                     // something went wrong, tell the user the error.
                     String error = "";
@@ -100,7 +99,7 @@ public class Config{
                 return false;
             }catch (Exception e) {
                 api.putError(ASTAPI.FILTER_ERROR, "Exception when reading filter file: " + e.toString());
-                //e.printStackTrace();
+                e.printStackTrace();
                 return false;
             }
         }catch (FileNotFoundException e) {

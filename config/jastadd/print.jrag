@@ -47,7 +47,7 @@ aspect Print{
     eq Color.print() = getColor();
     eq OnOff.print() = getONOFF();
     eq Bool.print() = getBOOL();
-    eq IdDecl.print() = getID();
+    syn String IdDecl.print() = getID();
     eq LangDecl.print() = getID();
 
     syn String Binding.print() = getName().getID() + " = " + getValue().print();

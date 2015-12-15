@@ -17,6 +17,8 @@ Use ::= IdDecl*;
 
 Binding ::= Name:IdDecl Value;
 
+IdDecl ::= <ID:String>;
+
 abstract Expr;
 ChildOf : Expr ::= Not:Bool LangDecl;
 ParentOf : Expr ::= Not:Bool LangDecl;
@@ -38,7 +40,6 @@ Color : Value ::= <Color>;
 StrArray : Value ::= Str*;
 NumArray : Value ::= Num*;
 EmptyArray : Value;
-IdDecl : Value ::= <ID:String>;
 LangDecl : Value ::= <ID:String>;
 Bool : Value ::= <BOOL>;
 OnOff : Value ::= <ONOFF>;
