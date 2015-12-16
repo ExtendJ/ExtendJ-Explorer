@@ -1,6 +1,7 @@
 package test.inputfiletests;
 
 import jastaddad.api.ASTAPI;
+import jastaddad.api.AlertMessage;
 import jastaddad.api.JastAddAdAPI;
 import jastaddad.tasks.JastAddAdXML;
 import test.OutoutXMLcomparer;
@@ -82,7 +83,7 @@ abstract public class AbstractInputFiletest {
 		JastAddAdXML xmlPrinter = new JastAddAdXML(debugger);
 		xmlPrinter.run();
 		xmlPrinter.printXml(inDirectory, AbstractInputFiletest.OUT_EXTENSION);
-		int numberOfErrors = debugger.api().getErrors(ASTAPI.FILTER_ERROR).size();
+		int numberOfErrors = debugger.api().getErrors(AlertMessage.FILTER_ERROR).size();
 		assertEquals("Errors parsing filter language", numberOfErrors, 0);
 		new OutoutXMLcomparer().checkOutput(debugger.getFilteredTree(), expectedFile, inDirectory);
 	}
