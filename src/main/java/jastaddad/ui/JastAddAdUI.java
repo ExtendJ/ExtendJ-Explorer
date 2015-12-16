@@ -11,13 +11,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ScrollPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * This is the main class for the JastAddAd system if the user wants the UI. This class will create an jastAddAd
@@ -80,9 +84,8 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         stage.setTitle("JastAddDebugger " + ASTAPI.VERSION);
         stage.setScene(new Scene(rootView, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
-        //stage.setMaximized(true);
-        
-        /*stage.setOnCloseRequest(we -> {
+
+        stage.setOnCloseRequest(we -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirm Exit");
             alert.initStyle(StageStyle.UNDECORATED);
@@ -93,7 +96,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
             } else {
                 we.consume();
             }
-        });*/
+        });
         stage.show();
         ScrollPane center = (ScrollPane) rootView.lookup("#graphViewScrollPane");
         center.setContent(graphview);
@@ -106,7 +109,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
      */
     public static void main(String[] args) {
         try{
-            String filename = "testInput.cfg";
+            String filename = "sample.cfg";
             ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
             ConfigParser parser = new ConfigParser();
             DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);

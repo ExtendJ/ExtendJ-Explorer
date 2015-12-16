@@ -14,14 +14,15 @@ import java.util.*;
  */
 public class ASTAPI {
 
-    public static final String VERSION = "alphabuild-0.2.3";
+    public static final String VERSION = "alphabuild-0.3.0";
 
     private Node tree;
     private GenericTreeNode filteredTree;
     private Config filterConfig;
     private HashSet<Class> allTypes;
     private HashMap<String, LinkedHashSet<Class>> inheritedTypes;
-    private HashMap<Class, HashSet<Class>> parentChain;
+    private HashMap<Class, HashSet<Class>> directParents;
+    private HashMap<Class, HashSet<Class>> directChildren;
     private HashMap<Object, GenericTreeNode> treeNodes;
     private HashMap<Node, HashSet<Node>> computedNTAs; //This might be a temporary solution,
     private HashSet<Object> ASTObjects;
@@ -37,7 +38,8 @@ public class ASTAPI {
         treeNodes = new HashMap<>();
         allTypes = new HashSet<>();
         inheritedTypes = new HashMap<>();
-        parentChain = new HashMap<>();
+        directParents = new HashMap<>();
+        directChildren = new HashMap<>();
         errors = new HashMap<>();
         warnings = new HashMap<>();
         computedNTAs = new HashMap<>();
@@ -110,13 +112,20 @@ public class ASTAPI {
      *
      * @param node
      */
-    private void setParentChain(Node node){
-        if(node.isNull() || node.parent == null) //Null node or Root node
+    private void setDirectParentsAndChildren(Node node){
+        if(node.isNull()) //Null node or Root node
             return;
         Class c = node.node.getClass();
-        if(!parentChain.containsKey(c))
-            parentChain.put(c, new HashSet<>());
-        parentChain.get(c).add(node.parent.node.getClass());
+        if(!directParents.containsKey(c))
+            directParents.put(c, new HashSet<>());
+        if(node.parent != null)
+            directParents.get(c).add(node.parent.node.getClass());
+        if(!directChildren.containsKey(c))
+            directChildren.put(c, new HashSet<>());
+        for(Node child : node.children){
+            if(!child.isNull())
+                directChildren.get(c).add(child.node.getClass());
+        }
     }
 
     /**
@@ -155,7 +164,7 @@ public class ASTAPI {
 
         if(firstTime) {
             addTypeInheritance(node);
-            setParentChain(node);
+            setDirectParentsAndChildren(node);
         }
 
         // if the class is not filtered
@@ -324,7 +333,7 @@ public class ASTAPI {
 
     public boolean isASTType(String className){ return inheritedTypes.containsKey(className); }
     public boolean isASTType(Class type){ return allTypes.contains(type); }
-    public HashMap<Class, HashSet<Class>> getParentChains(){ return parentChain; }
+    public HashMap<Class, HashSet<Class>> getParentChains(){ return directParents; }
 
     public GenericTreeNode getTreeNode(Object node){ return treeNodes.get(node); }
     public boolean isTreeNode(Object node){ return treeNodes.containsKey(node); }
