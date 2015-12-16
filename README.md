@@ -108,7 +108,7 @@ When running the debugger on Linux the following library dependencies are requir
 ## The Filter Configuration Language ##
 
 To filter the presentation of your AST we have implemented a simple language that helps you with this. 
-Check out the Wiki page for a small tutorial in how you write and use that language.
+Check out the Wiki page for a small [tutorial](https://bitbucket.org/jastadd/jastadddebugger-exjobb/wiki/The%20Filter%20Configuration%20Language) in how you write and use that language.
 
 Below is a standard template for the filter.
 
@@ -125,4 +125,3 @@ filter f1{
 }
 
 ```
-  
