@@ -16,13 +16,6 @@ public class ASTAPI {
 
     public static final String VERSION = "alphabuild-0.2.3";
 
-    public static final String AST_STRUCTURE_WARNING = "AST structure warning";
-    public static final String AST_STRUCTURE_ERROR = "AST structure error";
-    public static final String FILTER_ERROR = "FILTER ERROR";
-    public static final String FILTER_WARNING = "FILTER WARNING";
-    public static final String INVOCATION_WARNING = "INVOCATION WARNING";
-    public static final String INVOCATION_ERROR = "INVOCATION ERROR";
-
     private Node tree;
     private GenericTreeNode filteredTree;
     private Config filterConfig;

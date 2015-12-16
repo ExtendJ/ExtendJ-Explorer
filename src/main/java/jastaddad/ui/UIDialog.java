@@ -13,6 +13,8 @@ import javafx.stage.WindowEvent;
 
 /**
  * Created by gda10jth on 11/24/15.
+ * This class is used as a parent to dialogs in the program. It has a "yes" button that invoke a method
+ * yesButtonClicked() in the child class.
  */
 public abstract class UIDialog extends Stage{
     protected boolean invokeButtonPressed;
@@ -39,6 +41,9 @@ public abstract class UIDialog extends Stage{
         });
     }
 
+    /**
+     * initialize the dialog.
+     */
     public void init(){
         buttonTypeOk = new Button("yes");
         buttonTypeOk.setOnMouseClicked(event -> {

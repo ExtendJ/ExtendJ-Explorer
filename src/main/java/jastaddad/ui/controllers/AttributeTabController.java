@@ -2,6 +2,7 @@ package jastaddad.ui.controllers;
 
 import com.sun.javafx.scene.control.skin.TreeTableViewSkin;
 import jastaddad.api.ASTAPI;
+import jastaddad.api.AlertMessage;
 import jastaddad.api.Node;
 import jastaddad.api.filteredtree.GenericTreeCluster;
 import jastaddad.api.filteredtree.GenericTreeNode;
@@ -40,7 +41,11 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * This is a controller class that keeps track of the attribute tab.
+ * This is a controller class that keeps track of the attribute tab. The tab shows information of the clicked node in
+ * the tree. There are two VBoxes with stuff that is used depending on what is clicked on:
+ *  - clusterInfoView when a cluster is clicked.
+ *  - nodeInfoView when a node is clicked.
+ *
  */
 public class AttributeTabController implements Initializable, ChangeListener<TreeItem<NodeInfoInterface>> {
     private UIMonitor mon;
@@ -65,7 +70,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     @FXML private VBox clickedNodeInfoPane;
     @FXML private VBox nodeInfoView;
     @FXML private VBox clusterInfoView;
-    @FXML private ListView clusterInfoListView;
     @FXML private Label clusterInfoNumberLabel;
 
 
@@ -81,10 +85,12 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // node information views
         attributeTableView.getSelectionModel().selectedItemProperty().addListener(this);
         attributeInfoNameCol.setCellValueFactory(new PropertyValueFactory("name"));
         attributeInfoValueCol.setCellValueFactory(new PropertyValueFactory("value"));
 
+        // cluster information views
         clusterInfoNameCol.setCellValueFactory(new PropertyValueFactory("typeName"));
         clusterInfoCountCol.setCellValueFactory(new PropertyValueFactory("count"));
 
@@ -187,27 +193,42 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         showThisInAttributeTab(nodeInfoView);
     }
 
+    /**
+     * Switch to the view child.
+     * @param child
+     */
     private void showThisInAttributeTab(VBox child){
         clickedNodeInfoPane.getChildren().clear();
         clickedNodeInfoPane.getChildren().add(child);
     }
 
+    /**
+     * Used when computing and invoking methods in this controller. prints errors, values and warnings to the console.
+     * @param value
+     * @return
+     */
     private boolean printToConsole(Object value){
-        if(mon.getApi().containsError(ASTAPI.INVOCATION_ERROR)) {
-            mon.getController().addErrors(mon.getApi().getErrors(ASTAPI.INVOCATION_ERROR));
-            mon.getController().addWarnings(mon.getApi().getWarnings(ASTAPI.INVOCATION_WARNING));
+        if(mon.getApi().containsError(AlertMessage.INVOCATION_ERROR)) {
+            mon.getController().addErrors(mon.getApi().getErrors(AlertMessage.INVOCATION_ERROR));
+            mon.getController().addWarnings(mon.getApi().getWarnings(AlertMessage.INVOCATION_WARNING));
             mon.getController().addMessage("Computation unsuccessful");
             return false;
         }
-        mon.getController().addWarnings(mon.getApi().getWarnings(ASTAPI.INVOCATION_WARNING));
+        mon.getController().addWarnings(mon.getApi().getWarnings(AlertMessage.INVOCATION_WARNING));
         mon.getController().addMessage("Computation successful : " + value);
         return true;
     }
 
+    /**
+     * Called when a funciton starts from the Controller. A function can be a dialog.
+     */
     public void functionStarted(){
 
     }
 
+    /**
+     * Called when a funciton stops from the Controller. A function can be a dialog.
+     */
     public void functionStopped(){
 
     }
@@ -264,8 +285,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         Node n = node.getNode();
         if(compute) {
             mon.getApi().compute(n);
-            if(mon.getApi().containsError(ASTAPI.INVOCATION_ERROR))
-                mon.getController().addErrors(mon.getApi().getErrors(ASTAPI.INVOCATION_ERROR));
+            if(mon.getApi().containsError(AlertMessage.INVOCATION_ERROR))
+                mon.getController().addErrors(mon.getApi().getErrors(AlertMessage.INVOCATION_ERROR));
             attributeTableView.getSelectionModel().clearSelection();
         }
 
@@ -405,6 +426,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         graphView.setReferenceEdges(newRefs, mon.getSelectedNode());
     }
 
+
     public void nodeSelected() {
         GenericTreeNode node = mon.getSelectedNode();
         if(node.isNode()) {
@@ -417,30 +439,15 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     }
 
+    /**
+     * set the information of the cluster table view.
+     */
     private void setClusterInfo(){
         GenericTreeCluster cluster = (GenericTreeCluster)mon.getSelectedNode();
         clusterInfoNumberLabel.setText("Cluster. " + cluster.getNodeCount() + " node" + (cluster.getNodeCount() == 1 ? "" : "s"));
 
         ArrayList<ClusterInfo> itemList = new ArrayList<>();
         for(Map.Entry<String, Integer> type : cluster.getTypeList().entrySet()){
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
-            itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
             itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
         }
         ObservableList<ClusterInfo> items = FXCollections.observableArrayList (itemList);

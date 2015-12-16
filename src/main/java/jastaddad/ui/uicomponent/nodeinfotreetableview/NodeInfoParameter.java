@@ -4,6 +4,10 @@ import jastaddad.api.nodeinfo.NodeInfo;
 
 /**
  * Created by gda10jth on 11/30/15.
+ * This class is a holder of information for the attribute tree table view.
+ *
+ * This class represent a value from a parameterized attribute. The class contains the NodeInfo to the attribute, the
+ * name is the parameters as a string and the computed value.
  */
 public class NodeInfoParameter implements NodeInfoInterface {
     public final NodeInfo info;

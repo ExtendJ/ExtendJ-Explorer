@@ -4,8 +4,16 @@ import javafx.scene.control.TextField;
 
 /**
  * Created by gda10jth on 11/27/15.
+ * An TextField that only accepts one character, nothing more.
  */
 public class CharField extends TextField{
+    /**
+     * When text is added to the field, this method is called.
+     * It checks if the field text is to long, and ignore the new changes in that case.
+     * @param start
+     * @param end
+     * @param text
+     */
     @Override
     public void replaceText(int start, int end, String text) {
         int pos = getCaretPosition();

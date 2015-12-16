@@ -16,6 +16,25 @@ import javax.xml.transform.stream.StreamResult;
 
 /**
  * Created by gda10jth on 11/20/15.
+ *
+ * This class uses the resulting filtered tree from the JastAddAdAPI and prints it to a xml file. The xml only contains
+ * nodes, no attributes, tokens or anything else.
+ *
+ * usage:
+ * There are a number of ways to create an xml. The easiest is:
+ *      JastAddAdAPI debugger = new JastAddAdAPI(program);
+ *      JastAddAdXML xmlPrinter = new JastAddAdXML(debugger);
+ *      xmlPrinter.run();
+ * This will run the API and create a xml file in the root directory with a default name.
+ *
+ * You can also use one of the following methods to decide where and what name and extension of the file.
+ * NOTE: That run on the API must be called first!
+ *      JastAddAdAPI debugger = new JastAddAdAPI(program);
+ *      debugger.run();
+ *      JastAddAdXML xmlPrinter = new JastAddAdXML(debugger);
+ *      xmlPrinter.printXml(toDirectory, fileName, ext);    // OR
+ *      xmlPrinter.printXml(toDirectory, ext);              // OR
+ *      xmlPrinter.printXml(toDirectory);
  */
 public class JastAddAdXML extends DecoratorTask {
     public JastAddAdXML(JastAddAdAPI api){
@@ -26,10 +45,21 @@ public class JastAddAdXML extends DecoratorTask {
         super(root);
     }
 
+    /**
+     * Called from DecoratorTask when the run() method is called from the outside
+     */
     protected void runThisTask(){
         printToXML(JastAddAdAPI.FILE_NAME + ".xml");
     }
 
+    /**
+     * Print the AST to a file in toDirectory with the name fileName and extension ext.
+     *
+     * @param toDirectory
+     * @param fileName
+     * @param ext
+     * @return
+     */
     public boolean printXml(String toDirectory, String fileName, String ext){
         loadAPI();
         String filePath = fileName + ext;
@@ -40,6 +70,13 @@ public class JastAddAdXML extends DecoratorTask {
         return printToXML(filePath);
     }
 
+    /**
+     * Print the AST to a file in toDirectory with the default name and extension ext.
+     *
+     * @param toDirectory
+     * @param ext
+     * @return
+     */
     public boolean printXml(String toDirectory, String ext){
         loadAPI();
         String filePath = JastAddAdAPI.FILE_NAME + ext;
@@ -50,6 +87,12 @@ public class JastAddAdXML extends DecoratorTask {
         return printToXML(filePath);
     }
 
+    /**
+     * Print the AST to a file in toDirectory with the default name and .xml extension
+     *
+     * @param toDirectory
+     * @return
+     */
     public boolean printXml(String toDirectory){
         loadAPI();
         String filePath = JastAddAdAPI.FILE_NAME + ".xml";
@@ -60,6 +103,10 @@ public class JastAddAdXML extends DecoratorTask {
         return printToXML(filePath);
     }
 
+    /**
+     * Print the AST to a file in root with the default name and .xml extension
+     * @return
+     */
     public boolean printXml(){
         loadAPI();
         return printToXML(JastAddAdAPI.FILE_NAME + ".xml");

@@ -4,6 +4,12 @@ import jastaddad.api.nodeinfo.NodeInfo;
 
 /**
  * Created by gda10jth on 11/30/15.
+ * This class is a holder of information for the attribute tree table view.
+ *
+ * A label is a group that methods get put in. This class does not hold any actual methods, and is only used to get
+ * labels inside the tree table view.
+ *
+ * For example Attributes, Tokens and Nonterminal
  */
 public class NodeInfoLabel implements NodeInfoInterface{
     public final String label;

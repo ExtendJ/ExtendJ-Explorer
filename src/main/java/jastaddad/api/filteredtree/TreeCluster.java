@@ -1,7 +1,6 @@
 package jastaddad.api.filteredtree;
 
 /**
- * Class for the cluster, has a reference to its top node.
  * Created by gda10jth on 10/21/15.
  */
 public class TreeCluster extends GenericTreeCluster {

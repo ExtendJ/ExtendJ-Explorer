@@ -80,6 +80,7 @@ abstract public class AbstractInputFiletest {
 		debugger.setFilterDir(inDirectory + "/");
 		debugger.run();
 		JastAddAdXML xmlPrinter = new JastAddAdXML(debugger);
+		xmlPrinter.run();
 		xmlPrinter.printXml(inDirectory, AbstractInputFiletest.OUT_EXTENSION);
 		int numberOfErrors = debugger.api().getErrors(ASTAPI.FILTER_ERROR).size();
 		assertEquals("Errors parsing filter language", numberOfErrors, 0);

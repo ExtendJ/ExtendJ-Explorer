@@ -51,7 +51,7 @@ public class NodeContent {
         Object[] params;
         Method method = nodeInfo.getMethod();
         if ((par != null && par.length != method.getParameterCount()) || (par == null && method.getParameterCount() != 0)) {
-            api.putError(ASTAPI.INVOCATION_ERROR, "Wrong number of arguments for the method: " + method);
+            api.putError(AlertMessage.INVOCATION_ERROR, "Wrong number of arguments for the method: " + method);
             return null;
         }
         if(par == null)
@@ -59,13 +59,13 @@ public class NodeContent {
         else
             params = par;
         if(!nodeInfo.isAttribute()){
-            api.putError(ASTAPI.INVOCATION_ERROR, "Can only do compute on attributes");
+            api.putError(AlertMessage.INVOCATION_ERROR, "Can only do compute on attributes");
             return  null;
         }
 
         Attribute attribute = (Attribute) nodeInfo;
         if(attribute.containsValue(params)) {
-            api.putWarning(ASTAPI.INVOCATION_WARNING, String.format("Method %s with the parameters %s have already been computed", attribute.getMethod(), params));
+            api.putWarning(AlertMessage.INVOCATION_WARNING, String.format("Method %s with the parameters %s have already been computed", attribute.getMethod(), params));
             return attribute.getComputedValue(params);
         }
         try{
@@ -223,7 +223,7 @@ public class NodeContent {
      */
     private void addInvocationErrors(ASTAPI api, Throwable e, Method m){
         String message = String.format("Error while computing %s, cause : %s", m.getName(), e.getCause() != null ? e.getCause().toString() : e.getMessage());
-        api.putError(ASTAPI.INVOCATION_ERROR, message);
+        api.putError(AlertMessage.INVOCATION_ERROR, message);
         //e.printStackTrace();
     }
 

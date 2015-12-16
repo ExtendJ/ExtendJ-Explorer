@@ -20,14 +20,18 @@ import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
 
 /**
  * Created by gda10jth on 12/14/15.
+ * This is the filter editor in the program. It uses a library called RichTextFx by Tomas Mikula. This library gives
+ * us row lines and colored code. plus that it let us easier handel events in the text area.
  */
 public class FilterEditor extends CodeArea {
 
+    // words that will be highlighet with orange
     private static final String[] KEYWORDS = new String[] {
             "when", "style", "show", "use", "configs",
             "child", "parent", "of", "in", "not", "filter"
     };
 
+    // patterns for different highlighter objects
     private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
     private static final String PAREN_PATTERN = "\\(|\\)";
     private static final String BRACE_PATTERN = "\\{|\\}";
@@ -35,8 +39,6 @@ public class FilterEditor extends CodeArea {
     private static final String SEMICOLON_PATTERN = "\\;";
     private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
     private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
-
-    private static final String CODE_AREA_TAB = "    ";
 
     private static final Pattern PATTERN = Pattern.compile(
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
@@ -48,8 +50,11 @@ public class FilterEditor extends CodeArea {
                     + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
     );
 
-    public FilterEditor(){
+    // the editor uses spaces instead of tabs.
+    private static final String CODE_AREA_TAB = "    ";
 
+    public FilterEditor(){
+        // when a change happends in the text area, see if something should be highlighet or not.
         setParagraphGraphicFactory(LineNumberFactory.get(this));
         richChanges().subscribe(change -> {
             setStyleSpans(0, computeHighlighting(getText()));
@@ -57,7 +62,7 @@ public class FilterEditor extends CodeArea {
 
         addEventHandler(KeyEvent.KEY_PRESSED, event -> {
                 if (event.getCode() == KeyCode.BACK_SPACE) {
-                    backSpaceClicked(event);
+                    backspaceClicked(event);
                 } else if (event.getCode() == KeyCode.TAB) {
                     tabClicked(event);
                 } else if(event.getCode() == KeyCode.DELETE){
@@ -91,6 +96,12 @@ public class FilterEditor extends CodeArea {
         });
     }
 
+    /**
+     * Enter button event. This method computes the indention of the new line. The indention is based
+     * on the current row indention, and maybe one more tab if the row ends with a {.
+     *
+     * @param event
+     */
     private void enterClicked(KeyEvent event) {
         List<StyledText<Collection<String>>> segments = getParagraph(getCurrentParagraph()).getSegments();
         if(segments.size() <= 0)
@@ -113,22 +124,11 @@ public class FilterEditor extends CodeArea {
         event.consume();
     }
 
-    private void pastePerformed(KeyEvent event){
-        paste();
-        refract();
-        event.consume();
-    }
-
-    public void refract(){
-        int pos = getCaretPosition();
-        replaceText(getText().replace("\t", CODE_AREA_TAB));
-        positionCaret(pos);
-    }
-
-    public void setText(String filter){
-        replaceText(filter.replace("\t", CODE_AREA_TAB));
-    }
-
+    /**
+     * Delete button event. Checks if the next three characters are white spaces (a tab in this editor). If this is the
+     * case, remove all 4 else behave like a normal delete event
+     * @param event
+     */
     private void deleteClicked(KeyEvent event){
         if (getSelection().getLength() == 0) {
             int caretPos = getCaretPosition();
@@ -148,7 +148,14 @@ public class FilterEditor extends CodeArea {
         }
     }
 
-    private void backSpaceClicked(KeyEvent event){
+    /**
+     * Backspace button event. checks two things
+     *  - if the current row only consists of white spaces, remove the whole row.
+     *  - if the previous three characters are white spaces (a tab in this editor) remove them all.
+     *  else behave like a normal backspace event.
+     * @param event
+     */
+    private void backspaceClicked(KeyEvent event){
         if (getSelection().getLength() == 0) {
 
             if(getParagraph(getCurrentParagraph()).toString().matches("^[\\s]+$")){
@@ -174,6 +181,14 @@ public class FilterEditor extends CodeArea {
         }
     }
 
+    /**
+     * Tab button event. This method checks multiple things
+     *  - If there is a selection, add a tab in front of every selected row
+     *       or if shift button is down, remove a tab in each selected row instead.
+     *  - If no selection is made, add a CODE_AREA_TAB like normal
+     *      or if shift button is down, remove a tab if there is one
+     * @param event
+     */
     private void tabClicked(KeyEvent event){
         // First see if anything is selected and act accordingly
         if (getSelection().getLength() != 0) {
@@ -222,6 +237,7 @@ public class FilterEditor extends CodeArea {
             }
 
         } else {
+            // no selection goes here
             if(event.isShiftDown()){
                 int posExtra = 0;
                 int pos = getCaretPosition();
@@ -245,6 +261,40 @@ public class FilterEditor extends CodeArea {
         event.consume();
     }
 
+    /**
+     * Paste text from clipboard and refractorize the code, for example if tabs need to be removed.
+     * @param event
+     */
+    private void pastePerformed(KeyEvent event){
+        paste();
+        refract();
+        event.consume();
+    }
+
+    /**
+     * Changes the text in the area to somethig we want.
+     * - Tabs is replaced with the custom CODE_AREA_TAB.
+     */
+    public void refract(){
+        int pos = getCaretPosition();
+        replaceText(getText().replace("\t", CODE_AREA_TAB));
+        positionCaret(pos);
+    }
+
+    /**
+     * set text of code area
+     * @param filter
+     */
+    public void setText(String filter){
+        replaceText(filter.replace("\t", CODE_AREA_TAB));
+    }
+
+    /**
+     * Matches the text with the pattern, and add styles according to matches.
+     *
+     * @param text
+     * @return
+     */
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
 

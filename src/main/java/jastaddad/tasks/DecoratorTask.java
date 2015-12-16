@@ -4,6 +4,7 @@ import jastaddad.api.JastAddAdAPI;
 
 /**
  * Created by gda10jth on 11/20/15.
+ * A decorator task is a task that recives an JastAddAdAPI object and does something with the data afterwards.
  */
 public abstract class DecoratorTask implements JastAddAdTask{
     protected JastAddAdAPI api;

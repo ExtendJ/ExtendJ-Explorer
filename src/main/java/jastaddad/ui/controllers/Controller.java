@@ -187,13 +187,13 @@ public class Controller implements Initializable {
                 boolean noError = mon.getApi().saveNewFilter(filter);
                 if (noError) {
                     updateUI();
-                    addWarnings(mon.getApi().getWarnings(ASTAPI.FILTER_WARNING));
+                    addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
                     addMessage("Filter update: done after, " + (System.currentTimeMillis() - timeStart) + " ms");
                     addMessage("Number of nodes : " + mon.getApi().getASTSize());
                 } else {
                     //addError("Could not update graph: ");
-                    addWarnings(mon.getApi().getWarnings(ASTAPI.FILTER_WARNING));
-                    addErrors(mon.getApi().getErrors(ASTAPI.FILTER_ERROR));
+                    addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
+                    addErrors(mon.getApi().getErrors(AlertMessage.FILTER_ERROR));
                     addWarning("New filter is not applied, old filter is enabled. ");
                     //addMessage("Filter update: something is wrong!");
                 }
@@ -215,12 +215,12 @@ public class Controller implements Initializable {
             );
 
             Platform.runLater(() -> {
-                addWarnings(mon.getApi().getWarnings(ASTAPI.AST_STRUCTURE_WARNING));
-                addWarnings(mon.getApi().getWarnings(ASTAPI.INVOCATION_WARNING));
-                addWarnings(mon.getApi().getWarnings(ASTAPI.FILTER_WARNING));
-                addErrors(mon.getApi().getErrors(ASTAPI.AST_STRUCTURE_ERROR));
-                addErrors(mon.getApi().getErrors(ASTAPI.INVOCATION_ERROR));
-                addErrors(mon.getApi().getErrors(ASTAPI.FILTER_ERROR));
+                addWarnings(mon.getApi().getWarnings(AlertMessage.AST_STRUCTURE_WARNING));
+                addWarnings(mon.getApi().getWarnings(AlertMessage.INVOCATION_WARNING));
+                addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
+                addErrors(mon.getApi().getErrors(AlertMessage.AST_STRUCTURE_ERROR));
+                addErrors(mon.getApi().getErrors(AlertMessage.INVOCATION_ERROR));
+                addErrors(mon.getApi().getErrors(AlertMessage.FILTER_ERROR));
             });
         showRootNodeButton.setOnAction(click -> {
             graphView.panToNode(mon.getRootNode());
@@ -244,6 +244,9 @@ public class Controller implements Initializable {
         }
     }
 
+    /**
+     * Shows a exit program dialog box and waits for it. If yes then close the program.
+     */
     public void exitProgram(){
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirm Exit");
@@ -294,6 +297,7 @@ public class Controller implements Initializable {
                 addConsoleText(warning.type + ": " + warning.message, console, filter);
         });
     }
+
     /**
      * used by the public methods addMessage, addError, addWarning
      *
@@ -315,6 +319,12 @@ public class Controller implements Initializable {
         consoleScrollPaneAll.setVvalue(1.0);
     }
 
+    /**
+     * get the array with messages of a certain type (e.g. MESSAGE, ERROR, WARNING).
+     *
+     * @param filterType
+     * @return
+     */
     private TextFlow getConsoleArray(ConsoleFilter filterType){
         switch (filterType) {
             case MESSAGE:
@@ -423,6 +433,7 @@ public class Controller implements Initializable {
         if(mon.getSelectedInfo() != null)
             attributeTabController.setReference(mon.getSelectedInfo().getValue());
     }
+
 
     private void loadClassTreeView(){
 

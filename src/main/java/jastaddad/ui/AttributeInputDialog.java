@@ -221,6 +221,7 @@ public class AttributeInputDialog extends UIDialog {
                 TextField field = (TextField) fieldContainer.getChildren().get(0);
 
                     // OH GOD MY EYES!!!!! x.x - author of this fine piece of code
+                    // this code makes sure the value is within bounds of its type.
                 if (type == int.class || type == Integer.class) {
                     try {
                         tmpParam[i] = field.getText().length() <= 0 ? null : Integer.parseInt(field.getText());
