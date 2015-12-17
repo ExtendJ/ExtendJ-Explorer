@@ -505,6 +505,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         }
 
         public String getTypeName(){return typeName;}
+
         public int getCount(){return count;}
     }
 

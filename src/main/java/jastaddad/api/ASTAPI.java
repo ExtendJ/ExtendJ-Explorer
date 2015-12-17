@@ -14,7 +14,7 @@ import java.util.*;
  */
 public class ASTAPI {
 
-    public static final String VERSION = "alphabuild-0.3.0";
+    public static final String VERSION = "alphabuild-0.3.1";
 
     private Node tree;
     private GenericTreeNode filteredTree;
@@ -155,7 +155,6 @@ public class ASTAPI {
         if(node.isNull()){
             fNode.setEnabled(true);
             if(parent != null)
-
                 parent.addChild(fNode);
             else
                 filteredTree = fNode;
@@ -200,7 +199,7 @@ public class ASTAPI {
         HashSet<String> displayedAttributes = filterConfig.getDisplayedAttributes(node);
 
         if(tmpCluster == null) //Only add NTAs if the node is not a Cluster
-            addNTAs(node, parent, tmpCluster, firstTime, depth, futureReferences,displayedAttributes);
+            addNTAs(node, fNode, tmpCluster, firstTime, depth, futureReferences,displayedAttributes);
 
         fNode.setClusterReference(tmpCluster);
 
@@ -235,17 +234,19 @@ public class ASTAPI {
                     node.NTAChildren.put(s, ntaNode);
                     ASTNTAObjects.add(ntaNode.node);
                 }
-                traversTree(ntaNode, parent, cluster, firstTime, depth - 1, futureReferences);
+                traversTree(ntaNode, parent, cluster, true, depth - 1, futureReferences);
             }
         }
 
         // travers down the tree for the Computed NTA:s
-        if(computedNTAs.containsKey(node) && filterConfig.getBoolean(Config.NTA_COMPUTED)){
-            for(Node child : computedNTAs.get(node)) {
-                if(!treeNodes.containsKey(child.node))
-                    traversTree(child, parent, cluster, firstTime, 0, futureReferences);
+        if(!computedNTAs.containsKey(node) || !filterConfig.getBoolean(Config.NTA_COMPUTED))
+            return;
+        for(Node child : computedNTAs.get(node)) {
+            if(!treeNodes.containsKey(child.node)) {
+                traversTree(child, parent, cluster, true, 0, futureReferences);
             }
         }
+
     }
 
 
@@ -333,7 +334,10 @@ public class ASTAPI {
 
     public boolean isASTType(String className){ return inheritedTypes.containsKey(className); }
     public boolean isASTType(Class type){ return allTypes.contains(type); }
-    public HashMap<Class, HashSet<Class>> getParentChains(){ return directParents; }
+
+    public HashSet<Class> getAllASTTypes(){ return allTypes; }
+    public HashMap<Class, HashSet<Class>> getDirectParents(){ return directParents; }
+    public HashMap<Class, HashSet<Class>> getDirectChildren(){ return directChildren; }
 
     public GenericTreeNode getTreeNode(Object node){ return treeNodes.get(node); }
     public boolean isTreeNode(Object node){ return treeNodes.containsKey(node); }

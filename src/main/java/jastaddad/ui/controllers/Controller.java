@@ -425,7 +425,7 @@ public class Controller implements Initializable {
         GenericTreeNode node = mon.getLastRealNode();
         if(node == null)
             return;
-        node = mon.getApi().getTreeNode(((TreeNode) node).getNode().node);
+        node = mon.getApi().getTreeNode(node.getNode().node);
         if(node == null)
             return;
         mon.setSelectedNode(node);
@@ -438,17 +438,36 @@ public class Controller implements Initializable {
     private void loadClassTreeView(){
 
         TreeItem<String> root = new TreeItem<>("ROOT");
+        TreeItem<String> astRoot = new TreeItem<>("AST classes");
+        TreeItem<String> superRoot = new TreeItem<>("Abstract AST classes");
+        astRoot.setExpanded(true);
         root.setExpanded(true);
-
-        for (Map.Entry<Class, HashSet<Class>> chains : mon.getApi().getParentChains().entrySet()) {
-            TreeItem<String> parent = new TreeItem<>(chains.getKey().getSimpleName());
-            for(Class parentClass : chains.getValue()){
-                parent.getChildren().add(new TreeItem<>(parentClass.getSimpleName()));
-            }
-            root.getChildren().add(parent);
+        HashMap<Class, HashSet<Class>> parents = mon.getApi().getDirectParents();
+        HashMap<Class, HashSet<Class>> children = mon.getApi().getDirectChildren();
+        int superClass;
+        for (Class type : mon.getApi().getAllASTTypes()) {
+            TreeItem<String> parent = new TreeItem<>(type.getSimpleName());
+            superClass = loadChildrenOrParents(parent, "AST Parents", parents.get(type));
+            superClass += loadChildrenOrParents(parent, "AST children", children.get(type));
+            if(superClass == 0) //We have found no direct children or parents, this type is then treated as a superClass
+                superRoot.getChildren().add(parent);
+            else
+                astRoot.getChildren().add(parent);
         }
+        root.getChildren().addAll(astRoot, superRoot);
         typeListView.setRoot(root);
         typeListView.setShowRoot(false);
+    }
+
+    private int loadChildrenOrParents(TreeItem<String> parent, String name, HashSet<Class> set){
+        if(set == null || set.size() == 0)
+            return 0;
+        TreeItem<String> level = new TreeItem<>(name);
+        for(Class parentClass : set){
+            level.getChildren().add(new TreeItem<>(parentClass.getSimpleName()));
+        }
+        parent.getChildren().add(level);
+        return 1;
     }
 
 }
