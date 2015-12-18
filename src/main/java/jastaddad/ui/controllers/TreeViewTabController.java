@@ -82,6 +82,7 @@ public class TreeViewTabController implements Initializable, ChangeListener {
      * @param parent
      */
     private void createTree(TreeItem<GenericTreeNode> parent){
+        parent.setExpanded(true);
         GenericTreeNode parentGNode = parent.getValue();
         for (GenericTreeNode child : parentGNode.getChildren()) {
             TreeItem<GenericTreeNode> childItem = new TreeItem<>(child);
