@@ -40,7 +40,7 @@ public class VertexPaintTransformer implements Transformer<GenericTreeNode,Paint
         if(fNode.isNode() && mon.gethighlightedSimpleClassNames().contains(((TreeNode)fNode).getNode().simpleNameClass))
             return new Color(255, 140, 140);
         if (pi.isPicked(fNode))
-            return new Color(240, 240, 200);
+            return new Color(255, 255, 200);
         if(fNode.isNullNode())
             return new Color(255, 50, 50);
         if(fNode.isReferenceHighlight())
