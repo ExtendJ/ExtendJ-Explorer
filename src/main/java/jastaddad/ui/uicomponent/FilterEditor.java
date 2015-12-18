@@ -24,6 +24,7 @@ import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
  * us row lines and colored code. plus that it let us easier handel events in the text area.
  */
 public class FilterEditor extends CodeArea {
+    private boolean removeHistory;
 
     // words that will be highlighet with orange
     private static final String[] KEYWORDS = new String[] {
@@ -54,6 +55,7 @@ public class FilterEditor extends CodeArea {
     private static final String CODE_AREA_TAB = "    ";
 
     public FilterEditor(){
+        removeHistory = true;
         // when a change happends in the text area, see if something should be highlighet or not.
         setParagraphGraphicFactory(LineNumberFactory.get(this));
         richChanges().subscribe(change -> {
@@ -104,24 +106,44 @@ public class FilterEditor extends CodeArea {
      */
     private void enterClicked(KeyEvent event) {
         List<StyledText<Collection<String>>> segments = getParagraph(getCurrentParagraph()).getSegments();
+        String row = getParagraph(getCurrentParagraph()).toString().replace(" ", "");
         if(segments.size() <= 0)
             return;
 
         StyledText<Collection<String>> indentSegment = segments.get(0);
 
         String indent = "";
+        int pos = -1;
         for(int i=0;i<indentSegment.length();i++){
             if(i%4 == 3)
                 indent += CODE_AREA_TAB;
+            // end condition of the loop
             if(indentSegment.charAt(i) != ' ' || i == indentSegment.length()-1) {
+
+                int masPos = row.indexOf('}');
+                if(masPos > 0 && row.charAt(masPos-1) == '{'){
+                    pos = getCaretPosition()+indent.length() + CODE_AREA_TAB.length()+1;
+                    indent = indent + CODE_AREA_TAB + "\n" + indent;
+                    break;
+                }
+                // if a { is at the end of the line, add an indention
                 if(segments.get(segments.size()-1).charAt(0) == '{' || (segments.size() > 2 && segments.get(segments.size()-2).charAt(0) == '{')) {
+
                     indent += CODE_AREA_TAB;
                 }
                 break;
             }
         }
         replaceSelection("\n" + indent);
+        if(pos > -1){
+            setCaretPosition(pos);
+        }
         event.consume();
+    }
+
+    private void setCaretPosition(int pos){
+        positionCaret(pos);
+        selectRange(pos, pos);
     }
 
     /**
@@ -246,14 +268,14 @@ public class FilterEditor extends CodeArea {
                 String newRow = getSelectedText().replaceFirst(CODE_AREA_TAB, "");
                 if(!newRow.equals(getSelectedText())){
                     replaceSelection(newRow);
-                    System.out.println("diff: " + (pos - getSelection().getStart()));
+                    //System.out.println("diff: " + (pos - getSelection().getStart()));
                     lineStart(SelectionPolicy.CLEAR);
                     if(pos - getCaretPosition() >= 3)
                         posExtra = 4;
                 }
                 int newPos = pos - posExtra;
                 selectRange(newPos, newPos);
-                positionCaret(newPos);
+                setCaretPosition(newPos);
             }else {
                 replaceSelection(CODE_AREA_TAB);
             }
@@ -276,9 +298,11 @@ public class FilterEditor extends CodeArea {
      * - Tabs is replaced with the custom CODE_AREA_TAB.
      */
     public void refract(){
-        int pos = getCaretPosition();
-        replaceText(getText().replace("\t", CODE_AREA_TAB));
-        positionCaret(pos);
+        if(getText().contains("\t")) {
+            int pos = getCaretPosition();
+            replaceText(getText().replace("\t", CODE_AREA_TAB));
+            setCaretPosition(pos);
+        }
     }
 
     /**
@@ -287,6 +311,10 @@ public class FilterEditor extends CodeArea {
      */
     public void setText(String filter){
         replaceText(filter.replace("\t", CODE_AREA_TAB));
+        if(removeHistory){
+            getUndoManager().forgetHistory();
+            getUndoManager().mark();
+        }
     }
 
     /**

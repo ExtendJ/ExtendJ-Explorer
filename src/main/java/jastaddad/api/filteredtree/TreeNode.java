@@ -103,11 +103,11 @@ public class TreeNode extends GenericTreeNode {
     @Override
     public void setStyles(Config filter) {
         if(node.isList() || node.isOpt()) {
-            styles.put("node-color", new Color("#C8C8C8"));
+            styles.put("node-color", new Color("#dddddd"));
             styles.put("node-shape", new Str("\"rectangle\""));
         }
         else {
-            styles.put("node-color", new Color("#C8F0E6"));
+            styles.put("node-color", new Color("#ccffff"));
             styles.put("node-shape", new Str("\"rounded_rectangle\""));
         }
         styles.put("border-style", new Str("\"line\""));

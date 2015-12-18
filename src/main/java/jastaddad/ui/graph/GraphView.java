@@ -97,6 +97,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         TreeLayout<GenericTreeNode, UIEdge> layout = new TreeLayout<>(g, 150, 100);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         vs = new VisualizationViewer<>(layout, screenSize);
+        vs.setBackground(new Color(255,255,255));
         setVisualizationTransformers(vs);
     }
 
