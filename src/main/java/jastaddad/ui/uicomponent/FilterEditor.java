@@ -246,7 +246,7 @@ public class FilterEditor extends CodeArea {
                 String newRow = getSelectedText().replaceFirst(CODE_AREA_TAB, "");
                 if(!newRow.equals(getSelectedText())){
                     replaceSelection(newRow);
-                    System.out.println("diff: " + (pos - getSelection().getStart()));
+                    //System.out.println("diff: " + (pos - getSelection().getStart()));
                     lineStart(SelectionPolicy.CLEAR);
                     if(pos - getCaretPosition() >= 3)
                         posExtra = 4;
@@ -278,6 +278,7 @@ public class FilterEditor extends CodeArea {
     public void refract(){
         int pos = getCaretPosition();
         replaceText(getText().replace("\t", CODE_AREA_TAB));
+        selectRange(pos, pos);
         positionCaret(pos);
     }
 
