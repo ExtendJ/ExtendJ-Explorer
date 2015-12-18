@@ -102,7 +102,6 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         center.setContent(graphview);
     }
 
-
     /**
      * main function for starting a JastAddAdUI session.
      * @param args
@@ -120,7 +119,6 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
                     System.err.println("- " + e);
                 }
             } else {
-                //DebuggerConfig config = new DebuggerConfig(new FilterConfig(new Opt<>(null), new List<>()), new List<>());
                 JastAddAdUI debugger = new JastAddAdUI(program);
                 debugger.run();
             }

@@ -9,14 +9,14 @@ aspect ShowAttributes{
         if(nodeClass == null)
             return attrs;
         for(NodeFilter filter : nodeFilters()){
-            if(filter.getClassName().equals(nodeClass.getSimpleName())){
-                for(LangDecl d : filter.shows()){
-                    if(!attrs.contains(d.getID())){
-                        attrs.add(d.getID());
-                    }
-            	}
-                break;
+            if(!filter.getClassName().equals(nodeClass.getSimpleName()))
+                continue;
+            for(LangDecl d : filter.shows()){
+                if(!attrs.contains(d.getID())){
+                    attrs.add(d.getID());
+                }
             }
+            break;
         }
         return getShow(nodeClass.getSuperclass(), attrs);
     }
