@@ -110,7 +110,7 @@ When running the debugger on Linux the following library dependencies are requir
 To filter the presentation of your AST we have implemented a simple language that helps you with this. 
 Check out the Wiki page for a small [tutorial](https://bitbucket.org/jastadd/jastadddebugger-exjobb/wiki/The%20Filter%20Configuration%20Language) in how you write and use that language.
 
-Below is a standard template for the filter.
+Below is a standard template for the filter. This filter means that all nodes that are of class ASTNode or a child class of ASTNode should be shown (this means all nodes will be shown).
 
 ```
 configs{
