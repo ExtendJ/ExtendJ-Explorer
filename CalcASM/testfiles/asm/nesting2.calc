@@ -1,9 +1,10 @@
 let
 	a = 2
+	b = 1
 in
 	let
 		x = 3
-		y = a * 2
+		y = a / b
 	in
 		a * x * y
 	end

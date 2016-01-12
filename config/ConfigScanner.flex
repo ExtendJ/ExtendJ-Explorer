@@ -35,7 +35,7 @@ ID = [a-zA-Z][\-a-zA-Z0-9]*
 Numeral = [0-9]+
 Color = #[0-9a-fA-F]{6}
 String = \"[^\"]*\"
-Comment = (\/\/[^\n]*|\/\*[^]*\*\/)
+Comment = (\/\/[^\n]*|\/\*[^\*]*\*\/)
 %%
 
 // discard whitespace information

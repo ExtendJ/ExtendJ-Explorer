@@ -35,7 +35,7 @@
                             <Tab text="Graph" fx:id="graphViewTabNode">
                                 <VBox>
                                     <HBox styleClass="paneParent">
-                                        <Label text="show: " styleClass="our_label"/>
+                                        <Label text="view: " styleClass="our_label"/>
                                         <Button styleClass="our_button" text="Root node" fx:id="showRootNodeButton"/>
                                         <Label text=""/>
                                         <Button styleClass="our_button" text="Selected node" fx:id="showSelectedNodeButton"/>

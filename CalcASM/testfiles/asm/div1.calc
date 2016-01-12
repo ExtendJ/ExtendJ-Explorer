@@ -3,4 +3,5 @@ let
 	b = 2
 in
 	a / b
+	b * a
 end

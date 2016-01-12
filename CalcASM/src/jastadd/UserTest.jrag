@@ -1,0 +1,17 @@
+aspect UserTest{
+    coll Counter Program.idDecls() [new Counter()] with add;
+
+    IdDecl contributes 1
+    		to Program.idDecls() for program();
+
+    syn int Program.nodeCount() = idDecls().value();
+
+	syn IdDecl Program.getIdDecl(IdUse idUse) = idUse.decl();
+
+    class Counter {
+		private int value;
+		public Counter() { value = 0; }
+		public void add(int value) { this.value += value; }
+		public int value() { return value; }
+	}
+}
