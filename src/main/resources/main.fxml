@@ -35,12 +35,18 @@
                             <Tab text="Graph" fx:id="graphViewTabNode">
                                 <VBox>
                                     <HBox styleClass="paneParent">
-                                        <Label text="view: " styleClass="our_label"/>
+                                        <Label text="Navigate: " styleClass="our_label"/>
+                                        <Button styleClass="our_button" text="+" fx:id="zoomInButton"/>
+                                        <Label text=""/>
+                                        <Button styleClass="our_button" text="-" fx:id="zoomOutButton"/>
+                                        <Label text="to: " styleClass="our_label"/>
                                         <Button styleClass="our_button" text="Root node" fx:id="showRootNodeButton"/>
                                         <Label text=""/>
                                         <Button styleClass="our_button" text="Selected node" fx:id="showSelectedNodeButton"/>
                                         <Label text=""/>
-                                        <Button styleClass="our_button" text="Whole Graph" fx:id="showWholeGraphButton"/>
+                                        <Button styleClass="our_button" text="Graph" fx:id="showWholeGraphButton"/>
+                                        <Label text=""/>
+                                        <Label text="Pan: ctrl+left mouse OR hold middle mouse" styleClass="our_label"/>
                                     </HBox>
                                     <ScrollPane styleClass="graphView" fx:id="graphViewScrollPane"/>
                                 </VBox>

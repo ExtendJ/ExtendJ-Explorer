@@ -49,6 +49,10 @@ public class Controller implements Initializable {
     @FXML
     private Button saveNewFilterButton;
     @FXML
+    private Button zoomInButton;
+    @FXML
+    private Button zoomOutButton;
+    @FXML
     private Button showRootNodeButton;
     @FXML
     private Button showSelectedNodeButton;
@@ -215,6 +219,14 @@ public class Controller implements Initializable {
         showWholeGraphButton.setOnAction(click -> {
 
             graphView.showWholeGraphOnScreen();
+        });
+
+        zoomInButton.setOnMouseClicked(e->{
+            graphView.zoomIn();
+        });
+
+        zoomOutButton.setOnMouseClicked(e->{
+            graphView.zoomOut();
         });
     }
 
