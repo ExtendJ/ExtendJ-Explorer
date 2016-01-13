@@ -1,5 +1,6 @@
 package jastaddad.ui.uicomponent;
 
+import jastaddad.ui.controllers.Controller;
 import javafx.event.EventHandler;
 import javafx.scene.control.IndexRange;
 import javafx.scene.input.KeyCode;
@@ -25,6 +26,7 @@ import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
  */
 public class FilterEditor extends CodeArea {
     private boolean removeHistory;
+    private Controller con;
 
     // words that will be highlighet with orange
     private static final String[] KEYWORDS = new String[] {
@@ -54,7 +56,8 @@ public class FilterEditor extends CodeArea {
     // the editor uses spaces instead of tabs.
     private static final String CODE_AREA_TAB = "    ";
 
-    public FilterEditor(){
+    public FilterEditor(Controller con){
+        this.con = con;
         removeHistory = true;
         // when a change happends in the text area, see if something should be highlighet or not.
         setParagraphGraphicFactory(LineNumberFactory.get(this));
@@ -73,6 +76,8 @@ public class FilterEditor extends CodeArea {
                     enterClicked(event);
                 } else if (event.isControlDown() && event.getCode() == KeyCode.V){
                     pastePerformed(event);
+                } else if(event.isControlDown() && event.getCode() == KeyCode.S){
+                    savePerformed(event);
                 }
             }
         );
@@ -96,6 +101,10 @@ public class FilterEditor extends CodeArea {
 
             }
         });
+    }
+
+    private void savePerformed(KeyEvent event) {
+        con.saveNewFilter();
     }
 
     /**
@@ -152,8 +161,8 @@ public class FilterEditor extends CodeArea {
      * @param event
      */
     private void deleteClicked(KeyEvent event){
-        if (getSelection().getLength() == 0) {
-            int caretPos = getCaretPosition();
+        int caretPos = getCaretPosition();
+        if (getSelection().getLength() == 0 && caretPos+4 <= getText().length()) {
             String things = getText().substring(caretPos, caretPos + 4);
             boolean tabDel = true;
             boolean lineBreak = false;
@@ -178,7 +187,8 @@ public class FilterEditor extends CodeArea {
      * @param event
      */
     private void backspaceClicked(KeyEvent event){
-        if (getSelection().getLength() == 0) {
+        int caretPos = getCaretPosition();
+        if (getSelection().getLength() == 0 && caretPos-4 >=0) {
 
             if(getParagraph(getCurrentParagraph()).toString().matches("^[\\s]+$")){
                 lineEnd(SelectionPolicy.CLEAR);
@@ -187,7 +197,6 @@ public class FilterEditor extends CodeArea {
                 return;
             }
 
-            int caretPos = getCaretPosition();
             String things = getText().substring(caretPos - 4, caretPos);
             boolean tab = true;
             boolean lineBreak = false;

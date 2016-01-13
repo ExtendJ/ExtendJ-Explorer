@@ -17,6 +17,7 @@ import jastaddad.ui.uicomponent.nodeinfotreetableview.NodeInfoHolder;
 import jastaddad.ui.uicomponent.nodeinfotreetableview.NodeInfoInterface;
 import jastaddad.ui.uicomponent.nodeinfotreetableview.NodeInfoLabel;
 import jastaddad.ui.uicomponent.nodeinfotreetableview.NodeInfoParameter;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
@@ -296,6 +297,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         attributeTableView.setRoot(mainParent);
         attributeTableView.setShowRoot(false);
         mainParent.setExpanded(true);
+
 
         addSectionToAttributeList("Attributes", n.getNodeContent().getAttributes(), mainParent);
         addSectionToAttributeList("Nonterminal attributes", n.getNodeContent().getNTAs(), mainParent);

@@ -100,7 +100,7 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        codeArea = new FilterEditor();
+        codeArea = new FilterEditor(this);
         codeAreaContainer.getChildren().add(codeArea);
         codeArea.getStyleClass().add("textAreaConfig");
     }
@@ -135,7 +135,7 @@ public class Controller implements Initializable {
 
         // hide/show sidebars
         centerSplitPane.setOnKeyPressed(ke -> {
-            if (ke.getCode().equals(KeyCode.F)){
+            if (!ke.isShiftDown() && !ke.isAltDown() && !ke.isControlDown() && ke.getCode().equals(KeyCode.F)){
                 if(centerSplitPane.getDividers().get(0).getPosition() < 0.05 &&
                         centerSplitPane.getDividers().get(1).getPosition() > 0.95 &&
                         consoleAndGraphSplitPane.getDividers().get(0).getPosition() > 0.95){
@@ -180,24 +180,7 @@ public class Controller implements Initializable {
 
             // update the new filter. This is done in the API
             saveNewFilterButton.setOnAction((event) -> {
-                //addMessage("Filter update: starting");
-                graphView.getJungGraph();
-                long timeStart = System.currentTimeMillis();
-                String filter = codeArea.getText();
-                boolean noError = mon.getApi().saveNewFilter(filter);
-                if (noError) {
-                    updateUI();
-                    addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
-                    addMessage("Filter update: done after, " + (System.currentTimeMillis() - timeStart) + " ms");
-                    addMessage("Number of nodes : " + mon.getApi().getASTSize());
-                } else {
-                    //addError("Could not update graph: ");
-                    addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
-                    addErrors(mon.getApi().getErrors(AlertMessage.FILTER_ERROR));
-                    addWarning("New filter is not applied, old filter is enabled. ");
-                    //addMessage("Filter update: something is wrong!");
-                }
-
+                saveNewFilter();
             });
 
             // not working right now. The graph does not repaint when moving between the tabs
@@ -233,6 +216,26 @@ public class Controller implements Initializable {
 
             graphView.showWholeGraphOnScreen();
         });
+    }
+
+    public void saveNewFilter(){
+        //addMessage("Filter update: starting");
+        graphView.getJungGraph();
+        long timeStart = System.currentTimeMillis();
+        String filter = codeArea.getText();
+        boolean noError = mon.getApi().saveNewFilter(filter);
+        if (noError) {
+            updateUI();
+            addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
+            addMessage("Filter update: done after, " + (System.currentTimeMillis() - timeStart) + " ms");
+            addMessage("Number of nodes : " + mon.getApi().getASTSize());
+        } else {
+            //addError("Could not update graph: ");
+            addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
+            addErrors(mon.getApi().getErrors(AlertMessage.FILTER_ERROR));
+            addWarning("New filter is not applied, old filter is enabled. ");
+            //addMessage("Filter update: something is wrong!");
+        }
     }
 
     public void updateUI(){
