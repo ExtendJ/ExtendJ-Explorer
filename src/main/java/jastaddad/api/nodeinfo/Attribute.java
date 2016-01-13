@@ -37,7 +37,7 @@ public class Attribute extends NodeInfo {
         al.add(new NodeInfoHolder("Is circular", isCircular));
         al.add(new NodeInfoHolder("Is NTA", isNTA));
         al.add(new NodeInfoHolder("Aspect", aspect));
-        al.add(new NodeInfoHolder("Declared at", declaredAt));
+        al.add(new NodeInfoHolder("Declared at", declaredAt, true));
     }
 
     @Override

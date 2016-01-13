@@ -9,11 +9,20 @@ public class NodeInfoHolder implements Comparable<NodeInfoHolder>{
     private final String name;
     private final Object value;
     private final NodeInfo nodeInfo;
+    private boolean filePointer;
+
+    public NodeInfoHolder(String name, Object value, boolean filePointer){
+        this.name = name;
+        this.value = value;
+        nodeInfo = null;
+        this.filePointer = filePointer;
+    }
 
     public NodeInfoHolder(String name, Object value){
         this.name = name;
         this.value = value;
         nodeInfo = null;
+        this.filePointer = false;
     }
 
     public NodeInfoHolder(NodeInfo nodeInfo){
@@ -26,6 +35,9 @@ public class NodeInfoHolder implements Comparable<NodeInfoHolder>{
     public String getName() { return name; }
     public Object getValue() {
         return value;
+    }
+    public boolean getFilePointer() {
+        return filePointer;
     }
 
     @Override
