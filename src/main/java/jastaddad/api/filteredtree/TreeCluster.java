@@ -12,13 +12,13 @@ public class TreeCluster extends GenericTreeCluster {
         this.node = node;
     }
 
-    public void addToTypeList(GenericTreeNode child) {
+    public void addToTypeList (GenericTreeNode child){
         nodeCount++;
-        if(!child.isNode())
+        if (!child.isNode())
             return;
         TreeNode node = (TreeNode) child;
         Integer nbr = typeList.get(node.getNode().simpleNameClass);
-        if(nbr == null)
+        if (nbr == null)
             nbr = 0;
         nbr++;
         typeList.put(node.getNode().simpleNameClass, nbr);

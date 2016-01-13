@@ -28,6 +28,7 @@ aspect Errors {
 	syn DebuggerConfig DebuggerConfig.debuggerConfig() = this;
 	eq DebuggerConfig.getChild().debuggerConfig() = this;
 	inh DebuggerConfig ASTNode.debuggerConfig();
+
 }
 
 
@@ -60,4 +61,15 @@ aspect ErrorContributions {
 		to DebuggerConfig.errors()
 		for debuggerConfig();
 
+	// Use unknown filter
+	Use contributes error("Unknown filters: " + getUnknownFilterNames())
+		when hasUnKnownFilters()
+		to DebuggerConfig.errors()
+		for debuggerConfig();
+
+	// Use multiple of the same filter
+	Use contributes error("Multiple usages of the same filter(s):" + getMultipleEnabledFilterNames())
+		when hasMultipleEnabledFilters()
+		to DebuggerConfig.errors()
+		for debuggerConfig();
 }

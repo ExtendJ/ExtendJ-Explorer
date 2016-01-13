@@ -187,6 +187,7 @@ public class Controller implements Initializable {
                 boolean noError = mon.getApi().saveNewFilter(filter);
                 if (noError) {
                     updateUI();
+                    addMessages(mon.getApi().getMessages(AlertMessage.FILTER_MESSAGE));
                     addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
                     addMessage("Filter update: done after, " + (System.currentTimeMillis() - timeStart) + " ms");
                     addMessage("Number of nodes : " + mon.getApi().getASTSize());

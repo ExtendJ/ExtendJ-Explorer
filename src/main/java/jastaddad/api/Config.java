@@ -168,6 +168,14 @@ public class Config{
     }
 
     /**
+     * Will fetch the names of the enabled filters, from the DebuggerConfig.
+     * @return
+     */
+    public String getEnabledFilterNames(){
+        return configs.getEnabledFilterNames();
+    }
+
+    /**
      * Get the int value for the config with the name "name"
      * @param name
      * @return

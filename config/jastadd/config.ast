@@ -12,7 +12,6 @@ When : NodeConfig ::= Expr*;
 Style : NodeConfig ::= Binding*;
 Show : NodeConfig ::= LangDecl*;
 
-/*Stand alone expr, cause reasons*/
 Use ::= IdDecl*;
 
 Binding ::= Name:IdDecl Value;

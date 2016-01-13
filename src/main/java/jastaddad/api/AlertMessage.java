@@ -12,6 +12,7 @@ public class AlertMessage {
     public static final String AST_STRUCTURE_ERROR = "AST structure error";
     public static final String FILTER_ERROR = "FILTER ERROR";
     public static final String FILTER_WARNING = "FILTER WARNING";
+    public static final String FILTER_MESSAGE = "FILTER MESSAGE";
     public static final String INVOCATION_WARNING = "INVOCATION WARNING";
     public static final String INVOCATION_ERROR = "INVOCATION ERROR";
 
