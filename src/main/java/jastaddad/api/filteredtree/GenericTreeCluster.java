@@ -49,6 +49,9 @@ public abstract  class GenericTreeCluster extends GenericTreeNode{
     public String toGraphString(){return getNodeCount()+""; }
 
     @Override
+    public String toTreeViewString(){return toString() + " " + getNodeCount(); }
+
+    @Override
     public void setStyles(Config filter) {
         if(isExpandable())
             styles.put("node-color", new Color("#DCDCaa"));

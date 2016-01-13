@@ -18,6 +18,7 @@ public class TreeNode extends GenericTreeNode {
     private final Node node;
     private boolean enabled;
     private String graphName;
+    private String treeViewName;
     private LinkedHashMap<Integer, Boolean> realChildEdge;
     private HashSet<NodeReference> outwardReferences;
     private HashMap<NodeReference, NodeReference> inwardReferences;
@@ -96,6 +97,9 @@ public class TreeNode extends GenericTreeNode {
     @Override
     public String toGraphString(){ return graphName != null ? graphName : "<html>" + toString() + "</html>"; }
 
+    @Override
+    public String toTreeViewString() { return treeViewName != null ? treeViewName : toString(); }
+
     /**
      * Set the node specific styles, derived from the config
      * @param filter
@@ -131,6 +135,7 @@ public class TreeNode extends GenericTreeNode {
         if(set.size() == 0)
             return;
         graphName = "<html>" + toString();
+        treeViewName = toString() + " : ";
         if(outwardReferences == null)
             outwardReferences = new HashSet<>();
         for (String s : set){
@@ -143,8 +148,10 @@ public class TreeNode extends GenericTreeNode {
                 outwardReferences.add(reference);
                 allReferences.add(reference);
                 allRefs.add(reference);
-            } else
+            } else {
                 graphName += String.format("<br>%s : %s </br>", s, info.getValue());
+                treeViewName += s + " : " + info.getValue();
+            }
         }
         graphName += "</html>";
     }

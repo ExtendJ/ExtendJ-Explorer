@@ -1,7 +1,7 @@
 
 aspect WhenAttributes{
     syn ArrayList<Expr> DebuggerConfig.getFilterExpressions(jastaddad.api.Node node){
-        ArrayList<Expr> exprs = new ArrayList<>();
+        ArrayList<Expr> exprs = new ArrayList<Expr>();
         boolean found = getFilterExpressions(node.node.getClass(), exprs, false);
         return found ? exprs : null;
     }
@@ -30,7 +30,7 @@ aspect WhenAttributes{
 
     // ArrayList with all When expressions
     syn ArrayList<Expr> Node.getWhenExprs(){
-        ArrayList<Expr> list = new ArrayList<>();
+        ArrayList<Expr> list = new ArrayList<Expr>();
         When when = getWhen();
         if(when == null)
             return list;
