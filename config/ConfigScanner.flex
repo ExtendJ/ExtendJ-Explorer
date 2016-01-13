@@ -35,12 +35,14 @@ ID = [a-zA-Z][\-a-zA-Z0-9]*
 Numeral = [0-9]+
 Color = #[0-9a-fA-F]{6}
 String = \"[^\"]*\"
-Comment = (\/\/[^\n]*|\/\*[^\*]*\*\/)
+CommentStandard = "/*" [^*] ~"*/" | "/*" "*"+ "/"
+CommentEndOfLine = \/\/[^\n]*
 %%
 
 // discard whitespace information
 {WhiteSpace}  { }
-{Comment} {   }
+{CommentStandard} {   }
+{CommentEndOfLine} {   }
 //token definitions
 "configs"       { return sym(Terminals.CONFIGS); }
 "filter"       { return sym(Terminals.FILTER); }

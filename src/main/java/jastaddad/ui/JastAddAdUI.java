@@ -40,8 +40,9 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
     private Parent rootView;
     public JastAddAdUI() {} // This one is used by Application
 
-    public JastAddAdUI(Object root) {
-        jastAddAd = new JastAddAdAPI(root);
+    public JastAddAdUI(Object root) { jastAddAd = new JastAddAdAPI(root); }
+    public JastAddAdUI(Object root, boolean listRoot) {
+        jastAddAd = new JastAddAdAPI(root, listRoot);
     }
 
     public Parent getRoot(){
@@ -85,7 +86,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         stage.setTitle("JastAddDebugger " + ASTAPI.VERSION);
         stage.setScene(new Scene(rootView, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
-/*
+        /*
         stage.setOnCloseRequest(we -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirm Exit");
@@ -101,7 +102,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         stage.show();
         ScrollPane center = (ScrollPane) rootView.lookup("#graphViewScrollPane");
         center.setContent(graphview);
-        graphview.setPreferredSize((int)center.getWidth(), (int)center.getHeight());
+        graphview.setPreferredSize((int) center.getWidth(), (int) center.getHeight());
     }
 
     /**
@@ -121,7 +122,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
                     System.err.println("- " + e);
                 }
             } else {
-                JastAddAdUI debugger = new JastAddAdUI(program);
+                JastAddAdUI debugger = new JastAddAdUI(program.getFilterList(), true);
                 debugger.run();
             }
         } catch (FileNotFoundException e) {

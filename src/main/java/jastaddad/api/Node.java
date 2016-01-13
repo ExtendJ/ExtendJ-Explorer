@@ -33,7 +33,7 @@ public class Node{
      * @param root
      * @param api used for contributing errors and warnings, during the traversal of the AST.
      */
-    public Node(Object root, ASTAPI api){
+    public Node(Object root, ASTAPI api, boolean isList){
         this.children = new ArrayList<>();
         this.NTAChildren = new HashMap<>();
         this.nameFromParent = "";
@@ -45,7 +45,7 @@ public class Node{
         this.node = root;
         fullName = simpleNameClass;
         id = System.identityHashCode(this.toString());
-        init(root, false, false, false, 1, api);
+        init(root, isList, false, false, 1, api);
     }
 
     /**

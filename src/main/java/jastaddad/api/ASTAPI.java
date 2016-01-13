@@ -34,6 +34,13 @@ public class ASTAPI {
     private String directoryPath;
 
     public ASTAPI(Object root, String filterDir){
+        initialize(root, filterDir, false);
+    }
+    public ASTAPI(Object root, String filterDir, boolean listRoot){
+        initialize(root, filterDir, listRoot);
+    }
+
+    public void initialize(Object root, String filterDir, boolean listRoot){
         directoryPath = filterDir;
         displayedReferences = new ArrayList<>();
         treeNodes = new HashMap<>();
@@ -48,7 +55,7 @@ public class ASTAPI {
         ASTObjects = new HashSet<>();
         ASTNTAObjects = new HashSet<>();
 
-        tree = new Node(root, this);
+        tree = new Node(root, this, listRoot);
         this.filteredTree = null;
         filterConfig = new Config(this, filterDir);
         traversTree(this.tree, true);
@@ -425,6 +432,8 @@ public class ASTAPI {
         node.NTAChildren.put(NodeInfo.getName(info.getMethod(), params), astNode);
         if(filterConfig.getBoolean(Config.NTA_COMPUTED))
             buildFilteredSubTree(astNode, (TreeNode) treeNodes.get(node.node));
+        else
+            putWarning(AlertMessage.INVOCATION_WARNING, "Computed NTA successfully, but the configuration: " + Config.NTA_COMPUTED + " is either not set or off, so the NTA will not be shown.");
         return obj;
     }
 
