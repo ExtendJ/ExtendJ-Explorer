@@ -19,7 +19,7 @@ public class TreeNode extends GenericTreeNode {
     private boolean enabled;
     private String graphName;
     private String treeViewName;
-    private LinkedHashMap<Integer, Boolean> realChildEdge;
+
     private HashSet<NodeReference> outwardReferences;
     private HashMap<NodeReference, NodeReference> inwardReferences;
     private HashSet<NodeReference> allRefs;
@@ -27,7 +27,6 @@ public class TreeNode extends GenericTreeNode {
     public TreeNode(Node data, GenericTreeNode parent, Config filter){
         super(parent);
         node = data;
-        realChildEdge = new LinkedHashMap<>();
         enabled = setEnabled(filter);
         allRefs = new HashSet<>();
         setExpandable(true);
@@ -65,13 +64,7 @@ public class TreeNode extends GenericTreeNode {
      * @param child
      */
     @Override
-    public void addChild(GenericTreeNode child){
-        if(child.isNode()) {
-            TreeNode c = (TreeNode)child;
-            realChildEdge.put(c.node.id, node.children.contains(c.node));
-        }
-        children.add(child);
-    }
+    public void addChild(GenericTreeNode child){ children.add(child); }
 
     @Override
     public boolean isNTANode(){ return node.isNTA(); }

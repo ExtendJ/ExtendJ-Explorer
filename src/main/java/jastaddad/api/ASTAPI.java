@@ -29,6 +29,7 @@ public class ASTAPI {
     private HashSet<Object> ASTNTAObjects;
     private HashMap<String, ArrayList<AlertMessage>> errors;
     private HashMap<String, ArrayList<AlertMessage>> warnings;
+    private HashMap<String, ArrayList<AlertMessage>> messages;
     private ArrayList<NodeReference> displayedReferences;
     private String directoryPath;
 
@@ -42,6 +43,7 @@ public class ASTAPI {
         directChildren = new HashMap<>();
         errors = new HashMap<>();
         warnings = new HashMap<>();
+        messages = new HashMap<>();
         computedNTAs = new HashMap<>();
         ASTObjects = new HashSet<>();
         ASTNTAObjects = new HashSet<>();
@@ -57,9 +59,13 @@ public class ASTAPI {
 
     public boolean containsError(String type){ return errors.get(type).size() > 0; }
 
-    public ArrayList<AlertMessage> getErrors(String type){ return getMessageLine(errors, type); }
+    public ArrayList<AlertMessage> getMessages(String type){ return getMessageLine(messages, type); }
 
     public ArrayList<AlertMessage> getWarnings(String type){ return getMessageLine(warnings, type); }
+
+    public ArrayList<AlertMessage> getErrors(String type){ return getMessageLine(errors, type); }
+
+    public void putMessage(String type, String message){ putMessageLine(messages, type, message); }
 
     public void putWarning(String type, String message){ putMessageLine(warnings, type, message); }
 
@@ -133,13 +139,11 @@ public class ASTAPI {
      * @param node
      * @param firstTime
      */
-    private void traversTree(Node node, boolean firstTime){ //Todo christmas work, add the optimization you have been thinking of (Joel). Also reminder that you should fix so that null nodes are always present
+    private void traversTree(Node node, boolean firstTime){
         ArrayList<NodeReference> futureReferences = new ArrayList<>();
         traversTree(node, null, null, firstTime, filterConfig.getInt(Config.NTA_DEPTH), futureReferences);
-
         // Add reference edges that is defined in the filter language
         addReferences(futureReferences, false);
-
     }
 
     private void traversTree(Node node, GenericTreeNode parent, TreeCluster cluster, boolean firstTime, int depth, ArrayList<NodeReference> futureReferences){
@@ -199,18 +203,19 @@ public class ASTAPI {
         HashSet<String> displayedAttributes = filterConfig.getDisplayedAttributes(node);
 
         if(tmpCluster == null) //Only add NTAs if the node is not a Cluster
-            addNTAs(node, fNode, tmpCluster, firstTime, depth, futureReferences,displayedAttributes);
+            addNTAs(node, fNode, tmpCluster, depth, futureReferences, displayedAttributes);
 
         fNode.setClusterReference(tmpCluster);
 
         if(tmpCluster != null)
             tmpCluster.addToTypeList(fNode);
-        clusterClusters(fNode);
 
         // travers down the tree
         for(Node child : node.children){
-            traversTree(child, fNode, tmpCluster, firstTime, depth  ,futureReferences);
+            traversTree(child, fNode, tmpCluster, firstTime, depth,futureReferences);
         }
+
+        clusterClusters(fNode);
 
         if(addToParent != null)
             parent.addChild(addToParent);
@@ -221,9 +226,8 @@ public class ASTAPI {
     /**
      * Adds the NTA that should be visible to the filtered tree
      */
-    private void addNTAs(Node node, GenericTreeNode parent, TreeCluster cluster, boolean firstTime,
-                         int depth, ArrayList<NodeReference> futureReferences, HashSet<String> displayedAttributes){
-        // Create the nta nodes specified by the Configuration language, and traverse down THE NTA:s
+    private void addNTAs(Node node, GenericTreeNode parent, TreeCluster cluster, int depth, ArrayList<NodeReference> futureReferences, HashSet<String> displayedAttributes){
+        // Create the nta nodes specified by the Configuration language, and traverse down the NTA:s
         if(depth > 0) {
             for (String s : displayedAttributes) {
                 if (!node.NTAChildren.containsKey(s))
@@ -234,7 +238,7 @@ public class ASTAPI {
                     node.NTAChildren.put(s, ntaNode);
                     ASTNTAObjects.add(ntaNode.node);
                 }
-                traversTree(ntaNode, parent, cluster, true, depth - 1, futureReferences);
+                traversTree(ntaNode, parent, cluster,  true, depth - 1, futureReferences);
             }
         }
 
@@ -261,9 +265,8 @@ public class ASTAPI {
             clusterParent.setStyles(filterConfig);
             // get all children cluster children that have no children
             for (GenericTreeNode fChild : fNode.getChildren()) {
-                if (fChild.isCluster() && fChild.getChildren().size() == 0) {
+                if (fChild.isCluster() && fChild.getChildren().size() == 0)
                     clusterParent.addCluster((TreeCluster)fChild);
-                }
             }
             if(clusterParent.getClusters().size() > 0) {
                 for(GenericTreeNode cChild : clusterParent.getClusters()) {
@@ -312,6 +315,12 @@ public class ASTAPI {
             ASTNTAObjects.forEach(treeNodes::remove);
             clearDisplayedReferences();
             filteredTree = null;
+            String message;
+            if(filterConfig.getEnabledFilterNames() == null)
+                message = "Applied no filter, all nodes are shown";
+            else
+                message = "Applied filters : " + filterConfig.getEnabledFilterNames();
+            putMessage(AlertMessage.FILTER_MESSAGE, message);
             traversTree(this.tree, false);
         }
         return res;

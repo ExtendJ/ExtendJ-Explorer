@@ -43,17 +43,66 @@ aspect NameAnalysis {
     inh boolean Node.isDeclared(Node node);
 
     // filter is multiple declared
-    eq DebuggerConfig.getFilter(int i).isDeclared(Filter filter) = exists(filter, i);
-    private boolean DebuggerConfig.exists(Filter filter, int until){
+    eq DebuggerConfig.getFilter(int i).isDeclared(Filter filter) = exists(filter.getFilterName().getID(), i);
+
+    public boolean DebuggerConfig.exists(String filterName, int until){
         for (int i = 0; i < until; i++) {
             Filter child = getFilter(i);
-            boolean sameName = child.getFilterName().getID().equals(filter.getFilterName().getID());
+            boolean sameName = child.getFilterName().getID().equals(filterName);
             if(sameName)
                 return true;
         }
         return false;
     }
+
     syn boolean Filter.isMultipleDeclared() = isDeclared(this);
     inh boolean Filter.isDeclared(Filter filter);
 
+    syn String Use.getUnknownFilterNames(){
+        String s = "";
+        for(IdDecl decl : getIdDecls()){
+            if(!debuggerConfig().exists(decl.getID(), debuggerConfig().getNumFilter())){
+                if(!s.equals(""))
+                    s += ", ";
+                s += decl.getID();
+            }
+        }
+        return s;
+    }
+
+    syn boolean Use.hasUnKnownFilters(){
+        if(!debuggerConfig().hasFilter())
+            return true;
+        for(IdDecl decl : getIdDecls()){
+            if(!debuggerConfig().exists(decl.getID(), debuggerConfig().getNumFilter()))
+                return true;
+        }
+        return false;
+    }
+
+    syn String Use.getMultipleEnabledFilterNames(){
+        HashSet<String> a = new HashSet();
+        String s = "";
+        for(IdDecl decl : getIdDecls()){
+            if(a.contains(decl.getID())){
+                if(!s.equals(""))
+                    s += ", ";
+                s += decl.getID();
+            }
+            a.add(decl.getID());
+        }
+        return s;
+    }
+
+    syn boolean Use.hasMultipleEnabledFilters(){
+        HashSet<String> a = new HashSet();
+        for(IdDecl decl : getIdDecls()){
+            if(a.contains(decl.getID()))
+                return true;
+            a.add(decl.getID());
+        }
+        return false;
+    }
+
 }
+
