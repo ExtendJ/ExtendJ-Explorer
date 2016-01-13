@@ -50,7 +50,9 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
     private VisualizationViewer<GenericTreeNode, UIEdge> vs;
     private DelegateForest<GenericTreeNode, UIEdge> graph;
 
+    private ScalingControllerMinLimit scaler;
     public GraphView(UIMonitor mon){
+        scaler = new ScalingControllerMinLimit();
         this.mon = mon;
         this.con = mon.getController();
         DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge>();
@@ -127,7 +129,13 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW).setToIdentity();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         vs.setPreferredSize(screenSize);
-        vs.scaleToLayout(new ScalingControllerMinLimit());
+        vs.scaleToLayout(scaler);
+        repaint();
+    }
+
+    public void setPreferredSize(int width, int height){
+        vs.setPreferredSize(new Dimension(width, height));
+        vs.scaleToLayout(scaler);
         repaint();
     }
 
@@ -320,6 +328,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         gm.add(new PopupGraphMousePlugin(vs, mon, this));
         gm.add(new PickingGraphMousePlugin());
         gm.add(new ScalingGraphMousePlugin(new ScalingControllerMinLimit(), 0, 1.1f, 0.9f));
+        //gm.add(new RotatingGraphMousePlugin());
         vs.setGraphMouse(gm);
     }
 
@@ -357,5 +366,13 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
                     con.nodeDeselected(true);
             }
         });
+    }
+
+    public void zoomIn() {
+        scaler.scale(vs, 2 > 0 ? 1.1f : 1 / 1.1f, vs.getCenter());
+    }
+
+    public void zoomOut() {
+        scaler.scale(vs, -2 > 0 ? 1.1f : 1 / 1.1f, vs.getCenter());
     }
 }

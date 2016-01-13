@@ -76,6 +76,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         con = loader.<Controller>getController();
         mon.setParentStage(stage);
         mon.setController(con);
+
         GraphView graphview = new GraphView(mon);
         graphview.setOnMouseClicked(event -> graphview.getParent().requestFocus());
 
@@ -100,6 +101,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         stage.show();
         ScrollPane center = (ScrollPane) rootView.lookup("#graphViewScrollPane");
         center.setContent(graphview);
+        graphview.setPreferredSize((int)center.getWidth(), (int)center.getHeight());
     }
 
     /**
