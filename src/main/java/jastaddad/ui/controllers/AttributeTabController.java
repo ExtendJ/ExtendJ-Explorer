@@ -482,15 +482,16 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
 
-            if (getTableRow().getItem() == null || empty) {
+            if (getTableRow().getItem() == null || empty || item == null) {
                 setText(null);
                 setGraphic(null);
                 return;
             }
 
             AttributeInfo info = (AttributeInfo)getTableRow().getItem();
+
             String text = item.toString();
-            if(info != null && info.isFilePointer()){
+            if(info.isFilePointer()){
                 setText(text.substring(text.lastIndexOf('/') + 1) + " (" + text + ")");
                 HBox box= new HBox();
                 //box.setSpacing(10) ;
