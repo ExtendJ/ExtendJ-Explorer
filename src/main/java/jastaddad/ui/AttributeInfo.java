@@ -17,11 +17,13 @@ public class AttributeInfo {
     private final SimpleStringProperty name;
     private final SimpleObjectProperty value;
     private final NodeInfo nodeInfo;
+    private boolean filePointer;
 
-    public AttributeInfo(String name, Object value, NodeInfo nodeInfo){
+    public AttributeInfo(String name, Object value, NodeInfo nodeInfo, boolean filePointer){
         this.name = new SimpleStringProperty(name);
         this.value = new SimpleObjectProperty(value);
         this.nodeInfo = nodeInfo;
+        this.filePointer = filePointer;
     }
 
     public NodeInfo getNodeInfo(){ return nodeInfo; }
@@ -40,10 +42,11 @@ public class AttributeInfo {
         this.value.set(value);
     }
 
+    public boolean isFilePointer(){return filePointer;}
     public static ArrayList<AttributeInfo> toArray(ArrayList<NodeInfoHolder> infoList){
         ArrayList<AttributeInfo> al = new ArrayList();
         for (NodeInfoHolder info : infoList)
-            al.add(new AttributeInfo(info.getName(), info.getValue(),info.getNodeInfo()));
+            al.add(new AttributeInfo(info.getName(), info.getValue(),info.getNodeInfo(), info.getFilePointer()));
         return al;
     }
 

@@ -1,8 +1,11 @@
 package jastaddad.ui.controllers;
 
+import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
+import com.sun.javafx.application.HostServicesDelegate;
 import com.sun.javafx.scene.control.skin.TreeTableViewSkin;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.AlertMessage;
+import jastaddad.api.JastAddAdAPI;
 import jastaddad.api.Node;
 import jastaddad.api.filteredtree.GenericTreeCluster;
 import jastaddad.api.filteredtree.GenericTreeNode;
@@ -11,6 +14,7 @@ import jastaddad.api.nodeinfo.Attribute;
 import jastaddad.api.nodeinfo.NodeInfo;
 import jastaddad.ui.AttributeInfo;
 import jastaddad.ui.AttributeInputDialog;
+import jastaddad.ui.JastAddAdUI;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.graph.GraphView;
 import jastaddad.ui.uicomponent.nodeinfotreetableview.NodeInfoHolder;
@@ -26,18 +30,28 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.util.Callback;
 import org.reactfx.Subscription;
 
 import javax.swing.plaf.synth.Region;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -94,7 +108,48 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         // cluster information views
         clusterInfoNameCol.setCellValueFactory(new PropertyValueFactory("typeName"));
         clusterInfoCountCol.setCellValueFactory(new PropertyValueFactory("count"));
+        attributeInfoValueCol.setCellFactory(column -> new TableCell<AttributeInfo, Object>() {
+            @Override
+            protected void updateItem(Object item, boolean empty) {
+                super.updateItem(item, empty);
 
+                if(empty) {
+                    setText("");
+                    return;
+                }
+                AttributeInfo info = (AttributeInfo)getTableRow().getItem();
+
+                String text = item.toString();
+                if(info.isFilePointer()){
+                    setText(text.substring(text.lastIndexOf('/') + 1) + " (" + text + ")");
+                    HBox box= new HBox();
+                    //box.setSpacing(10) ;
+
+                    ImageView imageview = new ImageView();
+                    imageview.setFitHeight(16);
+                    imageview.setFitWidth(16);
+                    imageview.setImage(new Image("images/folder.png"));
+                    imageview.setCursor(Cursor.HAND);
+
+                    String filePath = text.substring(0, text.indexOf(':'));
+                    imageview.setOnMouseClicked(e ->{
+                        boolean success = JastAddAdUI.openFile(new File(filePath));
+                        if(!success){
+                            mon.getController().addError("File \"" + filePath + "\" could not be opened on this system");
+                        }
+                    });
+                    box.getChildren().addAll(imageview);
+                    //SETTING ALL THE GRAPHICS COMPONENT FOR CELL
+                    setGraphic(box);
+                    Tooltip.install(imageview, new Tooltip("open \"" + filePath + "\""));
+                    setContentDisplay(ContentDisplay.RIGHT);
+                }else{
+                    setText(text);
+                    setCursor(Cursor.DEFAULT);
+                }
+
+            }
+        });
         attributeNameCol.setCellValueFactory(param -> {
             NodeInfoInterface info = param.getValue().getValue();
             if(info != null) {

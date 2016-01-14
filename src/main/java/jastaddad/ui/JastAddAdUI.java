@@ -1,5 +1,7 @@
 package jastaddad.ui;
 
+import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
+import com.sun.javafx.application.HostServicesDelegate;
 import configAST.*;
 import jastaddad.api.ASTAPI;
 import jastaddad.api.JastAddAdAPI;
@@ -18,6 +20,8 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.awt.*;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -41,9 +45,8 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
     private Parent rootView;
     public JastAddAdUI() {} // This one is used by Application
 
-    public JastAddAdUI(Object root) { jastAddAd = new JastAddAdAPI(root); }
-    public JastAddAdUI(Object root, boolean listRoot) {
-        jastAddAd = new JastAddAdAPI(root, listRoot);
+    public JastAddAdUI(Object root) {
+        jastAddAd = new JastAddAdAPI(root);
     }
 
     public Parent getRoot(){
@@ -54,7 +57,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
      */
     public void run(){
         jastAddAd.run();
-        this.mon = new UIMonitor(jastAddAd);
+        this.mon = new UIMonitor(this);
         launch(new String[0]);
     }
 
@@ -87,7 +90,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         stage.setTitle("JastAddDebugger " + ASTAPI.VERSION);
         stage.setScene(new Scene(rootView, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
-        /*
+/*
         stage.setOnCloseRequest(we -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirm Exit");
@@ -103,7 +106,42 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         stage.show();
         ScrollPane center = (ScrollPane) rootView.lookup("#graphViewScrollPane");
         center.setContent(graphview);
-        graphview.setPreferredSize((int) center.getWidth(), (int) center.getHeight());
+        graphview.setPreferredSize((int)center.getWidth(), (int)center.getHeight());
+    }
+
+    public static boolean openFile(File file)
+    {
+        try
+        {
+            if (OSDetector.isWindows()) {
+                Runtime.getRuntime().exec(new String[]
+                        {"rundll32", "url.dll,FileProtocolHandler",
+                                file.getAbsolutePath()});
+                return true;
+            } else if (OSDetector.isLinux() || OSDetector.isMac())
+            {
+                Runtime.getRuntime().exec(new String[]{"xdg-open",
+                        file.getAbsolutePath()});
+                System.out.println(file.getAbsolutePath());
+                return true;
+            } else
+            {
+                // Unknown OS, try with desktop
+                if (Desktop.isDesktopSupported())
+                {
+                    Desktop.getDesktop().open(file);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        } catch (Exception e)
+        {
+            e.printStackTrace(System.err);
+            return false;
+        }
     }
 
     /**
@@ -123,9 +161,8 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
                     System.err.println("- " + e);
                 }
             } else {
+                TestMe root = new TestMe(new TestMe(), new TestMe());
                 JastAddAdUI debugger = new JastAddAdUI(program);
-                //TestMe root = new TestMe(new TestMe(), new TestMe());
-               // JastAddAdUI debugger = new JastAddAdUI(program);
                 debugger.run();
             }
         } catch (FileNotFoundException e) {
