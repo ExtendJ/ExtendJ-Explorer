@@ -25,6 +25,7 @@ public class TopMenuController implements Initializable {
     @FXML private Menu topMenuFileMenu;
     @FXML private Menu topMenuExportMenu;
     @FXML private MenuItem exitMenuItem;
+    @FXML private MenuItem toggleMinimizeMenuItem;
 
     public void init(UIMonitor mon, GraphView graphView){
         this.mon = mon;
@@ -40,6 +41,10 @@ public class TopMenuController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         exitMenuItem.setOnAction(event1 -> {
             mon.getController().exitProgram();
+        });
+
+        toggleMinimizeMenuItem.setOnAction(e -> {
+            mon.getController().toggleMinimizeWindows();
         });
 
         MenuItem exportXml = new MenuItem("XML");

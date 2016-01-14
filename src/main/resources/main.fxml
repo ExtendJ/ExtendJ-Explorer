@@ -114,7 +114,7 @@
                                 <VBox styleClass="paneParent">
                                     <Button text="Apply filter" StyleClass="updateFilterButton, our_button" fx:id="saveNewFilterButton">
                                         <tooltip>
-                                            <Tooltip text="Update the graph with the new filter."/>
+                                            <Tooltip text="Update the graph with the new filter. (ctrl+s)"/>
                                         </tooltip>
                                     </Button>
                                     <VBox fx:id="codeAreaContainer"></VBox>

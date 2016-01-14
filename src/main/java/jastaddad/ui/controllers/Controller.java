@@ -140,17 +140,7 @@ public class Controller implements Initializable {
         // hide/show sidebars
         centerSplitPane.setOnKeyPressed(ke -> {
             if (!ke.isShiftDown() && !ke.isAltDown() && !ke.isControlDown() && ke.getCode().equals(KeyCode.F)){
-                if(centerSplitPane.getDividers().get(0).getPosition() < 0.05 &&
-                        centerSplitPane.getDividers().get(1).getPosition() > 0.95 &&
-                        consoleAndGraphSplitPane.getDividers().get(0).getPosition() > 0.95){
-                    centerSplitPane.setDividerPosition(0, 0.2);
-                    centerSplitPane.setDividerPosition(1, 0.8);
-                    consoleAndGraphSplitPane.setDividerPosition(0, 0.8);
-                }else {
-                    centerSplitPane.setDividerPosition(0, 0);
-                    centerSplitPane.setDividerPosition(1, 1);
-                    consoleAndGraphSplitPane.setDividerPosition(0, 1);
-                }
+                toggleMinimizeWindows();
             }
         });
 
@@ -228,6 +218,20 @@ public class Controller implements Initializable {
         zoomOutButton.setOnMouseClicked(e->{
             graphView.zoomOut();
         });
+    }
+
+    public void toggleMinimizeWindows(){
+        if(centerSplitPane.getDividers().get(0).getPosition() < 0.05 &&
+                centerSplitPane.getDividers().get(1).getPosition() > 0.95 &&
+                consoleAndGraphSplitPane.getDividers().get(0).getPosition() > 0.95){
+            centerSplitPane.setDividerPosition(0, 0.2);
+            centerSplitPane.setDividerPosition(1, 0.8);
+            consoleAndGraphSplitPane.setDividerPosition(0, 0.8);
+        }else {
+            centerSplitPane.setDividerPosition(0, 0);
+            centerSplitPane.setDividerPosition(1, 1);
+            consoleAndGraphSplitPane.setDividerPosition(0, 1);
+        }
     }
 
     public void saveNewFilter(){

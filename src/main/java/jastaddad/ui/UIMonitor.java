@@ -23,7 +23,6 @@ public class UIMonitor {
     private NodeInfo selectedInfo;
     private ArrayList<UIEdge> refEdges;
     private HashMap<GenericTreeNode,ArrayList<UIEdge>> displayedRefEdges;
-    private JastAddAdAPI jaaApi;
     private Controller controller;
     private GraphView graphView;
     private Stage parentStage;
@@ -31,9 +30,10 @@ public class UIMonitor {
     private ArrayList<GenericTreeNode> dialogSelectedNodes;
     private boolean functionRunning;
     private ArrayList<String> highlightedSimpleClassNames;
+    private JastAddAdUI application;
 
-    public UIMonitor(JastAddAdAPI jaaApi){
-        this.jaaApi = jaaApi;
+    public UIMonitor(JastAddAdUI jaaUI){
+        this.application = jaaUI;
         subWindows = new ArrayList<>();
         dialogSelectedNodes = new ArrayList<>();
         highlightedSimpleClassNames = new ArrayList<>();
@@ -67,16 +67,16 @@ public class UIMonitor {
             dialogSelectedNodes.remove(node);
     }
     public void clearDialogSelectedNodes(){ dialogSelectedNodes.clear();}
-
+    public JastAddAdUI getApplication(){return application; }
 
     public ASTAPI getApi(){
-        return jaaApi.api();
+        return application.getAPI().api();
     }
     public JastAddAdAPI getJastAddAdAPI(){
-        return jaaApi;
+        return application.getAPI();
     }
 
-    public GenericTreeNode getRootNode(){ return jaaApi.getFilteredTree(); }
+    public GenericTreeNode getRootNode(){ return application.getAPI().getFilteredTree(); }
     public Controller getController(){return controller;}
 
     public void setController(Controller controller) {
