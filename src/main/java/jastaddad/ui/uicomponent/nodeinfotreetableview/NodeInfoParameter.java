@@ -9,25 +9,12 @@ import jastaddad.api.nodeinfo.NodeInfo;
  * This class represent a value from a parameterized attribute. The class contains the NodeInfo to the attribute, the
  * name is the parameters as a string and the computed value.
  */
-public class NodeInfoParameter implements NodeInfoInterface {
-    public final NodeInfo info;
-    private String name;
+public class NodeInfoParameter extends NodeInfoView {
     private Object value;
 
     public NodeInfoParameter(String name, Object value, NodeInfo info){
-        this.name = name;
+        super(name, info);
         this.value = value;
-        this.info = info;
-    }
-
-    @Override
-    public boolean isNodeInfo() {
-        return false;
-    }
-
-    @Override
-    public boolean isLabel() {
-        return false;
     }
 
     @Override
@@ -36,17 +23,8 @@ public class NodeInfoParameter implements NodeInfoInterface {
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
     public Object getValue() {
         return value;
     }
 
-    @Override
-    public NodeInfo getNodeInfoOrNull() {
-        return null;
-    }
 }

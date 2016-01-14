@@ -9,10 +9,10 @@ import jastaddad.api.nodeinfo.NodeInfo;
  * This class contains a NodeInfo.
  *
  */
-public class NodeInfoHolder implements NodeInfoInterface {
-    private NodeInfo info;
+public class NodeInfoHolder extends NodeInfoView {
+
     public NodeInfoHolder(NodeInfo info){
-        this.info = info;
+        super(info != null ? info.print() : "", info);
     }
 
     @Override
@@ -21,27 +21,8 @@ public class NodeInfoHolder implements NodeInfoInterface {
     }
 
     @Override
-    public boolean isLabel() {
-        return false;
-    }
-
-    @Override
-    public boolean isParameter() {
-        return false;
-    }
-
-    @Override
-    public String getName() {
-        return info.print();
-    }
-
-    @Override
     public Object getValue() {
-        return info.getValue();
+        return nodeInfo.getValue();
     }
 
-    @Override
-    public NodeInfo getNodeInfoOrNull() {
-        return info;
-    }
 }

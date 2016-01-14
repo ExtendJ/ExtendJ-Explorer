@@ -1,11 +1,7 @@
 package jastaddad.ui.controllers;
 
-import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
-import com.sun.javafx.application.HostServicesDelegate;
 import com.sun.javafx.scene.control.skin.TreeTableViewSkin;
-import jastaddad.api.ASTAPI;
 import jastaddad.api.AlertMessage;
-import jastaddad.api.JastAddAdAPI;
 import jastaddad.api.Node;
 import jastaddad.api.filteredtree.GenericTreeCluster;
 import jastaddad.api.filteredtree.GenericTreeNode;
@@ -17,11 +13,10 @@ import jastaddad.ui.AttributeInputDialog;
 import jastaddad.ui.JastAddAdUI;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.graph.GraphView;
+import jastaddad.ui.uicomponent.TextFormatter;
 import jastaddad.ui.uicomponent.nodeinfotreetableview.NodeInfoHolder;
-import jastaddad.ui.uicomponent.nodeinfotreetableview.NodeInfoInterface;
-import jastaddad.ui.uicomponent.nodeinfotreetableview.NodeInfoLabel;
+import jastaddad.ui.uicomponent.nodeinfotreetableview.NodeInfoView;
 import jastaddad.ui.uicomponent.nodeinfotreetableview.NodeInfoParameter;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
@@ -31,7 +26,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
-import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -41,17 +35,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import javafx.util.Callback;
-import org.reactfx.Subscription;
 
-import javax.swing.plaf.synth.Region;
-import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -62,14 +50,15 @@ import java.util.*;
  *  - nodeInfoView when a node is clicked.
  *
  */
-public class AttributeTabController implements Initializable, ChangeListener<TreeItem<NodeInfoInterface>> {
+public class AttributeTabController implements Initializable, ChangeListener<TreeItem<NodeInfoView>> {
     private UIMonitor mon;
     private GraphView graphView;
     private ContextMenu mouseMenu;
+    private TextFormatter formatter;
 
-    @FXML private TreeTableView<NodeInfoInterface> attributeTableView;
-    @FXML private TreeTableColumn<NodeInfoInterface, String> attributeNameCol;
-    @FXML private TreeTableColumn<NodeInfoInterface, Object> attributeValueCol;
+    @FXML private TreeTableView<NodeInfoView> attributeTableView;
+    @FXML private TreeTableColumn<NodeInfoView, String> attributeNameCol;
+    @FXML private TreeTableColumn<NodeInfoView, Object> attributeValueCol;
 
     @FXML private TableView<AttributeInfo> attributeInfoTableView;
     @FXML private TableColumn<AttributeInfo, String> attributeInfoNameCol;
@@ -91,6 +80,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     public void init(UIMonitor mon, GraphView graphView){
         this.mon = mon;
         this.graphView = graphView;
+        formatter = new TextFormatter(mon.getApi().getRoot().node.getClass());
     }
 
     /**
@@ -109,19 +99,18 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         clusterInfoNameCol.setCellValueFactory(new PropertyValueFactory("typeName"));
         clusterInfoCountCol.setCellValueFactory(new PropertyValueFactory("count"));
         attributeNameCol.setCellValueFactory(param -> {
-            NodeInfoInterface info = param.getValue().getValue();
+            NodeInfoView info = param.getValue().getValue();
             if(info != null) {
-                return new ReadOnlyStringWrapper(param.getValue().getValue().getName());
+                return new ReadOnlyStringWrapper(formatter.format(info.getName()));
             }
             return null;
         });
-        attributeValueCol.setCellValueFactory(
-                param -> {
-                    if(param.getValue().getValue() != null)
-                        return new ReadOnlyObjectWrapper(param.getValue().getValue().getValue());
-                    return null;
-                }
-        );
+        attributeValueCol.setCellValueFactory(param -> {
+            NodeInfoView info = param.getValue().getValue();
+            if(info != null)
+                return new ReadOnlyObjectWrapper(formatter.format(info.getValue()));
+            return null;
+        });
 
         attributeValueCol.setCellFactory(param -> new AttributeValueCell());
         attributeInfoValueCol.setCellFactory(column -> new AttributeInfoValueCell());
@@ -248,7 +237,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
         ((TreeViewSkinRefresher)attributeTableView.getSkin()).refresh(); //Refreshing the css.
 
-        TreeItem<NodeInfoInterface> mainParent = new TreeItem<>(null);
+        TreeItem<NodeInfoView> mainParent = new TreeItem<>(null);
         attributeTableView.setRoot(mainParent);
         attributeTableView.setShowRoot(false);
         mainParent.setExpanded(true);
@@ -269,7 +258,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         if(list.size() == 0)
             return;
 
-        TreeItem<NodeInfoInterface> tokensItem = new TreeItem<>(new NodeInfoLabel(label));
+        TreeItem<NodeInfoView> tokensItem = new TreeItem<>(new NodeInfoView(label));
         tokensItem.setExpanded(true);
 
         // go through all methods and sort them on kind
@@ -284,16 +273,16 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         // Add all methods to the list
         for(Map.Entry<String, ArrayList<NodeInfo>> entry : methods.entrySet()){
             if(entry.getValue().size() > 0) {
-                TreeItem<NodeInfoInterface> kindLabel;
+                TreeItem<NodeInfoView> kindLabel;
                 if(entry.getValue().get(0).getKind() != null) {
-                    kindLabel = new TreeItem<>(new NodeInfoLabel(entry.getKey()));
+                    kindLabel = new TreeItem<>(new NodeInfoView(entry.getKey()));
                     kindLabel.setExpanded(true);
                     tokensItem.getChildren().add(kindLabel);
                 }else
                     kindLabel = tokensItem;
 
                 for (NodeInfo info : entry.getValue()) {
-                    TreeItem<NodeInfoInterface> methodItem = new TreeItem<>(new NodeInfoHolder(info));
+                    TreeItem<NodeInfoView> methodItem = new TreeItem<>(new NodeInfoHolder(info));
                     kindLabel.getChildren().add(methodItem);
                     if(!info.isAttribute() || !info.isParametrized())
                         continue;
@@ -310,7 +299,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                                 name += ", ";
                             }
                         }
-                        TreeItem<NodeInfoInterface> computedItem = new TreeItem<>(new NodeInfoParameter(name, computedEntry.getValue(), info));
+                        TreeItem<NodeInfoView> computedItem = new TreeItem<>(new NodeInfoParameter(name, computedEntry.getValue(), info));
                         methodItem.getChildren().add(computedItem);
                     }
                 }
@@ -328,24 +317,24 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      * @param newValue
      */
     @Override
-    public void changed(ObservableValue<? extends TreeItem<NodeInfoInterface>> observable, TreeItem<NodeInfoInterface> oldValue, TreeItem<NodeInfoInterface> newValue) {
+    public void changed(ObservableValue<? extends TreeItem<NodeInfoView>> observable, TreeItem<NodeInfoView> oldValue, TreeItem<NodeInfoView> newValue) {
         if(oldValue != null && oldValue.getValue() != null) {
             if(oldValue.getValue().isNodeInfo())
-                mon.getApi().getNodeReferencesAndHighlightThem(oldValue.getValue().getNodeInfoOrNull().getValue(), false);
+                mon.getApi().getNodeReferencesAndHighlightThem(oldValue.getValue().getNodeInfo().getValue(), false);
             else if(oldValue.getValue().isParameter())
                 mon.getApi().getNodeReferencesAndHighlightThem(oldValue.getValue().getValue(), false);
         }
 
         if(newValue != null) {
-            NodeInfoInterface infoHolder = newValue.getValue();
+            NodeInfoView infoHolder = newValue.getValue();
             NodeInfo info = null;
             Object value = null;
             if(infoHolder.isNodeInfo()) {
-                info = newValue.getValue().getNodeInfoOrNull();
+                info = newValue.getValue().getNodeInfo();
                 value = info.getValue();
             } else if(infoHolder.isParameter()){
                 NodeInfoParameter paramHolder = ((NodeInfoParameter)newValue.getValue());
-                info = paramHolder.info;
+                info = paramHolder.getNodeInfo();
                 value = paramHolder.getValue();
             }
             mon.setSelectedInfo(info);
@@ -419,10 +408,10 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     private void onInvokeClicked(){
 
         TreeNode node = (TreeNode) mon.getSelectedNode();
-        NodeInfoInterface selectedInfo  = attributeTableView.getSelectionModel().getSelectedItem().getValue();
+        NodeInfoView selectedInfo  = attributeTableView.getSelectionModel().getSelectedItem().getValue();
         if(!selectedInfo.isNodeInfo())
             return;
-        NodeInfo info = selectedInfo.getNodeInfoOrNull();
+        NodeInfo info = selectedInfo.getNodeInfo();
         if(info.isNTA() && !info.isParametrized()){ //Handle the non-parametrized NTA:s
             Object obj = mon.getApi().compute(node.getNode(), info);
 
@@ -453,18 +442,18 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             // Below code is for setting the selected position to the last computed value, in case the selected row
             // is a parameterized attribute
             attributeTableView.getSelectionModel().select(dialog.getNodeInfoPos());
-            TreeItem<NodeInfoInterface> selected = attributeTableView.getSelectionModel().getSelectedItem();
+            TreeItem<NodeInfoView> selected = attributeTableView.getSelectionModel().getSelectedItem();
 
             if(selected == null || !selected.getValue().isNodeInfo())
                 return;
-            NodeInfo infoSelected = selected.getValue().getNodeInfoOrNull();
+            NodeInfo infoSelected = selected.getValue().getNodeInfo();
             if(!info.isAttribute() && !info.isParametrized())
                 return;
             Attribute attribute = (Attribute) infoSelected;
             int i = 0;
             for(Map.Entry<String, Object> entry : attribute.getComputedEntry()){
                 i++;
-                if(entry.getKey().equals(attribute.getLastComputedkey())) {
+                if(entry.getKey().equals(attribute.getLastComputedKey())) {
                     attributeTableView.getSelectionModel().select(dialog.getNodeInfoPos() + i);
                     break;
                 }
@@ -515,7 +504,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 Tooltip.install(imageview, new Tooltip("open \"" + filePath + "\""));
                 setContentDisplay(ContentDisplay.RIGHT);
             }else{
-                setText(text);
+                setText(formatter.format(text));
                 setCursor(Cursor.DEFAULT);
             }
         }
@@ -525,7 +514,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     /**
      * Class for the cells in the tableviews
      */
-    private class AttributeValueCell extends TreeTableCell<NodeInfoInterface, Object>{
+    private class AttributeValueCell extends TreeTableCell<NodeInfoView, Object>{
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
@@ -539,7 +528,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             setText(String.valueOf(item));
             setStyle("-fx-text-fill:#ffffff;");
 
-            NodeInfo info = (getTreeTableRow().getItem()).getNodeInfoOrNull();
+            NodeInfo info = (getTreeTableRow().getItem()).getNodeInfo();
             if(info == null)
                 return;
             if(info == null || item != null)
