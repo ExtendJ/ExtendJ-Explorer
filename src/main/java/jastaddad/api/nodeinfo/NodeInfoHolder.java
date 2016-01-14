@@ -22,7 +22,6 @@ public class NodeInfoHolder implements Comparable<NodeInfoHolder>{
         this.name = name;
         this.value = value;
         nodeInfo = null;
-        this.filePointer = false;
     }
 
     public NodeInfoHolder(NodeInfo nodeInfo){

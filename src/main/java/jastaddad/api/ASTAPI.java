@@ -63,6 +63,8 @@ public class ASTAPI {
         traversTree(this.tree, true);
     }
 
+    public Node getRoot(){return tree; }
+
     public String getFilterFilePath(){return directoryPath + "filter.cfg"; }
     public String getDirectoryPath(){return directoryPath;}
 

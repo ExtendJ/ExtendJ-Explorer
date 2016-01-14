@@ -123,7 +123,7 @@ public class Attribute extends NodeInfo {
         return usedParameters;
     }
 
-    public String getLastComputedkey(){return lastComputedkey;}
+    public String getLastComputedKey(){return lastComputedkey;}
     private String getKey(Object[] params){
         if(params.length == 0)
             return  "no-params";
