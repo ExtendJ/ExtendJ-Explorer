@@ -12,6 +12,8 @@
 /src/gen
 
 !/CalcASM
+/CalcASM/filter.cfg
+/CalcASM/whole_graph_*
 /CalcASM/src/gen
 /CalcASM/ant-bin
 /CalcASM/out
