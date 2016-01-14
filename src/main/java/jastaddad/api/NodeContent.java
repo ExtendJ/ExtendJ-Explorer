@@ -64,17 +64,17 @@ public class NodeContent {
         }
 
         Attribute attribute = (Attribute) nodeInfo;
-        if(attribute.containsValue(params)) {
-            api.putWarning(AlertMessage.INVOCATION_WARNING, String.format("Method %s with the parameters %s have already been computed", attribute.getMethod(), params));
+        if(attribute.containsValue(params))
             return attribute.getComputedValue(params);
-        }
+
         try{
             Object obj =  method.invoke(nodeObject, params);
             attribute.addComputedValue(params, obj);
             return obj;
         }catch(Throwable e){
             addInvocationErrors(api, e, attribute.getMethod());
-            return null;
+            attribute.addComputedValue(params, e.getCause());
+            return e.getCause();
         }
     }
 
@@ -176,7 +176,7 @@ public class NodeContent {
         attribute.setParametrized(m.getParameterCount() > 0);
         for(Annotation a : m.getAnnotations()) { //To many attribute specific methods so I decided to iterate through the Annotations again instead of sending them as parameters.
             if (ASTAnnotation.isAttribute(a)){
-                attribute.setKind(ASTAnnotation.get(a, ASTAnnotation.AST_METHOD_KIND));
+                attribute.setKind(ASTAnnotation.getKind(a));
                 attribute.setCircular(ASTAnnotation.is(a, ASTAnnotation.AST_METHOD_CIRCULAR));
                 attribute.setNTA(ASTAnnotation.is(a, ASTAnnotation.AST_METHOD_NTA));
             }else if(ASTAnnotation.isSource(a)){
@@ -222,7 +222,7 @@ public class NodeContent {
      * @param e
      */
     private void addInvocationErrors(ASTAPI api, Throwable e, Method m){
-        String message = String.format("Error while computing %s, cause : %s", m.getName(), e.getCause() != null ? e.getCause().toString() : e.getMessage());
+        String message = String.format("Error while computing %s in node %s. Cause : %s", m.getName(), node.node, e.getCause() != null ? e.getCause().toString() : e.getMessage());
         api.putError(AlertMessage.INVOCATION_ERROR, message);
         //e.printStackTrace();
     }

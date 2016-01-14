@@ -130,66 +130,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
         mouseMenu = new ContextMenu();
         MenuItem cmItem1 = new MenuItem("Compute");
-        /**
-         * This sub method will call the invocation of the method that has been clicked on, after the values have been added
-         */
-        cmItem1.setOnAction(e -> {
-            TreeNode node = (TreeNode) mon.getSelectedNode();
-            NodeInfoInterface selectedInfo  = attributeTableView.getSelectionModel().getSelectedItem().getValue();
-            if(!selectedInfo.isNodeInfo())
-                return;
-            NodeInfo info = selectedInfo.getNodeInfoOrNull();
-            if(info.isNTA() && !info.isParametrized()){ //Handle the non-parametrized NTA:s
-                Object obj = mon.getApi().compute(node.getNode(), info);
-                if(!printToConsole(obj))
-                    return;
-                setAttributeList(node, false);
-                mon.getController().updateUI();
-                return;
-            }
-
-            AttributeInputDialog dialog = new AttributeInputDialog(info, node, mon);
-            dialog.setNodeInfoPos(attributeTableView.getSelectionModel().getSelectedIndex());
-            dialog.init();
-
-            dialog.setOnCloseRequest(event -> {
-                mon.getController().nodeSelected(dialog.getTreeNode(), false);
-                if(!dialog.invokeButtonPressed())
-                    return;
-
-                Object[] result = dialog.getResult();
-                if(result == null ||  mon.getLastRealNode() == null)
-                    return;
-                Object value = mon.getApi().compute(dialog.getTreeNode().getNode(), dialog.getInfo(), result);
-                if(!printToConsole(value))
-                    return;
-
-                if(info.isNTA())
-                    mon.getController().updateUI();
-                setAttributeList(node, false);
-
-                // Below code is for setting the selected position to the last computed value, in case the selected row
-                // is a parameterized attribute
-                attributeTableView.getSelectionModel().select(dialog.getNodeInfoPos());
-                TreeItem<NodeInfoInterface> selected = attributeTableView.getSelectionModel().getSelectedItem();
-
-                if(selected == null || !selected.getValue().isNodeInfo())
-                    return;
-                NodeInfo infoSelected = selected.getValue().getNodeInfoOrNull();
-                if(!info.isAttribute() && !info.isParametrized())
-                    return;
-                Attribute attribute = (Attribute) infoSelected;
-                int i = 0;
-                for(Map.Entry<String, Object> entry : attribute.getComputedEntry()){
-                    i++;
-                    if(entry.getKey().equals(attribute.getLastComputedkey())) {
-                        attributeTableView.getSelectionModel().select(dialog.getNodeInfoPos() + i);
-                        break;
-                    }
-                }
-            });
-            dialog.show();
-        });
+        cmItem1.setOnAction(e ->  { onInvokeClicked();});
         mouseMenu.getItems().add(cmItem1);
         showThisInAttributeTab(nodeInfoView);
     }
@@ -314,33 +255,35 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         if(list.size() == 0)
             return;
 
-        NodeInfoInterface fucker = new NodeInfoLabel(label);
-        TreeItem<NodeInfoInterface> tokensItem = new TreeItem<>(fucker);
+        TreeItem<NodeInfoInterface> tokensItem = new TreeItem<>(new NodeInfoLabel(label));
         tokensItem.setExpanded(true);
 
         // go through all methods and sort them on kind
         HashMap<String, ArrayList<NodeInfo>> methods = new HashMap<>();
         for (NodeInfo info : list) {
-            if(!methods.containsKey(info.getKindString())){
-                methods.put(info.getKindString(), new ArrayList<>());
+            if(!methods.containsKey(info.getKind())){
+                methods.put(info.getKind(), new ArrayList<>());
             }
-            methods.get(info.getKindString()).add(info);
+            methods.get(info.getKind()).add(info);
         }
 
         // Add all methods to the list
         for(Map.Entry<String, ArrayList<NodeInfo>> entry : methods.entrySet()){
             if(entry.getValue().size() > 0) {
-
-                TreeItem<NodeInfoInterface> kindLabel = new TreeItem<>(new NodeInfoLabel(entry.getKey()));
-                kindLabel.setExpanded(true);
-                tokensItem.getChildren().add(kindLabel);
+                TreeItem<NodeInfoInterface> kindLabel;
+                if(entry.getValue().get(0).getKind() != null) {
+                    kindLabel = new TreeItem<>(new NodeInfoLabel(entry.getKey()));
+                    kindLabel.setExpanded(true);
+                    tokensItem.getChildren().add(kindLabel);
+                }else
+                    kindLabel = tokensItem;
 
                 for (NodeInfo info : entry.getValue()) {
                     TreeItem<NodeInfoInterface> methodItem = new TreeItem<>(new NodeInfoHolder(info));
                     kindLabel.getChildren().add(methodItem);
-                    if(!info.isAttribute() || !info.isParametrized()){
+                    if(!info.isAttribute() || !info.isParametrized())
                         continue;
-                    }
+
                     Attribute attr = (Attribute) info;
                     methodItem.setExpanded(true);
                     for(Map.Entry<String, Object> computedEntry : attr.getComputedEntry()){
@@ -378,6 +321,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             else if(oldValue.getValue().isParameter())
                 mon.getApi().getNodeReferencesAndHighlightThem(oldValue.getValue().getValue(), false);
         }
+        System.out.print(newValue.getValue().getName());
 
         if(newValue != null) {
             NodeInfoInterface infoHolder = newValue.getValue();
@@ -455,6 +399,68 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         ObservableList<ClusterInfo> items = FXCollections.observableArrayList (itemList);
         clusterInfoTableView.setItems(items);
     }
+
+    /**
+     * This method will call the invocation of the method that has been clicked on, after the values have been added
+     */
+    private void onInvokeClicked(){
+
+        TreeNode node = (TreeNode) mon.getSelectedNode();
+        NodeInfoInterface selectedInfo  = attributeTableView.getSelectionModel().getSelectedItem().getValue();
+        if(!selectedInfo.isNodeInfo())
+            return;
+        NodeInfo info = selectedInfo.getNodeInfoOrNull();
+        if(info.isNTA() && !info.isParametrized()){ //Handle the non-parametrized NTA:s
+            Object obj = mon.getApi().compute(node.getNode(), info);
+
+            setAttributeList(node, false);
+            if(printToConsole(obj))
+                mon.getController().updateUI();
+            return;
+        }
+
+        AttributeInputDialog dialog = new AttributeInputDialog(info, node, mon);
+        dialog.setNodeInfoPos(attributeTableView.getSelectionModel().getSelectedIndex());
+        dialog.init();
+
+        dialog.setOnCloseRequest(event -> {
+            mon.getController().nodeSelected(dialog.getTreeNode(), false);
+            if(!dialog.invokeButtonPressed())
+                return;
+
+            Object[] result = dialog.getResult();
+            if(result == null ||  mon.getLastRealNode() == null)
+                return;
+            Object value = mon.getApi().compute(dialog.getTreeNode().getNode(), dialog.getInfo(), result);
+            printToConsole(value);
+            if(info.isNTA())
+                mon.getController().updateUI();
+            setAttributeList(node, false);
+
+            // Below code is for setting the selected position to the last computed value, in case the selected row
+            // is a parameterized attribute
+            attributeTableView.getSelectionModel().select(dialog.getNodeInfoPos());
+            TreeItem<NodeInfoInterface> selected = attributeTableView.getSelectionModel().getSelectedItem();
+
+            if(selected == null || !selected.getValue().isNodeInfo())
+                return;
+            NodeInfo infoSelected = selected.getValue().getNodeInfoOrNull();
+            if(!info.isAttribute() && !info.isParametrized())
+                return;
+            Attribute attribute = (Attribute) infoSelected;
+            int i = 0;
+            for(Map.Entry<String, Object> entry : attribute.getComputedEntry()){
+                i++;
+                if(entry.getKey().equals(attribute.getLastComputedkey())) {
+                    attributeTableView.getSelectionModel().select(dialog.getNodeInfoPos() + i);
+                    break;
+                }
+            }
+        });
+        dialog.show();
+
+    }
+
 
     /**
      * Class for the cells in the tableviews

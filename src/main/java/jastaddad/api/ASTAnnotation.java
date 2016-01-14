@@ -17,10 +17,13 @@ public class ASTAnnotation{
   public static final String AST_NODE_TOKEN = AST_ANNO + "Token";
   public static final String AST_NODE_SOURCE = AST_ANNO + "Source";
 
-  public static final String AST_KIND = AST_ANNO + "Kind";
-  public static final String AST_KIND_SYN = AST_KIND + "SYN";
-  public static final String AST_KIND_INH = AST_KIND + "INH";
-  public static final String AST_KIND_COLL = AST_KIND + "COLL";
+  public static final String AST_KIND_SYN = "SYN";
+  public static final String AST_KIND_INH = "INH";
+  public static final String AST_KIND_COLL = "COLL";
+
+  public static String AST_KIND_SYN_FULL_NAME = "Synthesised";
+  public static String AST_KIND_INH_FULL_NAME = "Inherited";
+  public static String AST_KIND_COLL_FULL_NAME = "Collection";
 
   public static final String AST_METHOD_NAME = "name";
   public static final String AST_METHOD_KIND = "kind";
@@ -28,10 +31,6 @@ public class ASTAnnotation{
   public static final String AST_METHOD_ASPECT = "aspect";
   public static final String AST_METHOD_NTA = "isNTA";
   public static final String AST_METHOD_CIRCULAR = "isCircular";
-
-  public static final int ATTRIBUTE = 0;
-  public static final int TOKEN = 1;
-
 
   public static boolean isChild(Annotation a){ return isListChild(a) || isOptChild(a) || isSingleChild(a); }
 
@@ -61,6 +60,21 @@ public class ASTAnnotation{
 
   public static Object get(Annotation annotation, String method)  {
     return compute(annotation, method);
+  }
+  public static String getKind(Annotation annotation)  {
+    String kind = compute(annotation, AST_METHOD_KIND).toString();
+    if(kind == null)
+      return null;
+    switch (kind){
+      case AST_KIND_SYN:
+        return AST_KIND_SYN_FULL_NAME;
+      case AST_KIND_INH:
+        return AST_KIND_INH_FULL_NAME;
+      case AST_KIND_COLL:
+        return AST_KIND_COLL_FULL_NAME;
+      default:
+        return kind;
+    }
   }
 
   public static String getString(Annotation annotation, String method)  {

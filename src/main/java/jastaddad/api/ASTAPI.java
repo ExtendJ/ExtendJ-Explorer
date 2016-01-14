@@ -423,7 +423,7 @@ public class ASTAPI {
         if (info == null)
             return null;
         Object obj = node.getNodeContent().compute(info, params, this);
-        if(!info.isNTA() || ASTNTAObjects.contains(obj))
+        if(!info.isNTA() || ASTNTAObjects.contains(obj) || containsError(AlertMessage.INVOCATION_ERROR))
             return obj;
         Node astNode = new Node(obj, node, true, this);
         if(!computedNTAs.containsKey(node))
@@ -432,8 +432,10 @@ public class ASTAPI {
         node.NTAChildren.put(NodeInfo.getName(info.getMethod(), params), astNode);
         if(filterConfig.getBoolean(Config.NTA_COMPUTED))
             buildFilteredSubTree(astNode, (TreeNode) treeNodes.get(node.node));
-        else
-            putWarning(AlertMessage.INVOCATION_WARNING, "Computed NTA successfully, but the configuration: " + Config.NTA_COMPUTED + " is either not set or off, so the NTA will not be shown.");
+        else {
+            String message = String.format("Computed NTA successfully, but the configuration %s is either not set or off, so the NTA will not be shown.", Config.NTA_COMPUTED);
+            putWarning(AlertMessage.INVOCATION_WARNING, message);
+        }
         return obj;
     }
 

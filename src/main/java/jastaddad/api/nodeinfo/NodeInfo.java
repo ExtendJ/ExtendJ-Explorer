@@ -1,5 +1,7 @@
 package jastaddad.api.nodeinfo;
 
+import jastaddad.api.ASTAnnotation;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -11,13 +13,11 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
     protected Object value; //The value of the attribute
     protected Method method; //The method which is used to invoke the attribute
     protected String name;
-    protected Object kind;
 
-    public NodeInfo(String name, Object value, Method method, Object kind){
+    public NodeInfo(String name, Object value, Method method){
         this.name = name;
         this.value = value;
         this.method = method;
-        this.kind = kind;
     }
 
     public Object getValue(){ return value; }
@@ -34,9 +34,7 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
      * Returns the kind of the method, i.e. syn, syn, etc.
      * @return
      */
-    public Object getKind(){ return kind; }
-    public String getKindString(){ return kind == null ? "" : kind.toString(); }
-    public void setKind(Object kind) { this.kind = kind; }
+    public abstract String getKind();
 
     /**
      * This will print the name of the attribute with its parameters
@@ -108,8 +106,8 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
         for (int i = 0; i < method.getParameterCount(); i++)
             al.add(new NodeInfoHolder("Parameter type: " + i, method.getParameterTypes()[i]));
         al.add(new NodeInfoHolder("Is parametrized", isParametrized()));
-        setChildInfo(al);;
-        al.add(new NodeInfoHolder("Kind", kind));
+        setChildInfo(al);
         return al;
     }
+
 }

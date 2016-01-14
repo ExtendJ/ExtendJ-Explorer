@@ -1,7 +1,7 @@
 aspect StyleAttributes{
 
 	syn HashMap<String, Value> DebuggerConfig.getNodeStyles(jastaddad.api.Node node){
-		HashMap<String, Value> bindings = new HashMap<>();
+		HashMap<String, Value> bindings = new HashMap<String, Value>();
 		return getNodeStyles(node.node.getClass(), bindings);
 	}
 
@@ -29,7 +29,7 @@ aspect StyleAttributes{
 
 	// ArrayList with all When expressions
 	syn ArrayList<Binding> Node.getStyleBindings(){
-		ArrayList<Binding> list = new ArrayList<>();
+		ArrayList<Binding> list = new ArrayList<Binding>();
 		Style style = getStyle();
 		if(style == null)
 			return list;

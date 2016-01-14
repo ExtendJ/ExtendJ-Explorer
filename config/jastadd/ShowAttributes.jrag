@@ -1,7 +1,7 @@
 aspect ShowAttributes{
 
     syn HashSet<String> DebuggerConfig.getShow(jastaddad.api.Node node){
-        HashSet<String> attrs = new HashSet<>();
+        HashSet<String> attrs = new HashSet<String>();
         return getShow(node.node.getClass(), attrs);
     }
 
@@ -30,7 +30,7 @@ aspect ShowAttributes{
 
     // ArrayList with all When expressions
     syn ArrayList<LangDecl> Node.getShows(){
-        ArrayList<LangDecl> list = new ArrayList<>();
+        ArrayList<LangDecl> list = new ArrayList<LangDecl>();
         Show show = getShow();
         if(show == null)
             return list;

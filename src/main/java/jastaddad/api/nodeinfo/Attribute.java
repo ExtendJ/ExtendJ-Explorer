@@ -17,19 +17,22 @@ public class Attribute extends NodeInfo {
     private String declaredAt;
     private boolean isCircular;
     private boolean isNTA;
+    private String kind;
     private HashMap<String, Object> computedValues;
     private HashMap<String, Object[]> usedParameters;
     private String lastComputedkey;
     public Attribute(String name, Object value, Method m) {
-        super(name, value, m, "");
+        super(name, value, m);
         computedValues = new HashMap<>();
         usedParameters = new HashMap<>();
     }
 
-    public Attribute(String name, Object value, Method m, Object kind) {
-        super(name, value, m, kind);
+
+    public Attribute(String name, Object value, Method m, String kind) {
+        super(name, value, m);
         computedValues = new HashMap<>();
         usedParameters = new HashMap<>();
+        this.kind = kind;
     }
 
     @Override
@@ -38,7 +41,14 @@ public class Attribute extends NodeInfo {
         al.add(new NodeInfoHolder("Is NTA", isNTA));
         al.add(new NodeInfoHolder("Aspect", aspect));
         al.add(new NodeInfoHolder("Declared at", declaredAt));
+        al.add(new NodeInfoHolder("Kind", kind));
     }
+
+    @Override
+    public String getKind() { return kind; }
+
+
+    public void setKind(String kind) { this.kind = kind; }
 
     @Override
     public String print(){ return getName(method, null); }

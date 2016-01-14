@@ -25,6 +25,13 @@
                         <Tab text="Node data">
                             <fx:include fx:id="attributeTab" source="/attributeTab.fxml"/>
                         </Tab>
+                        <Tab text="Class overview"  fx:id="classOverviewTabNode">
+                            <VBox styleClass="paneParent" VBox.vgrow="ALWAYS">
+                                <ScrollPane styleClass="typeListView" fx:id="scrollPaneClassFilter" prefHeight="1000">
+                                    <TreeView styleClass="typeTreeView" fx:id="typeListView"/>
+                                </ScrollPane>
+                            </VBox>
+                        </Tab>
                     </tabs>
                 </TabPane>
             </VBox>
@@ -53,13 +60,6 @@
                             </Tab>
                             <Tab text="Tree" fx:id="treeViewTabNode">
                                 <fx:include fx:id="textTreeTab" source="/treeViewTab.fxml"/>
-                            </Tab>
-                            <Tab text="Class overview"  fx:id="classOverviewTabNode">
-                                <VBox styleClass="paneParent" VBox.vgrow="ALWAYS">
-                                    <ScrollPane styleClass="typeListView" fx:id="scrollPaneClassFilter" prefHeight="1000">
-                                        <TreeView styleClass="typeTreeView" fx:id="typeListView"/>
-                                    </ScrollPane>
-                                </VBox>
                             </Tab>
                         </tabs>
                     </TabPane>

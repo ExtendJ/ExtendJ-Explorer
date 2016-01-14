@@ -390,7 +390,6 @@ public class AttributeInputDialog extends UIDialog {
         if (focusedNodeParameter.type.getSimpleName().equals(fNode.getNode().simpleNameClass) ||
                 fNode.getNode().isChildClassOf(focusedNodeParameter.type)) {
             int index = nodeParameters.indexOf(focusedNodeParameter);
-            mon.getController().addMessage("index: " + index);
             if(index >= 0){
                 mon.removeDialogSelectedNodes(nodeParameters.get(index).getNode());
             }
@@ -405,8 +404,6 @@ public class AttributeInputDialog extends UIDialog {
             timeline.setCycleCount(2);
             timeline.play();
 
-
-            //System.out.println("asdasd: " + focusedNodeParameter.toString());
         }
     }
 

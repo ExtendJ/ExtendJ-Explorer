@@ -108,10 +108,16 @@ public abstract class GenericTreeNode {
     public abstract boolean isClusterParent();
 
     /**
-     * Creates the string containing the nodes name and the displayed attributes
+     * Creates the string containing the nodes name and the displayed attributes for the graph view
      * @return
      */
     public abstract String toGraphString();
+
+    /**
+     * Creates the string containing the nodes name and the displayed attributes for the tree view
+     * @return
+     */
+    public abstract String toTreeViewString();
 
     /**
      * Sets the style of the nodes

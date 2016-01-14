@@ -6,8 +6,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
+import javafx.util.Callback;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -33,6 +33,22 @@ public class TreeViewTabController implements Initializable, ChangeListener {
         loadGraphTreeView();
 
         graphTreeView.getSelectionModel().selectedItemProperty().addListener(this);
+        graphTreeView.setCellFactory(new Callback<TreeView, TreeCell>() {
+            @Override
+            public TreeCell call(TreeView param) {
+                TreeCell cell = new TreeCell<GenericTreeNode>() {
+                    @Override
+                    protected void updateItem(GenericTreeNode item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if(empty)
+                            setText("");
+                        else
+                            setText(item.toTreeViewString());
+                    }
+                };
+                return cell;
+            }
+        });
     }
 
     /**

@@ -21,6 +21,7 @@ import javafx.stage.StageStyle;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Optional;
 
 /**
@@ -122,7 +123,9 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
                     System.err.println("- " + e);
                 }
             } else {
-                JastAddAdUI debugger = new JastAddAdUI(program.getFilterList(), true);
+                JastAddAdUI debugger = new JastAddAdUI(program);
+                //TestMe root = new TestMe(new TestMe(), new TestMe());
+               // JastAddAdUI debugger = new JastAddAdUI(program);
                 debugger.run();
             }
         } catch (FileNotFoundException e) {
