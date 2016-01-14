@@ -2,6 +2,9 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Pane?>
 <MenuBar styleClass="typeListView" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jastaddad.ui.controllers.TopMenuController">
     <Menu text="File" fx:id="topMenuFileMenu">
         <items>
@@ -14,9 +17,13 @@
     </Menu>
     <Menu text="View">
         <items>
-            <MenuItem text="F" fx:id="toggleMinimizeMenuItem">
+            <MenuItem text="" fx:id="toggleMinimizeMenuItem">
                 <graphic>
-                    <Label text="Toggle minimize all"></Label>
+                    <HBox>
+                        <Label styleClass="MenuItemText" text="Toggle minimize all"></Label>
+                        <Label></Label>
+                        <Label styleClass="MenuItemShort" text="F"></Label>
+                    </HBox>
                 </graphic>
             </MenuItem>
         </items>

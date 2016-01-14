@@ -140,6 +140,7 @@ public class Controller implements Initializable {
         // hide/show sidebars
         centerSplitPane.setOnKeyPressed(ke -> {
             if (!ke.isShiftDown() && !ke.isAltDown() && !ke.isControlDown() && ke.getCode().equals(KeyCode.F)){
+                System.out.println("asdasdasd");
                 toggleMinimizeWindows();
             }
         });
