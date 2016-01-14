@@ -41,6 +41,19 @@
     -fx-border-color:#AAAAAA #AAAAAA #404040 black;
 }
 
+.graphInfo .label{
+    -fx-text-fill:#202020;
+    -fx-font-weight:normal;
+}
+
+.graphInfo{
+    -fx-background-color: #909090;
+    -fx-padding: 5;
+    -fx-background-insets: 0;
+    -fx-border-width:1 0 1 0;
+    -fx-border-color:#AAAAAA #AAAAAA #404040 black;
+}
+
 .paneParent{
     -fx-background-color: #606060;
     -fx-fit-to-height:true;

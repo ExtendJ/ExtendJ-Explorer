@@ -32,6 +32,7 @@ public class ASTAPI {
     private HashMap<String, ArrayList<AlertMessage>> messages;
     private ArrayList<NodeReference> displayedReferences;
     private String directoryPath;
+    private int nonFilteredNodes;
 
     public ASTAPI(Object root, String filterDir){
         initialize(root, filterDir, false);
@@ -41,6 +42,7 @@ public class ASTAPI {
     }
 
     public void initialize(Object root, String filterDir, boolean listRoot){
+        nonFilteredNodes = 0;
         directoryPath = filterDir;
         displayedReferences = new ArrayList<>();
         treeNodes = new HashMap<>();
@@ -80,6 +82,11 @@ public class ASTAPI {
 
     public void putError(String type, String message){ putMessageLine(errors, type, message); }
 
+    public int getNonFilteredNodes(){return nonFilteredNodes; }
+
+    public String getAppliedFilters(){
+        return filterConfig.getEnabledFilterNames();
+    }
     /**
      * Return all messages with the give type.
      * The messages will be removed and can not be fetched again through this method.
@@ -149,6 +156,7 @@ public class ASTAPI {
      * @param firstTime
      */
     private void traversTree(Node node, boolean firstTime){
+        nonFilteredNodes = 0;
         ArrayList<NodeReference> futureReferences = new ArrayList<>();
         traversTree(node, null, null, firstTime, filterConfig.getInt(Config.NTA_DEPTH), futureReferences);
         // Add reference edges that is defined in the filter language
@@ -181,6 +189,7 @@ public class ASTAPI {
 
         // if the class is not filtered
         if(fNode.isEnabled()){
+            nonFilteredNodes++;
             // is this the root?
             if(parent == null){
                 filteredTree = fNode;
@@ -226,8 +235,9 @@ public class ASTAPI {
 
         clusterClusters(fNode);
 
-        if(addToParent != null)
+        if(addToParent != null){
             parent.addChild(addToParent);
+        }
 
         fNode.setDisplayedAttributes(futureReferences, displayedAttributes, this);
     }
@@ -324,12 +334,6 @@ public class ASTAPI {
             ASTNTAObjects.forEach(treeNodes::remove);
             clearDisplayedReferences();
             filteredTree = null;
-            String message;
-            if(filterConfig.getEnabledFilterNames() == null)
-                message = "Applied no filter, all nodes are shown";
-            else
-                message = "Applied filters : " + filterConfig.getEnabledFilterNames();
-            putMessage(AlertMessage.FILTER_MESSAGE, message);
             traversTree(this.tree, false);
         }
         return res;

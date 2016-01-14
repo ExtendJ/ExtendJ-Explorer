@@ -87,6 +87,10 @@ public class Controller implements Initializable {
     @FXML private ScrollPane consoleScrollPaneMessage;
     @FXML private ScrollPane consoleScrollPaneWarning;
 
+    @FXML private Label appliedFiltersLabel;
+    @FXML private Label appliedFiltersLabelLabel;
+    @FXML private Label nodeCountLabel;
+
     private FilterEditor codeArea;
 
     private enum ConsoleFilter {
@@ -219,6 +223,21 @@ public class Controller implements Initializable {
         zoomOutButton.setOnMouseClicked(e->{
             graphView.zoomOut();
         });
+
+        updateGraphInfo();
+    }
+
+    private void updateGraphInfo(){
+        nodeCountLabel.setText(mon.getApi().getNonFilteredNodes() + "/" + mon.getApi().getASTSize() + ".");
+        String filters = mon.getApi().getAppliedFilters();
+
+        if(filters == null) {
+            appliedFiltersLabelLabel.setText("No filters.");
+            appliedFiltersLabel.setText("");
+        }else{
+            appliedFiltersLabelLabel.setText("Filters: ");
+            appliedFiltersLabel.setText(filters);
+        }
     }
 
     public void toggleMinimizeWindows(){
@@ -245,8 +264,8 @@ public class Controller implements Initializable {
             updateUI();
             addMessages(mon.getApi().getMessages(AlertMessage.FILTER_MESSAGE));
             addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
-            addMessage("Filter update: done after, " + (System.currentTimeMillis() - timeStart) + " ms");
-            addMessage("Number of nodes : " + mon.getApi().getASTSize());
+            addMessage("Filter update: done after " + (System.currentTimeMillis() - timeStart) + " ms");
+            updateGraphInfo();
         } else {
             //addError("Could not update graph: ");
             addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
