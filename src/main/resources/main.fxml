@@ -14,7 +14,7 @@
         <SplitPane styleClass="boobs" fx:id="centerSplitPane" orientation="HORIZONTAL" dividerPositions="0.2,0.8">
             <VBox styleClass="paneParent">
                 <VBox styleClass="topRigthAlign">
-                    <Button styleClass="minimizeButton" text="|-" fx:id="minimizeLeftSide">
+                    <Button styleClass="minimizeButton" text="-" fx:id="minimizeLeftSide">
                         <tooltip>
                             <Tooltip text="Minimize"/>
                         </tooltip>
@@ -113,7 +113,7 @@
             </VBox>
             <VBox styleClass="paneParent">
                     <VBox styleClass="topLeftAlign">
-                        <Button styleClass="minimizeButton" text="-|" fx:id="minimizeRightSide">
+                        <Button styleClass="minimizeButton" text="-" fx:id="minimizeRightSide">
                             <tooltip>
                                 <Tooltip text="Minimize"/>
                             </tooltip>

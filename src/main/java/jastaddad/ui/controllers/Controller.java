@@ -166,44 +166,47 @@ public class Controller implements Initializable {
                     centerSplitPane.setDividerPosition(1, 1);
             }
 
-            });
-            minimizeConsole.setOnMouseClicked(event2 -> {
-                if(event2.getButton() == MouseButton.PRIMARY) {
-                    if (consoleAndGraphSplitPane.getDividers().get(0).getPosition() > 0.95)
-                        consoleAndGraphSplitPane.setDividerPosition(0, 0.8);
-                    else
-                        consoleAndGraphSplitPane.setDividerPosition(0, 1);
-                }
+        });
+        minimizeConsole.setOnMouseClicked(event2 -> {
+            if(event2.getButton() == MouseButton.PRIMARY) {
+                if (consoleAndGraphSplitPane.getDividers().get(0).getPosition() > 0.95)
+                    consoleAndGraphSplitPane.setDividerPosition(0, 0.8);
+                else
+                    consoleAndGraphSplitPane.setDividerPosition(0, 1);
+            }
 
-            });
+        });
 
-            // update the new filter. This is done in the API
-            saveNewFilterButton.setOnAction((event) -> {
-                saveNewFilter();
-            });
+        // update the new filter. This is done in the API
+        saveNewFilterButton.setOnAction((event) -> {
+            saveNewFilter();
+        });
 
-            // not working right now. The graph does not repaint when moving between the tabs
-            graphViewTabs.getSelectionModel().selectedItemProperty().addListener(
-                    (ov, t, t1) -> {
-                        if (t1.getId().equals("graphViewTabNode")) {
-                            Platform.runLater(() -> {
-                                graphView.repaint();
-                                graphView.requestFocus();
-                            });
-                        } else if (t1.getId().equals("treeViewTabNode")) {
 
-                        }
+        // not working right now. The graph does not repaint when moving between the tabs
+        graphViewTabs.getSelectionModel().selectedItemProperty().addListener(
+                (ov, t, t1) -> {
+                    if (t1.getId().equals("graphViewTabNode")) {
+                        Platform.runLater(() -> {
+                            graphView.repaint();
+                            graphView.requestFocus();
+                        });
+                    } else if (t1.getId().equals("treeViewTabNode")) {
+
                     }
-            );
+                }
+        );
 
-            Platform.runLater(() -> {
-                addWarnings(mon.getApi().getWarnings(AlertMessage.AST_STRUCTURE_WARNING));
-                addWarnings(mon.getApi().getWarnings(AlertMessage.INVOCATION_WARNING));
-                addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
-                addErrors(mon.getApi().getErrors(AlertMessage.AST_STRUCTURE_ERROR));
-                addErrors(mon.getApi().getErrors(AlertMessage.INVOCATION_ERROR));
-                addErrors(mon.getApi().getErrors(AlertMessage.FILTER_ERROR));
-            });
+        Platform.runLater(() -> {
+            addWarnings(mon.getApi().getWarnings(AlertMessage.AST_STRUCTURE_WARNING));
+            addWarnings(mon.getApi().getWarnings(AlertMessage.INVOCATION_WARNING));
+            addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
+            addErrors(mon.getApi().getErrors(AlertMessage.AST_STRUCTURE_ERROR));
+            addErrors(mon.getApi().getErrors(AlertMessage.INVOCATION_ERROR));
+            addErrors(mon.getApi().getErrors(AlertMessage.FILTER_ERROR));
+        });
+
+
         showRootNodeButton.setOnAction(click -> {
             graphView.panToNode(mon.getRootNode());
         });
