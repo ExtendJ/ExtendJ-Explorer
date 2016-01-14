@@ -108,48 +108,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         // cluster information views
         clusterInfoNameCol.setCellValueFactory(new PropertyValueFactory("typeName"));
         clusterInfoCountCol.setCellValueFactory(new PropertyValueFactory("count"));
-        attributeInfoValueCol.setCellFactory(column -> new TableCell<AttributeInfo, Object>() {
-            @Override
-            protected void updateItem(Object item, boolean empty) {
-                super.updateItem(item, empty);
-
-                if(empty) {
-                    setText("");
-                    return;
-                }
-                AttributeInfo info = (AttributeInfo)getTableRow().getItem();
-
-                String text = item.toString();
-                if(info.isFilePointer()){
-                    setText(text.substring(text.lastIndexOf('/') + 1) + " (" + text + ")");
-                    HBox box= new HBox();
-                    //box.setSpacing(10) ;
-
-                    ImageView imageview = new ImageView();
-                    imageview.setFitHeight(16);
-                    imageview.setFitWidth(16);
-                    imageview.setImage(new Image("images/folder.png"));
-                    imageview.setCursor(Cursor.HAND);
-
-                    String filePath = text.substring(0, text.indexOf(':'));
-                    imageview.setOnMouseClicked(e ->{
-                        boolean success = JastAddAdUI.openFile(new File(filePath));
-                        if(!success){
-                            mon.getController().addError("File \"" + filePath + "\" could not be opened on this system");
-                        }
-                    });
-                    box.getChildren().addAll(imageview);
-                    //SETTING ALL THE GRAPHICS COMPONENT FOR CELL
-                    setGraphic(box);
-                    Tooltip.install(imageview, new Tooltip("open \"" + filePath + "\""));
-                    setContentDisplay(ContentDisplay.RIGHT);
-                }else{
-                    setText(text);
-                    setCursor(Cursor.DEFAULT);
-                }
-
-            }
-        });
         attributeNameCol.setCellValueFactory(param -> {
             NodeInfoInterface info = param.getValue().getValue();
             if(info != null) {
@@ -166,6 +124,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         );
 
         attributeValueCol.setCellFactory(param -> new AttributeValueCell());
+        attributeInfoValueCol.setCellFactory(column -> new AttributeInfoValueCell());
 
         //Yey hiding the header for attribute info tableview, so ugly
         attributeInfoTableView.widthProperty().addListener((source, oldWidth, newWidth) -> {
@@ -376,7 +335,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             else if(oldValue.getValue().isParameter())
                 mon.getApi().getNodeReferencesAndHighlightThem(oldValue.getValue().getValue(), false);
         }
-        System.out.print(newValue.getValue().getName());
 
         if(newValue != null) {
             NodeInfoInterface infoHolder = newValue.getValue();
@@ -516,6 +474,52 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     }
 
+    /**
+     * Class for the cells in the tableviews
+     */
+    private class AttributeInfoValueCell extends TableCell<AttributeInfo, Object>{
+        @Override
+        protected void updateItem(Object item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (getTableRow().getItem() == null || empty) {
+                setText(null);
+                setGraphic(null);
+                return;
+            }
+
+            AttributeInfo info = (AttributeInfo)getTableRow().getItem();
+            String text = item.toString();
+            if(info != null && info.isFilePointer()){
+                setText(text.substring(text.lastIndexOf('/') + 1) + " (" + text + ")");
+                HBox box= new HBox();
+                //box.setSpacing(10) ;
+
+                ImageView imageview = new ImageView();
+                imageview.setFitHeight(16);
+                imageview.setFitWidth(16);
+                imageview.setImage(new Image("images/folder.png"));
+                imageview.setCursor(Cursor.HAND);
+
+                String filePath = text.substring(0, text.indexOf(':'));
+                imageview.setOnMouseClicked(e ->{
+                    boolean success = JastAddAdUI.openFile(new File(filePath));
+                    if(!success){
+                        mon.getController().addError("File \"" + filePath + "\" could not be opened on this system");
+                    }
+                });
+                box.getChildren().addAll(imageview);
+                //SETTING ALL THE GRAPHICS COMPONENT FOR CELL
+                setGraphic(box);
+                Tooltip.install(imageview, new Tooltip("open \"" + filePath + "\""));
+                setContentDisplay(ContentDisplay.RIGHT);
+            }else{
+                setText(text);
+                setCursor(Cursor.DEFAULT);
+            }
+        }
+
+    }
 
     /**
      * Class for the cells in the tableviews
@@ -542,8 +546,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             if (info.isParametrized() || info.isNTA()) {
                 setText("right click to compute");
                 setStyle("-fx-text-fill:#999999;");
-            }else{
-
             }
 
             setOnMouseClicked(event -> {
