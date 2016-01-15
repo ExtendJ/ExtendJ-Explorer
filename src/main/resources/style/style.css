@@ -47,7 +47,7 @@
 }
 
 .graphInfo{
-    -fx-background-color: #909090;
+    -fx-background-color: #dddddd;
     -fx-padding: 5;
     -fx-background-insets: 0;
     -fx-border-width:1 0 1 0;
@@ -127,6 +127,14 @@
     -fx-padding: 0 0 0 10;
 }
 
+.tab-pane .tab-header-area .control-buttons-tab .arrow {
+        -fx-opacity: 0;
+}
+
+.tab-pane .tab-header-area .control-buttons-tab .tab-down-button {
+        visibility:hidden;
+        -fx-opacity: 0;
+}
 
 .tab-pane .tab-header-area .tab-header-background {
     -fx-opacity: 1;
