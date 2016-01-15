@@ -66,8 +66,9 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
     }
 
     @Override
-    public void setRoot(Object root) {
+    public void setRoot(Object root, String filterPath) {
         jastAddAd = new JastAddAdAPI(root);
+        jastAddAd.setFilterDir(filterPath);
         mon.clean(jastAddAd);
         con.onNewAPI();
     }

@@ -1,6 +1,7 @@
 package jastaddad.ui.controllers;
 
 import jastaddad.tasks.JastAddAdXML;
+import jastaddad.ui.ProcessTestOpener;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.graph.GraphView;
 import javafx.fxml.FXML;
@@ -26,6 +27,7 @@ public class TopMenuController implements Initializable {
     @FXML private Menu topMenuExportMenu;
     @FXML private MenuItem exitMenuItem;
     @FXML private MenuItem toggleMinimizeMenuItem;
+    @FXML private MenuItem openMenuItem;
 
     public void init(UIMonitor mon, GraphView graphView){
         this.mon = mon;
@@ -41,6 +43,12 @@ public class TopMenuController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         exitMenuItem.setOnAction(event1 -> {
             mon.getController().exitProgram();
+        });
+
+        openMenuItem.setOnAction(event1 -> {
+            ProcessTestOpener test = new ProcessTestOpener(mon);
+            test.init();
+            test.show();
         });
 
         toggleMinimizeMenuItem.setOnAction(e -> {

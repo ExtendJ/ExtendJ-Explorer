@@ -228,11 +228,6 @@ public class Controller implements Initializable {
         });
 
         updateGraphInfo();
-
-
-        ProcessTestOpener test = new ProcessTestOpener(mon);
-        test.init();
-        test.show();
     }
 
     private void updateGraphInfo(){

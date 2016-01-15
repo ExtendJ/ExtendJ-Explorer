@@ -9,5 +9,5 @@ import jastaddad.api.JastAddAdAPI;
 public interface JastAddAdTask {
     void run();
     JastAddAdAPI getAPI();
-    void setRoot(Object root);
+    void setRoot(Object root, String filterPath);
 }

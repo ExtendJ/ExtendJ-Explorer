@@ -72,10 +72,8 @@ public class JastAddAdSetup {
             // remove some java security, find the method we are looking for and invoke the method to get the new root.
             SystemExitControl.forbidSystemExitCall();
             for(Method m : main.getClass().getMethods()){
-                System.out.println(m.getName());
                 if(m.getName().equals("runDebugger")){
                     root = m.invoke(main, new Object[]{args});
-                    System.out.println(root);
                     success = true;
                 }
             }
@@ -115,7 +113,7 @@ public class JastAddAdSetup {
                         break;
                 }
             }
-            task.setRoot(root);
+            task.setRoot(root, filterPath);
         }
     }
 }

@@ -5,9 +5,12 @@ import jastaddad.api.JastAddAdAPI;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.nodeinfo.NodeInfo;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import org.apache.tools.ant.taskdefs.Jar;
 
 import java.io.File;
@@ -25,6 +28,9 @@ import java.util.jar.JarFile;
  * Created by gda10jth on 1/15/16.
  */
 public class ProcessTestOpener extends UIDialog {
+    private TextField jarField;
+    private TextField filterField;
+    private TextField args;
 
     public ProcessTestOpener(UIMonitor mon) {
         super(mon);
@@ -32,9 +38,9 @@ public class ProcessTestOpener extends UIDialog {
 
     @Override
     protected boolean yesButtonClicked() {
-        JastAddAdSetup setup = new JastAddAdSetup(mon.getJastAddAdUI(), "CalcASM/compiler.jar", "CalcASM/filter.cfg", new String[]{"CalcASM/testfiles/asm/nesting2.calc"});
+        JastAddAdSetup setup = new JastAddAdSetup(mon.getJastAddAdUI(), jarField.getText(), filterField.getText(), new String[]{args.getText()});
         setup.run();
-        return false;
+        return true;
     }
 
 
@@ -52,12 +58,22 @@ public class ProcessTestOpener extends UIDialog {
     @Override
     protected Parent buildDialogContent() {
         VBox parent = new VBox();
-        HBox topBox = new HBox();
-        Label label1 = new Label("Type");
-        Label label2 = new Label("Input");
-        topBox.getChildren().addAll(label1, label2);
-        parent.getChildren().add(topBox);
-        buttonTypeOk.setText("Invoke");
+        Label label1 = new Label("Path to compiler jar:");
+
+        HBox row1 = new HBox();
+        jarField = new TextField();
+        Button jarButton = new Button();
+        row1.getChildren().addAll(jarField, jarButton);
+
+        Label label2 = new Label("path to filter:");
+        filterField = new TextField();
+
+        Label label3 = new Label("Arguments for compiler:");
+        args = new TextField();
+
+        parent.getChildren().addAll(label1,row1, label2, filterField, label3, args );
+
+        buttonTypeOk.setText("Open");
         parent.getChildren().add(buttonTypeOk);
         return parent;
     }
