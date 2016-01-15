@@ -91,4 +91,8 @@ public class TopMenuController implements Initializable {
     public void functionStopped(){
 
     }
+
+    public void onNewAPI() {
+
+    }
 }

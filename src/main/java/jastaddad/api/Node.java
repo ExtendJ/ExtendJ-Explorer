@@ -146,6 +146,7 @@ public class Node{
      * @param api
      */
     private void traversDown(Object root, ASTAPI api) {
+        System.out.println("WOHO!" + root.toString() + " " + root.getClass().toString());
         try {
             for (Method m : root.getClass().getMethods()) {
                 for (Annotation a: m.getAnnotations()) {

@@ -145,7 +145,6 @@ public class Controller implements Initializable {
         // hide/show sidebars
         centerSplitPane.setOnKeyPressed(ke -> {
             if (!ke.isShiftDown() && !ke.isAltDown() && !ke.isControlDown() && ke.getCode().equals(KeyCode.F)){
-                System.out.println("asdasdasd");
                 toggleMinimizeWindows();
             }
         });
@@ -261,6 +260,32 @@ public class Controller implements Initializable {
             centerSplitPane.setDividerPosition(1, 1);
             consoleAndGraphSplitPane.setDividerPosition(0, 1);
         }
+    }
+
+    public void onNewAPI(){
+        long timeStart = System.currentTimeMillis();
+        mon.getJastAddAdAPI().run();
+        if(mon.getApi().containsError(AlertMessage.AST_STRUCTURE_ERROR) || mon.getApi().containsError(AlertMessage.FILTER_ERROR)){
+            addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
+            addErrors(mon.getApi().getErrors(AlertMessage.FILTER_ERROR));
+            addWarnings(mon.getApi().getWarnings(AlertMessage.AST_STRUCTURE_WARNING));
+            addErrors(mon.getApi().getErrors(AlertMessage.AST_STRUCTURE_ERROR));
+            return;
+        }
+
+        addMessages(mon.getApi().getMessages(AlertMessage.AST_STRUCTURE_WARNING));
+        addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
+        addMessages(mon.getApi().getMessages(AlertMessage.FILTER_MESSAGE));
+        addMessage("Filter update: done after " + (System.currentTimeMillis() - timeStart) + " ms");
+
+        loadClassTreeView();
+        attributeTabController.onNewAPI();
+        topMenuController.onNewAPI();
+        textTreeTabController.onNewAPI();
+
+        loadFilterFileText();
+        updateGraphInfo();
+        updateUI();
     }
 
     public void saveNewFilter(){

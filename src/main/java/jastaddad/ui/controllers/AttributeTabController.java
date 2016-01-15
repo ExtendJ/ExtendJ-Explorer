@@ -445,6 +445,10 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     }
 
+    public void onNewAPI() {
+        formatter = new TextFormatter(mon.getApi().getRoot().getClass());
+    }
+
     /**
      * Class for the cells in the tableviews
      */

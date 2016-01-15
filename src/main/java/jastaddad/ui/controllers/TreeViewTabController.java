@@ -137,4 +137,7 @@ public class TreeViewTabController implements Initializable, ChangeListener {
     public void initialize(URL url, ResourceBundle rb) {}
 
 
+    public void onNewAPI() {
+
+    }
 }

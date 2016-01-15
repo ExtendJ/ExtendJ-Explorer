@@ -28,9 +28,16 @@ public abstract class DecoratorTask implements JastAddAdTask{
     }
 
     @Override
+    public void setRoot(Object root) {
+        api = new JastAddAdAPI(root);
+        onNewRoot();
+    }
+
+    @Override
     public JastAddAdAPI getAPI() {
         return api;
     }
 
     protected abstract void runThisTask();
+    protected abstract void onNewRoot();
 }

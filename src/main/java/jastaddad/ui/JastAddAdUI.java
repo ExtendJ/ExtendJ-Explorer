@@ -37,7 +37,6 @@ import java.util.Optional;
  */
 
 public class JastAddAdUI extends Application implements JastAddAdTask {
-
     protected static UIMonitor mon;
     protected static JastAddAdAPI jastAddAd;
     protected static Controller con;
@@ -66,6 +65,13 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         return jastAddAd;
     }
 
+    @Override
+    public void setRoot(Object root) {
+        jastAddAd = new JastAddAdAPI(root);
+        mon.clean(jastAddAd);
+        con.onNewAPI();
+    }
+
     public void setFilterDir(String dir){jastAddAd.setFilterDir(dir);}
 
     /**
@@ -81,7 +87,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         con = loader.<Controller>getController();
         mon.setParentStage(stage);
         mon.setController(con);
-
+        mon.setJastAddAdUI(this);
         GraphView graphview = new GraphView(mon);
         graphview.setOnMouseClicked(event -> graphview.getParent().requestFocus());
 

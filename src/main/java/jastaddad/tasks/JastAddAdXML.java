@@ -52,6 +52,11 @@ public class JastAddAdXML extends DecoratorTask {
         printToXML(JastAddAdAPI.FILE_NAME + ".xml");
     }
 
+    @Override
+    protected void onNewRoot() {
+        run();
+    }
+
     /**
      * Print the AST to a file in toDirectory with the name fileName and extension ext.
      *

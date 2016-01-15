@@ -32,14 +32,26 @@ public class UIMonitor {
     private boolean functionRunning;
     private ArrayList<String> highlightedSimpleClassNames;
     private JastAddAdAPI jaaAPI;
+    private JastAddAdUI jaaUI;
+
 
     public UIMonitor(JastAddAdAPI jaaAPI){
+        clean(jaaAPI);
+    }
+
+    public void clean(JastAddAdAPI jaaAPI) {
         this.jaaAPI = jaaAPI;
         subWindows = new ArrayList<>();
         dialogSelectedNodes = new ArrayList<>();
         highlightedSimpleClassNames = new ArrayList<>();
         functionRunning = false;
+        selectedNode = null;
+        lastRealNode = null;
+        selectedInfo = null;
     }
+
+    public void setJastAddAdUI(JastAddAdUI jaaUI){ this.jaaUI = jaaUI;}
+    public JastAddAdUI getJastAddAdUI(){return jaaUI;}
 
     public void functionStart(){functionRunning = true;}
     public void functionDone(){functionRunning = false;}

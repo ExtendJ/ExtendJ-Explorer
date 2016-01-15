@@ -1,5 +1,7 @@
 package jastaddad.ui;
 
+import jastaddad.JastAddAdSetup;
+import jastaddad.api.JastAddAdAPI;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.nodeinfo.NodeInfo;
 import javafx.scene.Parent;
@@ -24,54 +26,14 @@ import java.util.jar.JarFile;
  */
 public class ProcessTestOpener extends UIDialog {
 
-
-    class MySecurityManager extends SecurityManager {
-
-        @Override public void checkExit(int status) {
-            throw new SecurityException();
-        }
-    }
-
     public ProcessTestOpener(UIMonitor mon) {
         super(mon);
     }
 
     @Override
     protected boolean yesButtonClicked() {
-        URL url = null;
-        try {
-            url = new URL("file:CalcASM/compiler.jar");
-            JarFile j =  new JarFile(new File("CalcASM/compiler.jar"));
-            String mainClassName = j.getManifest().getMainAttributes().getValue("Main-Class");
-            URLClassLoader loader = new URLClassLoader (new URL[]{url}, this.getClass().getClassLoader());
-            Class cl = Class.forName(mainClassName, true, loader);
-            Object main = cl.newInstance();
-            SystemExitControl.forbidSystemExitCall();
-            for(Method m : main.getClass().getMethods()){
-                System.out.println(m.getName());
-                if(m.getName().equals("runDebugger")){
-                    Object root = m.invoke(main, new Object[]{new String[]{"CalcASM/testfiles/asm/nesting1.calc"}});
-                    System.out.println(root);
-                }
-            }
-            SystemExitControl.enableSystemExitCall();
-            loader.close();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            if(e.getTargetException().getClass() != SystemExitControl.ExitTrappedException.class) {
-                e.printStackTrace();
-                System.exit(1);
-            }
-        }
+        JastAddAdSetup setup = new JastAddAdSetup(mon.getJastAddAdUI(), "CalcASM/compiler.jar", "CalcASM/filter.cfg", new String[]{"CalcASM/testfiles/asm/nesting2.calc"});
+        setup.run();
         return false;
     }
 
@@ -108,27 +70,5 @@ public class ProcessTestOpener extends UIDialog {
     @Override
     protected void nodeSelectedChild(GenericTreeNode node) {
 
-    }
-}
-
-class SystemExitControl {
-
-    public static class ExitTrappedException extends SecurityException {
-    }
-
-    public static void forbidSystemExitCall() {
-        final SecurityManager securityManager = new SecurityManager() {
-            @Override
-            public void checkPermission(Permission permission) {
-                if (permission.getName().contains("exitVM")) {
-                    throw new ExitTrappedException();
-                }
-            }
-        };
-        System.setSecurityManager(securityManager);
-    }
-
-    public static void enableSystemExitCall() {
-        System.setSecurityManager(null);
     }
 }
