@@ -321,7 +321,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 info = infoHolder.getNodeInfo();
                 value = infoHolder.getValue();
             }
-            mon.setSelectedInfo(info);
+            mon.setSelectedInfo(infoHolder);
             mon.getController().attributeInNodeSelected(info);
             setAttributeInfo(info);
             setReference(value);
