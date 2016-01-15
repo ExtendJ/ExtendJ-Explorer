@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessControlException;
 import java.security.Permission;
 import java.util.jar.JarFile;
 
@@ -25,6 +26,7 @@ public class ProcessTestOpener extends UIDialog {
 
 
     class MySecurityManager extends SecurityManager {
+
         @Override public void checkExit(int status) {
             throw new SecurityException();
         }
@@ -42,14 +44,15 @@ public class ProcessTestOpener extends UIDialog {
             URLClassLoader loader = new URLClassLoader (new URL[]{url}, this.getClass().getClassLoader());
             Class cl = Class.forName("lang.Compiler", true, loader);
             Object main = cl.newInstance();
-            MySecurityManager secManager = new MySecurityManager();
-            System.setSecurityManager(secManager);
+
+            SystemExitControl.forbidSystemExitCall();
+
             for(Method m : main.getClass().getMethods()){
                 if(m.getName() == "main"){
                     m.invoke(main, new Object[]{new String[]{}});
                 }
             }
-
+            SystemExitControl.enableSystemExitCall();
             loader.close();
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -62,9 +65,10 @@ public class ProcessTestOpener extends UIDialog {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }catch (SecurityException e) {
-            System.out.println("no exit");
+            if(e.getTargetException().getClass() != SystemExitControl.ExitTrappedException.class) {
+                e.printStackTrace();
+                System.exit(1);
+            }
         }
         return false;
     }
@@ -102,5 +106,27 @@ public class ProcessTestOpener extends UIDialog {
     @Override
     protected void nodeSelectedChild(GenericTreeNode node) {
 
+    }
+}
+
+class SystemExitControl {
+
+    public static class ExitTrappedException extends SecurityException {
+    }
+
+    public static void forbidSystemExitCall() {
+        final SecurityManager securityManager = new SecurityManager() {
+            @Override
+            public void checkPermission(Permission permission) {
+                if (permission.getName().contains("exitVM")) {
+                    throw new ExitTrappedException();
+                }
+            }
+        };
+        System.setSecurityManager(securityManager);
+    }
+
+    public static void enableSystemExitCall() {
+        System.setSecurityManager(null);
     }
 }
