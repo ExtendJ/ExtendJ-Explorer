@@ -1,6 +1,7 @@
 package lang;
 
 import beaver.Parser.Exception;
+import configAST.ASTNode;
 import jastaddad.ui.JastAddAdUI;
 import lang.ast.ErrorMessage;
 import lang.ast.LangParser;
@@ -15,6 +16,13 @@ import java.io.IOException;
  * Computes the maximum statement nesting depth for a Calc program.
  */
 public class Compiler {
+
+	private static Object root;
+	public static Object runDebugger(String[] args){
+		main(args);
+		return root;
+	}
+
 	/**
 	 * Entry point
 	 * @param args
@@ -40,8 +48,7 @@ public class Compiler {
 					System.err.println("- " + e);
 				}
 			} else {
-				JastAddAdUI debugger = new JastAddAdUI(program);
-				debugger.run();
+				root = program;
 				//program.genCode(System.out);
 			}
 		} catch (FileNotFoundException e) {

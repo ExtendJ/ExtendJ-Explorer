@@ -41,15 +41,17 @@ public class ProcessTestOpener extends UIDialog {
         URL url = null;
         try {
             url = new URL("file:CalcASM/compiler.jar");
+            JarFile j =  new JarFile(new File("CalcASM/compiler.jar"));
+            String mainClassName = j.getManifest().getMainAttributes().getValue("Main-Class");
             URLClassLoader loader = new URLClassLoader (new URL[]{url}, this.getClass().getClassLoader());
-            Class cl = Class.forName("lang.Compiler", true, loader);
+            Class cl = Class.forName(mainClassName, true, loader);
             Object main = cl.newInstance();
-
             SystemExitControl.forbidSystemExitCall();
-
             for(Method m : main.getClass().getMethods()){
-                if(m.getName() == "main"){
-                    m.invoke(main, new Object[]{new String[]{}});
+                System.out.println(m.getName());
+                if(m.getName().equals("runDebugger")){
+                    Object root = m.invoke(main, new Object[]{new String[]{"CalcASM/testfiles/asm/nesting1.calc"}});
+                    System.out.println(root);
                 }
             }
             SystemExitControl.enableSystemExitCall();
