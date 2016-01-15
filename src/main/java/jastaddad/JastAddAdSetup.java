@@ -54,13 +54,22 @@ public class JastAddAdSetup {
         Object root = null;
         boolean success = false;
         try {
+            // Add the jar to the classpath with reflection.
             URL url = new URL("file:" + jarPath);
+            URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+            Class urlClass = URLClassLoader.class;
+            Method method = urlClass.getDeclaredMethod("addURL", new Class[]{URL.class});
+            method.setAccessible(true);
+            method.invoke(urlClassLoader, new Object[]{url});
+
+            // Find and instantiate the main java file in the jar.
             JarFile j =  new JarFile(new File(jarPath));
             String mainClassName = j.getManifest().getMainAttributes().getValue("Main-Class");
             URLClassLoader loader = new URLClassLoader (new URL[]{url}, this.getClass().getClassLoader());
-
             Class cl = Class.forName(mainClassName, true, loader);
             Object main = cl.newInstance();
+
+            // remove some java security, find the method we are looking for and invoke the method to get the new root.
             SystemExitControl.forbidSystemExitCall();
             for(Method m : main.getClass().getMethods()){
                 System.out.println(m.getName());
@@ -70,7 +79,9 @@ public class JastAddAdSetup {
                     success = true;
                 }
             }
+
             SystemExitControl.enableSystemExitCall();
+
             loader.close();
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -83,14 +94,17 @@ public class JastAddAdSetup {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
-            System.out.println("asdasdasd");
             if(e.getTargetException().getClass() != SystemExitControl.ExitTrappedException.class) {
                 e.printStackTrace();
                 System.exit(1);
             }
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            success = false;
         }
 
-        if(success) {
+        if(success){
+            // If we got the root without crashing sent the root a task.(success)
             if (task == null) {
                 switch (taskName) {
                     case "JastAddAdUI":

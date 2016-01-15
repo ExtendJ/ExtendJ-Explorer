@@ -73,7 +73,7 @@ public class ASTAPI {
     public String getFilterFilePath(){return directoryPath + "filter.cfg"; }
     public String getDirectoryPath(){return directoryPath;}
 
-    public boolean containsError(String type){ return errors.get(type).size() > 0; }
+    public boolean containsError(String type){ return errors.containsKey(type) && errors.get(type).size() > 0; }
 
     public ArrayList<AlertMessage> getMessages(String type){ return getMessageLine(messages, type); }
 
