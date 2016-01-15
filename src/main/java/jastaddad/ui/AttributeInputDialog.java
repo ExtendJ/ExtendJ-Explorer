@@ -349,7 +349,7 @@ public class AttributeInputDialog extends UIDialog {
         }else {
             focusedNodeParameter.label.setStyle(prefWidthInput + paramSelectedTextColor);
         }
-        attributeSelected(mon.getSelectedInfo());
+        attributeSelected(mon.getSelectedInfo().getNodeInfo());
         if(mon.getSelectedNode() != null && mon.getSelectedNode().isNode())
             trySelectNode((TreeNode)mon.getSelectedNode());
         mon.getGraphView().repaint();

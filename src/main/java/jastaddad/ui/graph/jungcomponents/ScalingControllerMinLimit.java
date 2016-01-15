@@ -28,12 +28,13 @@ public class ScalingControllerMinLimit extends CrossoverScalingControl {
         MutableTransformer viewTransformer = vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW);
         double modelScale = layoutTransformer.getScale();
         double viewScale = viewTransformer.getScale();
-        double inverseModelScale = Math.sqrt(crossover)/modelScale;
-        double inverseViewScale = Math.sqrt(crossover)/viewScale;
         double scale = modelScale * viewScale;
 
         if(scale < scaleLimit && amount < 1)
             return;
+
+        double inverseModelScale = Math.sqrt(crossover)/modelScale;
+        double inverseViewScale = Math.sqrt(crossover)/viewScale;
 
         Point2D transformedAt = vv.getRenderContext().getMultiLayerTransformer().inverseTransform(Layer.VIEW, at);
         if((scale*amount - crossover)*(scale*amount - crossover) < 0.001) {

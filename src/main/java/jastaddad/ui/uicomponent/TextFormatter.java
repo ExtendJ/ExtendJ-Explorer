@@ -17,7 +17,7 @@ public class TextFormatter {
 
     public String format(Object obj){
         if(obj == null)
-            return "";
+            return null;
        return format(obj.toString());
     }
 

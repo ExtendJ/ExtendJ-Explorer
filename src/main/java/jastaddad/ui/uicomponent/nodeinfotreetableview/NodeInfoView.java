@@ -23,9 +23,9 @@ public class NodeInfoView {
         this.nodeInfo = nodeInfo;
     }
 
-    public boolean isNodeInfo(){ return false; }
+    public boolean isNodeInfo(){ return nodeInfo != null; }
     public boolean isParameter(){ return false; }
     public String getName(){ return label; }
-    public Object getValue(){ return ""; }
+    public Object getValue(){ return nodeInfo != null ? nodeInfo.getValue() : ""; }
     public NodeInfo getNodeInfo(){ return nodeInfo; }
 }

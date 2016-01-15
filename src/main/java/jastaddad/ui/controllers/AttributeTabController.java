@@ -290,16 +290,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                     Attribute attr = (Attribute) info;
                     methodItem.setExpanded(true);
                     for(Map.Entry<String, Object> computedEntry : attr.getComputedEntry()){
-                        String name = "";
                         Object[] params = attr.getUsedParameters().get(computedEntry.getKey());
-                        int i = params.length;
-                        for(Object param : params){
-                            name += param == null ? "null" : param.toString();
-                            if(--i > 0){
-                                name += ", ";
-                            }
-                        }
-                        TreeItem<NodeInfoView> computedItem = new TreeItem<>(new NodeInfoParameter(name, computedEntry.getValue(), info));
+                        TreeItem<NodeInfoView> computedItem = new TreeItem<>(new NodeInfoParameter(params, computedEntry.getValue(), info));
                         methodItem.getChildren().add(computedItem);
                     }
                 }
@@ -318,26 +310,18 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      */
     @Override
     public void changed(ObservableValue<? extends TreeItem<NodeInfoView>> observable, TreeItem<NodeInfoView> oldValue, TreeItem<NodeInfoView> newValue) {
-        if(oldValue != null && oldValue.getValue() != null) {
-            if(oldValue.getValue().isNodeInfo())
-                mon.getApi().getNodeReferencesAndHighlightThem(oldValue.getValue().getNodeInfo().getValue(), false);
-            else if(oldValue.getValue().isParameter())
-                mon.getApi().getNodeReferencesAndHighlightThem(oldValue.getValue().getValue(), false);
-        }
+        if(oldValue != null && oldValue.getValue() != null)
+            mon.getApi().getNodeReferencesAndHighlightThem(oldValue.getValue().getValue(), false);
 
         if(newValue != null) {
             NodeInfoView infoHolder = newValue.getValue();
             NodeInfo info = null;
             Object value = null;
             if(infoHolder.isNodeInfo()) {
-                info = newValue.getValue().getNodeInfo();
-                value = info.getValue();
-            } else if(infoHolder.isParameter()){
-                NodeInfoParameter paramHolder = ((NodeInfoParameter)newValue.getValue());
-                info = paramHolder.getNodeInfo();
-                value = paramHolder.getValue();
+                info = infoHolder.getNodeInfo();
+                value = infoHolder.getValue();
             }
-            mon.setSelectedInfo(info);
+            mon.setSelectedInfo(infoHolder);
             mon.getController().attributeInNodeSelected(info);
             setAttributeInfo(info);
             setReference(value);
@@ -414,7 +398,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         NodeInfo info = selectedInfo.getNodeInfo();
         if(info.isNTA() && !info.isParametrized()){ //Handle the non-parametrized NTA:s
             Object obj = mon.getApi().compute(node.getNode(), info);
-
             setAttributeList(node, false);
             if(printToConsole(obj))
                 mon.getController().updateUI();
@@ -438,7 +421,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             if(info.isNTA())
                 mon.getController().updateUI();
             setAttributeList(node, false);
-
             // Below code is for setting the selected position to the last computed value, in case the selected row
             // is a parameterized attribute
             attributeTableView.getSelectionModel().select(dialog.getNodeInfoPos());
@@ -528,9 +510,11 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             setText(String.valueOf(item));
             setStyle("-fx-text-fill:#ffffff;");
 
-            NodeInfo info = (getTreeTableRow().getItem()).getNodeInfo();
-            if(info == null)
+            NodeInfoView view = getTreeTableRow().getItem();
+            if(view.isParameter())
                 return;
+
+            NodeInfo info = view.getNodeInfo();
             if(info == null || item != null)
                 return;
             if (info.isParametrized() || info.isNTA()) {

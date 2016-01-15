@@ -12,8 +12,17 @@ import jastaddad.api.nodeinfo.NodeInfo;
 public class NodeInfoParameter extends NodeInfoView {
     private Object value;
 
-    public NodeInfoParameter(String name, Object value, NodeInfo info){
-        super(name, info);
+    public NodeInfoParameter(Object[] params, Object value, NodeInfo info){
+        super("", info);
+        String name = "";
+        int i = params.length;
+        for(Object param : params){
+            name += param == null ? "null" : param.toString();
+            if(--i > 0){
+                name += ", ";
+            }
+        }
+        this.label = name;
         this.value = value;
     }
 
