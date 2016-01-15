@@ -73,8 +73,9 @@ public class NodeContent {
             return obj;
         }catch(Throwable e){
             addInvocationErrors(api, e, attribute.getMethod());
-            attribute.addComputedValue(params, e.getCause());
-            return e.getCause();
+            Object message = e.getCause() != null ? e.getCause() : e.getMessage();
+            attribute.addComputedValue(params, message);
+            return message;
         }
     }
 
