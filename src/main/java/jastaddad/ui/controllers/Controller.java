@@ -5,6 +5,7 @@ import jastaddad.api.AlertMessage;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.TreeNode;
 import jastaddad.api.nodeinfo.NodeInfo;
+import jastaddad.ui.ProcessTestOpener;
 import jastaddad.ui.UIDialog;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.graph.GraphView;
@@ -228,6 +229,11 @@ public class Controller implements Initializable {
         });
 
         updateGraphInfo();
+
+
+        ProcessTestOpener test = new ProcessTestOpener(mon);
+        test.init();
+        test.show();
     }
 
     private void updateGraphInfo(){

@@ -57,7 +57,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
      */
     public void run(){
         jastAddAd.run();
-        this.mon = new UIMonitor(this);
+        this.mon = new UIMonitor(jastAddAd);
         launch(new String[0]);
     }
 

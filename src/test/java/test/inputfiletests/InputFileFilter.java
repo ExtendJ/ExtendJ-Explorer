@@ -1,5 +1,6 @@
 package test.inputfiletests;
 
+import beaver.Parser;
 import configAST.ConfigParser;
 import configAST.ConfigScanner;
 import configAST.DebuggerConfig;
@@ -39,7 +40,6 @@ public class InputFileFilter extends AbstractInputFiletest {
      */
     @Test
     public void runInputTests() {
-        try {
             System.out.println("start input file test in: " + inDirectory);
             try{
                 String filename = inDirectory + "/input.cfg";
@@ -62,14 +62,10 @@ public class InputFileFilter extends AbstractInputFiletest {
             } catch (IOException e) {
                 fail("IOException: " + e.getMessage());
                 e.printStackTrace(System.err);
-            } catch (Exception e) {
-                fail("Exception: " + e.getMessage());
+            } catch (Parser.Exception e) {
+                fail("IOException: " + e.getMessage());
                 e.printStackTrace();
             }
-        } catch (Exception e) {
-            fail("- Excetion: " + e.getMessage());
-            e.printStackTrace();
-        }
     }
 
     @SuppressWarnings("javadoc")

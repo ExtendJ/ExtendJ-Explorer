@@ -30,10 +30,10 @@ public class UIMonitor {
     private ArrayList<GenericTreeNode> dialogSelectedNodes;
     private boolean functionRunning;
     private ArrayList<String> highlightedSimpleClassNames;
-    private JastAddAdUI application;
+    private JastAddAdAPI jaaAPI;
 
-    public UIMonitor(JastAddAdUI jaaUI){
-        this.application = jaaUI;
+    public UIMonitor(JastAddAdAPI jaaAPI){
+        this.jaaAPI = jaaAPI;
         subWindows = new ArrayList<>();
         dialogSelectedNodes = new ArrayList<>();
         highlightedSimpleClassNames = new ArrayList<>();
@@ -67,16 +67,14 @@ public class UIMonitor {
             dialogSelectedNodes.remove(node);
     }
     public void clearDialogSelectedNodes(){ dialogSelectedNodes.clear();}
-    public JastAddAdUI getApplication(){return application; }
 
-    public ASTAPI getApi(){
-        return application.getAPI().api();
+    public ASTAPI getApi(){    return jaaAPI.api();
     }
     public JastAddAdAPI getJastAddAdAPI(){
-        return application.getAPI();
+        return jaaAPI;
     }
 
-    public GenericTreeNode getRootNode(){ return application.getAPI().getFilteredTree(); }
+    public GenericTreeNode getRootNode(){ return jaaAPI.getFilteredTree(); }
     public Controller getController(){return controller;}
 
     public void setController(Controller controller) {
