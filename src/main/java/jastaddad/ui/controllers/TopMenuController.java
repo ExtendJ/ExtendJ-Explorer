@@ -1,7 +1,7 @@
 package jastaddad.ui.controllers;
 
 import jastaddad.tasks.JastAddAdXML;
-import jastaddad.ui.ProcessTestOpener;
+import jastaddad.ui.dialogs.OpenASTDialog;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.graph.GraphView;
 import javafx.fxml.FXML;
@@ -46,7 +46,7 @@ public class TopMenuController implements Initializable {
         });
 
         openMenuItem.setOnAction(event1 -> {
-            ProcessTestOpener test = new ProcessTestOpener(mon);
+            OpenASTDialog test = new OpenASTDialog(mon);
             test.init();
             test.show();
         });

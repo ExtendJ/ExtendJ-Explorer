@@ -1,8 +1,9 @@
-package jastaddad.ui;
+package jastaddad.ui.dialogs;
 
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.filteredtree.TreeNode;
 import jastaddad.api.nodeinfo.NodeInfo;
+import jastaddad.ui.UIMonitor;
 import jastaddad.ui.uicomponent.inputfields.CharField;
 import jastaddad.ui.uicomponent.inputfields.FloatingNumberField;
 import jastaddad.ui.uicomponent.inputfields.NumberField;

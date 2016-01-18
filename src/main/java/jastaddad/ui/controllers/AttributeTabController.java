@@ -9,7 +9,7 @@ import jastaddad.api.filteredtree.TreeNode;
 import jastaddad.api.nodeinfo.Attribute;
 import jastaddad.api.nodeinfo.NodeInfo;
 import jastaddad.ui.AttributeInfo;
-import jastaddad.ui.AttributeInputDialog;
+import jastaddad.ui.dialogs.AttributeInputDialog;
 import jastaddad.ui.JastAddAdUI;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.graph.GraphView;

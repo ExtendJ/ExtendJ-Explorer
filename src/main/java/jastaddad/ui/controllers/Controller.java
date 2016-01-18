@@ -1,12 +1,9 @@
 package jastaddad.ui.controllers;
 
-import jastaddad.api.ASTAPI;
 import jastaddad.api.AlertMessage;
 import jastaddad.api.filteredtree.GenericTreeNode;
-import jastaddad.api.filteredtree.TreeNode;
 import jastaddad.api.nodeinfo.NodeInfo;
-import jastaddad.ui.ProcessTestOpener;
-import jastaddad.ui.UIDialog;
+import jastaddad.ui.dialogs.UIDialog;
 import jastaddad.ui.UIMonitor;
 import jastaddad.ui.graph.GraphView;
 import jastaddad.ui.uicomponent.FilterEditor;

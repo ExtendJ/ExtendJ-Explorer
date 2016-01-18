@@ -1,7 +1,8 @@
-package jastaddad.ui;
+package jastaddad.ui.dialogs;
 
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.nodeinfo.NodeInfo;
+import jastaddad.ui.UIMonitor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;

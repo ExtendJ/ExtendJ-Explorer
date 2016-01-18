@@ -1,9 +1,10 @@
-package jastaddad.ui;
+package jastaddad.ui.dialogs;
 
 import jastaddad.JastAddAdSetup;
 import jastaddad.api.JastAddAdAPI;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.nodeinfo.NodeInfo;
+import jastaddad.ui.UIMonitor;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -11,29 +12,19 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import org.apache.tools.ant.taskdefs.Jar;
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.security.AccessControlException;
-import java.security.Permission;
-import java.util.jar.JarFile;
 
 /**
  * Created by gda10jth on 1/15/16.
  */
-public class ProcessTestOpener extends UIDialog {
+public class OpenASTDialog extends UIDialog {
     private TextField jarField;
     private TextField filterField;
     private TextField arg1Field;
     private TextField args;
 
-    public ProcessTestOpener(UIMonitor mon) {
+    public OpenASTDialog(UIMonitor mon) {
         super(mon);
     }
 
