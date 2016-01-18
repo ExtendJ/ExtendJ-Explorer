@@ -116,39 +116,30 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         graphview.setPreferredSize((int)center.getWidth(), (int)center.getHeight());
     }
 
-    public static boolean openFile(File file)
-    {
-        try
-        {
+    public static boolean openFile(File file) {
+        try {
             if (OSDetector.isWindows()) {
                 Runtime.getRuntime().exec(new String[]
-                        {"rundll32", "url.dll,FileProtocolHandler",
-                                file.getAbsolutePath()});
+                        {"rundll32", "url.dll,FileProtocolHandler", file.getAbsolutePath()});
                 return true;
-            } else if (OSDetector.isLinux() || OSDetector.isMac())
-            {
-                Runtime.getRuntime().exec(new String[]{"xdg-open",
-                        file.getAbsolutePath()});
+            } else if (OSDetector.isLinux()){
+                Runtime.getRuntime().exec(new String[]{"xdg-open",file.getAbsolutePath()});
                 System.out.println(file.getAbsolutePath());
+            } else if(OSDetector.isMac()) {
+                Runtime.getRuntime().exec(new String[]{"open", file.getAbsolutePath()});
                 return true;
-            } else
-            {
+            }else{
                 // Unknown OS, try with desktop
-                if (Desktop.isDesktopSupported())
-                {
+                if (Desktop.isDesktopSupported()){
                     Desktop.getDesktop().open(file);
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-        } catch (Exception e)
-        {
-            e.printStackTrace(System.err);
-            return false;
+        } catch (Exception e){
+            e.printStackTrace();
         }
+        return false;
     }
 
     /**
@@ -168,7 +159,6 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
                     System.err.println("- " + e);
                 }
             } else {
-                TestMe root = new TestMe(new TestMe(), new TestMe());
                 JastAddAdUI debugger = new JastAddAdUI(program);
                 debugger.run();
             }
