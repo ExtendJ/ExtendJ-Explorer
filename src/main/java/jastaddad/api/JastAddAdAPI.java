@@ -20,22 +20,24 @@ import java.io.IOException;
 public class JastAddAdAPI {
 	public final static String FILE_NAME = "jastAddAd-result";
     public final static String CLUSTER_STRING = "cluster";
+    public final static String DEFAULT_FILTER_NAME = "filter.fcl";
+
 	private ASTAPI api;
 
     private Object root;
-    private String filterDir;
+    private String filterPath;
     private boolean done;
 	private boolean listRoot;
 	
 	public JastAddAdAPI(Object root){
         this.root = root;
-        filterDir = "";
+		filterPath = DEFAULT_FILTER_NAME;
         done = false;
 	}
 
 	public JastAddAdAPI(Object root, boolean listRoot){
 		this.root = root;
-		filterDir = "";
+		filterPath = DEFAULT_FILTER_NAME;
 		done = false;
 		this.listRoot = listRoot;
 	}
@@ -48,13 +50,13 @@ public class JastAddAdAPI {
      * Sets the directory of the projects
      * @param dir
      */
-    public void setFilterDir(String dir){filterDir = dir;}
+    public void setFilterPath(String dir){filterPath = dir;}
 
     /**
      * run() generates the AST
      */
 	public void run(){
-        api = new ASTAPI(root, filterDir, listRoot);
+        api = new ASTAPI(root, filterPath, listRoot);
         done = true;
 	}
 
@@ -69,8 +71,8 @@ public class JastAddAdAPI {
      * @param args
      */
 	public static void main(String[] args) {
+		String filename = "sample.fcl";
 		try{
-			String filename = "sample.cfg";
 			ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
 			ConfigParser parser = new ConfigParser();
 			DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);
@@ -85,7 +87,7 @@ public class JastAddAdAPI {
                 debugger.run();
 			}
 		} catch (FileNotFoundException e) {
-			System.out.println("File not found!");
+			System.out.println("File not found: " + filename);
 			System.exit(1);
 		} catch (IOException e) {
 			e.printStackTrace(System.err);

@@ -12,13 +12,13 @@
 /src/gen
 
 !/CalcASM
-/CalcASM/filter.cfg
+/CalcASM/filter.fcl
 /CalcASM/whole_graph_*
 /CalcASM/src/gen
 /CalcASM/ant-bin
 /CalcASM/out
 /CalcASM/compiler.jar
-!sample.cfg
+!sample.fcl
 !/config
 !/tools
 !/tests/

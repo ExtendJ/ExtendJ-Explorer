@@ -21,7 +21,7 @@ abstract public class AbstractInputFiletest {
 	/**
 	 * File extension for test input files. EDIT ME
 	 */
-	protected static final String IN_EXTENSION = ".cfg";
+	protected static final String IN_EXTENSION = ".fcl";
 	/**
 	 * Test output is written to a file with this extension
 	 */

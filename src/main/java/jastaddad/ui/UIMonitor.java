@@ -33,6 +33,7 @@ public class UIMonitor {
     private ArrayList<String> highlightedSimpleClassNames;
     private JastAddAdAPI jaaAPI;
     private JastAddAdUI jaaUI;
+    private Stage stage;
 
 
     public UIMonitor(JastAddAdAPI jaaAPI){
@@ -52,6 +53,9 @@ public class UIMonitor {
 
     public void setJastAddAdUI(JastAddAdUI jaaUI){ this.jaaUI = jaaUI;}
     public JastAddAdUI getJastAddAdUI(){return jaaUI;}
+
+    public void setStage(Stage stage){ this.stage = stage;}
+    public Stage getStage(){return stage;}
 
     public void functionStart(){functionRunning = true;}
     public void functionDone(){functionRunning = false;}

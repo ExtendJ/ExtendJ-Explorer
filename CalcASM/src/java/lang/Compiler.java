@@ -11,6 +11,7 @@ import lang.ast.Program;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.System;
 
 /**
  * Computes the maximum statement nesting depth for a Calc program.
@@ -18,6 +19,7 @@ import java.io.IOException;
 public class Compiler {
 
 	private static Object root;
+
 	public static Object runDebugger(String[] args){
 		main(args);
 		return root;
@@ -38,6 +40,7 @@ public class Compiler {
 			}
 
 			String filename = args[0];
+
 			LangScanner scanner = new LangScanner(new FileReader(filename));
 			LangParser parser = new LangParser();
 			Program program = (Program) parser.parse(scanner);

@@ -68,12 +68,12 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
     @Override
     public void setRoot(Object root, String filterPath) {
         jastAddAd = new JastAddAdAPI(root);
-        jastAddAd.setFilterDir(filterPath);
+        jastAddAd.setFilterPath(filterPath);
         mon.clean(jastAddAd);
         con.onNewAPI();
     }
 
-    public void setFilterDir(String dir){jastAddAd.setFilterDir(dir);}
+    public void setFilterDir(String dir){jastAddAd.setFilterPath(dir);}
 
     /**
      * start the UI and is by JavaFX. Load the FXML files and generates the UI. It also embeds the Swing based graph.
@@ -156,8 +156,8 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
      * @param args
      */
     public static void main(String[] args) {
+        String filename = "sample.fcl";
         try{
-            String filename = "sample.cfg";
             ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
             ConfigParser parser = new ConfigParser();
             DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);
@@ -173,7 +173,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
                 debugger.run();
             }
         } catch (FileNotFoundException e) {
-            System.out.println("File not found!");
+            System.out.println("File not found (UI): " + filename);
             System.exit(1);
         } catch (IOException e) {
             e.printStackTrace(System.err);

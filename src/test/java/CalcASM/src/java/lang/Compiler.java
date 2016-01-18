@@ -21,6 +21,7 @@ public class Compiler {
 	 */
 	public static void main(String[] args) {
 		try {
+			System.out.println("POOP");
 			if (args.length != 1) {
 				System.err.println(
 						"You must specify a source file on the command line!");

@@ -70,7 +70,7 @@ public class ASTAPI {
 
     public Node getRoot(){return tree; }
 
-    public String getFilterFilePath(){return directoryPath + "filter.cfg"; }
+    public String getFilterFilePath(){return directoryPath; }
     public String getDirectoryPath(){return directoryPath;}
 
     public boolean containsError(String type){ return errors.containsKey(type) && errors.get(type).size() > 0; }

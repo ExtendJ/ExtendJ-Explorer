@@ -42,7 +42,7 @@ public class InputFileFilter extends AbstractInputFiletest {
     public void runInputTests() {
             System.out.println("start input file test in: " + inDirectory);
             try{
-                String filename = inDirectory + "/input.cfg";
+                String filename = inDirectory + "/input.fcl";
                 ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
                 ConfigParser parser = new ConfigParser();
                 DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);

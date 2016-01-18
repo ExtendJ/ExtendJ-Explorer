@@ -51,7 +51,7 @@ java -jar jastadddebugger-exjobb.jar
 ```
 This should run a sample JastAdd project and run the JastAddAdUI program. see Lib dependencis below if it's not working.
 
-Note! The debugger will run on the sample.cfg file in your directory. The file sample.cfg contain some Configuration Language code which will be described later.
+Note! The debugger will run on the sample.fcl file in your directory. The file sample.fcl contain some Configuration Language code which will be described later.
 
 ## Try out an example project ##
 Alternatively you can look at the small project CaclASM, that follows when you clone this project. This version of CalcASM is configured to run JastAddUI after its parsing. See row 43-44 in the file CalcASM/src/java/lang/compiler.java to see how it works. 
