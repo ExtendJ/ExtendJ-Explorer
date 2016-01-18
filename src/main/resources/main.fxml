@@ -54,6 +54,8 @@
                                             <Label text=""/>
                                             <Button styleClass="our_button" text="Graph" fx:id="showWholeGraphButton"/>
                                             <Label text=""/>
+                                            <Button styleClass="our_button" text="Auto layout" fx:id="autoLayoutGraphButton"/>
+                                            <Label text=""/>
                                             <Label text="Pan: ctrl+left mouse OR hold middle mouse" styleClass="our_label"/>
                                         </HBox>
                                         <ScrollPane styleClass="graphView" fx:id="graphViewScrollPane"/>

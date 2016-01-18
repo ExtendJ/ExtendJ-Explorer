@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * This class represents the Node in the AST, it holds all its terminal attributes and references to its children.
@@ -21,6 +22,7 @@ public class Node{
     public final String simpleNameClass;
     public final String fullName;
     public final ArrayList<Node> children;
+    public final HashSet<Method> NTAMethods;
     public final HashMap<String,Node> NTAChildren;
     private boolean isList;
     private boolean isOpt;
@@ -35,6 +37,7 @@ public class Node{
      */
     public Node(Object root, ASTAPI api, boolean isList){
         this.children = new ArrayList<>();
+        this.NTAMethods = new HashSet<>();
         this.NTAChildren = new HashMap<>();
         this.nameFromParent = "";
         this.parent = null;
@@ -48,14 +51,21 @@ public class Node{
         init(root, isList, false, false, 1, api);
     }
 
+
     /**
      * This is the constructor used for NTA:S during the traversal of the AST.
      * Will traverse the real childs of the node
      * @param root
      * @param api
      */
-    public Node(Object root, Node parent, boolean NTA, ASTAPI api){
+
+    public static Node getNTANode(Object root, Node parent, ASTAPI api){
+        return new Node(root, parent, true, api);
+    }
+
+    private Node(Object root, Node parent, boolean NTA, ASTAPI api){
         this.children = new ArrayList<>();
+        this.NTAMethods = new HashSet<>();
         this.NTAChildren = new HashMap<>();
         this.nameFromParent = "";
         this.isNTA = NTA;
@@ -81,6 +91,7 @@ public class Node{
      */
     public Node(Object root, Node parent, String name, boolean isList, boolean isOpt, boolean isNTA, int level, ASTAPI api){
         this.children = new ArrayList<>();
+        this.NTAMethods = new HashSet<>();
         this.NTAChildren = new HashMap<>();
         this.parent = parent;
         if(root != null)
@@ -157,8 +168,10 @@ public class Node{
                                 !ASTAnnotation.isSingleChild(a),
                                 ASTAnnotation.isOptChild(a),
                                 isNTA, level + 1, api));
-                    }else if(ASTAnnotation.isAttribute(a) && ASTAnnotation.is(a, ASTAnnotation.AST_METHOD_NTA) && m.getParameterCount() == 0){
-                        NTAChildren.put(m.getName(), null);
+                    }else if(ASTAnnotation.isAttribute(a) && ASTAnnotation.is(a, ASTAnnotation.AST_METHOD_NTA) ){
+                        if(m.getParameterCount() == 0)
+                            NTAChildren.put(m.getName(), null);
+                        NTAMethods.add(m);
                     }
                 }
             }
