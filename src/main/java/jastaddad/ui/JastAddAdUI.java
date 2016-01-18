@@ -116,10 +116,8 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         graphview.setPreferredSize((int)center.getWidth(), (int)center.getHeight());
     }
 
-    public static boolean openFile(File file)
-    {
-        try
-        {
+    public static boolean openFile(File file) {
+        try {
             if (OSDetector.isWindows()) {
                 Runtime.getRuntime().exec(new String[]
                         {"rundll32", "url.dll,FileProtocolHandler", file.getAbsolutePath()});
@@ -136,14 +134,12 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
                     Desktop.getDesktop().open(file);
                     return true;
                 }
-                else{
-                    return false;
-                }
+                return false;
             }
         } catch (Exception e){
-            e.printStackTrace(System.err);
-            return false;
+            e.printStackTrace();
         }
+        return false;
     }
 
     /**
@@ -163,7 +159,6 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
                     System.err.println("- " + e);
                 }
             } else {
-                TestMe root = new TestMe(new TestMe(), new TestMe());
                 JastAddAdUI debugger = new JastAddAdUI(program);
                 debugger.run();
             }
