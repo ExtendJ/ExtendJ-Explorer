@@ -122,30 +122,25 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         {
             if (OSDetector.isWindows()) {
                 Runtime.getRuntime().exec(new String[]
-                        {"rundll32", "url.dll,FileProtocolHandler",
-                                file.getAbsolutePath()});
+                        {"rundll32", "url.dll,FileProtocolHandler", file.getAbsolutePath()});
                 return true;
-            } else if (OSDetector.isLinux() || OSDetector.isMac())
-            {
-                Runtime.getRuntime().exec(new String[]{"xdg-open",
-                        file.getAbsolutePath()});
+            } else if (OSDetector.isLinux()){
+                Runtime.getRuntime().exec(new String[]{"xdg-open",file.getAbsolutePath()});
                 System.out.println(file.getAbsolutePath());
+            } else if(OSDetector.isMac()) {
+                Runtime.getRuntime().exec(new String[]{"open", file.getAbsolutePath()});
                 return true;
-            } else
-            {
+            }else{
                 // Unknown OS, try with desktop
-                if (Desktop.isDesktopSupported())
-                {
+                if (Desktop.isDesktopSupported()){
                     Desktop.getDesktop().open(file);
                     return true;
                 }
-                else
-                {
+                else{
                     return false;
                 }
             }
-        } catch (Exception e)
-        {
+        } catch (Exception e){
             e.printStackTrace(System.err);
             return false;
         }
