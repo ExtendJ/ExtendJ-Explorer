@@ -30,6 +30,7 @@ public class UIMonitor {
     private Stage parentStage;
     private ArrayList<UIDialog> subWindows;
     private ArrayList<GenericTreeNode> dialogSelectedNodes;
+    private ArrayList<GenericTreeNode> selectedParameterNodes;
     private boolean functionRunning;
     private ArrayList<String> highlightedSimpleClassNames;
     private JastAddAdAPI jaaAPI;
@@ -51,6 +52,7 @@ public class UIMonitor {
         this.jaaAPI = jaaAPI;
         subWindows = new ArrayList<>();
         dialogSelectedNodes = new ArrayList<>();
+        selectedParameterNodes = new ArrayList<>();
         highlightedSimpleClassNames = new ArrayList<>();
         functionRunning = false;
         selectedNode = null;
@@ -83,6 +85,15 @@ public class UIMonitor {
     }
     public void addhighlightedSimpleClassName(String className){ highlightedSimpleClassNames.add(className); }
     public void removehighlightedSimpleClassName(String className){ highlightedSimpleClassNames.remove(className); }
+
+    public ArrayList<GenericTreeNode> getSelectedParameterNodes() {
+        return selectedParameterNodes;
+    }
+    public void addSelectedParameterNodes(GenericTreeNode node){
+        selectedParameterNodes.add(node);
+    }
+
+    public void clearSelectedParameterNodes(){ selectedParameterNodes.clear();}
 
     public ArrayList<GenericTreeNode> getDialogSelectedNodes() {
         return dialogSelectedNodes;

@@ -11,9 +11,11 @@ import jastaddad.api.nodeinfo.NodeInfo;
  */
 public class NodeInfoParameter extends NodeInfoView {
     private Object value;
+    private Object[] params;
 
     public NodeInfoParameter(Object[] params, Object value, NodeInfo info){
         super("", info);
+        this.params = params;
         String name = "";
         int i = params.length;
         for(Object param : params){
@@ -25,6 +27,8 @@ public class NodeInfoParameter extends NodeInfoView {
         this.label = name;
         this.value = value;
     }
+
+    public Object[] getParams(){return params;}
 
     @Override
     public boolean isParameter() {

@@ -49,6 +49,7 @@ public abstract class UIDialog extends Stage{
         buttonTypeOk = new Button("yes");
         buttonTypeOk.setOnMouseClicked(event -> {
             if(yesButtonClicked()) {
+                System.out.println("asdasd");
                 invokeButtonPressed = true;
                 closeDialog();
             }
