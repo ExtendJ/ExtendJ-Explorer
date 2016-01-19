@@ -5,7 +5,7 @@
 }
 
 .separator .line {
-    -fx-border-style: 0;
+    -fx-border-style: segments(0.166667em, 0.166667em);
     -fx-border-width: 1
     -fx-background-color: #808080;;
     -fx-padding: 4;

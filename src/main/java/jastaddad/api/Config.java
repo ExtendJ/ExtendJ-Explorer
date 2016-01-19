@@ -61,7 +61,7 @@ public class Config{
 
         ConfigScanner scanner;
         try {
-            System.out.println("checking for filter:" + fullFilePath);
+            //System.out.println("checking for filter:" + fullFilePath);
             // check if file exists
             File f = new File(fullFilePath);
             PrintWriter writer = null;

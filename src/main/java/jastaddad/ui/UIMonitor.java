@@ -10,6 +10,7 @@ import jastaddad.ui.graph.UIEdge;
 import jastaddad.ui.uicomponent.nodeinfotreetableview.NodeInfoView;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -34,6 +35,7 @@ public class UIMonitor {
     private JastAddAdAPI jaaAPI;
     private JastAddAdUI jaaUI;
     private Stage stage;
+    private String defaultDirectory;
 
 
     public UIMonitor(JastAddAdAPI jaaAPI){
@@ -49,6 +51,7 @@ public class UIMonitor {
         selectedNode = null;
         lastRealNode = null;
         selectedInfo = null;
+        defaultDirectory = new File(".").getAbsolutePath();
     }
 
     public void setJastAddAdUI(JastAddAdUI jaaUI){ this.jaaUI = jaaUI;}
@@ -138,4 +141,8 @@ public class UIMonitor {
         this.graphView = graphView;
     }
     public GraphView getGraphView(){return graphView;}
+
+    public String getDefaultDirectory() { return defaultDirectory; }
+
+    public void setDefaultDirectory(String defaultDirectory) { this.defaultDirectory = defaultDirectory; }
 }

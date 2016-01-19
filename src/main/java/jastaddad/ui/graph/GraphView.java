@@ -179,7 +179,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         vs.repaint();
     }
 
-    public void saveGraphAsImage(String filename, String ext){
+    public String saveGraphAsImage(String dirPath, String filename, String ext){
 
         VisualizationImageServer<GenericTreeNode, UIEdge> vis =
                 new VisualizationImageServer<>(vs.getGraphLayout(),
@@ -195,21 +195,29 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
                     new Dimension(vs.getGraphLayout().getSize()));
 
             // Write image to a png file
-            ImageIO.write(image, ext, new File(filename + "." + ext));
+            File imageFile = new File(dirPath + filename + "." + ext);
+            ImageIO.write(image, ext, imageFile);
+            return imageFile.getAbsolutePath();
         } catch (IOException e) {
             e.printStackTrace();
             mon.getController().addError("Error while capturing graph: " + e.getCause());
+            return "";
         }
     }
 
-    public void savePrintScreenGraph(String filename, String ext) {
+    public String savePrintScreenGraph(String dirPath, String filename, String ext) {
 
         BufferedImage bufImage = ScreenImage.createImage(getContent());
         try {
-            ImageIO.write(bufImage, ext, new File(filename + "." + ext));
+            File imageFile = new File(dirPath + filename + "." + ext);
+            ImageIO.write(bufImage, ext, imageFile);
+            return imageFile.getAbsolutePath();
         } catch (Exception e) {
             System.out.println("writeToImageFile(): " + e.getMessage());
+            mon.getController().addMessage("Could not save image. Cause: " + e.getCause());
+            return "";
         }
+
     }
 
     /**

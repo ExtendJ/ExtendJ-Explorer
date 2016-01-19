@@ -28,7 +28,7 @@ public abstract class DecoratorTask implements JastAddAdTask{
     }
 
     @Override
-    public void setRoot(Object root, String filterPath) {
+    public void setRoot(Object root, String filterPath, String defaultDir) {
         api = new JastAddAdAPI(root);
         api.setFilterPath(filterPath);
         onNewRoot();
