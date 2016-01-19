@@ -294,4 +294,65 @@ public class NodeContent {
         }
         return findFieldName(obj, methodName, clazz.getSuperclass());
     }
+
+    protected ArrayList<Object> computeCachedNTAS(ASTAPI api){
+        ArrayList<Object> values = new ArrayList();
+        try {
+            for(Map.Entry<Method, Object> e : findFieldNames().entrySet()){
+                NodeInfo n = node.getNodeContent().getComputed(e.getKey());
+                if(n != null && !n.isAttribute())
+                    continue;
+                if((n != null && n.hasCachedValues())){
+                    values.addAll(((Attribute)n).getComputedValues());
+                    continue;
+                }
+                if(n == null)
+                    n = node.getNodeContent().compute(api, e.getKey(), null, false);
+                Attribute attr = (Attribute) n;
+                if(attr.isParametrized()) {
+                    Map map = (Map) e.getValue();
+                    if (map == null)
+                        continue;
+                    for (Map.Entry par : (Set<Map.Entry>) map.entrySet()) {
+                        if (e.getKey().getParameterCount() > 1)
+                            attr.addComputedValue(((java.util.List) par.getKey()).toArray(), par.getValue());
+                        else
+                            attr.addComputedValue(new Object[]{par.getKey()}, par.getValue());
+                        values.add(par.getValue());
+                    }
+                    attr.setCachedValues(true);
+                }else {
+                    if(e.getValue() != null) {
+                        values.add(e);
+                        attr.setValue(e.getValue());
+                    }
+                }
+            }
+
+        }catch (ClassCastException e){
+            api.putError(AlertMessage.INVOCATION_ERROR, e.getMessage());
+        }
+       return values;
+    }
+
+    private HashMap<Method, Object> findFieldNames(){
+        Class clazz = node.node.getClass();
+        HashMap<Method, Object> values = new HashMap<>();
+        while(clazz != null) {
+            for (Field field : clazz.getDeclaredFields()) {
+                for(Method m : node.NTAMethods) {
+                    if (field.getName().contains(m.getName() + "_") && field.getName().contains("_value")) {
+                        field.setAccessible(true);
+                        try {
+                            values.put(m, field.get(node.node));
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+            clazz = clazz.getSuperclass();
+        }
+        return values;
+    }
 }

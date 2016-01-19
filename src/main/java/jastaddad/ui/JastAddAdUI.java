@@ -147,7 +147,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
      * @param args
      */
     public static void main(String[] args) {
-        String filename = "sample.fcl";
+        /*String filename = "sample.fcl";
         try{
             ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
             ConfigParser parser = new ConfigParser();
@@ -169,6 +169,6 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
             e.printStackTrace(System.err);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 }

@@ -273,25 +273,12 @@ public class ASTAPI {
             }
         }
         if(filterConfig.getBoolean(Config.CACHED_VALUES)){
-            for(Method m : node.NTAMethods){
-                NodeInfo n = node.getNodeContent().getComputed(m);
-                if(n != null && (treeNodes.containsKey(n.getValue()) || computedNTAs.containsKey(n.getValue())))
+            for(Object obj : node.getNodeContent().computeCachedNTAS(this)) {
+                if(treeNodes.containsKey(obj) || ASTNTAObjects.contains(obj))
                     continue;
-                if(n == null)
-                    n = node.getNodeContent().compute(this, m, null, false);
-                node.getNodeContent().addCachedValues(m, (Attribute) n, true);
-                if(n.getValue() == null){
-                    for(Object root : ((Attribute)n).getComputedValues()){
-                        System.out.println("YEY" + root);
-                        Node temp = Node.getNTANode(root, node, this);
-                        ASTNTAObjects.add(temp.node);
-                        traversTree(temp, parent, cluster, true, 0, futureReferences);
-                    }
-                }else{
-                    Node temp = Node.getNTANode(n.getValue(), node, this);
-                    ASTNTAObjects.add(temp.node);
-                    traversTree(temp, parent, cluster, true, 0, futureReferences);
-                }
+                Node temp = Node.getNTANode(obj, node, this);
+                ASTNTAObjects.add(temp.node);
+                traversTree(temp, parent, cluster, true, 0, futureReferences);
             }
         }
 
@@ -300,7 +287,6 @@ public class ASTAPI {
 
     /**
      * Put child clusters together in a parent cluster if they have no children in the filtered tree
-     *
      * @param fNode
      */
     private void clusterClusters(TreeNode fNode){
