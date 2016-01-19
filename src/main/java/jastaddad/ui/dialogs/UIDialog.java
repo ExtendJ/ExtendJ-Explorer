@@ -60,7 +60,10 @@ public abstract class UIDialog extends Stage{
                 closeDialog();
             }
         });
-        setScene(new Scene(parent));
+        Scene scene = new Scene(parent);
+        loadStyleSheets(scene);
+        setScene(scene);
+
     }
 
     public void closeDialog(){
@@ -72,6 +75,7 @@ public abstract class UIDialog extends Stage{
         );
     }
     protected abstract boolean yesButtonClicked();
+    protected abstract void loadStyleSheets(Scene scene);
     protected abstract void dialogClose();
     public abstract Object[]  getResult();
     protected abstract Parent buildDialogContent();
