@@ -13,6 +13,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.File;
 
 /**
  * Created by gda10jth on 11/20/15.
@@ -37,13 +38,18 @@ import javax.xml.transform.stream.StreamResult;
  *      xmlPrinter.printXml(toDirectory);
  */
 public class JastAddAdXML extends DecoratorTask {
+    private String absoluteFilePath;
     public JastAddAdXML(JastAddAdAPI api){
         super(api);
+        absoluteFilePath = "";
     }
 
     public JastAddAdXML(Object root){
         super(root);
+        absoluteFilePath = "";
     }
+
+    public String getAbsoluteFilePath(){ return absoluteFilePath;}
 
     /**
      * Called from DecoratorTask when the run() method is called from the outside
@@ -147,7 +153,7 @@ public class JastAddAdXML extends DecoratorTask {
             // StreamResult result = new StreamResult(System.out);
 
             transformer.transform(source, result);
-
+            absoluteFilePath = new File(filePath).getAbsolutePath();
             System.out.println("File saved!");
 
         } catch (ParserConfigurationException pce) {

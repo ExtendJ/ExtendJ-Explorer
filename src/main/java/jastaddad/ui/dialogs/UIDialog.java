@@ -58,6 +58,8 @@ public abstract class UIDialog extends Stage{
         parent.setOnKeyPressed(ke -> {
             if (ke.getCode().equals(KeyCode.ESCAPE)){
                 closeDialog();
+            }else if (ke.getCode().equals(KeyCode.ENTER)){
+                yesButtonClicked();
             }
         });
         Scene scene = new Scene(parent);

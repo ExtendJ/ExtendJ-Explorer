@@ -53,6 +53,7 @@ public class JastAddAdSetup {
     public void run(){
         Object root = null;
         boolean success = false;
+        String defaultDir = "";
         try {
             // Add the jar to the classpath with reflection.
             URL url = new URL("file:" + jarPath);
@@ -63,7 +64,9 @@ public class JastAddAdSetup {
             method.invoke(urlClassLoader, new Object[]{url});
 
             // Find and instantiate the main java file in the jar.
-            JarFile j =  new JarFile(new File(jarPath));
+            File file = new File(jarPath);
+            defaultDir = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(file.separator)) + file.separator;
+            JarFile j =  new JarFile(file);
             String mainClassName = j.getManifest().getMainAttributes().getValue("Main-Class");
             URLClassLoader loader = new URLClassLoader (new URL[]{url}, this.getClass().getClassLoader());
             Class cl = Class.forName(mainClassName, true, loader);
@@ -113,7 +116,7 @@ public class JastAddAdSetup {
                         break;
                 }
             }
-            task.setRoot(root, filterPath);
+            task.setRoot(root, filterPath, defaultDir, true);
         }
     }
 }

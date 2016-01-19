@@ -40,8 +40,8 @@
                <TableView fx:id="clusterInfoTableView" styleClass="info-table-view" prefHeight="1000">
                    <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
                    <columns>
-                       <TableColumn fx:id="clusterInfoNameCol" text="Name"/>
-                       <TableColumn fx:id="clusterInfoCountCol"  text="Count"  />
+                       <TableColumn fx:id="clusterInfoNameCol" text="Types"/>
+                       <TableColumn fx:id="clusterInfoCountCol"  text="Type Count"  />
                    </columns>
                </TableView>
            </VBox>
