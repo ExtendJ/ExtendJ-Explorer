@@ -55,13 +55,15 @@ public class Controller implements Initializable {
     @FXML
     private Button showSelectedNodeButton;
     @FXML
+    private Button showWholeGraphButton;
+    @FXML
+    private Button autoLayoutGraphButton;
+    @FXML
     private Button minimizeLeftSide;
     @FXML
     private Button minimizeRightSide;
     @FXML
     private Button minimizeConsole;
-    @FXML
-    private Button showWholeGraphButton;
     @FXML
     private TextArea filteredConfigTextArea;
     @FXML
@@ -212,11 +214,14 @@ public class Controller implements Initializable {
                 graphView.panToNode(mon.getSelectedNode());
         });
         showWholeGraphButton.setOnAction(click -> {
-
             graphView.showWholeGraphOnScreen();
         });
 
-        zoomInButton.setOnMouseClicked(e->{
+        autoLayoutGraphButton.setOnAction(click -> {
+            graphView.updateGraph();
+        });
+
+        zoomInButton.setOnMouseClicked(e -> {
             graphView.zoomIn();
         });
 

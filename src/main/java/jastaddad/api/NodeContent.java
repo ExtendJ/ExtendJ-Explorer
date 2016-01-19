@@ -4,12 +4,12 @@ import jastaddad.api.nodeinfo.Attribute;
 import jastaddad.api.nodeinfo.NodeInfo;
 import jastaddad.api.nodeinfo.NodeInfoHolder;
 import jastaddad.api.nodeinfo.Token;
+import org.w3c.dom.Attr;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -22,7 +22,7 @@ public class NodeContent {
     private HashMap<Method, NodeInfo> attributes;
     private HashMap<Method,NodeInfo> tokens;
     private HashMap<Method,NodeInfo> NTAs;
-    private HashMap<Method, NodeInfo> computedMethods; //Error list for invoke calls
+    private HashMap<Method, NodeInfo> computedMethods;
     private Node node; //The node the content is a part of
     private Object nodeObject; //The node the content is a part of
 
@@ -37,6 +37,10 @@ public class NodeContent {
         computedMethods = new HashMap<>();
         this.node = node;
         this.nodeObject = node.node;
+    }
+
+    protected NodeInfo getComputed(Method method){
+        return computedMethods.get(method);
     }
 
 
@@ -90,6 +94,7 @@ public class NodeContent {
             NTAs.clear();
             attributes.clear();
             tokens.clear();
+            computedMethods.clear();
         }
         compute(api, nodeObject, forceComputation);
     }
@@ -141,8 +146,12 @@ public class NodeContent {
      * @return
      */
     protected NodeInfo compute(ASTAPI api, Method m, Object[] params, boolean forceComputation){
-        if(computedMethods.containsKey(m) && !forceComputation)
-            return computedMethods.get(m);
+        if(computedMethods.containsKey(m) && !forceComputation) {
+            NodeInfo info = computedMethods.get(m);
+            if(info != null && !info.hasCachedValues())
+                addCachedValues(m, (Attribute) attributes.get(m));
+            return info;
+        }
         NodeInfo info = null;
         for (Annotation a : m.getAnnotations()) {
             if (ASTAnnotation.isAttribute(a)) {
@@ -172,7 +181,7 @@ public class NodeContent {
      * @param forceComputation
      * @return
      */
-    private Attribute computeAttribute(ASTAPI api, Object obj, Method m, Object[] params, boolean forceComputation){
+    protected Attribute computeAttribute(ASTAPI api, Object obj, Method m, Object[] params, boolean forceComputation){
         Attribute attribute = new Attribute(m.getName(), null, m);
         attribute.setParametrized(m.getParameterCount() > 0);
         for(Annotation a : m.getAnnotations()) { //To many attribute specific methods so I decided to iterate through the Annotations again instead of sending them as parameters.
@@ -199,6 +208,8 @@ public class NodeContent {
             addInvocationErrors(api, e, m);
             attribute.setValue(e.getCause());
         }
+        if(api.getfilterConfig().getBoolean(Config.CACHED_VALUES))
+            addCachedValues(m, attribute);
         return attribute;
     }
 
@@ -244,4 +255,43 @@ public class NodeContent {
     public Collection<NodeInfo> getNTAs(){ return NTAs.values(); }
     public Collection<NodeInfo> getTokens(){ return tokens.values(); }
 
+    public void addCachedValues(Method m, Attribute attribute){
+        addCachedValues(m, attribute, false);
+    }
+
+    public void addCachedValues(Method m, Attribute attribute, boolean force){
+        if(attribute == null || (attribute.isNTA() && !force))
+            return;
+        if(attribute.isParametrized()) {
+            Map map = (Map) findFieldName(node.node, m.getName(), node.node.getClass());
+            if (map == null)
+                return;
+            for (Map.Entry par : (Set<Map.Entry>) map.entrySet()) {
+                if (m.getParameterCount() > 1)
+                    attribute.addComputedValue(((java.util.List) par.getKey()).toArray(), par.getValue());
+                else
+                    attribute.addComputedValue(new Object[]{par.getKey()}, par.getValue());
+            }
+            attribute.setCachedValues(true);
+        }else if(attribute.isNTA() && force) {
+            Object obj = findFieldName(node.node, m.getName(), node.node.getClass());
+            attribute.setValue(obj);
+        }
+    }
+
+    private Object findFieldName(Object obj, String methodName, Class clazz){
+        if(clazz == null)
+            return null;
+        for(Field field : clazz.getDeclaredFields()){
+            if(field.getName().contains(methodName) && field.getName().contains("value")){
+                field.setAccessible(true);
+                try {
+                    return field.get(obj);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return findFieldName(obj, methodName, clazz.getSuperclass());
+    }
 }

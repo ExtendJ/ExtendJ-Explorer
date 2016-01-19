@@ -23,6 +23,7 @@ public class Config{
     private final String filterFileName;
     private final String filterTmpFileName;
 
+    public static final String CACHED_VALUES = "cached-values";
     public static final String NTA_DEPTH = "NTA-depth";
     public static final String NTA_COMPUTED = "NTA-computed";
 
@@ -229,7 +230,6 @@ public class Config{
 
     private Value getConfigValue(String name) {
         Value v = null;
-
         if(configs == null)
             return null;
         if (configsCache.containsKey(name))

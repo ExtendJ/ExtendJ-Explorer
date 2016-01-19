@@ -1,10 +1,7 @@
 package jastaddad.api.nodeinfo;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Class that holds the terminal Attributes
@@ -21,6 +18,7 @@ public class Attribute extends NodeInfo {
     private HashMap<String, Object> computedValues;
     private HashMap<String, Object[]> usedParameters;
     private String lastComputedkey;
+    private boolean cachedValues;
     public Attribute(String name, Object value, Method m) {
         super(name, value, m);
         computedValues = new HashMap<>();
@@ -115,8 +113,10 @@ public class Attribute extends NodeInfo {
         return computedValues.get(getKey(params));
     }
 
-    public Set<Map.Entry<String, Object>> getComputedEntry(){
-        return computedValues.entrySet();
+    public Set<Map.Entry<String, Object>> getComputedEntry(){ return computedValues.entrySet(); }
+
+    public Collection<Object> getComputedValues(){
+        return computedValues.values();
     }
 
     public HashMap<String, Object[]> getUsedParameters(){
@@ -133,4 +133,8 @@ public class Attribute extends NodeInfo {
         return key;
     }
 
+    @Override
+    public boolean hasCachedValues(){ return cachedValues; }
+
+    public void setCachedValues(boolean cachedValues){ this.cachedValues = cachedValues; }
 }
