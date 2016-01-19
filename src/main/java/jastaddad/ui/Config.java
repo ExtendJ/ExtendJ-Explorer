@@ -68,16 +68,23 @@ public class Config{
 
 	private void readConfigFile(){
 		try{
-			BufferedReader reader = new BufferedReader(new FileReader(fullFilePath));
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				if(line.length() > 0){
-					line = line.replace(" ", "");
-					if(!line.startsWith("#")){
-						String[] one_config = line.split("=");
-						configs.put(one_config[0], one_config[1]);
+
+			File file = new File(fullFilePath);
+			if(file.exists()) {
+				BufferedReader reader = new BufferedReader(new FileReader(new File(fullFilePath)));
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					if (line.length() > 0) {
+						line = line.replace(" ", "");
+						if (!line.startsWith("#")) {
+							String[] one_config = line.split("=");
+							configs.put(one_config[0], one_config[1]);
+						}
 					}
 				}
+			}else{
+				PrintWriter writer = new PrintWriter(fullFilePath, "UTF-8");
+				writer.close();
 			}
 		}catch(IOException e){
 			e.printStackTrace();
