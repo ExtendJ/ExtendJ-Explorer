@@ -76,7 +76,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     @FXML private VBox clusterInfoView;
     @FXML private Label clusterInfoNumberLabel;
 
-
     public void init(UIMonitor mon, GraphView graphView){
         this.mon = mon;
         this.graphView = graphView;
@@ -311,6 +310,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      */
     @Override
     public void changed(ObservableValue<? extends TreeItem<NodeInfoView>> observable, TreeItem<NodeInfoView> oldValue, TreeItem<NodeInfoView> newValue) {
+        mon.clearSelectedParameterNodes();
         if(oldValue != null && oldValue.getValue() != null)
             mon.getApi().getNodeReferencesAndHighlightThem(oldValue.getValue().getValue(), false);
 
@@ -322,6 +322,16 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 info = infoHolder.getNodeInfo();
                 value = infoHolder.getValue();
             }
+
+            if(infoHolder.isParameter()){
+                for(Object param : ((NodeInfoParameter)infoHolder).getParams()){
+                    GenericTreeNode tmp = mon.getApi().getTreeNode(param);
+                    if(tmp != null)
+                        mon.addSelectedParameterNodes(tmp);
+                }
+
+            }
+
             mon.setSelectedInfo(infoHolder);
             mon.getController().attributeInNodeSelected(info);
             setAttributeInfo(info);

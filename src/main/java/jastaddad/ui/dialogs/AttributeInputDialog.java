@@ -336,6 +336,7 @@ public class AttributeInputDialog extends UIDialog {
      * @param param information about the field selected
      */
     private void paramTextFieldSelected(nodeParameter param){
+        if(invokeButtonPressed) return;
         // sets the old selected field to normal style settings and tell the UI to not highlight that type anymore
         if(focusedNodeParameter != null){
             focusedNodeParameter.hBox.setStyle(rowPadding + backgroundColorParam + paramSelectedBorderWidth + paramUnSelectedBorderColor);
@@ -356,8 +357,10 @@ public class AttributeInputDialog extends UIDialog {
         }else {
             focusedNodeParameter.label.setStyle(prefWidthInput + paramSelectedTextColor);
         }
-        attributeSelected(mon.getSelectedInfo().getNodeInfo());
-        if(mon.getSelectedNode() != null && mon.getSelectedNode().isNode())
+
+        if (mon.getSelectedInfo() != null)
+            attributeSelected(mon.getSelectedInfo().getNodeInfo());
+        if(focusedNodeParameter.getNode() == null && mon.getSelectedNode() != null && mon.getSelectedNode().isNode())
             trySelectNode((TreeNode)mon.getSelectedNode());
         mon.getGraphView().repaint();
     }

@@ -37,6 +37,8 @@ public class VertexPaintTransformer implements Transformer<GenericTreeNode,Paint
     public Paint transform(GenericTreeNode fNode) {
         if(mon.getDialogSelectedNodes().contains(fNode))
             return new Color(255, 197, 115);
+        if(mon.getSelectedParameterNodes().contains(fNode))
+            return new Color(255, 197, 115);
         if(fNode.isNode() && mon.gethighlightedSimpleClassNames().contains(fNode.getNode().simpleNameClass))
             return new Color(255, 140, 140);
         if (pi.isPicked(fNode))
