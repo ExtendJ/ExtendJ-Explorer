@@ -28,6 +28,7 @@ public class JastAddAdAPI {
     private String filterPath;
     private boolean done;
 	private boolean listRoot;
+	private boolean holderAPI;
 	
 	public JastAddAdAPI(Object root){
         this.root = root;
@@ -40,6 +41,11 @@ public class JastAddAdAPI {
 		filterPath = DEFAULT_FILTER_NAME;
 		done = false;
 		this.listRoot = listRoot;
+	}
+
+	public JastAddAdAPI(){
+		done = false;
+		holderAPI = true;
 	}
 
     public boolean hasRun(){
@@ -56,11 +62,11 @@ public class JastAddAdAPI {
      * run() generates the AST
      */
 	public void run(){
-        api = new ASTAPI(root, filterPath, listRoot);
+        api = holderAPI ? new ASTAPI() : new ASTAPI(root, filterPath, listRoot);
         done = true;
 	}
 
-    public ASTAPI api(){ return api;};
+    public ASTAPI api(){ return api; }
 
 	public GenericTreeNode getFilteredTree(){
 		return api.getFilteredTree();

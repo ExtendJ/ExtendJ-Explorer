@@ -131,6 +131,10 @@ public class JastAddAdXML extends DecoratorTask {
      */
     private boolean printToXML(String filePath){
         try {
+            if(api.getFilteredTree() == null){
+                System.out.println("No tree to print, root node is null");
+                return false;
+            }
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 

@@ -80,7 +80,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     public void init(UIMonitor mon, GraphView graphView){
         this.mon = mon;
         this.graphView = graphView;
-        formatter = new TextFormatter(mon.getApi().getRoot().node.getClass());
+        if(mon.getRootNode() != null)
+            formatter = new TextFormatter(mon.getApi().getRoot().node.getClass());
     }
 
     /**

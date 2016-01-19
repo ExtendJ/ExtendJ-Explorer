@@ -30,7 +30,9 @@ public class TreeViewTabController implements Initializable, ChangeListener {
         this.mon = mon;
         nodeToItemRef = new HashMap<>();
         ignoreChange = false;
-        loadGraphTreeView();
+
+        if(mon.getRootNode() != null)
+            loadGraphTreeView();
 
         graphTreeView.getSelectionModel().selectedItemProperty().addListener(this);
         graphTreeView.setCellFactory(new Callback<TreeView, TreeCell>() {
@@ -40,7 +42,7 @@ public class TreeViewTabController implements Initializable, ChangeListener {
                     @Override
                     protected void updateItem(GenericTreeNode item, boolean empty) {
                         super.updateItem(item, empty);
-                        if(empty)
+                        if(item == null || empty)
                             setText("");
                         else
                             setText(item.toTreeViewString());

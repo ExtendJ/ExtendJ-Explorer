@@ -39,6 +39,10 @@ public class UIMonitor {
     private Config config;
     private boolean rerunable;
 
+    public UIMonitor(){
+        clean(null);
+    }
+
     public UIMonitor(JastAddAdAPI jaaAPI){
         clean(jaaAPI);
     }
@@ -86,17 +90,16 @@ public class UIMonitor {
     public void addDialogSelectedNodes(GenericTreeNode node){
         dialogSelectedNodes.add(node);
     }
+
     public void removeDialogSelectedNodes(GenericTreeNode node){
         if(node != null)
             dialogSelectedNodes.remove(node);
     }
+
     public void clearDialogSelectedNodes(){ dialogSelectedNodes.clear();}
 
-    public ASTAPI getApi(){    return jaaAPI.api();
-    }
-    public JastAddAdAPI getJastAddAdAPI(){
-        return jaaAPI;
-    }
+    public ASTAPI getApi(){ return jaaAPI.api(); }
+    public JastAddAdAPI getJastAddAdAPI(){ return jaaAPI; }
 
     public GenericTreeNode getRootNode(){ return jaaAPI.getFilteredTree(); }
     public Controller getController(){return controller;}

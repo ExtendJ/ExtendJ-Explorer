@@ -1,11 +1,8 @@
 package jastaddad.api;
 
 import jastaddad.api.filteredtree.*;
-import jastaddad.api.nodeinfo.Attribute;
 import jastaddad.api.nodeinfo.NodeInfo;
-import org.w3c.dom.Attr;
 
-import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -39,13 +36,12 @@ public class ASTAPI {
 
 
     public ASTAPI(Object root, String filterDir){
-        initialize(root, filterDir, false);
+        initialize(root, filterDir, false, false);
     }
-    public ASTAPI(Object root, String filterDir, boolean listRoot){
-        initialize(root, filterDir, listRoot);
-    }
+    public ASTAPI(Object root, String filterDir, boolean listRoot){ initialize(root, filterDir, listRoot, false); }
+    public ASTAPI(){ initialize(null, null, false, true); }
 
-    public void initialize(Object root, String filterDir, boolean listRoot){
+    public void initialize(Object root, String filterDir, boolean listRoot, boolean isAPIHolder){
         nonFilteredNodes = 0;
         directoryPath = filterDir;
         displayedReferences = new ArrayList<>();
@@ -60,7 +56,8 @@ public class ASTAPI {
         computedNTAs = new HashMap<>();
         ASTObjects = new HashSet<>();
         ASTNTAObjects = new HashSet<>();
-
+        if(isAPIHolder)
+            return;
         tree = new Node(root, this, listRoot);
         this.filteredTree = null;
         filterConfig = new Config(this, filterDir);
@@ -89,7 +86,7 @@ public class ASTAPI {
     public int getNonFilteredNodes(){return nonFilteredNodes; }
 
     public String getAppliedFilters(){
-        return filterConfig.getEnabledFilterNames();
+        return filterConfig != null ? filterConfig.getEnabledFilterNames() : null;
     }
     /**
      * Return all messages with the give type.
@@ -252,12 +249,12 @@ public class ASTAPI {
         // Create the nta nodes specified by the Configuration language, and traverse down the NTA:s
         if(depth > 0) {
             for (String s : displayedAttributes) {
-                if (!node.NTAChildren.containsKey(s))
+                if (!node.showNTAChildren.containsKey(s))
                     continue;
-                Node ntaNode = node.NTAChildren.get(s);
+                Node ntaNode = node.showNTAChildren.get(s);
                 if (ntaNode == null) {
                     ntaNode = Node.getNTANode(node.getNodeContent().computeMethod(this, s, true).getValue(),node, this);
-                    node.NTAChildren.put(s, ntaNode);
+                    node.showNTAChildren.put(s, ntaNode);
                     ASTNTAObjects.add(ntaNode.node);
                 }
                 traversTree(ntaNode, parent, cluster,  true, depth - 1, futureReferences);
@@ -273,25 +270,12 @@ public class ASTAPI {
             }
         }
         if(filterConfig.getBoolean(Config.CACHED_VALUES)){
-            for(Method m : node.NTAMethods){
-                NodeInfo n = node.getNodeContent().getComputed(m);
-                if(n != null && (treeNodes.containsKey(n.getValue()) || computedNTAs.containsKey(n.getValue())))
+            for(Node child : node.getNodeContent().computeCachedNTAS(this)) {
+                if(treeNodes.containsKey(child.node))
                     continue;
-                if(n == null)
-                    n = node.getNodeContent().compute(this, m, null, false);
-                node.getNodeContent().addCachedValues(m, (Attribute) n, true);
-                if(n.getValue() == null){
-                    for(Object root : ((Attribute)n).getComputedValues()){
-                        System.out.println("YEY" + root);
-                        Node temp = Node.getNTANode(root, node, this);
-                        ASTNTAObjects.add(temp.node);
-                        traversTree(temp, parent, cluster, true, 0, futureReferences);
-                    }
-                }else{
-                    Node temp = Node.getNTANode(n.getValue(), node, this);
-                    ASTNTAObjects.add(temp.node);
-                    traversTree(temp, parent, cluster, true, 0, futureReferences);
-                }
+                if(!ASTNTAObjects.contains(child.node))
+                    ASTNTAObjects.add(child.node);
+                traversTree(child, parent, cluster, true, 0, futureReferences);
             }
         }
 
@@ -300,7 +284,6 @@ public class ASTAPI {
 
     /**
      * Put child clusters together in a parent cluster if they have no children in the filtered tree
-     *
      * @param fNode
      */
     private void clusterClusters(TreeNode fNode){
@@ -460,7 +443,7 @@ public class ASTAPI {
         if(!computedNTAs.containsKey(node))
             computedNTAs.put(node, new HashSet<>());
         computedNTAs.get(node).add(astNode);
-        node.NTAChildren.put(NodeInfo.getName(info.getMethod(), params), astNode);
+        node.showNTAChildren.put(NodeInfo.getName(info.getMethod(), params), astNode);
         if(filterConfig.getBoolean(Config.NTA_COMPUTED))
             buildFilteredSubTree(astNode, (TreeNode) treeNodes.get(node.node));
         else {

@@ -4,7 +4,6 @@ import jastaddad.api.nodeinfo.Attribute;
 import jastaddad.api.nodeinfo.NodeInfo;
 import jastaddad.api.nodeinfo.NodeInfoHolder;
 import jastaddad.api.nodeinfo.Token;
-import org.w3c.dom.Attr;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -148,7 +147,7 @@ public class NodeContent {
     protected NodeInfo compute(ASTAPI api, Method m, Object[] params, boolean forceComputation){
         if(computedMethods.containsKey(m) && !forceComputation) {
             NodeInfo info = computedMethods.get(m);
-            if(info != null && !info.hasCachedValues())
+            if(info != null && !info.hasCachedValues() && api.getfilterConfig().getBoolean(Config.CACHED_VALUES))
                 addCachedValues(m, (Attribute) attributes.get(m));
             return info;
         }
@@ -208,8 +207,9 @@ public class NodeContent {
             addInvocationErrors(api, e, m);
             attribute.setValue(e.getCause());
         }
-        if(api.getfilterConfig().getBoolean(Config.CACHED_VALUES))
-            addCachedValues(m, attribute);
+        if(!attribute.hasCachedValues() && api.getfilterConfig().getBoolean(Config.CACHED_VALUES)) {
+            addCachedValues(m, attribute, false);
+        }
         return attribute;
     }
 
@@ -276,6 +276,7 @@ public class NodeContent {
         }else if(attribute.isNTA() && force) {
             Object obj = findFieldName(node.node, m.getName(), node.node.getClass());
             attribute.setValue(obj);
+            attribute.setCachedValues(true);
         }
     }
 
@@ -283,7 +284,7 @@ public class NodeContent {
         if(clazz == null)
             return null;
         for(Field field : clazz.getDeclaredFields()){
-            if(field.getName().contains(methodName) && field.getName().contains("value")){
+            if(field.getName().contains(methodName +"_") && field.getName().contains("_value")){
                 field.setAccessible(true);
                 try {
                     return field.get(obj);
@@ -293,5 +294,79 @@ public class NodeContent {
             }
         }
         return findFieldName(obj, methodName, clazz.getSuperclass());
+    }
+
+    protected ArrayList<Node> computeCachedNTAS(ASTAPI api){
+        HashMap<Object, Method> values = new HashMap<>();
+        try {
+            for(Map.Entry<Method, Object> e : findFieldNames().entrySet()){
+                NodeInfo n = computedMethods.get(e.getKey());
+                if(n != null)
+                    continue;
+                if(n == null)
+                    n = compute(api, e.getKey(), null, false);
+                Attribute attr = (Attribute) n;
+                if(attr.isParametrized()) {
+                    Map map = (Map) e.getValue();
+                    if (map == null)
+                        continue;
+                    for (Map.Entry par : (Set<Map.Entry>) map.entrySet()) {
+                        if (e.getKey().getParameterCount() > 1)
+                            attr.addComputedValue(((java.util.List) par.getKey()).toArray(), par.getValue());
+                        else
+                            attr.addComputedValue(new Object[]{par.getKey()}, par.getValue());
+                        values.put(par.getValue(), e.getKey());
+                        attr.setCachedValues(true);
+                    }
+                }else {
+                    if(e.getValue() != null) {
+                        values.put(e.getValue(), e.getKey());
+                        attr.setValue(e.getValue());
+                        attr.setCachedValues(true);
+                    }
+                }
+            }
+
+        }catch (ClassCastException e){
+            api.putError(AlertMessage.INVOCATION_ERROR, e.getMessage());
+        }
+        ArrayList<Node> nodes = new ArrayList<>();
+        for(Map.Entry<Object, Method> e : values.entrySet()){
+            Object obj = e.getKey();
+            if(node.NTAChildren.containsKey(obj))
+                nodes.add(node.NTAChildren.get(obj));
+            else{
+                Node temp = Node.getNTANode(obj, node, api);
+                node.NTAChildren.put(obj, temp);
+            }
+        }
+       return nodes;
+    }
+
+    private HashMap<Method, Object> findFieldNames(){
+        Class clazz = node.node.getClass();
+        HashMap<Method, Object> values = new HashMap<>();
+        if(node.NTAChildren.size() == 0)
+            return values;
+        while(clazz != null) {
+            for (Field field : clazz.getDeclaredFields()) {
+                if(values.size() == node.NTAChildren.size())  //have found all the fields, can leave now
+                    return values;
+                for(Method m : node.NTAMethods){
+                    if(values.containsKey(m)) //have already found a field for this method
+                       continue;
+                    if (field.getName().contains(m.getName() + "_") && field.getName().contains("_value")) {
+                        field.setAccessible(true);
+                        try {
+                            values.put(m, field.get(node.node));
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+            clazz = clazz.getSuperclass();
+        }
+        return values;
     }
 }

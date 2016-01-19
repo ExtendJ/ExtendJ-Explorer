@@ -7,8 +7,10 @@ import jastaddad.api.ASTAPI;
 import jastaddad.api.JastAddAdAPI;
 import jastaddad.tasks.JastAddAdTask;
 import jastaddad.ui.controllers.Controller;
+import jastaddad.ui.dialogs.OpenASTDialog;
 import jastaddad.ui.graph.GraphView;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
@@ -42,7 +44,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
     protected static Controller con;
 
     private Parent rootView;
-    public JastAddAdUI() {} // This one is used by Application
+    public JastAddAdUI() { jastAddAd = new JastAddAdAPI(); } // This one is used by Application
 
     public JastAddAdUI(Object root) {
         jastAddAd = new JastAddAdAPI(root);
@@ -54,7 +56,7 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
     /**
      * run() generates the AST and then opens the UI
      */
-    public void run(){
+    public void run() {
         jastAddAd.run();
         this.mon = new UIMonitor(jastAddAd);
         launch(new String[0]);
@@ -117,6 +119,15 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         ScrollPane center = (ScrollPane) rootView.lookup("#graphViewScrollPane");
         center.setContent(graphview);
         graphview.setPreferredSize((int)center.getWidth(), (int)center.getHeight());
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                OpenASTDialog dialog = new OpenASTDialog(mon);
+                dialog.init();
+                dialog.show();
+            }
+        });
+
     }
 
     public static boolean openFile(File file) {
@@ -150,7 +161,8 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
      * @param args
      */
     public static void main(String[] args) {
-        String filename = "sample.fcl";
+        new JastAddAdUI().run();
+        /*String filename = "sample.fcl";
         try{
             ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
             ConfigParser parser = new ConfigParser();
@@ -172,6 +184,6 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
             e.printStackTrace(System.err);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 }
