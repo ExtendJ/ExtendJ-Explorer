@@ -8,7 +8,8 @@
 <MenuBar styleClass="typeListView" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jastaddad.ui.controllers.TopMenuController">
     <Menu text="File" fx:id="topMenuFileMenu">
         <items>
-            <MenuItem text="Open" fx:id="openMenuItem">
+            <MenuItem text="Run compiler" fx:id="rerunCompiler"/>
+            <MenuItem text="Open..." fx:id="openMenuItem">
             </MenuItem>
             <Menu text="Export" fx:id="topMenuExportMenu">
             </Menu>

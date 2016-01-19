@@ -1,5 +1,6 @@
 package jastaddad.ui.controllers;
 
+import jastaddad.JastAddAdSetup;
 import jastaddad.tasks.JastAddAdXML;
 import jastaddad.ui.dialogs.OpenASTDialog;
 import jastaddad.ui.UIMonitor;
@@ -24,16 +25,23 @@ import java.util.ResourceBundle;
 public class TopMenuController implements Initializable {
     private UIMonitor mon;
     private GraphView graphView;
+    private String prevJarPath;
+    private String prevFilterPath;
+    private String prevArgString;
 
     @FXML private Menu topMenuFileMenu;
     @FXML private Menu topMenuExportMenu;
     @FXML private MenuItem exitMenuItem;
     @FXML private MenuItem toggleMinimizeMenuItem;
     @FXML private MenuItem openMenuItem;
+    @FXML private MenuItem rerunCompiler;
 
     public void init(UIMonitor mon, GraphView graphView){
         this.mon = mon;
         this.graphView = graphView;
+        prevJarPath = "";
+        prevFilterPath = "";
+        prevArgString = "";
     }
 
     /**
@@ -55,6 +63,13 @@ public class TopMenuController implements Initializable {
 
         toggleMinimizeMenuItem.setOnAction(e -> {
             mon.getController().toggleMinimizeWindows();
+        });
+
+        rerunCompiler.setOnAction(e->{
+            if(mon.isRerunable()){
+                JastAddAdSetup setup = new JastAddAdSetup(mon.getJastAddAdUI(), prevJarPath, prevFilterPath, prevArgString.split(" "));
+                setup.run();
+            }
         });
 
         MenuItem exportXml = new MenuItem("XML");
@@ -123,6 +138,8 @@ public class TopMenuController implements Initializable {
     }
 
     public void onNewAPI() {
-
+        prevJarPath = mon.getConfig().getOrEmpty("prevJar");
+        prevFilterPath = mon.getConfig().getOrEmpty("prevFilter");
+        prevArgString = mon.getConfig().getOrEmpty("prevFullArgs");
     }
 }

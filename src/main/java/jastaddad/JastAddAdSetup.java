@@ -116,7 +116,7 @@ public class JastAddAdSetup {
                         break;
                 }
             }
-            task.setRoot(root, filterPath, defaultDir);
+            task.setRoot(root, filterPath, defaultDir, true);
         }
     }
 }

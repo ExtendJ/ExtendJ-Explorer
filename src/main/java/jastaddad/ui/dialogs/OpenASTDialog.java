@@ -48,7 +48,15 @@ public class OpenASTDialog extends UIDialog implements Initializable, ChangeList
                 filterPath = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(file.separator)) + file.separator + JastAddAdAPI.DEFAULT_FILTER_NAME;
             }
         }
-
+        mon.getConfig().put("prevJar", jarField.getText());
+        mon.getConfig().put("prevFilter", filterField.getText());
+        mon.getConfig().put("prevFirstArg", arg1Field.getText());
+        mon.getConfig().put("prevRestArgs", args.getText());
+        String fullArgString = "";
+        for(String s : argString)
+            fullArgString += s;
+        mon.getConfig().put("prevFullArgs", fullArgString);
+        mon.getConfig().saveConfigFile();
         JastAddAdSetup setup = new JastAddAdSetup(mon.getJastAddAdUI(), jarField.getText(), filterPath, argString);
         setup.run();
         return true;
@@ -66,6 +74,11 @@ public class OpenASTDialog extends UIDialog implements Initializable, ChangeList
         return new Object[0];
     }
 
+    private String lastValue(String key){
+        String value = mon.getConfig().get(key);
+        return value == null ? "" : value;
+    }
+
     @Override
     protected Parent buildDialogContent() {
         VBox parent = new VBox();
@@ -79,6 +92,7 @@ public class OpenASTDialog extends UIDialog implements Initializable, ChangeList
         HBox row1 = new HBox();
         row1.getStyleClass().add("out_row");
         jarField = new TextField();
+        jarField.setText(lastValue("prevJar"));
         Button jarButton = new Button("...");
         row1.getChildren().addAll(jarField, jarButton);
 
@@ -86,6 +100,7 @@ public class OpenASTDialog extends UIDialog implements Initializable, ChangeList
         HBox row2 = new HBox();
         row2.getStyleClass().add("out_row");
         filterField = new TextField();
+        filterField.setText(lastValue("prevFilter"));
         Button filterButton = new Button("...");
         row2.getChildren().addAll(filterField, filterButton);
 
@@ -95,6 +110,7 @@ public class OpenASTDialog extends UIDialog implements Initializable, ChangeList
         HBox row3 = new HBox();
         row3.getStyleClass().add("out_row");
         arg1Field = new TextField();
+        arg1Field.setText(lastValue("prevFirstArg"));
         Button arg1Button = new Button("...");
         row3.getChildren().addAll(arg1Field, arg1Button);
 
@@ -103,6 +119,7 @@ public class OpenASTDialog extends UIDialog implements Initializable, ChangeList
         HBox row4 = new HBox();
         row4.getStyleClass().add("out_row");
         args = new TextField();
+        args.setText(lastValue("prevRestArgs"));
         row4.getChildren().add(args);
         //args.getStyleClass().add("out_row");
 

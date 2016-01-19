@@ -6,8 +6,8 @@
 
 .separator .line {
     -fx-border-style: segments(0.166667em, 0.166667em);
-    -fx-border-width: 1
-    -fx-background-color: #808080;;
+    -fx-border-width: 1;
+    -fx-background-color: #808080;
     -fx-padding: 4;
     -fx-border-color: derive(-fx-background,-20%) transparent transparent transparent;
 }

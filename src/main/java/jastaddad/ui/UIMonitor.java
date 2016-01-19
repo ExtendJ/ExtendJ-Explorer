@@ -36,7 +36,8 @@ public class UIMonitor {
     private JastAddAdUI jaaUI;
     private Stage stage;
     private String defaultDirectory;
-
+    private Config config;
+    private boolean rerunable;
 
     public UIMonitor(JastAddAdAPI jaaAPI){
         clean(jaaAPI);
@@ -51,7 +52,10 @@ public class UIMonitor {
         selectedNode = null;
         lastRealNode = null;
         selectedInfo = null;
-        defaultDirectory = new File(".").getAbsolutePath();
+        String tmp = new File(".").getAbsolutePath();
+        defaultDirectory = tmp.substring(0,tmp.length()-1);
+        config = new Config(defaultDirectory);
+        rerunable = false;
     }
 
     public void setJastAddAdUI(JastAddAdUI jaaUI){ this.jaaUI = jaaUI;}
@@ -145,4 +149,16 @@ public class UIMonitor {
     public String getDefaultDirectory() { return defaultDirectory; }
 
     public void setDefaultDirectory(String defaultDirectory) { this.defaultDirectory = defaultDirectory; }
+
+    public Config getConfig() {
+        return config;
+    }
+
+    public boolean isRerunable() {
+        return rerunable;
+    }
+
+    public void setRerunable(boolean rerunable) {
+        this.rerunable = rerunable;
+    }
 }
