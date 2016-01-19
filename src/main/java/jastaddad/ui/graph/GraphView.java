@@ -57,10 +57,12 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         this.con = mon.getController();
         DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge>();
         graph = new DelegateForest<>(n);
-        createTree(graph, mon.getRootNode(), true);
+        if(mon.getRootNode() != null) {
+            createTree(graph, mon.getRootNode(), true);
+        }
+        addDisplayedReferences();
         createLayout(graph);
         setListeners();
-        addDisplayedReferences();
         setContent(vs);
     }
 
@@ -113,7 +115,8 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
     public void updateGraph(){
         DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge>();
         graph = new DelegateForest<>(n);
-        createTree(graph, mon.getRootNode(), true);
+        if(mon.getRootNode() != null)
+            createTree(graph, mon.getRootNode(), true);
         TreeLayout<GenericTreeNode, UIEdge> layout = new TreeLayout<>(graph, 150, 100);
         vs.setGraphLayout(layout);
         addDisplayedReferences();

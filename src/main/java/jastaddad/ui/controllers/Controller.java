@@ -275,6 +275,8 @@ public class Controller implements Initializable {
         addMessages(mon.getApi().getMessages(AlertMessage.FILTER_MESSAGE));
         addMessage("Filter update: done after " + (System.currentTimeMillis() - timeStart) + " ms");
 
+        System.out.println(mon.getRootNode() + "");
+
         loadClassTreeView();
         attributeTabController.onNewAPI();
         topMenuController.onNewAPI();
@@ -287,6 +289,8 @@ public class Controller implements Initializable {
 
     public void saveNewFilter(){
         //addMessage("Filter update: starting");
+        if(mon.getApi().getRoot() == null)
+            return;
         graphView.getJungGraph();
         long timeStart = System.currentTimeMillis();
         String filter = codeArea.getText();
@@ -475,15 +479,17 @@ public class Controller implements Initializable {
     private void loadFilterFileText() {
         String line;
         String textContent = "";
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(mon.getApi().getFilterFilePath()));
-            while ((line = reader.readLine()) != null) {
-                textContent += line + "\n";
+        if(mon.getApi().getFilterFilePath() != null) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(mon.getApi().getFilterFilePath()));
+                while ((line = reader.readLine()) != null) {
+                    textContent += line + "\n";
+                }
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                textContent = "Can not read the configuration file!";
             }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            textContent = "Can not read the configuration file!";
         }
         codeArea.setText(textContent);
 

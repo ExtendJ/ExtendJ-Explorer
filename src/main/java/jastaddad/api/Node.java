@@ -22,8 +22,9 @@ public class Node{
     public final String simpleNameClass;
     public final String fullName;
     public final ArrayList<Node> children;
+    public final HashMap<Object, Node> NTAChildren;
     public final HashSet<Method> NTAMethods;
-    public final HashMap<String,Node> NTAChildren;
+    public final HashMap<String,Node> showNTAChildren;
     private boolean isList;
     private boolean isOpt;
     private boolean isNTA;
@@ -37,8 +38,9 @@ public class Node{
      */
     public Node(Object root, ASTAPI api, boolean isList){
         this.children = new ArrayList<>();
-        this.NTAMethods = new HashSet<>();
         this.NTAChildren = new HashMap<>();
+        this.NTAMethods = new HashSet<>();
+        this.showNTAChildren = new HashMap<>();
         this.nameFromParent = "";
         this.parent = null;
         if(root != null)
@@ -65,8 +67,9 @@ public class Node{
 
     private Node(Object root, Node parent, boolean NTA, ASTAPI api){
         this.children = new ArrayList<>();
-        this.NTAMethods = new HashSet<>();
         this.NTAChildren = new HashMap<>();
+        this.NTAMethods = new HashSet<>();
+        this.showNTAChildren = new HashMap<>();
         this.nameFromParent = "";
         this.isNTA = NTA;
         if(root != null)
@@ -91,8 +94,9 @@ public class Node{
      */
     public Node(Object root, Node parent, String name, boolean isList, boolean isOpt, boolean isNTA, int level, ASTAPI api){
         this.children = new ArrayList<>();
-        this.NTAMethods = new HashSet<>();
         this.NTAChildren = new HashMap<>();
+        this.NTAMethods = new HashSet<>();
+        this.showNTAChildren = new HashMap<>();
         this.parent = parent;
         if(root != null)
             this.simpleNameClass = root.getClass().getSimpleName();
@@ -170,7 +174,7 @@ public class Node{
                                 isNTA, level + 1, api));
                     }else if(ASTAnnotation.isAttribute(a) && ASTAnnotation.is(a, ASTAnnotation.AST_METHOD_NTA) ){
                         if(m.getParameterCount() == 0)
-                            NTAChildren.put(m.getName(), null);
+                            showNTAChildren.put(m.getName(), null);
                         NTAMethods.add(m);
                     }
                 }
