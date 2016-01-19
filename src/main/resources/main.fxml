@@ -44,19 +44,45 @@
                                     <VBox>
                                         <HBox styleClass="paneParent">
                                             <Label text="Navigate: " styleClass="our_label"/>
-                                            <Button styleClass="our_button" text="+" fx:id="zoomInButton"/>
+                                            <Button styleClass="our_button" text="+" fx:id="zoomInButton">
+                                                <tooltip>
+                                                    <Tooltip text="Zoom in"/>
+                                                </tooltip>
+                                            </Button>
                                             <Label text=""/>
-                                            <Button styleClass="our_button" text="-" fx:id="zoomOutButton"/>
+                                            <Button styleClass="our_button" text="-" fx:id="zoomOutButton">
+                                                <tooltip>
+                                                    <Tooltip text="Zoom out"/>
+                                                </tooltip>
+                                            </Button>
                                             <Label text="to: " styleClass="our_label"/>
-                                            <Button styleClass="our_button" text="Root node" fx:id="showRootNodeButton"/>
+                                            <Button styleClass="our_button" text="Root node" fx:id="showRootNodeButton">
+                                                <tooltip>
+                                                    <Tooltip text="Move camera to root node."/>
+                                                </tooltip>
+                                            </Button>
                                             <Label text=""/>
-                                            <Button styleClass="our_button" text="Selected node" fx:id="showSelectedNodeButton"/>
+                                            <Button styleClass="our_button" text="Selected node" fx:id="showSelectedNodeButton">
+                                                <tooltip>
+                                                    <Tooltip text="Move camera to selected node."/>
+                                                </tooltip>
+                                            </Button>
                                             <Label text=""/>
-                                            <Button styleClass="our_button" text="Graph" fx:id="showWholeGraphButton"/>
-                                            <Label text=""/>
-                                            <Button styleClass="our_button" text="Auto layout" fx:id="autoLayoutGraphButton"/>
+                                            <Button styleClass="our_button" text="Graph" fx:id="showWholeGraphButton">
+                                                <tooltip>
+                                                    <Tooltip text="Move camera to show the whole graph."/>
+                                                </tooltip>
+                                            </Button>
                                             <Label text=""/>
                                             <Label text="Pan: ctrl+left mouse OR hold middle mouse" styleClass="our_label"/>
+                                            <Label text=""/>
+                                            <Label text=""/>
+                                            <Label text=""/>
+                                            <Button styleClass="our_button" text="Reset graph" fx:id="autoLayoutGraphButton">
+                                                <tooltip>
+                                                    <Tooltip text="Reset the positions of all nodes and edges."/>
+                                                </tooltip>
+                                            </Button>
                                         </HBox>
                                         <ScrollPane styleClass="graphView" fx:id="graphViewScrollPane"/>
                                     </VBox>
