@@ -5,20 +5,28 @@ import jastaddad.api.JastAddAdAPI;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.nodeinfo.NodeInfo;
 import jastaddad.ui.UIMonitor;
+import jastaddad.ui.uicomponent.nodeinfotreetableview.NodeInfoView;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 /**
  * Created by gda10jth on 1/15/16.
  */
-public class OpenASTDialog extends UIDialog {
+public class OpenASTDialog extends UIDialog implements Initializable, ChangeListener<TreeItem<NodeInfoView>> {
     private TextField jarField;
     private TextField filterField;
     private TextField arg1Field;
@@ -26,6 +34,7 @@ public class OpenASTDialog extends UIDialog {
 
     public OpenASTDialog(UIMonitor mon) {
         super(mon);
+        setTitle("Open compiler...");
     }
 
     @Override
@@ -60,32 +69,50 @@ public class OpenASTDialog extends UIDialog {
     @Override
     protected Parent buildDialogContent() {
         VBox parent = new VBox();
+        parent.getStyleClass().add("our_root");
+        parent.setFillWidth(true);
+        VBox fieldContainer = new VBox();
+        fieldContainer.getStyleClass().add("top_parent");
+        fieldContainer.setFillWidth(true);
 
         Label label1 = new Label("Path to compiler jar:");
         HBox row1 = new HBox();
+        row1.getStyleClass().add("out_row");
         jarField = new TextField();
-        Button jarButton = new Button("browse");
+        Button jarButton = new Button("...");
         row1.getChildren().addAll(jarField, jarButton);
 
         Label label2 = new Label("Path to filter:");
         HBox row2 = new HBox();
+        row2.getStyleClass().add("out_row");
         filterField = new TextField();
-        Button filterButton = new Button("browse");
+        Button filterButton = new Button("...");
         row2.getChildren().addAll(filterField, filterButton);
 
-        Label label3 = new Label("First compiler argument");
+        Separator separatorArg = new Separator();
+
+        Label label3 = new Label("First compiler argument:");
         HBox row3 = new HBox();
+        row3.getStyleClass().add("out_row");
         arg1Field = new TextField();
-        Button arg1Button = new Button("browse");
+        Button arg1Button = new Button("...");
         row3.getChildren().addAll(arg1Field, arg1Button);
 
 
-        Label label4 = new Label("Arguments for compiler:");
+        Label label4 = new Label("Compiler arguments:");
+        HBox row4 = new HBox();
+        row4.getStyleClass().add("out_row");
         args = new TextField();
+        row4.getChildren().add(args);
+        //args.getStyleClass().add("out_row");
 
-        parent.getChildren().addAll(label1,row1, label2, row2, label3, row3, label4, args );
+        Separator separator = new Separator();
+
+        fieldContainer.getChildren().addAll(label1,row1, label2, row2,separatorArg, label3, row3, label4, row4 );
+        parent.getChildren().addAll(fieldContainer, separator);
 
         buttonTypeOk.setText("Open");
+        buttonTypeOk.getStyleClass().add("done_button");
         parent.getChildren().add(buttonTypeOk);
 
         jarButton.setOnAction(e->{
@@ -123,8 +150,12 @@ public class OpenASTDialog extends UIDialog {
                 arg1Field.setText(file.getAbsolutePath());
             }
         });
-
         return parent;
+    }
+
+    @Override
+    protected void loadStyleSheets(Scene scene){
+        scene.getStylesheets().add("/style/dialog.css");
     }
 
     @Override
@@ -134,6 +165,16 @@ public class OpenASTDialog extends UIDialog {
 
     @Override
     protected void nodeSelectedChild(GenericTreeNode node) {
+
+    }
+
+    @Override
+    public void changed(ObservableValue<? extends TreeItem<NodeInfoView>> observable, TreeItem<NodeInfoView> oldValue, TreeItem<NodeInfoView> newValue) {
+
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
 
     }
 }
