@@ -80,7 +80,6 @@ public class Config{
 				}
 			}
 		}catch(IOException e){
-			System.out.println("MetricPCE.java: Error reading file:\n");
 			e.printStackTrace();
 		}
 	}
