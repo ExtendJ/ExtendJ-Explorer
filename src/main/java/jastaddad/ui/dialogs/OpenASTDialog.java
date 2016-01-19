@@ -32,6 +32,7 @@ public class OpenASTDialog extends UIDialog implements Initializable, ChangeList
     private TextField arg1Field;
     private TextField args;
 
+
     public OpenASTDialog(UIMonitor mon) {
         super(mon);
         setTitle("Open compiler...");
@@ -42,21 +43,43 @@ public class OpenASTDialog extends UIDialog implements Initializable, ChangeList
         String[] argString = (arg1Field.getText().length() <= 0 ? args.getText() : arg1Field.getText() + " " + args.getText()).split(" ");
         if(argString[0].equals("")) argString = new String[0];
         String filterPath = filterField.getText();
-        if(filterPath.length() <= 0){
-            File file = new File(jarField.getText());
-            if(file != null && !file.isDirectory()){
+
+        boolean done = true;
+
+        File file;
+
+        if(filterPath.length() > 0) {
+            file = new File(filterPath);
+            if (!file.exists()) {
+                filterField.setStyle("-fx-background-color: #ffcccc");
+                done = false;
+            }
+        }
+        file = new File(jarField.getText());
+        if(!file.exists()) {
+            jarField.setStyle("-fx-background-color: #ffcccc");
+            done = false;
+        }
+
+        if(!done) return false;
+
+        if (filterPath.length() <= 0) {
+            if (file != null && !file.isDirectory()) {
                 filterPath = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(file.separator)) + file.separator + JastAddAdAPI.DEFAULT_FILTER_NAME;
             }
         }
+
+
         mon.getConfig().put("prevJar", jarField.getText());
         mon.getConfig().put("prevFilter", filterField.getText());
         mon.getConfig().put("prevFirstArg", arg1Field.getText());
         mon.getConfig().put("prevRestArgs", args.getText());
         String fullArgString = "";
-        for(String s : argString)
+        for (String s : argString)
             fullArgString += s;
         mon.getConfig().put("prevFullArgs", fullArgString);
         mon.getConfig().saveConfigFile();
+
         JastAddAdSetup setup = new JastAddAdSetup(mon.getJastAddAdUI(), jarField.getText(), filterPath, argString);
         setup.run();
         return true;
