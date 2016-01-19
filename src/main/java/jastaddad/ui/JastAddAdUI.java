@@ -119,13 +119,10 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         ScrollPane center = (ScrollPane) rootView.lookup("#graphViewScrollPane");
         center.setContent(graphview);
         graphview.setPreferredSize((int)center.getWidth(), (int)center.getHeight());
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                OpenASTDialog dialog = new OpenASTDialog(mon);
-                dialog.init();
-                dialog.show();
-            }
+        Platform.runLater(() -> {
+            OpenASTDialog dialog = new OpenASTDialog(mon);
+            dialog.init();
+            dialog.show();
         });
 
     }
@@ -162,28 +159,5 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
      */
     public static void main(String[] args) {
         new JastAddAdUI().run();
-        /*String filename = "sample.fcl";
-        try{
-            ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
-            ConfigParser parser = new ConfigParser();
-            DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);
-            if (!program.errors().isEmpty()) {
-                System.err.println();
-                System.err.println("Errors: ");
-                for (ErrorMessage e: program.errors()) {
-                    System.err.println("- " + e);
-                }
-            } else {
-                JastAddAdUI debugger = new JastAddAdUI(program);
-                debugger.run();
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found (UI): " + filename);
-            System.exit(1);
-        } catch (IOException e) {
-            e.printStackTrace(System.err);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
     }
 }

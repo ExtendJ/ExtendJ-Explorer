@@ -71,7 +71,7 @@ public class Config{
 
 			File file = new File(fullFilePath);
 			if(file.exists()) {
-				BufferedReader reader = new BufferedReader(new FileReader(new File(fullFilePath)));
+				BufferedReader reader = new BufferedReader(new FileReader(file));
 				String line = null;
 				while ((line = reader.readLine()) != null) {
 					if (line.length() > 0) {

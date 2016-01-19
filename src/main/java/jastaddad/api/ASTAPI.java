@@ -271,7 +271,7 @@ public class ASTAPI {
         }
         if(filterConfig.getBoolean(Config.CACHED_VALUES)){
             for(Node child : node.getNodeContent().computeCachedNTAS(this)) {
-                if(treeNodes.containsKey(child.node))
+                if(child == null || treeNodes.containsKey(child.node))
                     continue;
                 if(!ASTNTAObjects.contains(child.node))
                     ASTNTAObjects.add(child.node);

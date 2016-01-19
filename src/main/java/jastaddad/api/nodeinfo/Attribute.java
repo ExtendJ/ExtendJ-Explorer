@@ -18,7 +18,6 @@ public class Attribute extends NodeInfo {
     private HashMap<String, Object> computedValues;
     private HashMap<String, Object[]> usedParameters;
     private String lastComputedkey;
-    private boolean cachedValues;
     public Attribute(String name, Object value, Method m) {
         super(name, value, m);
         computedValues = new HashMap<>();
@@ -133,8 +132,4 @@ public class Attribute extends NodeInfo {
         return key;
     }
 
-    @Override
-    public boolean hasCachedValues(){ return cachedValues; }
-
-    public void setCachedValues(boolean cachedValues){ this.cachedValues = cachedValues; }
 }

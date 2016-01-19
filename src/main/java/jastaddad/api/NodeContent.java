@@ -4,6 +4,7 @@ import jastaddad.api.nodeinfo.Attribute;
 import jastaddad.api.nodeinfo.NodeInfo;
 import jastaddad.api.nodeinfo.NodeInfoHolder;
 import jastaddad.api.nodeinfo.Token;
+import org.w3c.dom.Attr;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -24,6 +25,7 @@ public class NodeContent {
     private HashMap<Method, NodeInfo> computedMethods;
     private Node node; //The node the content is a part of
     private Object nodeObject; //The node the content is a part of
+    private boolean hasComputedCachedNTAS = false;
 
     /**
      * Constructor for the NodeContent, which will init the HashSet/HashMap
@@ -147,7 +149,7 @@ public class NodeContent {
     protected NodeInfo compute(ASTAPI api, Method m, Object[] params, boolean forceComputation){
         if(computedMethods.containsKey(m) && !forceComputation) {
             NodeInfo info = computedMethods.get(m);
-            if(info != null && !info.hasCachedValues() && api.getfilterConfig().getBoolean(Config.CACHED_VALUES))
+            if(info != null && api.getfilterConfig().getBoolean(Config.CACHED_VALUES))
                 addCachedValues(m, (Attribute) attributes.get(m));
             return info;
         }
@@ -207,7 +209,7 @@ public class NodeContent {
             addInvocationErrors(api, e, m);
             attribute.setValue(e.getCause());
         }
-        if(!attribute.hasCachedValues() && api.getfilterConfig().getBoolean(Config.CACHED_VALUES)) {
+        if(api.getfilterConfig().getBoolean(Config.CACHED_VALUES)) {
             addCachedValues(m, attribute, false);
         }
         return attribute;
@@ -255,6 +257,8 @@ public class NodeContent {
     public Collection<NodeInfo> getNTAs(){ return NTAs.values(); }
     public Collection<NodeInfo> getTokens(){ return tokens.values(); }
 
+    //HERE BE DRAGONS, this code is so fricking bad!
+
     public void addCachedValues(Method m, Attribute attribute){
         addCachedValues(m, attribute, false);
     }
@@ -272,11 +276,9 @@ public class NodeContent {
                 else
                     attribute.addComputedValue(new Object[]{par.getKey()}, par.getValue());
             }
-            attribute.setCachedValues(true);
         }else if(attribute.isNTA() && force) {
             Object obj = findFieldName(node.node, m.getName(), node.node.getClass());
             attribute.setValue(obj);
-            attribute.setCachedValues(true);
         }
     }
 
@@ -296,33 +298,50 @@ public class NodeContent {
         return findFieldName(obj, methodName, clazz.getSuperclass());
     }
 
-    protected ArrayList<Node> computeCachedNTAS(ASTAPI api){
+    protected Collection<Node> computeCachedNTAS(ASTAPI api){
         HashMap<Object, Method> values = new HashMap<>();
         try {
             for(Map.Entry<Method, Object> e : findFieldNames().entrySet()){
-                NodeInfo n = computedMethods.get(e.getKey());
-                if(n != null)
-                    continue;
-                if(n == null)
-                    n = compute(api, e.getKey(), null, false);
-                Attribute attr = (Attribute) n;
-                if(attr.isParametrized()) {
-                    Map map = (Map) e.getValue();
-                    if (map == null)
-                        continue;
-                    for (Map.Entry par : (Set<Map.Entry>) map.entrySet()) {
-                        if (e.getKey().getParameterCount() > 1)
-                            attr.addComputedValue(((java.util.List) par.getKey()).toArray(), par.getValue());
-                        else
-                            attr.addComputedValue(new Object[]{par.getKey()}, par.getValue());
-                        values.put(par.getValue(), e.getKey());
-                        attr.setCachedValues(true);
+                Attribute attri = (Attribute) computedMethods.get(e.getKey());
+                if(attri != null){
+                    if(!attri.isParametrized()) {
+                        if(attri.getValue() == null)
+                            attri.setValue(e.getValue());
+                        values.put(attri.getValue(), e.getKey());
+                    }
+                    else{
+                        Map map = (Map) e.getValue();
+                        if (map == null)
+                            continue;
+                        for (Map.Entry par : (Set<Map.Entry>) map.entrySet()) {
+                            if (e.getKey().getParameterCount() > 1)
+                                attri.addComputedValue(((java.util.List) par.getKey()).toArray(), par.getValue());
+                            else
+                                attri.addComputedValue(new Object[]{par.getKey()}, par.getValue());
+                        }
+                        for(Object obj : attri.getComputedValues()){
+                            values.put(obj, e.getKey());
+                        }
                     }
                 }else {
-                    if(e.getValue() != null) {
-                        values.put(e.getValue(), e.getKey());
-                        attr.setValue(e.getValue());
-                        attr.setCachedValues(true);
+                    if (attri == null)
+                            attri = (Attribute) compute(api, e.getKey(), null, false);
+                    if (attri.isParametrized()) {
+                        Map map = (Map) e.getValue();
+                        if (map == null)
+                            continue;
+                        for (Map.Entry par : (Set<Map.Entry>) map.entrySet()) {
+                            if (e.getKey().getParameterCount() > 1)
+                                attri.addComputedValue(((java.util.List) par.getKey()).toArray(), par.getValue());
+                            else
+                                attri.addComputedValue(new Object[]{par.getKey()}, par.getValue());
+                            values.put(par.getValue(), e.getKey());
+                        }
+                    } else {
+                        if (e.getValue() != null) {
+                            values.put(e.getValue(), e.getKey());
+                            attri.setValue(e.getValue());
+                        }
                     }
                 }
             }
@@ -331,26 +350,27 @@ public class NodeContent {
             api.putError(AlertMessage.INVOCATION_ERROR, e.getMessage());
         }
         ArrayList<Node> nodes = new ArrayList<>();
-        for(Map.Entry<Object, Method> e : values.entrySet()){
+        for (Map.Entry<Object, Method> e : values.entrySet()) {
             Object obj = e.getKey();
-            if(node.NTAChildren.containsKey(obj))
+            if (node.NTAChildren.containsKey(obj))
                 nodes.add(node.NTAChildren.get(obj));
-            else{
+            else {
                 Node temp = Node.getNTANode(obj, node, api);
                 node.NTAChildren.put(obj, temp);
+                nodes.add(temp);
             }
         }
-       return nodes;
+        return nodes;
     }
 
     private HashMap<Method, Object> findFieldNames(){
         Class clazz = node.node.getClass();
         HashMap<Method, Object> values = new HashMap<>();
-        if(node.NTAChildren.size() == 0)
+        if(node.NTAMethods.size() == 0)
             return values;
         while(clazz != null) {
             for (Field field : clazz.getDeclaredFields()) {
-                if(values.size() == node.NTAChildren.size())  //have found all the fields, can leave now
+                if(values.size() == node.NTAMethods.size())  //have found all the fields, can leave now
                     return values;
                 for(Method m : node.NTAMethods){
                     if(values.containsKey(m)) //have already found a field for this method
@@ -358,7 +378,8 @@ public class NodeContent {
                     if (field.getName().contains(m.getName() + "_") && field.getName().contains("_value")) {
                         field.setAccessible(true);
                         try {
-                            values.put(m, field.get(node.node));
+                            if(field.get(node.node) != null)
+                                values.put(m, field.get(node.node));
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();
                         }
