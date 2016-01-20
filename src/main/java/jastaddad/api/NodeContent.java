@@ -305,7 +305,7 @@ public class NodeContent {
     protected Collection<Node> computeCachedNTAS(ASTAPI api){
         HashMap<Object, Method> values = new HashMap<>();
         try {
-            for(Map.Entry<Method, Object> e : findFieldNames().entrySet()){
+            for(Map.Entry<Method, Object> e : findFieldNames(api.getNTAMethods(node.getClass())).entrySet()){
                 Attribute attri = (Attribute) computedMethods.get(e.getKey());
                 if(attri != null){
                     if(!attri.isParametrized()) {
@@ -367,16 +367,16 @@ public class NodeContent {
         return nodes;
     }
 
-    private HashMap<Method, Object> findFieldNames(){
+    private HashMap<Method, Object> findFieldNames(ArrayList<Method> methods){
         Class clazz = node.node.getClass();
         HashMap<Method, Object> values = new HashMap<>();
-        if(node.NTAMethods.size() == 0)
+        if(methods == null || methods.size() == 0)
             return values;
         while(clazz != null) {
             for (Field field : clazz.getDeclaredFields()) {
-                if(values.size() == node.NTAMethods.size())  //have found all the fields, can leave now
+                if(values.size() == methods.size())  //have found all the fields, can leave now
                     return values;
-                for(Method m : node.NTAMethods){
+                for(Method m : methods){
                     if(values.containsKey(m)) //have already found a field for this method
                        continue;
                     if (field.getName().contains(m.getName() + "_") && field.getName().contains("_value")) {

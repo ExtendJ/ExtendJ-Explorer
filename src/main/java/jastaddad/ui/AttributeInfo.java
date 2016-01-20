@@ -28,9 +28,8 @@ public class AttributeInfo {
 
     public NodeInfo getNodeInfo(){ return nodeInfo; }
 
-    public String getName() {
-        return name.get();
-    }
+    public String getName(){ return name.get(); }
+
     public void setName(String name) {
         this.name.set(name);
     }

@@ -1,8 +1,6 @@
 package lang;
 
 import beaver.Parser.Exception;
-import configAST.ASTNode;
-import jastaddad.ui.JastAddAdUI;
 import lang.ast.ErrorMessage;
 import lang.ast.LangParser;
 import lang.ast.LangScanner;

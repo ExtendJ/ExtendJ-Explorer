@@ -36,7 +36,7 @@ sourceSets {
 			srcDirs = ['src/main/java', 'src/gen']
 		}
 		resources {
-			srcDir 'src/mainresources'
+			srcDir 'src/main/resources'
 		}
 	}
 }
@@ -53,9 +53,10 @@ sourceSets {
 
 
 dependencies {
-	compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6.10'
-	compile name: 'jastadd2'
-	compile name: 'beaver-rt'
+	//compile name: 'jastadd2'
+	//compile name: 'beaver-rt'
+	compile files('tools/beaver-rt.jar')
+	compile 'org.fxmisc.richtext:richtextfx:0.6.10'
 	compile 'org.apache.ant:ant:1.9.4'
 	compile 'net.sf.jung:jung-graph-impl:2.0.1'
 	compile 'net.sf.jung:jung-api:2.0.1'
@@ -75,7 +76,7 @@ gradle.projectsEvaluated {
 task fatJar(type: Jar) {
 	destinationDir = projectDir
 	manifest.attributes 'Main-Class': 'jastaddad.ui.JastAddAdUI'
-	baseName = "${project.name}"
+	baseName = "JastAddAd"
 	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 	with jar
 }

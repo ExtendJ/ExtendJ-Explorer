@@ -1,5 +1,7 @@
 package jastaddad;
 
+import configAST.List;
+import jastaddad.api.CompilerClassLoader;
 import jastaddad.api.JastAddAdAPI;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.nodeinfo.NodeInfo;
@@ -20,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.Permission;
+import java.util.ArrayList;
 import java.util.jar.JarFile;
 
 /**
@@ -55,35 +58,33 @@ public class JastAddAdSetup {
         boolean success = false;
         String defaultDir = "";
         try {
-            // Add the jar to the classpath with reflection.
             URL url = new URL("file:" + jarPath);
-            URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-            Class urlClass = URLClassLoader.class;
-            Method method = urlClass.getDeclaredMethod("addURL", new Class[]{URL.class});
-            method.setAccessible(true);
-            method.invoke(urlClassLoader, new Object[]{url});
+            ArrayList<URL> urlList = new ArrayList<>();
+            urlList.add(url);
+            CompilerClassLoader urlClassLoader = new CompilerClassLoader(urlList);
 
             // Find and instantiate the main java file in the jar.
             File file = new File(jarPath);
             defaultDir = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(file.separator)) + file.separator;
             JarFile j =  new JarFile(file);
             String mainClassName = j.getManifest().getMainAttributes().getValue("Main-Class");
-            URLClassLoader loader = new URLClassLoader (new URL[]{url}, this.getClass().getClassLoader());
-            Class cl = Class.forName(mainClassName, true, loader);
+            Class cl = Class.forName(mainClassName, true, urlClassLoader);
             Object main = cl.newInstance();
 
             // remove some java security, find the method we are looking for and invoke the method to get the new root.
             SystemExitControl.forbidSystemExitCall();
             for(Method m : main.getClass().getMethods()){
                 if(m.getName().equals("runDebugger")){
+                    long time = System.currentTimeMillis();
                     root = m.invoke(main, new Object[]{args});
+                    System.out.println("Time for compiler : " + (System.currentTimeMillis() - time));
                     success = true;
                 }
             }
 
             SystemExitControl.enableSystemExitCall();
 
-            loader.close();
+            //loader.close();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -99,10 +100,10 @@ public class JastAddAdSetup {
                 e.printStackTrace();
                 System.exit(1);
             }
-        } catch (NoSuchMethodException e) {
+        }/* catch (NoSuchMethodException e) {
             e.printStackTrace();
             success = false;
-        }
+        }*/
 
         if(success){
             // If we got the root without crashing sent the root a task.(success)

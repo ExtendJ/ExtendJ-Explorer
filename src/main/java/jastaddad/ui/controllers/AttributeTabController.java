@@ -456,9 +456,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     }
 
-    public void onNewAPI() {
-        formatter = new TextFormatter(mon.getApi().getRoot().getClass());
-    }
+    public void onNewAPI() { formatter = new TextFormatter(mon.getApi().getRoot().node.getClass()); }
 
     /**
      * Class for the cells in the tableviews
@@ -480,7 +478,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             if(info.isFilePointer()){
                 setText(text.substring(text.lastIndexOf('/') + 1) + " (" + text + ")");
                 HBox box= new HBox();
-                //box.setSpacing(10) ;
 
                 ImageView imageview = new ImageView();
                 imageview.setFitHeight(16);

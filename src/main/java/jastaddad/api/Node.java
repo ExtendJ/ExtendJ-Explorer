@@ -4,6 +4,7 @@ package jastaddad.api;
 import jastaddad.api.nodeinfo.NodeInfoHolder;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,7 +24,6 @@ public class Node{
     public final String fullName;
     public final ArrayList<Node> children;
     public final HashMap<Object, Node> NTAChildren;
-    public final HashSet<Method> NTAMethods;
     public final HashMap<String,Node> showNTAChildren;
     private boolean isList;
     private boolean isOpt;
@@ -37,9 +37,9 @@ public class Node{
      * @param api used for contributing errors and warnings, during the traversal of the AST.
      */
     public Node(Object root, ASTAPI api, boolean isList){
+        long time = System.currentTimeMillis();
         this.children = new ArrayList<>();
         this.NTAChildren = new HashMap<>();
-        this.NTAMethods = new HashSet<>();
         this.showNTAChildren = new HashMap<>();
         this.nameFromParent = "";
         this.parent = null;
@@ -51,6 +51,8 @@ public class Node{
         fullName = simpleNameClass;
         id = System.identityHashCode(this.toString());
         init(root, isList, false, false, 1, api);
+        System.out.println("Time for AST recreation : " + (System.currentTimeMillis() - time));
+
     }
 
 
@@ -68,7 +70,6 @@ public class Node{
     private Node(Object root, Node parent, boolean NTA, ASTAPI api){
         this.children = new ArrayList<>();
         this.NTAChildren = new HashMap<>();
-        this.NTAMethods = new HashSet<>();
         this.showNTAChildren = new HashMap<>();
         this.nameFromParent = "";
         this.isNTA = NTA;
@@ -95,7 +96,6 @@ public class Node{
     public Node(Object root, Node parent, String name, boolean isList, boolean isOpt, boolean isNTA, int level, ASTAPI api){
         this.children = new ArrayList<>();
         this.NTAChildren = new HashMap<>();
-        this.NTAMethods = new HashSet<>();
         this.showNTAChildren = new HashMap<>();
         this.parent = parent;
         if(root != null)
@@ -161,10 +161,28 @@ public class Node{
      * @param api
      */
     private void traversDown(Object root, ASTAPI api) {
+        ArrayList<Method> methods = api.getMethods(root.getClass());
+        if(methods == null) {
+            methods = new ArrayList<>();
+            ArrayList<Method> NTAMethods = new ArrayList<>();
+            for (Method m : root.getClass().getMethods()) {
+                for (Annotation a : m.getAnnotations()) {
+                    if (ASTAnnotation.isChild(a)) {
+                        methods.add(m);
+                    } else if (ASTAnnotation.isAttribute(a) && ASTAnnotation.is(a, ASTAnnotation.AST_METHOD_NTA)) {
+                        if (m.getParameterCount() == 0)
+                            showNTAChildren.put(m.getName(), null);
+                        NTAMethods.add(m);
+                    }
+                }
+            }
+            api.putMethods(root.getClass(), methods);
+            api.putNTAMethods(root.getClass(), NTAMethods);
+        }
         try {
             for (Method m : root.getClass().getMethods()) {
-                for (Annotation a: m.getAnnotations()) {
-                    if(ASTAnnotation.isChild(a)) {
+                for (Annotation a : m.getAnnotations()) {
+                    if (ASTAnnotation.isChild(a)) {
                         Object obj = m.invoke(root, new Object[m.getParameterCount()]);
                         String name = ASTAnnotation.getString(a, ASTAnnotation.AST_METHOD_NAME);
                         nullCheck(obj, api, name);
@@ -172,14 +190,12 @@ public class Node{
                                 !ASTAnnotation.isSingleChild(a),
                                 ASTAnnotation.isOptChild(a),
                                 isNTA, level + 1, api));
-                    }else if(ASTAnnotation.isAttribute(a) && ASTAnnotation.is(a, ASTAnnotation.AST_METHOD_NTA) ){
-                        if(m.getParameterCount() == 0)
-                            showNTAChildren.put(m.getName(), null);
-                        NTAMethods.add(m);
                     }
                 }
             }
-        } catch (Throwable e) {
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
     }

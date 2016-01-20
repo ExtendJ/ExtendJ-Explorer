@@ -62,6 +62,9 @@ public class ASTAnnotation{
     return compute(annotation, method);
   }
   public static String getKind(Annotation annotation)  {
+    Object obj = compute(annotation, AST_METHOD_KIND);
+    if(obj == null)
+      return null;
     String kind = compute(annotation, AST_METHOD_KIND).toString();
     if(kind == null)
       return null;
