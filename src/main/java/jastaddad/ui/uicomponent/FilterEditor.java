@@ -12,6 +12,7 @@ import org.fxmisc.wellbehaved.event.EventHandlerHelper;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +32,7 @@ public class FilterEditor extends CodeArea {
     // words that will be highlighet with orange
     private static final String[] KEYWORDS = new String[] {
             "when", "style", "show", "use", "configs",
-            "child", "parent", "of", "in", "not", "filter"
+            "child", "parent", "of", "on", "off", "in", "not", "filter"
     };
 
     // patterns for different highlighter objects
@@ -58,11 +59,20 @@ public class FilterEditor extends CodeArea {
 
     public FilterEditor(Controller con){
         this.con = con;
+
         removeHistory = true;
         // when a change happends in the text area, see if something should be highlighet or not.
         setParagraphGraphicFactory(LineNumberFactory.get(this));
-        richChanges().subscribe(change -> {
-            setStyleSpans(0, computeHighlighting(getText()));
+        richChanges().subscribe(new Consumer<RichTextChange<Collection<String>>>() {
+            @Override
+            public void accept(RichTextChange<Collection<String>> change) {
+                String changeText = change.getInserted().getText();
+                if(changeText.equals("{")) {
+                    replaceSelection("}");
+                    setCaretPosition(getCaretPosition() - 1);
+                }
+                FilterEditor.this.setStyleSpans(0, computeHighlighting(getText()));
+            }
         });
 
         addEventHandler(KeyEvent.KEY_PRESSED, event -> {
