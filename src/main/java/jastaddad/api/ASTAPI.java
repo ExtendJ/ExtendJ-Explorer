@@ -2,6 +2,7 @@ package jastaddad.api;
 
 import jastaddad.api.filteredtree.*;
 import jastaddad.api.nodeinfo.NodeInfo;
+import javafx.util.Pair;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -18,9 +19,8 @@ public class ASTAPI {
 
     public static final String VERSION = "alphabuild-0.3.1";
 
-    private HashMap<Class, ArrayList<Method>> methods;
+    private HashMap<Class, ArrayList<Pair<Method, Annotation>>> methods;
     private HashMap<Class, ArrayList<Method>> NTAMethods;
-    private HashMap<Method, Annotation> methodAnnotation;
 
     private Node tree;
     private GenericTreeNode filteredTree;
@@ -64,7 +64,6 @@ public class ASTAPI {
             return;
         NTAMethods = new HashMap<>();
         methods = new HashMap<>();
-        methodAnnotation = new HashMap<>();
         tree = new Node(root, this, listRoot);
         this.filteredTree = null;
         filterConfig = new Config(this, filterDir);
@@ -73,11 +72,9 @@ public class ASTAPI {
         System.out.println("Time for AST filter : " + (System.currentTimeMillis() - time));
     }
 
-    public Annotation getMethodAnnotation(Method m){ return methodAnnotation.get(m); }
-    public void putMethodAnnotation(Method m, Annotation a){ methodAnnotation.put(m, a); }
-    public ArrayList<Method> getMethods(Class clazz){ return methods.get(clazz); }
-    public void putMethods(Class clazz, ArrayList<Method> methods){ this.methods.put(clazz, methods); }
-    public ArrayList<Method> getNTAMethods(Class clazz){ return methods.get(clazz); }
+    public ArrayList<Pair<Method, Annotation>> getMethods(Class clazz){ return methods.get(clazz); }
+    public void putMethods(Class clazz, ArrayList<Pair<Method, Annotation>> methods){ this.methods.put(clazz, methods); }
+    public ArrayList<Method> getNTAMethods(Class clazz){ return NTAMethods.get(clazz); }
     public void putNTAMethods(Class clazz, ArrayList<Method> methods){ this.NTAMethods.put(clazz, methods); }
 
     public Node getRoot(){return tree; }

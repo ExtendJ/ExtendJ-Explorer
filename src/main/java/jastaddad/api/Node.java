@@ -2,6 +2,7 @@ package jastaddad.api;
 
 
 import jastaddad.api.nodeinfo.NodeInfoHolder;
+import javafx.util.Pair;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -161,15 +162,14 @@ public class Node{
      * @param api
      */
     private void traversDown(Object root, ASTAPI api) {
-        ArrayList<Method> methods = api.getMethods(root.getClass());
+        ArrayList<Pair<Method, Annotation>> methods = api.getMethods(root.getClass());
         if(methods == null) {
             methods = new ArrayList<>();
             ArrayList<Method> NTAMethods = new ArrayList<>();
             for (Method m : root.getClass().getMethods()) {
                 for (Annotation a : m.getAnnotations()) {
                     if (ASTAnnotation.isChild(a)) {
-                        methods.add(m);
-                        api.putMethodAnnotation(m, a);
+                        methods.add(new Pair<>(m,a));
                     } else if (ASTAnnotation.isAttribute(a) && ASTAnnotation.is(a, ASTAnnotation.AST_METHOD_NTA)) {
                         if (m.getParameterCount() == 0)
                             showNTAChildren.put(m.getName(), null);
@@ -181,20 +181,15 @@ public class Node{
             api.putNTAMethods(root.getClass(), NTAMethods);
         }
         try {
-            for (Method m : root.getClass().getMethods()) {
-               for (Annotation a : m.getAnnotations()) {
-                    if (ASTAnnotation.isChild(a)) {
-                        //Annotation a = api.getMethodAnnotation(m.);
-                        System.out.println(ASTAnnotation.isChild(a));
-                        Object obj = m.invoke(root, new Object[m.getParameterCount()]);
-                        String name = ASTAnnotation.getString(a, ASTAnnotation.AST_METHOD_NAME);
-                        nullCheck(obj, api, name);
-                        children.add(new Node(obj, this, name,
-                                !ASTAnnotation.isSingleChild(a),
-                                ASTAnnotation.isOptChild(a),
-                                isNTA, level + 1, api));
-                    }
-                }
+            for (Pair<Method, Annotation> p : methods) {
+                Annotation a = p.getValue();
+                Object obj = p.getKey().invoke(root, new Object[p.getKey().getParameterCount()]);
+                String name = ASTAnnotation.getString(a, ASTAnnotation.AST_METHOD_NAME);
+                nullCheck(obj, api, name);
+                children.add(new Node(obj, this, name,
+                        !ASTAnnotation.isSingleChild(a),
+                        ASTAnnotation.isOptChild(a),
+                        isNTA, level + 1, api));
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
