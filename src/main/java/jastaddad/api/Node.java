@@ -169,6 +169,7 @@ public class Node{
                 for (Annotation a : m.getAnnotations()) {
                     if (ASTAnnotation.isChild(a)) {
                         methods.add(m);
+                        api.putMethodAnnotation(m, a);
                     } else if (ASTAnnotation.isAttribute(a) && ASTAnnotation.is(a, ASTAnnotation.AST_METHOD_NTA)) {
                         if (m.getParameterCount() == 0)
                             showNTAChildren.put(m.getName(), null);
@@ -181,8 +182,10 @@ public class Node{
         }
         try {
             for (Method m : root.getClass().getMethods()) {
-                for (Annotation a : m.getAnnotations()) {
+               for (Annotation a : m.getAnnotations()) {
                     if (ASTAnnotation.isChild(a)) {
+                        //Annotation a = api.getMethodAnnotation(m.);
+                        System.out.println(ASTAnnotation.isChild(a));
                         Object obj = m.invoke(root, new Object[m.getParameterCount()]);
                         String name = ASTAnnotation.getString(a, ASTAnnotation.AST_METHOD_NAME);
                         nullCheck(obj, api, name);
