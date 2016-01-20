@@ -149,8 +149,8 @@ public class NodeContent {
     protected NodeInfo compute(ASTAPI api, Method m, Object[] params, boolean forceComputation){
         if(computedMethods.containsKey(m) && !forceComputation) {
             NodeInfo info = computedMethods.get(m);
-            if(info != null && api.getfilterConfig().getBoolean(Config.CACHED_VALUES))
-                addCachedValues(m, (Attribute) attributes.get(m));
+            if(info != null && info.isAttribute())
+                invokeAndSetValue((Attribute)info, api, node.node, m, params, forceComputation);
             return info;
         }
         NodeInfo info = null;
@@ -195,6 +195,11 @@ public class NodeContent {
                 attribute.setDeclaredAt(ASTAnnotation.getString(a, ASTAnnotation.AST_METHOD_DECLARED_AT));
             }
         }
+        invokeAndSetValue(attribute, api, obj, m, params, forceComputation);
+        return attribute;
+    }
+
+    private void invokeAndSetValue(Attribute attribute, ASTAPI api, Object obj, Method m, Object[] params, boolean forceComputation){
         try {
             if ((attribute.isParametrized() || attribute.isNTA())) {
                 if(attribute.isNTA() && !attribute.isParametrized() && forceComputation)
@@ -212,7 +217,6 @@ public class NodeContent {
         if(api.getfilterConfig().getBoolean(Config.CACHED_VALUES)) {
             addCachedValues(m, attribute, false);
         }
-        return attribute;
     }
 
     /**
