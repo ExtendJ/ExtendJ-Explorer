@@ -275,8 +275,6 @@ public class Controller implements Initializable {
         addMessages(mon.getApi().getMessages(AlertMessage.FILTER_MESSAGE));
         addMessage("Filter update: done after " + (System.currentTimeMillis() - timeStart) + " ms");
 
-        System.out.println(mon.getRootNode() + "");
-
         loadClassTreeView();
         attributeTabController.onNewAPI();
         topMenuController.onNewAPI();
