@@ -9,6 +9,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.DirectoryChooser;
 
 import java.io.File;
@@ -55,20 +58,20 @@ public class TopMenuController implements Initializable {
             mon.getController().exitProgram();
         });
 
+        openMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         openMenuItem.setOnAction(event1 -> {
             OpenASTDialog test = new OpenASTDialog(mon);
             test.init();
             test.show();
         });
 
-        toggleMinimizeMenuItem.setOnAction(e -> {
-            mon.getController().toggleMinimizeWindows();
-        });
+        toggleMinimizeMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F));
+        toggleMinimizeMenuItem.setOnAction(e -> mon.getController().toggleMinimizeWindows());
 
+        rerunCompiler.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
         rerunCompiler.setOnAction(e->{
             if(mon.isRerunable()){
-                JastAddAdSetup setup = new JastAddAdSetup(mon.getJastAddAdUI(), prevJarPath, prevFilterPath, prevArgString.split(" "));
-                setup.run();
+                reRunCompiler();
             }
         });
 
@@ -121,6 +124,11 @@ public class TopMenuController implements Initializable {
         File defaultDirectory = new File(mon.getDefaultDirectory());
         chooser.setInitialDirectory(defaultDirectory);
         return chooser.showDialog(mon.getStage());
+    }
+
+    public void reRunCompiler(){
+        JastAddAdSetup setup = new JastAddAdSetup(mon.getJastAddAdUI(), prevJarPath, prevFilterPath, prevArgString.split(" "));
+        setup.run();
     }
 
     /**

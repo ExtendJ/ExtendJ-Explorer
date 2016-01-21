@@ -3,8 +3,8 @@ package jastaddad.ui.controllers;
 import jastaddad.api.AlertMessage;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.nodeinfo.NodeInfo;
-import jastaddad.ui.dialogs.UIDialog;
 import jastaddad.ui.UIMonitor;
+import jastaddad.ui.dialogs.UIDialog;
 import jastaddad.ui.graph.GraphView;
 import jastaddad.ui.uicomponent.FilterEditor;
 import javafx.application.Platform;
@@ -27,8 +27,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
-
-import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
 
 /**
  * This is the main controller of the UI. It holds references to all sub controllers. If some part of the UI does
@@ -140,13 +138,6 @@ public class Controller implements Initializable {
         setConsoleScrollHeightListener(consoleHeightError, consoleScrollPaneError, consoleTextFlowError);
         setConsoleScrollHeightListener(consoleHeightWarning, consoleScrollPaneWarning, consoleTextFlowWarning);
         setConsoleScrollHeightListener(consoleHeightMessage, consoleScrollPaneMessage, consoleTextFlowMessage);
-
-        // hide/show sidebars
-        centerSplitPane.setOnKeyPressed(ke -> {
-            if (!ke.isShiftDown() && !ke.isAltDown() && !ke.isControlDown() && ke.getCode().equals(KeyCode.F)){
-                toggleMinimizeWindows();
-            }
-        });
 
         // minimize buttons for each side bar
         minimizeLeftSide.setOnMouseClicked(event2 -> {
