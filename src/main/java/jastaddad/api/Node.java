@@ -145,12 +145,23 @@ public class Node{
         this.level = level;
         if(root != null) {
             api.addASTObject(node, isNTA);
-            if (isList) {
-                for (Object child : (Iterable<?>) root) {
-                    if (child instanceof Collection && child.getClass().getSimpleName().equals("List") && isOpt)
-                        api.putWarning(AlertMessage.AST_STRUCTURE_WARNING, "A List is a direct child to a Opt parent, parent : " + root + ", -> child : " + child);
-                    children.add(new Node(child, this, isOpt ? nameFromParent : "", child instanceof Collection, false, isNTA, 1, api));
+            try {
+                if (isList) {
+                    for (Object child : (Iterable<?>) root) {
+                        if (child instanceof Collection && child.getClass().getSimpleName().equals("List") && isOpt)
+                            api.putWarning(AlertMessage.AST_STRUCTURE_WARNING, "A List is a direct child to a Opt parent, parent : " + root + ", -> child : " + child);
+                        children.add(new Node(child, this, isOpt ? nameFromParent : "", child instanceof Collection, false, isNTA, 1, api));
+                    }
                 }
+            }catch (ClassCastException e){
+                String message;
+                if(isNTA){
+                    message = "Object : " + root + " is not a type of the AST";
+                }else
+                    message = e.getMessage();
+                api.putError(AlertMessage.AST_STRUCTURE_ERROR, message);
+                e.printStackTrace();
+                return;
             }
             traversDown(root, api);
         }

@@ -3,8 +3,8 @@ package jastaddad.ui.controllers;
 import jastaddad.api.AlertMessage;
 import jastaddad.api.filteredtree.GenericTreeNode;
 import jastaddad.api.nodeinfo.NodeInfo;
-import jastaddad.ui.dialogs.UIDialog;
 import jastaddad.ui.UIMonitor;
+import jastaddad.ui.dialogs.UIDialog;
 import jastaddad.ui.graph.GraphView;
 import jastaddad.ui.uicomponent.FilterEditor;
 import javafx.application.Platform;
@@ -27,8 +27,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
-
-import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
 
 /**
  * This is the main controller of the UI. It holds references to all sub controllers. If some part of the UI does
@@ -141,13 +139,6 @@ public class Controller implements Initializable {
         setConsoleScrollHeightListener(consoleHeightWarning, consoleScrollPaneWarning, consoleTextFlowWarning);
         setConsoleScrollHeightListener(consoleHeightMessage, consoleScrollPaneMessage, consoleTextFlowMessage);
 
-        // hide/show sidebars
-        centerSplitPane.setOnKeyPressed(ke -> {
-            if (!ke.isShiftDown() && !ke.isAltDown() && !ke.isControlDown() && ke.getCode().equals(KeyCode.F)){
-                toggleMinimizeWindows();
-            }
-        });
-
         // minimize buttons for each side bar
         minimizeLeftSide.setOnMouseClicked(event2 -> {
             if(event2.getButton() == MouseButton.PRIMARY) {
@@ -186,12 +177,7 @@ public class Controller implements Initializable {
         graphViewTabs.getSelectionModel().selectedItemProperty().addListener(
                 (ov, t, t1) -> {
                     if (t1.getId().equals("graphViewTabNode")) {
-                        Platform.runLater(() -> {
-                            graphView.repaint();
-                            graphView.requestFocus();
-                        });
-                    } else if (t1.getId().equals("treeViewTabNode")) {
-
+                        graphView.repaintHard();
                     }
                 }
         );
@@ -429,6 +415,11 @@ public class Controller implements Initializable {
         attributeTabController.functionStopped();
         textTreeTabController.functionStopped();
         topMenuController.functionStopped();
+
+        if(mon.getApi().containsError(AlertMessage.SETUP_FAILURE)){
+            addErrors(mon.getApi().getErrors(AlertMessage.SETUP_FAILURE));
+            return;
+        }
     }
 
     /**

@@ -8,13 +8,25 @@
 <MenuBar styleClass="typeListView" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jastaddad.ui.controllers.TopMenuController">
     <Menu text="File" fx:id="topMenuFileMenu">
         <items>
-            <MenuItem text="Run compiler" fx:id="rerunCompiler"/>
-            <MenuItem text="Open..." fx:id="openMenuItem">
+            <MenuItem text="" fx:id="rerunCompiler">
+                <graphic>
+                        <Label styleClass="MenuItemText" text="Run compiler"></Label>
+                </graphic>
             </MenuItem>
-            <Menu text="Export" fx:id="topMenuExportMenu">
+            <MenuItem text="" fx:id="openMenuItem" >
+                <graphic>
+                    <Label styleClass="MenuItemText" text="Open..." ></Label>
+                </graphic>
+            </MenuItem>
+            <Menu text="" fx:id="topMenuExportMenu">
+                <graphic>
+                        <Label styleClass="MenuItemText" text="Export"></Label>
+                </graphic>
             </Menu>
-            <SeparatorMenuItem/>
-            <MenuItem text="Exit" fx:id="exitMenuItem">
+            <MenuItem text="" fx:id="exitMenuItem">
+                <graphic>
+                        <Label styleClass="MenuItemText" text="Exit"></Label>
+                </graphic>
             </MenuItem>
         </items>
     </Menu>
@@ -22,11 +34,7 @@
         <items>
             <MenuItem text="" fx:id="toggleMinimizeMenuItem">
                 <graphic>
-                    <HBox>
                         <Label styleClass="MenuItemText" text="Toggle minimize all"></Label>
-                        <Label></Label>
-                        <Label styleClass="MenuItemShort" text="F"></Label>
-                    </HBox>
                 </graphic>
             </MenuItem>
         </items>

@@ -334,12 +334,12 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
             mon.setSelectedInfo(infoHolder);
             mon.getController().attributeInNodeSelected(info);
-            setAttributeInfo(info);
+            setAttributeInfo(info, value);
             setReference(value);
 
         }else{
             mon.setSelectedInfo(null);
-            setAttributeInfo(null);
+            setAttributeInfo(null, null);
             setReference(null);
         }
     }
@@ -348,14 +348,14 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      * Fill the attributeInfoTableView with information about the attribute
      * @param info
      */
-    private void setAttributeInfo(NodeInfo info){
+    private void setAttributeInfo(NodeInfo info, Object value){
         if(info == null ) {
             attributeInfoLabel.setText("");
             attributeInfoTableView.getItems().clear();
             return;
         }
         attributeInfoLabel.setText(info.print());
-        attributeInfoTableView.setItems(FXCollections.observableArrayList(AttributeInfo.toArray(info.getInfo())));
+        attributeInfoTableView.setItems(FXCollections.observableArrayList(AttributeInfo.toArray(info.getInfo(value))));
     }
 
     /**
@@ -456,7 +456,10 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     }
 
-    public void onNewAPI() { formatter = new TextFormatter(mon.getApi().getRoot().node.getClass()); }
+    public void onNewAPI() {
+        formatter = new TextFormatter(mon.getApi().getRoot().node.getClass());
+        setAttributes();
+    }
 
     /**
      * Class for the cells in the tableviews

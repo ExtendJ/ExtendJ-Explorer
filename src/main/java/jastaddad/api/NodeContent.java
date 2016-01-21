@@ -204,8 +204,6 @@ public class NodeContent {
             if ((attribute.isParametrized() || attribute.isNTA())) {
                 if(attribute.isNTA() && !attribute.isParametrized() && forceComputation)
                     attribute.setValue(m.invoke(obj));
-                else
-                    attribute.setValue(null);
             }else if(params != null && params.length == m.getParameterCount())
                 attribute.setValue(m.invoke(obj, params));
             else if(obj != null)
@@ -240,7 +238,7 @@ public class NodeContent {
      * @param e
      */
     private void addInvocationErrors(ASTAPI api, Throwable e, Method m){
-        String message = String.format("Error while computing %s in node %s. Cause : %s", m.getName(), node.node, e.getCause() != null ? e.getCause().toString() : e.getMessage());
+        String message = String.format("While computing %s in node %s. Cause : %s", m.getName(), node.node, e.getCause() != null ? e.getCause().toString() : e.getMessage());
         api.putError(AlertMessage.INVOCATION_ERROR, message);
         //e.printStackTrace();
     }
@@ -305,7 +303,7 @@ public class NodeContent {
     protected Collection<Node> computeCachedNTAS(ASTAPI api){
         HashMap<Object, Method> values = new HashMap<>();
         try {
-            for(Map.Entry<Method, Object> e : findFieldNames(api.getNTAMethods(node.getClass())).entrySet()){
+            for(Map.Entry<Method, Object> e : findFieldNames(api).entrySet()){
                 Attribute attri = (Attribute) computedMethods.get(e.getKey());
                 if(attri != null){
                     if(!attri.isParametrized()) {
@@ -328,8 +326,7 @@ public class NodeContent {
                         }
                     }
                 }else {
-                    if (attri == null)
-                            attri = (Attribute) compute(api, e.getKey(), null, false);
+                    attri = (Attribute) compute(api, e.getKey(), null, false);
                     if (attri.isParametrized()) {
                         Map map = (Map) e.getValue();
                         if (map == null)
@@ -367,7 +364,8 @@ public class NodeContent {
         return nodes;
     }
 
-    private HashMap<Method, Object> findFieldNames(ArrayList<Method> methods){
+    private HashMap<Method, Object> findFieldNames(ASTAPI api){
+        ArrayList<Method> methods = api.getNTAMethods(node.node.getClass());
         Class clazz = node.node.getClass();
         HashMap<Method, Object> values = new HashMap<>();
         if(methods == null || methods.size() == 0)

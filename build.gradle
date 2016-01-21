@@ -53,8 +53,6 @@ sourceSets {
 
 
 dependencies {
-	//compile name: 'jastadd2'
-	//compile name: 'beaver-rt'
 	compile files('tools/beaver-rt.jar')
 	compile 'org.fxmisc.richtext:richtextfx:0.6.10'
 	compile 'org.apache.ant:ant:1.9.4'
