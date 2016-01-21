@@ -102,6 +102,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         vs = new VisualizationViewer<>(layout, screenSize);
         vs.setBackground(new Color(255,255,255));
+        vs.setRenderer(new CustomRenderer<GenericTreeNode, UIEdge>());
         setVisualizationTransformers(vs);
     }
 
@@ -338,7 +339,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         gm.add(new DraggingGraphMousePlugin(MouseEvent.BUTTON1_MASK + MouseEvent.CTRL_MASK));
         gm.add(new PopupGraphMousePlugin(vs, mon, this));
         gm.add(new PickingGraphMousePlugin());
-        gm.add(new ScalingGraphMousePlugin(new ScalingControllerMinLimit(), 0, 1.1f, 0.9f));
+        gm.add(new CustomScalingGraphMousePlugin(new ScalingControllerMinLimit(), 0, 1.1f, 0.9f));
         //gm.add(new RotatingGraphMousePlugin());
         vs.setGraphMouse(gm);
     }
