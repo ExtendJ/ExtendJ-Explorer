@@ -41,4 +41,7 @@ public abstract class DecoratorTask implements JastAddAdTask{
 
     protected abstract void runThisTask();
     protected abstract void onNewRoot();
+
+    @Override
+    public void printMessage(String type, String message){}
 }

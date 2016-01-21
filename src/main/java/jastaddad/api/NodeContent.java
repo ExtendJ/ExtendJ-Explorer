@@ -238,7 +238,7 @@ public class NodeContent {
      * @param e
      */
     private void addInvocationErrors(ASTAPI api, Throwable e, Method m){
-        String message = String.format("Error while computing %s in node %s. Cause : %s", m.getName(), node.node, e.getCause() != null ? e.getCause().toString() : e.getMessage());
+        String message = String.format("While computing %s in node %s. Cause : %s", m.getName(), node.node, e.getCause() != null ? e.getCause().toString() : e.getMessage());
         api.putError(AlertMessage.INVOCATION_ERROR, message);
         //e.printStackTrace();
     }

@@ -177,12 +177,7 @@ public class Controller implements Initializable {
         graphViewTabs.getSelectionModel().selectedItemProperty().addListener(
                 (ov, t, t1) -> {
                     if (t1.getId().equals("graphViewTabNode")) {
-                        Platform.runLater(() -> {
-                            graphView.repaint();
-                            graphView.requestFocus();
-                        });
-                    } else if (t1.getId().equals("treeViewTabNode")) {
-
+                        graphView.repaintHard();
                     }
                 }
         );
@@ -420,6 +415,11 @@ public class Controller implements Initializable {
         attributeTabController.functionStopped();
         textTreeTabController.functionStopped();
         topMenuController.functionStopped();
+
+        if(mon.getApi().containsError(AlertMessage.SETUP_FAILURE)){
+            addErrors(mon.getApi().getErrors(AlertMessage.SETUP_FAILURE));
+            return;
+        }
     }
 
     /**

@@ -134,13 +134,13 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         vs.setPreferredSize(screenSize);
         vs.scaleToLayout(scaler);
-        repaint();
+        vs.repaint();
     }
 
     public void setPreferredSize(int width, int height){
         vs.setPreferredSize(new Dimension(width, height));
         vs.scaleToLayout(scaler);
-        repaint();
+        vs.repaint();
     }
 
     /**
@@ -342,6 +342,11 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         gm.add(new CustomScalingGraphMousePlugin(new ScalingControllerMinLimit(), 0, 1.1f, 0.9f));
         //gm.add(new RotatingGraphMousePlugin());
         vs.setGraphMouse(gm);
+    }
+
+    public void repaintHard(){
+        vs.repaint();
+        setContent(vs);
     }
 
     public void repaint(){

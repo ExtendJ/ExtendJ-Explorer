@@ -77,6 +77,13 @@ public class JastAddAdUI extends Application implements JastAddAdTask {
         con.onNewAPI();
     }
 
+    @Override
+    public void printMessage(String type, String message){
+        if(mon == null || mon.getApi() == null)
+            return;
+        mon.getApi().putError(type, message);
+    }
+
     public void setFilterDir(String dir){jastAddAd.setFilterPath(dir);}
 
     /**

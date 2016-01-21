@@ -1,6 +1,7 @@
 package jastaddad;
 
 import configAST.List;
+import jastaddad.api.AlertMessage;
 import jastaddad.api.CompilerClassLoader;
 import jastaddad.api.JastAddAdAPI;
 import jastaddad.api.filteredtree.GenericTreeNode;
@@ -81,7 +82,11 @@ public class JastAddAdSetup {
                     success = true;
                 }
             }
-
+            if(!success && task != null) {
+                String message = "Could not find method : public static Object runDebugger(String[] args) in the main class. \n" +
+                        "Make sure this is implemented correctly check the README file for instructions";
+                task.printMessage(AlertMessage.SETUP_FAILURE, message);
+            }
             SystemExitControl.enableSystemExitCall();
 
             //loader.close();
@@ -100,10 +105,7 @@ public class JastAddAdSetup {
                 e.printStackTrace();
                 System.exit(1);
             }
-        }/* catch (NoSuchMethodException e) {
-            e.printStackTrace();
-            success = false;
-        }*/
+        }
 
         if(success){
             // If we got the root without crashing sent the root a task.(success)
