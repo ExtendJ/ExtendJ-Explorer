@@ -45,6 +45,13 @@ public class DraggingGraphMousePlugin extends TranslatingGraphMousePlugin {
 
             e.consume();
             vv.repaint();
+            ((CustomRenderer)vv.getRenderer()).setMoving(true);
         }
+    }
+
+    public void mouseReleased(MouseEvent e) {
+        VisualizationViewer vv = (VisualizationViewer)e.getSource();
+        ((CustomRenderer)vv.getRenderer()).setMoving(false);
+        super.mouseReleased(e);
     }
 }
