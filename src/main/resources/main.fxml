@@ -166,6 +166,11 @@
             </VBox>
         </SplitPane>
     </center>
+    <bottom>
+        <HBox styleClass="paneParent, bottombar">
+            <Label text="Joel Lindholm | Johan Thorsberg"/>
+        </HBox>
+    </bottom>
     <stylesheets>style/style.css</stylesheets>
     <stylesheets>style/invokeAttributeDialog.css</stylesheets>
     <stylesheets>style/topmenu.css</stylesheets>

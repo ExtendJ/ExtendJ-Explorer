@@ -102,7 +102,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         vs = new VisualizationViewer<>(layout, screenSize);
         vs.setBackground(new Color(255,255,255));
-        vs.setRenderer(new CustomRenderer<GenericTreeNode, UIEdge>());
+        vs.setRenderer(new CustomRenderer(mon));
         setVisualizationTransformers(vs);
     }
 
@@ -116,6 +116,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
     public void updateGraph(){
         DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, UIEdge>();
         graph = new DelegateForest<>(n);
+        ((CustomRenderer)vs.getRenderer()).refresh(mon);
         if(mon.getRootNode() != null)
             createTree(graph, mon.getRootNode(), true);
         TreeLayout<GenericTreeNode, UIEdge> layout = new TreeLayout<>(graph, 150, 100);
