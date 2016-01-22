@@ -16,7 +16,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -54,6 +56,11 @@ public class JastAddAdSetup {
         this.filterPath = filterPath;
     }
 
+    private void print(String message){
+        if(task != null)
+            task.printMessage(AlertMessage.SETUP_FAILURE, message);
+    }
+
     public void run(){
         Object root = null;
         boolean success = false;
@@ -74,25 +81,30 @@ public class JastAddAdSetup {
 
             // remove some java security, find the method we are looking for and invoke the method to get the new root.
             SystemExitControl.forbidSystemExitCall();
-            for(Method m : main.getClass().getMethods()){
-                if(m.getName().equals("runDebugger")){
-                    long time = System.currentTimeMillis();
-                    root = m.invoke(main, new Object[]{args});
-                    System.out.println("Time for compiler : " + (System.currentTimeMillis() - time));
-                    success = true;
-                }
-            }
-            if(!success && task != null) {
-                String message = "Could not find method : public static Object runDebugger(String[] args) in the main class. \n" +
-                        "Make sure this is implemented correctly check the README file for instructions";
-                task.printMessage(AlertMessage.SETUP_FAILURE, message);
-            }
-            SystemExitControl.enableSystemExitCall();
 
-            //loader.close();
+            long time = System.currentTimeMillis();
+            Method mainMethod = cl.getMethod("main", String[].class);
+            mainMethod.invoke(main, new Object[]{args});
+            Field rootField = cl.getField("jastaddad_root_node");
+            rootField.setAccessible(true);
+            root = rootField.get(main);
+            System.out.println("Time for compiler : " + (System.currentTimeMillis() - time));
+            SystemExitControl.enableSystemExitCall();
+            success = true;
+
+        } catch (NoSuchFieldException e) {
+            print("Could not find field : jastaddad_root_node in the main class. \n" +
+                "Make sure this is implemented correctly check the README file for instructions");
+            //e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            print("Could not find the compiler's main method");
+            //e.printStackTrace();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }catch (FileNotFoundException e) {
+            print("Could not find jar file, check path");
             e.printStackTrace();
         } catch (InstantiationException e) {
             e.printStackTrace();

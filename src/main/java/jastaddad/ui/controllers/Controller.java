@@ -14,7 +14,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -168,9 +167,7 @@ public class Controller implements Initializable {
         });
 
         // update the new filter. This is done in the API
-        saveNewFilterButton.setOnAction((event) -> {
-            saveNewFilter();
-        });
+        saveNewFilterButton.setOnAction((event) -> saveNewFilter());
 
 
         // not working right now. The graph does not repaint when moving between the tabs
@@ -192,34 +189,26 @@ public class Controller implements Initializable {
         });
 
 
-        showRootNodeButton.setOnAction(click -> {
-            graphView.panToNode(mon.getRootNode());
-        });
         showSelectedNodeButton.setOnAction(click -> {
             if (mon.getSelectedNode() != null)
                 graphView.panToNode(mon.getSelectedNode());
         });
-        showWholeGraphButton.setOnAction(click -> {
-            graphView.showWholeGraphOnScreen();
-        });
 
-        autoLayoutGraphButton.setOnAction(click -> {
-            graphView.updateGraph();
-        });
+        showRootNodeButton.setOnAction(click -> graphView.panToNode(mon.getRootNode()));
 
-        zoomInButton.setOnMouseClicked(e -> {
-            graphView.zoomIn();
-        });
+        showWholeGraphButton.setOnAction(click -> graphView.showWholeGraphOnScreen());
 
-        zoomOutButton.setOnMouseClicked(e->{
-            graphView.zoomOut();
-        });
+        autoLayoutGraphButton.setOnAction(click -> graphView.updateGraph());
+
+        zoomInButton.setOnMouseClicked(e -> graphView.zoomIn());
+
+        zoomOutButton.setOnMouseClicked(e-> graphView.zoomOut());
 
         updateGraphInfo();
     }
 
-    private void updateGraphInfo(){
-        nodeCountLabel.setText(mon.getApi().getNonFilteredNodes() + "/" + mon.getApi().getASTSize() + ".");
+    protected void updateGraphInfo(){
+        nodeCountLabel.setText(mon.getApi().getNonFilteredNodeCount() + "/" + mon.getApi().getASTSize() + ".");
         String filters = mon.getApi().getAppliedFilters();
 
         if(filters == null) {
@@ -296,8 +285,10 @@ public class Controller implements Initializable {
 
     public void updateUI(){
         graphView.updateGraph();
+        updateGraphInfo();
         textTreeTabController.updateTree();
         resetReferences();
+        attributeTabController.setAttributes();
         if (mon.getSelectedNode() != null) {
             Platform.runLater(() -> textTreeTabController.newNodeSelected(mon.getSelectedNode()));
         }

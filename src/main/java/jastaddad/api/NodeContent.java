@@ -213,7 +213,7 @@ public class NodeContent {
             attribute.setValue(e.getCause());
         }
         if(api.getfilterConfig().getBoolean(Config.CACHED_VALUES)) {
-            addCachedValues(m, attribute, false);
+            addCachedValues(api, m, attribute, false);
         }
     }
 
@@ -259,94 +259,31 @@ public class NodeContent {
     public Collection<NodeInfo> getNTAs(){ return NTAs.values(); }
     public Collection<NodeInfo> getTokens(){ return tokens.values(); }
 
-    //HERE BE DRAGONS, this code is so fricking bad!
-
-    public void addCachedValues(Method m, Attribute attribute){
-        addCachedValues(m, attribute, false);
-    }
-
-    public void addCachedValues(Method m, Attribute attribute, boolean force){
+    //HERE BE DRAGONS, this cod is here for shits and giggles
+    public void addCachedValues(ASTAPI api, Method m, Attribute attribute, boolean force){
         if(attribute == null || (attribute.isNTA() && !force))
             return;
-        if(attribute.isParametrized()) {
-            Map map = (Map) findFieldName(node.node, m.getName(), node.node.getClass());
-            if (map == null)
-                return;
-            for (Map.Entry par : (Set<Map.Entry>) map.entrySet()) {
-                if (m.getParameterCount() > 1)
-                    attribute.addComputedValue(((java.util.List) par.getKey()).toArray(), par.getValue());
-                else
-                    attribute.addComputedValue(new Object[]{par.getKey()}, par.getValue());
-            }
-        }else if(attribute.isNTA() && force) {
-            Object obj = findFieldName(node.node, m.getName(), node.node.getClass());
+        Object obj = getFieldValue(node.node, getField(api, m, node.node.getClass()));
+        if(attribute.isParametrized() && obj != null)
+            setValues(attribute, obj, m);
+        else if(attribute.isNTA() && obj != null)
             attribute.setValue(obj);
-        }
     }
 
-    private Object findFieldName(Object obj, String methodName, Class clazz){
-        if(clazz == null)
-            return null;
-        for(Field field : clazz.getDeclaredFields()){
-            if(field.getName().contains(methodName +"_") && field.getName().contains("_value")){
-                field.setAccessible(true);
-                try {
-                    return field.get(obj);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return findFieldName(obj, methodName, clazz.getSuperclass());
-    }
-
-    protected Collection<Node> computeCachedNTAS(ASTAPI api){
+    protected Collection<Node> findCachedNTAs(ASTAPI api){
         HashMap<Object, Method> values = new HashMap<>();
         try {
             for(Map.Entry<Method, Object> e : findFieldNames(api).entrySet()){
                 Attribute attri = (Attribute) computedMethods.get(e.getKey());
-                if(attri != null){
-                    if(!attri.isParametrized()) {
-                        if(attri.getValue() == null)
-                            attri.setValue(e.getValue());
-                        values.put(attri.getValue(), e.getKey());
-                    }
-                    else{
-                        Map map = (Map) e.getValue();
-                        if (map == null)
-                            continue;
-                        for (Map.Entry par : (Set<Map.Entry>) map.entrySet()) {
-                            if (e.getKey().getParameterCount() > 1)
-                                attri.addComputedValue(((java.util.List) par.getKey()).toArray(), par.getValue());
-                            else
-                                attri.addComputedValue(new Object[]{par.getKey()}, par.getValue());
-                        }
-                        for(Object obj : attri.getComputedValues()){
-                            values.put(obj, e.getKey());
-                        }
-                    }
-                }else {
+                if(attri == null)
                     attri = (Attribute) compute(api, e.getKey(), null, false);
-                    if (attri.isParametrized()) {
-                        Map map = (Map) e.getValue();
-                        if (map == null)
-                            continue;
-                        for (Map.Entry par : (Set<Map.Entry>) map.entrySet()) {
-                            if (e.getKey().getParameterCount() > 1)
-                                attri.addComputedValue(((java.util.List) par.getKey()).toArray(), par.getValue());
-                            else
-                                attri.addComputedValue(new Object[]{par.getKey()}, par.getValue());
-                            values.put(par.getValue(), e.getKey());
-                        }
-                    } else {
-                        if (e.getValue() != null) {
-                            values.put(e.getValue(), e.getKey());
-                            attri.setValue(e.getValue());
-                        }
-                    }
-                }
+                setValues(attri, e.getValue(), e.getKey());
+                if(attri.isParametrized()) {
+                    for (Object obj : attri.getComputedValues())
+                        values.put(obj, e.getKey());
+                }else
+                    values.put(attri.getValue(), e.getKey());
             }
-
         }catch (ClassCastException e){
             api.putError(AlertMessage.INVOCATION_ERROR, e.getMessage());
         }
@@ -364,32 +301,66 @@ public class NodeContent {
         return nodes;
     }
 
-    private HashMap<Method, Object> findFieldNames(ASTAPI api){
-        ArrayList<Method> methods = api.getNTAMethods(node.node.getClass());
-        Class clazz = node.node.getClass();
-        HashMap<Method, Object> values = new HashMap<>();
-        if(methods == null || methods.size() == 0)
-            return values;
+    private void setValues(Attribute attri, Object v, Method m){
+        if (attri.isParametrized()) {
+            if (v == null || !(v instanceof Map))
+                return;
+            Map map = (Map) v;
+            for (Map.Entry par : (Set<Map.Entry>) map.entrySet()) {
+                if (m.getParameterCount() > 1  && par.getKey() instanceof Collection)
+                    attri.addComputedValue(((java.util.List) par.getKey()).toArray(), par.getValue());
+                else
+                    attri.addComputedValue(new Object[]{par.getKey()}, par.getValue());
+            }
+        } else
+            attri.setValue(v);
+    }
+
+    private Field getField(ASTAPI api, Method method, Class clazz){
+        if(clazz == null)
+            return null;
+        if(api.getCachedField(method) != null)
+            return api.getCachedField(method);
         while(clazz != null) {
             for (Field field : clazz.getDeclaredFields()) {
-                if(values.size() == methods.size())  //have found all the fields, can leave now
-                    return values;
-                for(Method m : methods){
-                    if(values.containsKey(m)) //have already found a field for this method
-                       continue;
-                    if (field.getName().contains(m.getName() + "_") && field.getName().contains("_value")) {
-                        field.setAccessible(true);
-                        try {
-                            if(field.get(node.node) != null)
-                                values.put(m, field.get(node.node));
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                if (field.getName().contains(method.getName() + "_") && field.getName().contains("_value")) {
+                    api.putCachedField(method, field);
+                    return field;
                 }
             }
             clazz = clazz.getSuperclass();
         }
+        return null;
+    }
+
+    private HashMap<Method, Object> findFieldNames(ASTAPI api){
+        ArrayList<Method> methods = api.getNTAMethods(node.node.getClass());
+        HashMap<Method, Object> values = new HashMap<>();
+        if(methods == null || methods.size() == 0)
+            return values;
+        for(Method m : methods){
+            Field f;
+            if(api.getCachedField(m) != null)
+                f = api.getCachedField(m);
+            else
+                f = getField(api, m, node.node.getClass());
+            Object value = getFieldValue(node.node, f);
+            if(value != null)
+                values.put(m, value);
+        }
         return values;
     }
+
+    private Object getFieldValue(Object obj, Field field){
+        if(obj == null || field == null)
+            return null;
+        try {
+            field.setAccessible(true);
+            return field.get(obj);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }
