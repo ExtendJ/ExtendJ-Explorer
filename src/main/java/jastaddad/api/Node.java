@@ -82,7 +82,7 @@ public class Node{
         this.parent = parent;
         fullName = simpleNameClass;
         id = System.identityHashCode(this.toString());
-        init(root, true, false, true,  1, api);
+        init(root, false, false, true,  1, api);
     }
 
     /**
@@ -160,7 +160,6 @@ public class Node{
                 }else
                     message = e.getMessage();
                 api.putError(AlertMessage.AST_STRUCTURE_ERROR, message);
-                e.printStackTrace();
                 return;
             }
             traversDown(root, api);

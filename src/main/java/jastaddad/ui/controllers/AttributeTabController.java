@@ -451,6 +451,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                     break;
                 }
             }
+
         });
         dialog.show();
 

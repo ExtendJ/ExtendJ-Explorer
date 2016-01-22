@@ -16,12 +16,7 @@ import java.lang.System;
  */
 public class Compiler {
 
-	private static Object root;
-
-	public static Object runDebugger(String[] args){
-		main(args);
-		return root;
-	}
+	public static Object jastaddad_root_node;
 
 	/**
 	 * Entry point
@@ -49,7 +44,7 @@ public class Compiler {
 					System.err.println("- " + e);
 				}
 			} else {
-				root = program;
+				jastaddad_root_node = program;
 				//program.genCode(System.out);
 			}
 		} catch (FileNotFoundException e) {
