@@ -10,13 +10,13 @@ import configAST.DebuggerConfig;
 import configAST.ErrorMessage;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.Graph;
-import jastaddad.api.ASTAPI;
-import jastaddad.api.JastAddAdAPI;
-import jastaddad.api.filteredtree.GenericTreeNode;
-import jastaddad.ui.UIMonitor;
-import jastaddad.ui.controllers.Controller;
-import jastaddad.ui.graph.GraphView;
-import jastaddad.ui.graph.UIEdge;
+import DrAST.api.ASTAPI;
+import DrAST.api.DrASTAPI;
+import DrAST.api.filteredtree.GenericTreeNode;
+import DrAST.ui.UIMonitor;
+import DrAST.ui.controllers.Controller;
+import DrAST.ui.graph.GraphView;
+import DrAST.ui.graph.UIEdge;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
@@ -76,7 +76,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
     }
 
     protected static UIMonitor mon;
-    protected static JastAddAdAPI jastAddAd;
+    protected static DrASTAPI DrAST;
     protected static Controller con;
     private static boolean init = true;
 
@@ -85,10 +85,10 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         if(!init)
             return;
         init = false;
-        jastAddAd = new JastAddAdAPI(getRootNode());
-        jastAddAd.setFilterDir(inDirectory);
-        jastAddAd.run();
-        mon = new UIMonitor(jastAddAd);
+        DrAST = new DrASTAPI(getRootNode());
+        DrAST.setFilterDir(inDirectory);
+        DrAST.run();
+        mon = new UIMonitor(DrAST);
         FXMLLoader loader = new FXMLLoader();
         Parent rootView = loader.load(getClass().getResource("/main.fxml").openStream());
         con = loader.<Controller>getController();

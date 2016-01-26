@@ -5,7 +5,7 @@ import configAST.ConfigParser;
 import configAST.ConfigScanner;
 import configAST.DebuggerConfig;
 import configAST.ErrorMessage;
-import jastaddad.api.JastAddAdAPI;
+import DrAST.api.DrASTAPI;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -32,7 +32,7 @@ public class InputFileFilter extends AbstractInputFiletest {
      * @param dir filename of test input file
      */
     public InputFileFilter(String dir) {
-        super(TEST_DIR, dir, JastAddAdAPI.FILE_NAME);
+        super(TEST_DIR, dir, DrASTAPI.FILE_NAME);
     }
 
     /**

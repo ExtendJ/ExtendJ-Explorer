@@ -1,6 +1,6 @@
 ### Work in progress. please contact gda10jth@student.lu.se and gda10jli@student.lu.se if you want to try it out. ###
 
-# JastAddAd readme #
+# DrAST readme #
 This readme has the following content
 
 * Getting Started 
@@ -9,7 +9,7 @@ This readme has the following content
     - Create jar file
     - See if things are working
     - Try out an example project
-    - Running JastAddAd on your project
+    - Running DrAST on your project
     - Lib dependencies for Linux
     - The Filter Configuration Language
 
@@ -27,7 +27,7 @@ git clone https://git@bitbucket.org/jastadd/jastadddebugger-exjobb.git
 Then go to the directory where you cloned the project, with your terminal
 
 ## Building the project ##
-In order to run JastAddAd you first need to build the project and then create its jar file.
+In order to run DrAST you first need to build the project and then create its jar file.
 
 There are two ways to assemble the project. Either just assemble:
 ```
@@ -45,11 +45,11 @@ After assembling the project, create the jar by writing the following command:
 ./gradlew fatJar
 ```
 ## See if things are working ##
-To test if the JastAddAd is ready to run on your computer you can just run the jar with the following command:
+To test if the DrAST is ready to run on your computer you can just run the jar with the following command:
 ```
 java -jar jastadddebugger-exjobb.jar
 ```
-This should run a sample JastAdd project and run the JastAddAdUI program. see Lib dependencis below if it's not working.
+This should run a sample JastAdd project and run the DrASTUI program. see Lib dependencis below if it's not working.
 
 Note! The debugger will run on the sample.fcl file in your directory. The file sample.fcl contain some Configuration Language code which will be described later.
 
@@ -61,13 +61,13 @@ To run this version of CalcASM go to the directory and run the following command
 ant jar
 ```
 This will create a jar named compiler which contains the compiler for the CalcASM language. 
-To start the JastAddAdUI simply run:
+To start the DrASTUI simply run:
 ```
 java -jar compiler.jar testfiles/asm/mul2.calc
 ```
 
-## Running JastAddAd on your project ##
-There are a few things that must be done to run JastAddAd on your own project.
+## Running DrAST on your project ##
+There are a few things that must be done to run DrAST on your own project.
 
 * Add created Jar to your projects Library path.
 For example if you are using an ant build script do something like this:
@@ -81,20 +81,20 @@ And then add the jar to the to the scripts jar target:
 ```
 Note! The jastadddebugger-exjobb.jar contatins a number of .fxml and .css files, these are required to run the UI. The include="\*\*/\*.\*" above does this, for ant. 
 
-Now JastAddAd is ready to run! In your own java code (typically the same class as you run your parser) add the following code when the AST is created: 
+Now DrAST is ready to run! In your own java code (typically the same class as you run your parser) add the following code when the AST is created:
 ```
 YourScanner scanner = new YourScanner(...);
 YourParser parser = new YourParser();
 RootNode rootNode = (RootNode) parser.parse(scanner);
-jastaddad.ui.JastAddAdUI debugger = new jastaddad.ui.JastAddAdUI(rootNode);// Where rootNode is the Object of your AST:s root.
+DrAST.ui.DrASTUI debugger = new DrAST.ui.DrASTUI(rootNode);// Where rootNode is the Object of your AST:s root.
 debugger.run();
 ```
 
-Now your done! Next time you run your project on your source code, JastAddAdUI will start up after the parsing and scanning is done. 
+Now your done! Next time you run your project on your source code, DrASTUI will start up after the parsing and scanning is done.
 
-NOTE! You don't need to run the UI of JastAddAd. All computations are done in a class JastAddAdAPI. If you want to get the data without an UI, run the following code:
+NOTE! You don't need to run the UI of DrAST. All computations are done in a class DrASTAPI. If you want to get the data without an UI, run the following code:
 ```
-jastaddad.api.JastAddAdAPI debugger = new jastaddad.api.JastAddAdAPI(rootNode); // Where rootNode is the Object of your AST:s root
+DrAST.api.DrASTAPI debugger = new DrAST.api.DrASTAPI(rootNode); // Where rootNode is the Object of your AST:s root
 debugger.run();
 ```
 

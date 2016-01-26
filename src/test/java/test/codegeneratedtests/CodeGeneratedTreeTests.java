@@ -3,9 +3,9 @@ package test.codegeneratedtests;
 import CalcASM.src.gen.lang.ast.Mul;
 import CalcASM.src.gen.lang.ast.Numeral;
 import CalcASM.src.gen.lang.ast.Program;
-import jastaddad.api.JastAddAdAPI;
-import jastaddad.tasks.JastAddAdXML;
-import jastaddad.ui.JastAddAdUI;
+import DrAST.api.DrASTAPI;
+import DrAST.tasks.DrASTXML;
+import DrAST.ui.DrASTUI;
 import org.junit.Test;
 import test.OutoutXMLcomparer;
 
@@ -28,10 +28,10 @@ public class CodeGeneratedTreeTests {
 
     private void runThisTree(Object program, String expectedFile){
         String inDirectory = "tests/codeGeneratedTreeTests/";
-        JastAddAdAPI debugger = new JastAddAdAPI(program);
+        DrASTAPI debugger = new DrASTAPI(program);
         debugger.setFilterDir("tests/codeGeneratedTreeTests/");
         debugger.run();
-        JastAddAdXML xmlPrinter = new JastAddAdXML(debugger);
+        DrASTXML xmlPrinter = new DrASTXML(debugger);
         xmlPrinter.printXml(inDirectory, expectedFile, ".out");
         //new OutoutXMLcomparer().checkOutput(debugger.getFilteredTree(), expectedFile + ".expected", inDirectory);
     }

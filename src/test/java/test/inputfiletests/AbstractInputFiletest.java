@@ -1,9 +1,9 @@
 package test.inputfiletests;
 
-import jastaddad.api.ASTAPI;
-import jastaddad.api.AlertMessage;
-import jastaddad.api.JastAddAdAPI;
-import jastaddad.tasks.JastAddAdXML;
+import DrAST.api.ASTAPI;
+import DrAST.api.AlertMessage;
+import DrAST.api.DrASTAPI;
+import DrAST.tasks.DrASTXML;
 import test.OutoutXMLcomparer;
 
 import java.io.File;
@@ -77,10 +77,10 @@ abstract public class AbstractInputFiletest {
 
 	protected void compareWithExpectedFile(Object program){
 		// everything went well!
-		JastAddAdAPI debugger = new JastAddAdAPI(program);
+		DrASTAPI debugger = new DrASTAPI(program);
 		debugger.setFilterDir(inDirectory + "/");
 		debugger.run();
-		JastAddAdXML xmlPrinter = new JastAddAdXML(debugger);
+		DrASTXML xmlPrinter = new DrASTXML(debugger);
 		xmlPrinter.run();
 		xmlPrinter.printXml(inDirectory, AbstractInputFiletest.OUT_EXTENSION);
 		int numberOfErrors = debugger.api().getErrors(AlertMessage.FILTER_ERROR).size();

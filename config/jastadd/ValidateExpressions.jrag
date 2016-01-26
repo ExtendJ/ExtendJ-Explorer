@@ -36,31 +36,31 @@ aspect ValidateExpressions{
     // ============================
 
     syn boolean Expr.validateExpr(Object attr) = false;
-    syn boolean Expr.validateExpr(jastaddad.api.Node node) = false;
+    syn boolean Expr.validateExpr(drast.api.Node node) = false;
 
     // child- and parent of
     syn boolean ChildOf.isNot() = getNot().getBool();
     syn boolean ParentOf.isNot() = getNot().getBool();
 
-    syn boolean ChildOf.isChildOf(jastaddad.api.Node node){
-        jastaddad.api.Node parent = node.parent;
+    syn boolean ChildOf.isChildOf(drast.api.Node node){
+        drast.api.Node parent = node.parent;
         if(parent == null)
             return false;
         boolean ret = parent.getSimpleNameClass().equals(getLangDecl().getID());
         return isNot() ? !ret : ret;
     }
 
-    syn boolean ParentOf.isParentOf(jastaddad.api.Node node){
+    syn boolean ParentOf.isParentOf(drast.api.Node node){
         boolean ret;
-        for(jastaddad.api.Node child : node.children){
+        for(drast.api.Node child : node.children){
             ret = child.getSimpleNameClass().equals(getLangDecl().getID());
             if(ret)
                 return isNot() ? !ret : ret;
         }
         return isNot();
     }
-    eq ChildOf.validateExpr(jastaddad.api.Node node) = isChildOf(node);
-    eq ParentOf.validateExpr(jastaddad.api.Node node) = isParentOf(node);
+    eq ChildOf.validateExpr(drast.api.Node node) = isChildOf(node);
+    eq ParentOf.validateExpr(drast.api.Node node) = isParentOf(node);
 
 
     eq BinExpr.validateExpr(Object attr){
