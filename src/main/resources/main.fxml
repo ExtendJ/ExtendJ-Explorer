@@ -83,6 +83,9 @@
                                                     <Tooltip text="Reset the positions of all nodes and edges."/>
                                                 </tooltip>
                                             </Button>
+                                            <Label text=""/>
+                                            <Label text="Search" styleClass="our_label"/>
+                                            <TextField></TextField>
                                         </HBox>
                                         <ScrollPane styleClass="graphView" fx:id="graphViewScrollPane"/>
                                     </VBox>

@@ -13,6 +13,13 @@ import java.util.ConcurrentModificationException;
 
 /**
  * Created by gda10jth on 1/21/16.
+ *
+ * This Class replaces the BasicRenderer as the renderer for the graph view. This is done so we could decide
+ * which vertexes and edges that will be shown on the screen, and when. This is to optimize navigation in the tree.
+ *
+ * If the number of nodes in the tree exceeds a certain number of nodes, defined in hte config file, edges will not be
+ * drawn onto the screen.
+ *
  */
 public class CustomRenderer extends BasicRenderer<GenericTreeNode, UIEdge> {
     private boolean moving;
@@ -22,7 +29,15 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, UIEdge> {
         refresh(mon);
     }
 
+    /**
+     * This method tries to get the threshold from the configuration file and see if optimizations needs to be done.
+     * No optimization will be enabled if something goes wrong with reading the configuration value.
+     *
+     * @param mon
+     */
+
     public void refresh(UIMonitor mon){
+        optimization = false;
         try {
             int nodeThreshold = Integer.parseInt(mon.getConfig().get("nodeThreshold"));
 
@@ -41,7 +56,9 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, UIEdge> {
     }
 
     /**
-     * This method is copyed from BasicRenderer, so we could do some optimizations.
+     * This method is copyed from BasicRenderer with some changes. If we are navigating ( panning, zooming ) the graph
+     * some stuff will not be drawn to save power.
+     *
      * @param renderContext
      * @param layout
      */

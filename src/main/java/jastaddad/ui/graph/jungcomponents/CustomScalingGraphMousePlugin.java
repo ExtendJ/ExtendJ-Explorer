@@ -11,8 +11,13 @@ import java.util.TimerTask;
 
 /**
  * Created by gda10jth on 1/21/16.
+ *
+ * This class handles the mose wheel zoom event. It also contains a timer that is used to determine when the user stops
+ * scrolling. This is done so some performance optimizations can be done during zooming.
+ *
  */
 public class CustomScalingGraphMousePlugin extends ScalingGraphMousePlugin {
+
     private Timer timer;
     private VisualizationViewer vv;
     public CustomScalingGraphMousePlugin(ScalingControl scaler, int modifiers) {
@@ -29,7 +34,10 @@ public class CustomScalingGraphMousePlugin extends ScalingGraphMousePlugin {
         vv = null;
     }
 
-    private void newTimer(){
+    /**
+     * Restarts the timer
+     */
+    private void restartTimer(){
         if(timer != null)
             timer.cancel();
         timer = new Timer();
@@ -39,6 +47,10 @@ public class CustomScalingGraphMousePlugin extends ScalingGraphMousePlugin {
     /**
      * zoom the display in or out, depending on the direction of the
      * mouse wheel motion.
+     *
+     * The method also tells the graph renderer that the user is navigating (eventual optimizations could that place
+     * because of this).
+     *
      */
     public void mouseWheelMoved(MouseWheelEvent e) {
         boolean accepted = checkModifiers(e);
@@ -63,11 +75,14 @@ public class CustomScalingGraphMousePlugin extends ScalingGraphMousePlugin {
             e.consume();
             vv.repaint();
             ((CustomRenderer)vv.getRenderer()).setMoving(true);
-            newTimer();
+            restartTimer();
 
         }
     }
 
+    /**
+     * Class to take care of the "stop scolling event". tells the graph renderer that the user stopped its zooming.
+     */
     class RemindTask extends TimerTask {
         private VisualizationViewer vv;
 
