@@ -1,6 +1,6 @@
 
 aspect WhenAttributes{
-    syn ArrayList<Expr> DebuggerConfig.getFilterExpressions(jastaddad.api.Node node){
+    syn ArrayList<Expr> DebuggerConfig.getFilterExpressions(drast.api.Node node){
         ArrayList<Expr> exprs = new ArrayList<Expr>();
         boolean found = getFilterExpressions(node.node.getClass(), exprs, false);
         return found ? exprs : null;

@@ -1,7 +1,7 @@
 package CalcASM.src.java.lang;
 
 import beaver.Parser.Exception;
-import jastaddad.ui.JastAddAdUI;
+import DrAST.ui.DrASTUI;
 import CalcASM.src.gen.lang.ast.ErrorMessage;
 import CalcASM.src.gen.lang.ast.LangParser;
 import CalcASM.src.gen.lang.ast.LangScanner;
@@ -41,7 +41,7 @@ public class Compiler {
 					System.err.println("- " + e);
 				}
 			} else {
-				JastAddAdUI debugger = new JastAddAdUI(program);
+				DrASTUI debugger = new DrASTUI(program);
 				debugger.run();
 				//program.genCode(System.out);
 			}

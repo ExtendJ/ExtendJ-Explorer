@@ -1,6 +1,6 @@
 package test;
-import jastaddad.api.JastAddAdAPI;
-import jastaddad.api.filteredtree.GenericTreeNode;
+import DrAST.api.DrASTAPI;
+import DrAST.api.filteredtree.GenericTreeNode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -47,7 +47,7 @@ public class OutoutXMLcomparer {
     private String nodeName(GenericTreeNode node){
         String name = node.toString();
         if(!node.isNode())
-            name = JastAddAdAPI.CLUSTER_STRING;
+            name = DrASTAPI.CLUSTER_STRING;
         return name;
     }
 

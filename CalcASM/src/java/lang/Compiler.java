@@ -16,7 +16,7 @@ import java.lang.System;
  */
 public class Compiler {
 
-	public static Object jastaddad_root_node;
+	public static Object DrAST_root_node;
 
 	/**
 	 * Entry point
@@ -44,7 +44,7 @@ public class Compiler {
 					System.err.println("- " + e);
 				}
 			} else {
-				jastaddad_root_node = program;
+				DrAST_root_node = program;
 				//program.genCode(System.out);
 			}
 		} catch (FileNotFoundException e) {

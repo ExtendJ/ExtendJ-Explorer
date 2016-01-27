@@ -4,7 +4,7 @@ import CalcASM.src.gen.lang.ast.LangParser;
 import CalcASM.src.gen.lang.ast.LangScanner;
 import CalcASM.src.gen.lang.ast.Program;
 import beaver.Parser;
-import jastaddad.api.JastAddAdAPI;
+import DrAST.api.DrASTAPI;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -29,7 +29,7 @@ public class InputFileCalcASM extends AbstractInputFiletest {
 	 * @param dir filename of test input file
 	 */
 	public InputFileCalcASM(String dir) {
-		super(TEST_DIR, dir, JastAddAdAPI.FILE_NAME);
+		super(TEST_DIR, dir, DrASTAPI.FILE_NAME);
 	}
 
 
