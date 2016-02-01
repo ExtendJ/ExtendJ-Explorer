@@ -84,7 +84,7 @@
                                                 </tooltip>
                                             </Button>
                                             <Label text=""/>
-                                            <Label text="Search" styleClass="our_label"/>
+                                            <Label text="Search: " styleClass="our_label"/>
                                             <TextField></TextField>
                                         </HBox>
                                         <ScrollPane styleClass="graphView" fx:id="graphViewScrollPane"/>

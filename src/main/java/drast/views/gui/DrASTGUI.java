@@ -50,6 +50,7 @@ public class DrASTGUI extends Application implements DrASTView {
         DrAST.run();
         this.mon = new Monitor(DrAST);
         launch(new String[0]);
+
     }
 
     @Override
@@ -65,6 +66,7 @@ public class DrASTGUI extends Application implements DrASTView {
         mon.setDefaultDirectory(defaultDir);
         mon.setRerunable(opened);
         con.onNewAPI();
+
     }
 
     @Override
@@ -84,6 +86,7 @@ public class DrASTGUI extends Application implements DrASTView {
      */
     @Override
     public void start (Stage stage) throws Exception {
+
         FXMLLoader loader = new FXMLLoader();
         rootView = loader.load(getClass().getResource("/main.fxml").openStream());
         con = loader.<Controller>getController();
