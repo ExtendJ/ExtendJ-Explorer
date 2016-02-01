@@ -281,7 +281,7 @@ public class ASTAPI {
                     continue;
                 Node ntaNode = node.showNTAChildren.get(s);
                 if (ntaNode == null) {
-                    ntaNode = Node.getNTANode(node.getNodeContent().computeMethod(this, s, true).getValue(),node, this);
+                    ntaNode = Node.getNTANode(node.getNodeData().computeMethod(this, s, true).getValue(),node, this);
                     node.showNTAChildren.put(s, ntaNode);
                     ASTNTAObjects.add(ntaNode.node);
                 }
@@ -292,14 +292,13 @@ public class ASTAPI {
         // travers down the tree for the Computed NTA:s
         if(computedNTAs.containsKey(node) && filterConfig.getBoolean(Config.NTA_COMPUTED)){
             for(Node child : computedNTAs.get(node)) {
-                System.out.println("Node" + child.node);
                 if(!treeNodes.containsKey(child.node)) {
                     traversTree(child, parent, cluster, true, 0, futureReferences);
                 }
             }
         }
         if(filterConfig.getBoolean(Config.CACHED_VALUES)){
-            for(Node child : node.getNodeContent().findCachedNTAs(this)) {
+            for(Node child : node.getNodeData().findCachedNTAs(this)) {
                 if(child == null || treeNodes.containsKey(child.node))
                     continue;
                 if(!ASTNTAObjects.contains(child.node))
@@ -433,11 +432,11 @@ public class ASTAPI {
         return nodes;
     }
 
-    public NodeInfo computeMethod(Node node, String method) { return node.getNodeContent().computeMethod(this, method); }
+    public NodeInfo computeMethod(Node node, String method) { return node.getNodeData().computeMethod(this, method); }
 
-    public void compute(Node node, boolean force) { node.getNodeContent().compute(this, false, force); }
+    public void compute(Node node, boolean force) { node.getNodeData().compute(this, false, force); }
 
-    public void compute(Node node) { node.getNodeContent().compute(this, false, false); }
+    public void compute(Node node) { node.getNodeData().compute(this, false, false); }
 
     /**
      * Computes the method for the NodeInfo,
@@ -457,7 +456,7 @@ public class ASTAPI {
     public Object compute(Node node, NodeInfo info, Object[]  params) {
         if (info == null)
             return null;
-        Object obj = node.getNodeContent().compute(info, params, this);
+        Object obj = node.getNodeData().compute(info, params, this);
         if(!info.isNTA() || ASTNTAObjects.contains(obj) || containsError(AlertMessage.INVOCATION_ERROR))
             return obj;
         Node astNode = Node.getNTANode(obj, node, this);

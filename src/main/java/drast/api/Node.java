@@ -10,7 +10,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  * This class represents the Node in the AST, it holds all its terminal attributes and references to its children.
@@ -30,7 +29,7 @@ public class Node{
     private boolean isOpt;
     private boolean isNTA;
     private int level;
-    private NodeContent nodeContent;
+    private NodeData nodeData;
 
     /**
      * This is THE constructor for the root node of the AST
@@ -142,7 +141,7 @@ public class Node{
     private void init(Object root, boolean isList, boolean isOpt, boolean isNTA, int level, ASTAPI api){
         this.isOpt = isOpt;
         this.isList = isList;
-        this.nodeContent = new NodeContent(this);
+        this.nodeData = new NodeData(this);
         this.level = level;
         if(root != null) {
             api.addASTObject(node, isNTA);
@@ -226,7 +225,7 @@ public class Node{
     public String toString() { return simpleNameClass; }
     public int getLevel(){ return level;}
 
-    public NodeContent getNodeContent(){ return nodeContent;}
-    public ArrayList<NodeInfoHolder> getNodeContentArray(){ return nodeContent.toArray();}
+    public NodeData getNodeData(){ return nodeData;}
+    public ArrayList<NodeInfoHolder> getNodeContentArray(){ return nodeData.toArray();}
 
 }

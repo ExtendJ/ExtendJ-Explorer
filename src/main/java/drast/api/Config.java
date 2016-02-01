@@ -7,7 +7,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 /**
  * This class contains the configurations specified by the configuration language.
@@ -277,11 +276,11 @@ public class Config{
             }else {
                 BinExpr be = (BinExpr) expr;
 
-                NodeInfo a = node.getNodeContent().computeMethod(api, decl);
+                NodeInfo a = node.getNodeData().computeMethod(api, decl);
                 if (a != null) {
                     if (be.isDoubleDecl()) {
                         String decl2 = ((LangDecl) be.getValue()).getID();
-                        NodeInfo b = node.getNodeContent().computeMethod(api, decl2);
+                        NodeInfo b = node.getNodeData().computeMethod(api, decl2);
                         if (b == null)
                             success =  false;
                         else

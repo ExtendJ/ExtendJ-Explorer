@@ -83,12 +83,15 @@ public class DrASTSetup {
             SystemExitControl.forbidSystemExitCall();
 
             long time = System.currentTimeMillis();
+            for (String s: args)
+                System.out.println(s);
             Method mainMethod = cl.getMethod("main", String[].class);
             mainMethod.invoke(main, new Object[]{args});
             Field rootField = cl.getField("DrAST_root_node");
             rootField.setAccessible(true);
             root = rootField.get(main);
-            System.out.println("Time for compiler : " + (System.currentTimeMillis() - time));
+            time = System.currentTimeMillis() - time;
+            System.out.println("Time for compiler : " + time);
             SystemExitControl.enableSystemExitCall();
 
             success = true;

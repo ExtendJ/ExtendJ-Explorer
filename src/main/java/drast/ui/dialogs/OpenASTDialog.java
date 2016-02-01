@@ -40,8 +40,9 @@ public class OpenASTDialog extends UIDialog implements Initializable, ChangeList
 
     @Override
     protected boolean yesButtonClicked() {
-        String[] argString = (arg1Field.getText().length() <= 0 ? args.getText() : arg1Field.getText() + " " + args.getText()).split(" ");
-        if(argString[0].equals("")) argString = new String[0];
+        String[] argString = (arg1Field.getText().length() == 0 ? args.getText() : arg1Field.getText() + " " + args.getText()).split(" ");
+        if(argString[0].equals(""))
+            argString = new String[0];
         String filterPath = filterField.getText();
 
         boolean done = true;
@@ -63,7 +64,7 @@ public class OpenASTDialog extends UIDialog implements Initializable, ChangeList
 
         if(!done) return false;
 
-        if (filterPath.length() <= 0) {
+        if (filterPath.length() == 0) {
             if (file != null && !file.isDirectory()) {
                 filterPath = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(file.separator)) + file.separator + DrASTAPI.DEFAULT_FILTER_NAME;
             }
@@ -76,7 +77,7 @@ public class OpenASTDialog extends UIDialog implements Initializable, ChangeList
         mon.getConfig().put("prevRestArgs", args.getText());
         String fullArgString = "";
         for (String s : argString)
-            fullArgString += s;
+            fullArgString += s + " ";
         mon.getConfig().put("prevFullArgs", fullArgString);
         mon.getConfig().saveConfigFile();
 

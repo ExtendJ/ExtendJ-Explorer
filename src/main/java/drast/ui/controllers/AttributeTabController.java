@@ -243,9 +243,9 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         mainParent.setExpanded(true);
 
 
-        addSectionToAttributeList("Attributes", n.getNodeContent().getAttributes(), mainParent);
-        addSectionToAttributeList("Nonterminal attributes", n.getNodeContent().getNTAs(), mainParent);
-        addSectionToAttributeList("Tokens", n.getNodeContent().getTokens(), mainParent);
+        addSectionToAttributeList("Attributes", n.getNodeData().getAttributes(), mainParent);
+        addSectionToAttributeList("Nonterminal attributes", n.getNodeData().getNTAs(), mainParent);
+        addSectionToAttributeList("Tokens", n.getNodeData().getTokens(), mainParent);
     }
 
     /**
@@ -372,6 +372,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     public void nodeSelected() {
         GenericTreeNode node = mon.getSelectedNode();
+        System.out.println(node + " : " + mon.getApi().isASTObject(node.getNode()));
         if(node.isNode()) {
             showThisInAttributeTab(nodeInfoView);
             setAttributes();

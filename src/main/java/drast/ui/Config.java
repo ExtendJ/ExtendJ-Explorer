@@ -75,7 +75,6 @@ public class Config{
 				String line = null;
 				while ((line = reader.readLine()) != null) {
 					if (line.length() > 0) {
-						line = line.replace(" ", "");
 						if (!line.startsWith("#")) {
 							String[] one_config = line.split("=");
 							configs.put(one_config[0], one_config[1]);

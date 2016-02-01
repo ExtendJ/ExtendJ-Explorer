@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * It can invoke methods with the compute methods.
  * Created by gda10jli on 10/14/15.
  */
-public class NodeContent {
+public class NodeData {
 
     private HashMap<Method, NodeInfo> attributes;
     private HashMap<Method,NodeInfo> tokens;
@@ -28,10 +28,10 @@ public class NodeContent {
     private boolean hasComputedCachedNTAS = false;
 
     /**
-     * Constructor for the NodeContent, which will init the HashSet/HashMap
+     * Constructor for the NodeData, which will init the HashSet/HashMap
      * @param node
      */
-    public NodeContent(Node node){
+    public NodeData(Node node){
         attributes = new HashMap<>();
         tokens = new HashMap<>();
         NTAs = new HashMap<>();
@@ -290,6 +290,8 @@ public class NodeContent {
         ArrayList<Node> nodes = new ArrayList<>();
         for (Map.Entry<Object, Method> e : values.entrySet()) {
             Object obj = e.getKey();
+            if(obj.getClass().getSimpleName().equals("String"))
+                System.out.println(obj + " : " + e.getValue() + " @ " + node.node);
             if (node.NTAChildren.containsKey(obj))
                 nodes.add(node.NTAChildren.get(obj));
             else {

@@ -9,16 +9,10 @@ aspect Test{
 
     //NTA test things
 
-    syn nta Num DebuggerConfig.getNum() = new Num("1");
 
-    //syn nta DebuggerConfig DebuggerConfig.getDebuggerNTA() = new DebuggerConfig(new Opt(), new List());
-    /*syn nta List DebuggerConfig.getDebuggerNTAList() {
-        List list = new List();
-        list.add(new DebuggerConfig(new Opt(), new List()));
-        list.add(new DebuggerConfig(new Opt(), new List()));
-        list.add(new DebuggerConfig(new Opt(), new List()));
-        list.add(new DebuggerConfig(new Opt(), new List()));
-        list.add(new DebuggerConfig(new Opt(), new List()));
-        return list;
-    }*/
+
+    syn nta Num DebuggerConfig.getNum() = new Num("1");
+    syn lazy String IdDecl.getString() = getID();
+    syn String IdDecl.getString2() = getID();
+
 }
