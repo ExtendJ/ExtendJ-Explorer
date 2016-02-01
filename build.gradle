@@ -73,7 +73,7 @@ gradle.projectsEvaluated {
 
 task fatJar(type: Jar) {
 	destinationDir = projectDir
-	manifest.attributes 'Main-Class': 'drast.views.gui.DrASTUI'
+	manifest.attributes 'Main-Class': 'drast.views.gui.DrASTGUI'
 	baseName = "DrAST"
 	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 	with jar
