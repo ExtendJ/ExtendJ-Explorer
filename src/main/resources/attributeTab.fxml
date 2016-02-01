@@ -8,7 +8,7 @@
 <VBox VBox.vgrow="ALWAYS"
       xmlns="http://javafx.com/javafx/8"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="drast.ui.controllers.AttributeTabController"
+      fx:controller="drast.views.gui.controllers.AttributeTabController"
       fx:id="clickedNodeInfoPane">
     <children>
            <VBox fx:id="nodeInfoView">
