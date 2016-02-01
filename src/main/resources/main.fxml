@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.TextFlow?>
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="drast.ui.controllers.Controller" fx:id="root">
+            fx:controller="drast.views.gui.controllers.Controller" fx:id="root">
     <top>
         <HBox styleClass="topParent">
             <fx:include fx:id="topMenu" source="/topMenu.fxml"/>
@@ -83,6 +83,9 @@
                                                     <Tooltip text="Reset the positions of all nodes and edges."/>
                                                 </tooltip>
                                             </Button>
+                                            <Label text=""/>
+                                            <Label text="Search" styleClass="our_label"/>
+                                            <TextField></TextField>
                                         </HBox>
                                         <ScrollPane styleClass="graphView" fx:id="graphViewScrollPane"/>
                                     </VBox>
@@ -166,6 +169,11 @@
             </VBox>
         </SplitPane>
     </center>
+    <bottom>
+        <HBox styleClass="paneParent, bottombar">
+            <Label text="Joel Lindholm | Johan Thorsberg"/>
+        </HBox>
+    </bottom>
     <stylesheets>style/style.css</stylesheets>
     <stylesheets>style/invokeAttributeDialog.css</stylesheets>
     <stylesheets>style/topmenu.css</stylesheets>

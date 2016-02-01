@@ -2,6 +2,6 @@
 
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TreeView?>
-<ScrollPane styleClass="typeListView" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="drast.ui.controllers.TreeViewTabController">
+<ScrollPane styleClass="typeListView" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="drast.views.gui.controllers.TreeViewTabController">
     <TreeView styleClass="typeTreeView" fx:id="treeView"/>
 </ScrollPane>

@@ -1,6 +1,6 @@
 aspect StyleAttributes{
 
-	syn HashMap<String, Value> DebuggerConfig.getNodeStyles(drast.api.Node node){
+	syn HashMap<String, Value> DebuggerConfig.getNodeStyles(drast.model.Node node){
 		HashMap<String, Value> bindings = new HashMap<String, Value>();
 		return getNodeStyles(node.node.getClass(), bindings);
 	}

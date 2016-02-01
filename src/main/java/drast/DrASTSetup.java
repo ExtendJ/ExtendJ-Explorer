@@ -1,19 +1,10 @@
 package drast;
 
-import configAST.List;
-import drast.api.AlertMessage;
-import drast.api.CompilerClassLoader;
-import drast.api.DrASTAPI;
-import drast.api.filteredtree.GenericTreeNode;
-import drast.api.nodeinfo.NodeInfo;
-import drast.tasks.DrASTTask;
-import drast.tasks.DrASTXML;
-import drast.ui.DrASTUI;
-import drast.ui.UIMonitor;
-import javafx.scene.Parent;
-import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import drast.model.AlertMessage;
+import drast.model.CompilerClassLoader;
+import drast.views.DrASTView;
+import drast.views.DrASTXML;
+import drast.views.gui.DrASTGUI;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,7 +14,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.security.Permission;
 import java.util.ArrayList;
 import java.util.jar.JarFile;
@@ -33,7 +23,7 @@ import java.util.jar.JarFile;
  */
 public class DrASTSetup {
     private String taskName;
-    private DrASTTask task;
+    private DrASTView task;
     private String jarPath;
     private String[] args;
     private String filterPath;
@@ -44,7 +34,7 @@ public class DrASTSetup {
         init(jarPath, filterPath, args);
     }
 
-    public DrASTSetup(DrASTTask task, String jarPath, String filterPath, String[] args) {
+    public DrASTSetup(DrASTView task, String jarPath, String filterPath, String[] args) {
         this.task = task;
         this.taskName = "";
         init(jarPath, filterPath, args);
@@ -127,7 +117,7 @@ public class DrASTSetup {
             if (task == null) {
                 switch (taskName) {
                     case "DrASTUI":
-                        this.task = new DrASTUI(root);
+                        this.task = new DrASTGUI(root);
                         break;
                     case "DrASTXML":
                         this.task = new DrASTXML(root);

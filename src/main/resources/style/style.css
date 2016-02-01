@@ -63,6 +63,11 @@
     -fx-border-color:#AAAAAA #AAAAAA #404040 black;
 }
 
+.bottombar .label{
+    -fx-font-size:10;
+    -fx-font-weight:normal;
+}
+
 .topLeftAlign{
     -fx-fit-to-width:true;
     -fx-border-width:0 0 1 0;

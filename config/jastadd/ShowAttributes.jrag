@@ -1,6 +1,6 @@
 aspect ShowAttributes{
 
-    syn HashSet<String> DebuggerConfig.getShow(drast.api.Node node){
+    syn HashSet<String> DebuggerConfig.getShow(drast.model.Node node){
         HashSet<String> attrs = new HashSet<String>();
         return getShow(node.node.getClass(), attrs);
     }

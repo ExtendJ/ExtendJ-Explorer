@@ -37,7 +37,7 @@ or build which will additionally run tests:
 ```
 ./gradlew build
 ```
-Note! The second one will run both normal and UI tests.
+Note! The second one will run both normal and GUI tests.
 
 ## Create jar file ##
 After assembling the project, create the jar by writing the following command:
@@ -79,7 +79,7 @@ And then add the jar to the to the scripts jar target:
 ```
 <zipfileset includes="**/*.*" src="/[path to debugger .jar]"/> 
 ```
-Note! The jastadddebugger-exjobb.jar contatins a number of .fxml and .css files, these are required to run the UI. The include="\*\*/\*.\*" above does this, for ant. 
+Note! The jastadddebugger-exjobb.jar contatins a number of .fxml and .css files, these are required to run the GUI. The include="\*\*/\*.\*" above does this, for ant.
 
 Now DrAST is ready to run! In your own java code (typically the same class as you run your parser) add the following code when the AST is created:
 ```
@@ -92,7 +92,7 @@ debugger.run();
 
 Now your done! Next time you run your project on your source code, DrASTUI will start up after the parsing and scanning is done.
 
-NOTE! You don't need to run the UI of DrAST. All computations are done in a class DrASTAPI. If you want to get the data without an UI, run the following code:
+NOTE! You don't need to run the GUI of DrAST. All computations are done in a class DrASTAPI. If you want to get the data without an GUI, run the following code:
 ```
 DrAST.api.DrASTAPI debugger = new DrAST.api.DrASTAPI(rootNode); // Where rootNode is the Object of your AST:s root
 debugger.run();
