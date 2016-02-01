@@ -1,7 +1,7 @@
 package drast.views.gui.controllers;
 
 import drast.model.filteredtree.GenericTreeNode;
-import drast.views.gui.UIMonitor;
+import drast.views.gui.Monitor;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -19,14 +19,14 @@ import java.util.ResourceBundle;
  * Created by gda10jth on 11/2/15.
  */
 public class TreeViewTabController implements Initializable, ChangeListener {
-    private UIMonitor mon;
+    private Monitor mon;
     private HashMap<GenericTreeNode, TreeItem<GenericTreeNode>> nodeToItemRef;
     private boolean ignoreChange;
 
     @FXML
     private TreeView treeView;
 
-    public void init(UIMonitor mon){
+    public void init(Monitor mon){
         this.mon = mon;
         nodeToItemRef = new HashMap<>();
         ignoreChange = false;

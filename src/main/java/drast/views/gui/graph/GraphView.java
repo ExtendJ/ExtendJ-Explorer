@@ -15,7 +15,7 @@ import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.filteredtree.NodeReference;
-import drast.views.gui.UIMonitor;
+import drast.views.gui.Monitor;
 import drast.views.gui.controllers.Controller;
 import drast.views.gui.graph.jungcomponents.*;
 import javafx.application.Platform;
@@ -45,13 +45,13 @@ import java.util.HashMap;
  * Created by gda10jli on 10/15/15.
  */
 public class GraphView extends SwingNode implements ItemListener { //TODO needs a performance overhaul when it comes to HUGE graphs
-    private UIMonitor mon;
+    private Monitor mon;
     private Controller con;
     private VisualizationViewer<GenericTreeNode, GraphEdge> vs;
     private DelegateForest<GenericTreeNode, GraphEdge> graph;
 
     private ScalingControllerMinLimit scaler;
-    public GraphView(UIMonitor mon){
+    public GraphView(Monitor mon){
         scaler = new ScalingControllerMinLimit();
         this.mon = mon;
         this.con = mon.getController();

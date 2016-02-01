@@ -3,7 +3,7 @@ package drast.views.gui.controllers;
 import drast.DrASTSetup;
 import drast.views.DrASTXML;
 import drast.views.gui.dialogs.OpenASTDialog;
-import drast.views.gui.UIMonitor;
+import drast.views.gui.Monitor;
 import drast.views.gui.graph.GraphView;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -26,7 +26,7 @@ import java.util.ResourceBundle;
  * Controller for the top menu.
  */
 public class TopMenuController implements Initializable {
-    private UIMonitor mon;
+    private Monitor mon;
     private GraphView graphView;
     private String prevJarPath;
     private String prevFilterPath;
@@ -39,7 +39,7 @@ public class TopMenuController implements Initializable {
     @FXML private MenuItem openMenuItem;
     @FXML private MenuItem rerunCompiler;
 
-    public void init(UIMonitor mon, GraphView graphView){
+    public void init(Monitor mon, GraphView graphView){
         this.mon = mon;
         this.graphView = graphView;
         prevJarPath = "";

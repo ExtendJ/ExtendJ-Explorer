@@ -11,7 +11,7 @@ import drast.model.nodeinfo.NodeInfo;
 import drast.views.gui.AttributeInfo;
 import drast.views.gui.dialogs.AttributeInputDialog;
 import drast.views.gui.DrASTGUI;
-import drast.views.gui.UIMonitor;
+import drast.views.gui.Monitor;
 import drast.views.gui.graph.GraphView;
 import drast.views.gui.guicomponent.TextFormatter;
 import drast.views.gui.guicomponent.nodeinfotreetableview.NodeInfoHolder;
@@ -51,7 +51,7 @@ import java.util.*;
  *
  */
 public class AttributeTabController implements Initializable, ChangeListener<TreeItem<NodeInfoView>> {
-    private UIMonitor mon;
+    private Monitor mon;
     private GraphView graphView;
     private ContextMenu mouseMenu;
     private TextFormatter formatter;
@@ -76,7 +76,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     @FXML private VBox clusterInfoView;
     @FXML private Label clusterInfoNumberLabel;
 
-    public void init(UIMonitor mon, GraphView graphView){
+    public void init(Monitor mon, GraphView graphView){
         this.mon = mon;
         this.graphView = graphView;
         if(mon.getRootNode() != null)

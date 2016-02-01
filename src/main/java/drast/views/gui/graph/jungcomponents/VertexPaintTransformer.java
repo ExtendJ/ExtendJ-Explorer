@@ -6,7 +6,7 @@ package drast.views.gui.graph.jungcomponents;
 
 import edu.uci.ics.jung.visualization.picking.PickedInfo;
 import drast.model.filteredtree.GenericTreeNode;
-import drast.views.gui.UIMonitor;
+import drast.views.gui.Monitor;
 import org.apache.commons.collections15.Transformer;
 
 import java.awt.*;
@@ -16,9 +16,9 @@ import java.awt.*;
  */
 public class VertexPaintTransformer implements Transformer<GenericTreeNode,Paint> {
     private final PickedInfo<GenericTreeNode> pi;
-    private final UIMonitor mon;
+    private final Monitor mon;
 
-   public VertexPaintTransformer ( PickedInfo<GenericTreeNode> pi, UIMonitor mon ) {
+   public VertexPaintTransformer ( PickedInfo<GenericTreeNode> pi, Monitor mon ) {
         super();
         this.mon = mon;
         if (pi == null)

@@ -4,7 +4,7 @@ import drast.DrASTSetup;
 import drast.model.DrAST;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.nodeinfo.NodeInfo;
-import drast.views.gui.UIMonitor;
+import drast.views.gui.Monitor;
 import drast.views.gui.guicomponent.nodeinfotreetableview.NodeInfoView;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -30,7 +30,7 @@ public class OpenASTDialog extends DrDialog implements Initializable, ChangeList
     private TextField args;
 
 
-    public OpenASTDialog(UIMonitor mon) {
+    public OpenASTDialog(Monitor mon) {
         super(mon);
         setTitle("Open compiler...");
     }

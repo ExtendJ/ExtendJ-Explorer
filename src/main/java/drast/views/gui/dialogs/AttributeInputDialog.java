@@ -3,7 +3,7 @@ package drast.views.gui.dialogs;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.filteredtree.TreeNode;
 import drast.model.nodeinfo.NodeInfo;
-import drast.views.gui.UIMonitor;
+import drast.views.gui.Monitor;
 import drast.views.gui.guicomponent.inputfields.CharField;
 import drast.views.gui.guicomponent.inputfields.FloatingNumberField;
 import drast.views.gui.guicomponent.inputfields.NumberField;
@@ -65,7 +65,7 @@ public class AttributeInputDialog extends DrDialog {
     private String clickHereString = "Click here";
     private String selectNodeString = "Click on a node";
 
-    public AttributeInputDialog(NodeInfo attribute, TreeNode node, UIMonitor mon){
+    public AttributeInputDialog(NodeInfo attribute, TreeNode node, Monitor mon){
         super(mon);
         initModality(Modality.NONE);
         this.info = attribute;

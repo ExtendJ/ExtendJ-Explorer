@@ -19,7 +19,7 @@ import java.util.HashMap;
  * Monitor class for the UI.
  * It keeps track of the controllers, the GraphView and the ASTAPI etc.
  */
-public class UIMonitor {
+public class Monitor {
     private GenericTreeNode lastRealNode;
     private GenericTreeNode selectedNode;
     private NodeInfoView selectedInfo;
@@ -40,11 +40,11 @@ public class UIMonitor {
     private Config config;
     private boolean rerunable;
 
-    public UIMonitor(){
+    public Monitor(){
         clean(null);
     }
 
-    public UIMonitor(DrAST jaaAPI){
+    public Monitor(DrAST jaaAPI){
         clean(jaaAPI);
     }
 

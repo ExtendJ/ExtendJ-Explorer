@@ -29,7 +29,7 @@ import java.io.IOException;
  */
 
 public class DrASTGUI extends Application implements DrASTView {
-    protected static UIMonitor mon;
+    protected static Monitor mon;
     protected static drast.model.DrAST DrAST;
     protected static Controller con;
 
@@ -48,7 +48,7 @@ public class DrASTGUI extends Application implements DrASTView {
      */
     public void run() {
         DrAST.run();
-        this.mon = new UIMonitor(DrAST);
+        this.mon = new Monitor(DrAST);
         launch(new String[0]);
     }
 

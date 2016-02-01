@@ -3,7 +3,7 @@ package drast.views.gui.controllers;
 import drast.model.AlertMessage;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.nodeinfo.NodeInfo;
-import drast.views.gui.UIMonitor;
+import drast.views.gui.Monitor;
 import drast.views.gui.dialogs.DrDialog;
 import drast.views.gui.graph.GraphView;
 import drast.views.gui.guicomponent.FilterEditor;
@@ -100,7 +100,7 @@ public class Controller implements Initializable {
     private DoubleProperty consoleHeightWarning;
     private DoubleProperty consoleHeightMessage;
 
-    private UIMonitor mon;
+    private Monitor mon;
     private GraphView graphView;
 
     @Override
@@ -117,7 +117,7 @@ public class Controller implements Initializable {
      * @param graphView
      * @throws IOException
      */
-    public void init(UIMonitor mon, GraphView graphView) throws IOException {
+    public void init(Monitor mon, GraphView graphView) throws IOException {
         this.mon = mon;
         this.graphView = graphView;
 

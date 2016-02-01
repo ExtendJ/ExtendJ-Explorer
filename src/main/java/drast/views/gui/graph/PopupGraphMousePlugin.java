@@ -6,7 +6,7 @@ import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
 import drast.model.filteredtree.*;
-import drast.views.gui.UIMonitor;
+import drast.views.gui.Monitor;
 import javafx.application.Platform;
 
 import javax.swing.*;
@@ -26,15 +26,15 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
     private JPopupMenu vertexPopup;
     private VisualizationViewer<GenericTreeNode, GraphEdge> vs;
     private GenericTreeNode lastClicked;
-    private UIMonitor mon;
+    private Monitor mon;
     private GraphView graphView;
     private int removedNodesCount;
     private int clusterCount;
-    public PopupGraphMousePlugin(VisualizationViewer<GenericTreeNode, GraphEdge> vs, UIMonitor mon, GraphView graphView) {
+    public PopupGraphMousePlugin(VisualizationViewer<GenericTreeNode, GraphEdge> vs, Monitor mon, GraphView graphView) {
         this(MouseEvent.BUTTON3_MASK, vs, mon, graphView);
     }
 
-    public PopupGraphMousePlugin(int modifiers, VisualizationViewer<GenericTreeNode, GraphEdge> vs, UIMonitor mon, GraphView graphView) {
+    public PopupGraphMousePlugin(int modifiers, VisualizationViewer<GenericTreeNode, GraphEdge> vs, Monitor mon, GraphView graphView) {
         super(modifiers);
         this.vs = vs;
         this.mon = mon;

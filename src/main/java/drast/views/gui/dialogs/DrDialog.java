@@ -2,7 +2,7 @@ package drast.views.gui.dialogs;
 
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.nodeinfo.NodeInfo;
-import drast.views.gui.UIMonitor;
+import drast.views.gui.Monitor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -19,10 +19,10 @@ import javafx.stage.WindowEvent;
  */
 public abstract class DrDialog extends Stage{
     protected boolean invokeButtonPressed;
-    protected UIMonitor mon;
+    protected Monitor mon;
     protected Button buttonTypeOk;
 
-    protected DrDialog(UIMonitor mon){
+    protected DrDialog(Monitor mon){
         super(StageStyle.UNIFIED);
         this.mon = mon;
         mon.getController().functionStarted();

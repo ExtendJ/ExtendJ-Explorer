@@ -4,7 +4,7 @@ import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.renderers.BasicRenderer;
 import drast.model.filteredtree.GenericTreeNode;
-import drast.views.gui.UIMonitor;
+import drast.views.gui.Monitor;
 import drast.views.gui.graph.GraphEdge;
 
 import java.util.ConcurrentModificationException;
@@ -22,7 +22,7 @@ import java.util.ConcurrentModificationException;
 public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
     private boolean moving;
     private boolean optimization;
-    public CustomRenderer(UIMonitor mon){
+    public CustomRenderer(Monitor mon){
         moving = false;
         refresh(mon);
     }
@@ -34,7 +34,7 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
      * @param mon
      */
 
-    public void refresh(UIMonitor mon){
+    public void refresh(Monitor mon){
         optimization = false;
         try {
             int nodeThreshold = Integer.parseInt(mon.getConfig().get("nodeThreshold"));
