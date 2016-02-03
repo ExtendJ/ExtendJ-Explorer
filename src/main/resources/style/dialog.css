@@ -37,11 +37,14 @@
 }
 
 .done_button{
-
-    -fx-background-color:#404040;
+    -fx-background-color:#909080;
     -fx-text-fill:white;
     -fx-border-width:0px;
-    -fx-border-color:#404040;
+    -fx-border-color: #606060;
     -fx-border-radius: 0 0 0 0;
     -fx-background-radius: 0 0 0 0;
+}
+
+.done_button:hover{
+    -fx-background-color:#202020;
 }
