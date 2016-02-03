@@ -370,11 +370,11 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      */
     private void setAttributeInfo(NodeInfo info, Object value){
         if(info == null ) {
-            attributeInfoLabel.setText("");
+            attributeInfoLabel.setText("asd");
             attributeInfoTableView.getItems().clear();
             return;
         }
-        attributeInfoLabel.setText(info.print());
+        attributeInfoLabel.setText("penisar:");
         attributeInfoTableView.setItems(FXCollections.observableArrayList(AttributeInfo.toArray(info.getInfo(value))));
     }
 
