@@ -84,8 +84,10 @@
                                                 </tooltip>
                                             </Button>
                                             <Label text=""/>
+                                            <!--
                                             <Label text="Search: " styleClass="our_label"/>
                                             <TextField></TextField>
+                                            -->
                                         </HBox>
                                         <ScrollPane styleClass="graphView" fx:id="graphViewScrollPane"/>
                                     </VBox>
@@ -171,7 +173,7 @@
     </center>
     <bottom>
         <HBox styleClass="paneParent, bottombar">
-            <Label text="Joel Lindholm | Johan Thorsberg"/>
+            <Label text="Joel Lindholm | Johan Thorsberg 2015-2016"/>
         </HBox>
     </bottom>
     <stylesheets>style/style.css</stylesheets>
