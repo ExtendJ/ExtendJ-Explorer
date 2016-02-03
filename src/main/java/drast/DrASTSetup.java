@@ -71,10 +71,7 @@ public class DrASTSetup {
 
             // remove some java security, find the method we are looking for and invoke the method to get the new root.
             SystemExitControl.forbidSystemExitCall();
-
             long time = System.currentTimeMillis();
-            for (String s: args)
-                System.out.println(s);
             Method mainMethod = cl.getMethod("main", String[].class);
             mainMethod.invoke(main, new Object[]{args});
             Field rootField = cl.getField("DrAST_root_node");

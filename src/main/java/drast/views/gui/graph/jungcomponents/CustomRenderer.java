@@ -45,6 +45,7 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
             if(optimization){
                 mon.getController().addWarning("Number of nodes exceed optimization threshold of " + nodeThreshold + " nodes. Navigation will be a bit more ugly, but performance will be better. ");
             }
+            mon.getConfig().put("nodeThreshold", String.valueOf(nodeThreshold));
         }catch (Exception e){
             e.printStackTrace();
             optimization = false;
@@ -56,7 +57,7 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
     }
 
     /**
-     * This method is copyed from BasicRenderer with some changes. If we are navigating ( panning, zooming ) the graph
+     * This method is copied from BasicRenderer with some changes. If we are navigating ( panning, zooming ) the graph
      * some stuff will not be drawn to save power.
      *
      * @param renderContext
