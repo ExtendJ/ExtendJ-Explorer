@@ -1,10 +1,10 @@
 package drast.views.gui.controllers;
 
 import drast.DrASTSetup;
+import drast.model.filteredtree.GenericTreeNode;
 import drast.views.DrASTXML;
 import drast.views.gui.dialogs.OpenASTDialog;
 import drast.views.gui.Monitor;
-import drast.views.gui.graph.GraphView;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Menu;
@@ -13,6 +13,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.net.URL;
@@ -25,9 +26,8 @@ import java.util.ResourceBundle;
  *
  * Controller for the top menu.
  */
-public class TopMenuController implements Initializable {
+public class TopMenuController implements Initializable, ControllerInterface {
     private Monitor mon;
-    private GraphView graphView;
     private String prevJarPath;
     private String prevFilterPath;
     private String prevArgString;
@@ -39,9 +39,8 @@ public class TopMenuController implements Initializable {
     @FXML private MenuItem openMenuItem;
     @FXML private MenuItem rerunCompiler;
 
-    public void init(Monitor mon, GraphView graphView){
+    public void init(Monitor mon){
         this.mon = mon;
-        this.graphView = graphView;
         prevJarPath = "";
         prevFilterPath = "";
         prevArgString = "";
@@ -77,11 +76,12 @@ public class TopMenuController implements Initializable {
 
         MenuItem exportXml = new MenuItem("XML");
         exportXml.setOnAction(event -> {
-            File dirPath = openDirectoryBrowser("Choose XML location");
+            String fileName = "graph_to_xml" + new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
+            File dirPath = openDirectoryBrowser("Choose XML location", fileName);
             if(dirPath == null) return;
 
             DrASTXML xmlBuilder = new DrASTXML(mon.getDrASTAPI());
-            boolean success = xmlBuilder.printXml(dirPath.getAbsolutePath());
+            boolean success = xmlBuilder.printXml(dirPath.getParent() + dirPath.separator, dirPath.getName(), ".xml");
             if(success)
                 mon.getController().addMessage("XML file saved to: " + xmlBuilder.getAbsoluteFilePath());
             else
@@ -91,22 +91,22 @@ public class TopMenuController implements Initializable {
         Menu imageMenu = new Menu("Image (png)");
         MenuItem exportImage = new MenuItem("Whole graph");
         exportImage.setOnAction(event -> {
-            File dirPath = openDirectoryBrowser("Choose image location");
+            String fileName = "whole_graph_" + new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
+            File dirPath = openDirectoryBrowser("Choose image location", fileName);
             if(dirPath == null) return;
 
-            String fileName = "whole_graph_" + new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
-            String absPath = mon.getGraphView().saveGraphAsImage(dirPath.getAbsolutePath() + dirPath.separator, fileName, "png");
+            String absPath = mon.getGraphView().saveGraphAsImage(dirPath.getParent() + dirPath.separator, dirPath.getName(), "png");
             if(absPath.length() > 1) {
                 mon.getController().addMessage("Image saved to: " + absPath);
             }
         });
         MenuItem exportImagePrintScreen = new MenuItem("On screen");
         exportImagePrintScreen.setOnAction(event -> {
-            File dirPath = openDirectoryBrowser("Choose image location");
-            if(dirPath == null) return;
             String fileName = "screen_graph_" + new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
+            File dirPath = openDirectoryBrowser("Choose image location", fileName);
+            if(dirPath == null) return;
 
-            String absPath = mon.getGraphView().savePrintScreenGraph(dirPath.getAbsolutePath() + dirPath.separator, fileName, "png");
+            String absPath = mon.getGraphView().savePrintScreenGraph(dirPath.getParent() + dirPath.separator, dirPath.getName(), "png");
             if(absPath.length() > 1) {
                 mon.getController().addMessage("Image saved to: " + absPath);
             }
@@ -118,12 +118,13 @@ public class TopMenuController implements Initializable {
 
     }
 
-    private File openDirectoryBrowser(String title){
-        DirectoryChooser chooser = new DirectoryChooser();
+    private File openDirectoryBrowser(String title, String fileName){
+        FileChooser chooser = new FileChooser();
         chooser.setTitle(title);
+        chooser.setInitialFileName(fileName);
         File defaultDirectory = new File(mon.getDefaultDirectory());
         chooser.setInitialDirectory(defaultDirectory);
-        return chooser.showDialog(mon.getStage());
+        return chooser.showSaveDialog(mon.getStage());
     }
 
     public void reRunCompiler(){
@@ -142,6 +143,21 @@ public class TopMenuController implements Initializable {
      * Called when a funciton stops from the Controller. A function can be a dialog.
      */
     public void functionStopped(){
+
+    }
+
+    @Override
+    public void nodeSelected(GenericTreeNode node) {
+
+    }
+
+    @Override
+    public void nodeDeselected() {
+
+    }
+
+    @Override
+    public void updateGUI() {
 
     }
 

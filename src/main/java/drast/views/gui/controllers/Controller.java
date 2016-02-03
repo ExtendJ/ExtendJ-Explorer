@@ -6,23 +6,15 @@ import drast.model.nodeinfo.NodeInfo;
 import drast.views.gui.Monitor;
 import drast.views.gui.dialogs.DrDialog;
 import drast.views.gui.graph.GraphView;
-import drast.views.gui.guicomponent.FilterEditor;
-import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -38,76 +30,36 @@ public class Controller implements Initializable {
     @FXML private ScrollPane textTreeTab;
     @FXML private TreeViewTabController textTreeTabController;
     @FXML private TopMenuController topMenuController;
+    @FXML private GraphViewController graphViewTabController;
+    @FXML private ConsoleController consoleController;
+    @FXML private FilterTabController filterTabController;
+    @FXML private ClassOverviewController classOverviewController;
 
     @FXML
-    private TabPane graphViewTabs;
-    @FXML
-    private Button saveNewFilterButton;
-    @FXML
-    private Button zoomInButton;
-    @FXML
-    private Button zoomOutButton;
-    @FXML
-    private Button showRootNodeButton;
-    @FXML
-    private Button showSelectedNodeButton;
-    @FXML
-    private Button showWholeGraphButton;
-    @FXML
-    private Button autoLayoutGraphButton;
+    private TabPane astViewTabs;
+
     @FXML
     private Button minimizeLeftSide;
     @FXML
     private Button minimizeRightSide;
     @FXML
     private Button minimizeConsole;
-    @FXML
-    private TextArea filteredConfigTextArea;
-    @FXML
-    private TreeView<String> typeListView;
 
     @FXML
     private SplitPane centerSplitPane;
     @FXML
     private SplitPane consoleAndGraphSplitPane;
-    @FXML
-    private VBox codeAreaContainer;
-
-    // Console stuff
-    @FXML private TextFlow consoleTextFlowAll;
-    @FXML private TextFlow consoleTextFlowWarning;
-    @FXML private TextFlow consoleTextFlowError;
-    @FXML private TextFlow consoleTextFlowMessage;
-
-    @FXML private ScrollPane consoleScrollPaneAll;
-    @FXML private ScrollPane consoleScrollPaneError;
-    @FXML private ScrollPane consoleScrollPaneMessage;
-    @FXML private ScrollPane consoleScrollPaneWarning;
 
     @FXML private Label appliedFiltersLabel;
     @FXML private Label appliedFiltersLabelLabel;
     @FXML private Label nodeCountLabel;
 
-    private FilterEditor codeArea;
-
-    private enum ConsoleFilter {
-        ALL, ERROR, WARNING, MESSAGE
-    }
-
-
-    private DoubleProperty consoleHeightAll;
-    private DoubleProperty consoleHeightError;
-    private DoubleProperty consoleHeightWarning;
-    private DoubleProperty consoleHeightMessage;
 
     private Monitor mon;
-    private GraphView graphView;
+    private ArrayList<ControllerInterface> controllers;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        codeArea = new FilterEditor(this);
-        codeAreaContainer.getChildren().add(codeArea);
-        codeArea.getStyleClass().add("textAreaConfig");
     }
 
     /**
@@ -119,24 +71,18 @@ public class Controller implements Initializable {
      */
     public void init(Monitor mon, GraphView graphView) throws IOException {
         this.mon = mon;
-        this.graphView = graphView;
 
-        attributeTabController.init(mon, graphView);
-        textTreeTabController.init(mon);
-        topMenuController.init(mon, graphView);
+        controllers = new ArrayList<>();
+        controllers.add(attributeTabController);
+        controllers.add(textTreeTabController);
+        controllers.add(topMenuController);
+        controllers.add(graphViewTabController);
+        controllers.add(consoleController);
+        controllers.add(filterTabController);
+        controllers.add(classOverviewController);
 
-        loadClassTreeView();
-        loadFilterFileText();
-
-        consoleHeightAll = new SimpleDoubleProperty();
-        consoleHeightError = new SimpleDoubleProperty();
-        consoleHeightWarning = new SimpleDoubleProperty();
-        consoleHeightMessage = new SimpleDoubleProperty();
-
-        setConsoleScrollHeightListener(consoleHeightAll, consoleScrollPaneAll, consoleTextFlowAll);
-        setConsoleScrollHeightListener(consoleHeightError, consoleScrollPaneError, consoleTextFlowError);
-        setConsoleScrollHeightListener(consoleHeightWarning, consoleScrollPaneWarning, consoleTextFlowWarning);
-        setConsoleScrollHeightListener(consoleHeightMessage, consoleScrollPaneMessage, consoleTextFlowMessage);
+        for(ControllerInterface controller : controllers)
+            controller.init(mon);
 
         // minimize buttons for each side bar
         minimizeLeftSide.setOnMouseClicked(event2 -> {
@@ -166,12 +112,9 @@ public class Controller implements Initializable {
 
         });
 
-        // update the new filter. This is done in the API
-        saveNewFilterButton.setOnAction((event) -> saveNewFilter());
-
 
         // not working right now. The graph does not repaint when moving between the tabs
-        graphViewTabs.getSelectionModel().selectedItemProperty().addListener(
+        astViewTabs.getSelectionModel().selectedItemProperty().addListener(
                 (ov, t, t1) -> {
                     if (t1.getId().equals("graphViewTabNode")) {
                         graphView.repaintHard();
@@ -179,35 +122,13 @@ public class Controller implements Initializable {
                 }
         );
 
-        Platform.runLater(() -> {
-            addWarnings(mon.getApi().getWarnings(AlertMessage.AST_STRUCTURE_WARNING));
-            addWarnings(mon.getApi().getWarnings(AlertMessage.INVOCATION_WARNING));
-            addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
-            addErrors(mon.getApi().getErrors(AlertMessage.AST_STRUCTURE_ERROR));
-            addErrors(mon.getApi().getErrors(AlertMessage.INVOCATION_ERROR));
-            addErrors(mon.getApi().getErrors(AlertMessage.FILTER_ERROR));
-        });
-
-
-        showSelectedNodeButton.setOnAction(click -> {
-            if (mon.getSelectedNode() != null)
-                graphView.panToNode(mon.getSelectedNode());
-        });
-
-        showRootNodeButton.setOnAction(click -> graphView.panToNode(mon.getRootNode()));
-
-        showWholeGraphButton.setOnAction(click -> graphView.showWholeGraphOnScreen());
-
-        autoLayoutGraphButton.setOnAction(click -> graphView.updateGraph());
-
-        zoomInButton.setOnMouseClicked(e -> graphView.zoomIn());
-
-        zoomOutButton.setOnMouseClicked(e-> graphView.zoomOut());
-
-        updateGraphInfo();
+        updateAstInfoLabels();
     }
 
-    protected void updateGraphInfo(){
+    /**
+     * 
+     */
+    protected void updateAstInfoLabels(){
         nodeCountLabel.setText(mon.getApi().getClusteredASTSize() + "/" + mon.getApi().getASTSize() + ".");
         String filters = mon.getApi().getAppliedFilters();
 
@@ -250,30 +171,27 @@ public class Controller implements Initializable {
         addMessages(mon.getApi().getMessages(AlertMessage.FILTER_MESSAGE));
         addMessage("Filter update: done after " + (System.currentTimeMillis() - timeStart) + " ms");
 
-        loadClassTreeView();
-        attributeTabController.onNewAPI();
-        topMenuController.onNewAPI();
-        textTreeTabController.onNewAPI();
+        for(ControllerInterface controller : controllers)
+            controller.onNewAPI();
 
-        loadFilterFileText();
-        updateGraphInfo();
-        updateUI();
+        updateAstInfoLabels();
+        updateGUI();
     }
 
     public void saveNewFilter(){
         //addMessage("Filter update: starting");
         if(mon.getApi().getRoot() == null)
             return;
-        graphView.getJungGraph();
+
         long timeStart = System.currentTimeMillis();
-        String filter = codeArea.getText();
+        String filter = filterTabController.getFilterText();
         boolean noError = mon.getApi().saveNewFilter(filter);
         if (noError) {
-            updateUI();
+            updateGUI();
             addMessages(mon.getApi().getMessages(AlertMessage.FILTER_MESSAGE));
             addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
             addMessage("Filter update: done after " + (System.currentTimeMillis() - timeStart) + " ms");
-            updateGraphInfo();
+            updateAstInfoLabels();
         } else {
             //addError("Could not update graph: ");
             addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
@@ -283,15 +201,12 @@ public class Controller implements Initializable {
         }
     }
 
-    public void updateUI(){
-        graphView.updateGraph();
-        updateGraphInfo();
-        textTreeTabController.updateTree();
+    public void updateGUI(){
         resetReferences();
-        attributeTabController.setAttributes();
-        if (mon.getSelectedNode() != null) {
-            Platform.runLater(() -> textTreeTabController.newNodeSelected(mon.getSelectedNode()));
+        for(ControllerInterface controller : controllers){
+            controller.updateGUI();
         }
+        updateAstInfoLabels();
     }
 
     /**
@@ -310,81 +225,27 @@ public class Controller implements Initializable {
         }
     }
 
-    private void setConsoleScrollHeightListener(DoubleProperty consoleHeight, ScrollPane consoleScrollPane, TextFlow textFlow){
-        consoleHeight.bind(textFlow.heightProperty());
-        consoleHeight.addListener((ov, t, t1) -> {
-            consoleScrollPane.setVvalue(consoleScrollPane.getVmax());
-        }) ;
-    }
-
     public void addErrors(Collection<AlertMessage> errors){
-        addConsoleTexts("consoleTextError", ConsoleFilter.ERROR, errors);
+        consoleController.addErrors(errors);
     }
 
     public void addWarnings(Collection<AlertMessage> warnings){
-        addConsoleTexts("consoleTextWarning", ConsoleFilter.WARNING, warnings);
+        consoleController.addWarnings(warnings);
     }
 
     public void addMessages(Collection<AlertMessage> messages){
-        addConsoleTexts("consoleTextMessage", ConsoleFilter.MESSAGE, messages);
+        consoleController.addMessages(messages);
     }
 
     public void addMessage(String message) {
-        Platform.runLater(() -> addConsoleText(message, "consoleTextMessage", ConsoleFilter.MESSAGE));
+        consoleController.addMessage(message);
     }
-    public void addError(String message){
-        Platform.runLater(() -> addConsoleText(message, "consoleTextError", ConsoleFilter.ERROR));
-    }
-
-    public void addWarning(String message) {
-        Platform.runLater(() -> addConsoleText(message, "consoleTextWarning", ConsoleFilter.WARNING));
+    public void addError(String error){
+        consoleController.addError(error);
     }
 
-    private void addConsoleTexts(String console, ConsoleFilter filter, Collection<AlertMessage> warnings){
-        Platform.runLater(() -> {
-            for (AlertMessage warning : warnings)
-                addConsoleText(warning.type + ": " + warning.message, console, filter);
-        });
-    }
-
-    /**
-     * used by the public methods addMessage, addError, addWarning
-     *
-     * @param message
-     * @param style
-     * @param filterType
-     */
-    private void addConsoleText(String message, String style, ConsoleFilter filterType){
-        Text text1 = new Text(message + "\n");
-        Text text2 = new Text(message + "\n");
-        text1.getStyleClass().add(style);
-        text1.getStyleClass().add("consoleText");
-        text2.getStyleClass().add(style);
-        text2.getStyleClass().add("consoleText");
-        getConsoleArray(filterType).getChildren().add(text1);
-        if(filterType != ConsoleFilter.ALL)
-            consoleTextFlowAll.getChildren().add(text2);
-
-        consoleScrollPaneAll.setVvalue(1.0);
-    }
-
-    /**
-     * get the array with messages of a certain type (e.g. MESSAGE, ERROR, WARNING).
-     *
-     * @param filterType
-     * @return
-     */
-    private TextFlow getConsoleArray(ConsoleFilter filterType){
-        switch (filterType) {
-            case MESSAGE:
-                return consoleTextFlowMessage;
-            case ERROR:
-                return consoleTextFlowError;
-            case WARNING:
-                return consoleTextFlowWarning;
-            default:
-                return consoleTextFlowAll;
-        }
+    public void addWarning(String warning) {
+        consoleController.addWarning(warning);
     }
 
     /**
@@ -392,9 +253,9 @@ public class Controller implements Initializable {
      */
     public void functionStarted(){
         mon.functionStart();
-        attributeTabController.functionStarted();
-        textTreeTabController.functionStarted();
-        topMenuController.functionStarted();
+        for(ControllerInterface controller : controllers){
+            controller.functionStarted();
+        }
     }
 
     /**
@@ -402,9 +263,9 @@ public class Controller implements Initializable {
      */
     public void functionStopped(){
         mon.functionDone();
-        attributeTabController.functionStopped();
-        textTreeTabController.functionStopped();
-        topMenuController.functionStopped();
+        for(ControllerInterface controller : controllers){
+            controller.functionStopped();
+        }
 
         if(mon.getApi().containsError(AlertMessage.SETUP_FAILURE)){
             addErrors(mon.getApi().getErrors(AlertMessage.SETUP_FAILURE));
@@ -425,53 +286,33 @@ public class Controller implements Initializable {
      * Method for selecting a node in the graph or tree. Used for example by other controllers.
      *
      * @param node
-     * @param fromGraph
+     * @param caller
      */
-    public void nodeSelected(GenericTreeNode node, boolean fromGraph){
+    public void nodeSelected(GenericTreeNode node, ControllerInterface caller){
         for(DrDialog subWindow : mon.getSubWindows())
             subWindow.nodeSelected(node);
+
         mon.setSelectedNode(node);
-        attributeTabController.nodeSelected();
-        if(fromGraph)
-            textTreeTabController.newNodeSelected(node);
-        else
-            graphView.setSelectedNode(node);
+
+        for(ControllerInterface controller : controllers) {
+            if(controller != caller)
+                controller.nodeSelected(node);
+        }
     }
 
     /**
      * Method for deselecting a node in the graph or tree. Used for example by other controllers.
      *
-     * @param fromGraph
+     * @param caller
      */
-    public void nodeDeselected(boolean fromGraph){
+    public void nodeDeselected(ControllerInterface caller){
+
         mon.setSelectedNode(null);
-        if(fromGraph)
-            textTreeTabController.deselectNode();
-        else
-            graphView.deselectNode();
-        attributeTabController.setAttributes();
-    }
 
-    /**
-     * Load and print the filter text in the textarea for filter text
-     */
-    private void loadFilterFileText() {
-        String line;
-        String textContent = "";
-        if(mon.getApi().getFilterFilePath() != null) {
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(mon.getApi().getFilterFilePath()));
-                while ((line = reader.readLine()) != null) {
-                    textContent += line + "\n";
-                }
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                textContent = "Can not read the configuration file!";
-            }
+        for(ControllerInterface controller : controllers) {
+            if(controller != caller)
+                controller.nodeDeselected();
         }
-        codeArea.setText(textContent);
-
     }
 
     /**
@@ -485,45 +326,9 @@ public class Controller implements Initializable {
         if(node == null)
             return;
         mon.setSelectedNode(node);
-        graphView.setSelectedNode(node.getClusterNode());
+        graphViewTabController.nodeSelected(node.getClusterNode());
         if(mon.getSelectedInfo() != null)
             attributeTabController.setReference(mon.getSelectedInfo().getValue());
-    }
-
-
-    private void loadClassTreeView(){
-
-        TreeItem<String> root = new TreeItem<>("ROOT");
-        TreeItem<String> astRoot = new TreeItem<>("AST classes");
-        TreeItem<String> superRoot = new TreeItem<>("Abstract AST classes");
-        astRoot.setExpanded(true);
-        root.setExpanded(true);
-        HashMap<Class, HashSet<Class>> parents = mon.getApi().getDirectParents();
-        HashMap<Class, HashSet<Class>> children = mon.getApi().getDirectChildren();
-        int superClass;
-        for (Class type : mon.getApi().getAllASTTypes()) {
-            TreeItem<String> parent = new TreeItem<>(type.getSimpleName());
-            superClass = loadChildrenOrParents(parent, "AST Parents", parents.get(type));
-            superClass += loadChildrenOrParents(parent, "AST children", children.get(type));
-            if(superClass == 0) //We have found no direct children or parents, this type is then treated as a superClass
-                superRoot.getChildren().add(parent);
-            else
-                astRoot.getChildren().add(parent);
-        }
-        root.getChildren().addAll(astRoot, superRoot);
-        typeListView.setRoot(root);
-        typeListView.setShowRoot(false);
-    }
-
-    private int loadChildrenOrParents(TreeItem<String> parent, String name, HashSet<Class> set){
-        if(set == null || set.size() == 0)
-            return 0;
-        TreeItem<String> level = new TreeItem<>(name);
-        for(Class parentClass : set){
-            level.getChildren().add(new TreeItem<>(parentClass.getSimpleName()));
-        }
-        parent.getChildren().add(level);
-        return 1;
     }
 
 }

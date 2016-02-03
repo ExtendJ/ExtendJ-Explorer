@@ -191,7 +191,7 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
 
             if(mon.getSelectedNode() == lastClicked){
                 Platform.runLater(() -> {
-                    mon.getController().nodeDeselected(false);
+                    mon.getController().nodeDeselected(null);
                 });
             }
             // get the parent vertex and the edge from this one.

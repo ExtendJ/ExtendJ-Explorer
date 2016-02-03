@@ -2,6 +2,7 @@ package drast.views.gui.controllers;
 
 import drast.model.filteredtree.GenericTreeNode;
 import drast.views.gui.Monitor;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -18,7 +19,7 @@ import java.util.ResourceBundle;
  *
  * Created by gda10jth on 11/2/15.
  */
-public class TreeViewTabController implements Initializable, ChangeListener {
+public class TreeViewTabController implements Initializable, ChangeListener, ControllerInterface {
     private Monitor mon;
     private HashMap<GenericTreeNode, TreeItem<GenericTreeNode>> nodeToItemRef;
     private boolean ignoreChange;
@@ -80,7 +81,7 @@ public class TreeViewTabController implements Initializable, ChangeListener {
 
         TreeItem<GenericTreeNode> selectedItem = (TreeItem<GenericTreeNode>) newValue;
         if(selectedItem != null && !ignoreChange)
-            mon.getController().nodeSelected(selectedItem.getValue(), false);
+            mon.getController().nodeSelected(selectedItem.getValue(), this);
         ignoreChange = false;
         // do what ever you want
     }
@@ -115,7 +116,7 @@ public class TreeViewTabController implements Initializable, ChangeListener {
      * of the UI, e.g. the Graph view.
      * @param node
      */
-    public void newNodeSelected(GenericTreeNode node){
+    public void nodeSelected(GenericTreeNode node){
         ignoreChange = true;
         treeView.getSelectionModel().select(nodeToItemRef.get(node));
     }
@@ -124,8 +125,16 @@ public class TreeViewTabController implements Initializable, ChangeListener {
      * Deselects all vertexes in the tree. This method is used if the selected node is defined by some other part
      * of the UI, e.g. the Graph view.
      */
-    public void deselectNode(){
+    public void nodeDeselected(){
         treeView.getSelectionModel().clearSelection();
+    }
+
+    @Override
+    public void updateGUI() {
+        updateTree();
+        if (mon.getSelectedNode() != null) {
+            Platform.runLater(() -> nodeSelected(mon.getSelectedNode()));
+        }
     }
 
     public void updateTree(){

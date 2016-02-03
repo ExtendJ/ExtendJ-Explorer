@@ -12,7 +12,6 @@ import drast.views.gui.AttributeInfo;
 import drast.views.gui.dialogs.AttributeInputDialog;
 import drast.views.gui.DrASTGUI;
 import drast.views.gui.Monitor;
-import drast.views.gui.graph.GraphView;
 import drast.views.gui.guicomponent.TextFormatter;
 import drast.views.gui.guicomponent.nodeinfotreetableview.NodeInfoHolder;
 import drast.views.gui.guicomponent.nodeinfotreetableview.NodeInfoView;
@@ -50,9 +49,8 @@ import java.util.*;
  *  - nodeInfoView when a node is clicked.
  *
  */
-public class AttributeTabController implements Initializable, ChangeListener<TreeItem<NodeInfoView>> {
+public class AttributeTabController implements Initializable, ChangeListener<TreeItem<NodeInfoView>>, ControllerInterface {
     private Monitor mon;
-    private GraphView graphView;
     private ContextMenu mouseMenu;
     private TextFormatter formatter;
 
@@ -76,9 +74,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     @FXML private VBox clusterInfoView;
     @FXML private Label clusterInfoNumberLabel;
 
-    public void init(Monitor mon, GraphView graphView){
+    public void init(Monitor mon){
         this.mon = mon;
-        this.graphView = graphView;
         if(mon.getRootNode() != null)
             formatter = new TextFormatter(mon.getApi().getRoot().node.getClass());
     }
@@ -167,6 +164,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     /**
      * Called when a funciton starts from the Controller. A function can be a dialog.
      */
+    @Override
     public void functionStarted(){
 
     }
@@ -174,8 +172,30 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     /**
      * Called when a funciton stops from the Controller. A function can be a dialog.
      */
+    @Override
     public void functionStopped(){
 
+    }
+
+    @Override
+    public void nodeSelected(GenericTreeNode node) {
+        if(node.isNode()) {
+            showThisInAttributeTab(nodeInfoView);
+            setAttributes();
+        }else{
+            showThisInAttributeTab(clusterInfoView);
+            setClusterInfo();
+        }
+    }
+
+    @Override
+    public void nodeDeselected() {
+        setAttributes();
+    }
+
+    @Override
+    public void updateGUI() {
+        setAttributes();
     }
 
     /**
@@ -366,21 +386,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         ArrayList<GenericTreeNode> newRefs = null;
         if(value != null)
             newRefs = mon.getApi().getNodeReferencesAndHighlightThem(value, true);
-        graphView.setReferenceEdges(newRefs, mon.getSelectedNode());
-    }
-
-
-    public void nodeSelected() {
-        GenericTreeNode node = mon.getSelectedNode();
-        System.out.println(node + " : " + mon.getApi().isASTObject(node.getNode()));
-        if(node.isNode()) {
-            showThisInAttributeTab(nodeInfoView);
-            setAttributes();
-        }else{
-            showThisInAttributeTab(clusterInfoView);
-            setClusterInfo();
-        }
-
+        mon.getGraphView().setReferenceEdges(newRefs, mon.getSelectedNode());
     }
 
     /**
@@ -412,7 +418,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             Object obj = mon.getApi().compute(node.getNode(), info);
             setAttributeList(node, false);
             if(printToConsole(obj))
-                mon.getController().updateUI();
+                mon.getController().updateGUI();
             return;
         }
 
@@ -421,7 +427,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         dialog.init();
 
         dialog.setOnCloseRequest(event -> {
-            mon.getController().nodeSelected(dialog.getTreeNode(), false);
+            mon.getController().nodeSelected(dialog.getTreeNode(), this);
             if(!dialog.invokeButtonPressed())
                 return;
 
@@ -431,7 +437,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             Object value = mon.getApi().compute(dialog.getTreeNode().getNode(), dialog.getInfo(), result);
             printToConsole(value);
             if(info.isNTA())
-                mon.getController().updateUI();
+                mon.getController().updateGUI();
             setAttributeList(node, false);
             // Below code is for setting the selected position to the last computed value, in case the selected row
             // is a parameterized attribute

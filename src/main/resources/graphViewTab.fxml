@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tooltip?>
+
+<VBox styleClass="typeListView" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="drast.views.gui.controllers.GraphViewController">
+    <HBox styleClass="paneParent">
+        <Label text="Navigate: " styleClass="our_label"/>
+        <Button styleClass="our_button" text="+" fx:id="zoomInButton">
+            <tooltip>
+                <Tooltip text="Zoom in"/>
+            </tooltip>
+        </Button>
+        <Label text=""/>
+        <Button styleClass="our_button" text="-" fx:id="zoomOutButton">
+            <tooltip>
+                <Tooltip text="Zoom out"/>
+            </tooltip>
+        </Button>
+        <Label text="to: " styleClass="our_label"/>
+        <Button styleClass="our_button" text="Root node" fx:id="showRootNodeButton">
+            <tooltip>
+                <Tooltip text="Move camera to root node."/>
+            </tooltip>
+        </Button>
+        <Label text=""/>
+        <Button styleClass="our_button" text="Selected node" fx:id="showSelectedNodeButton">
+            <tooltip>
+                <Tooltip text="Move camera to selected node."/>
+            </tooltip>
+        </Button>
+        <Label text=""/>
+        <Button styleClass="our_button" text="Graph" fx:id="showWholeGraphButton">
+            <tooltip>
+                <Tooltip text="Move camera to show the whole graph."/>
+            </tooltip>
+        </Button>
+        <Label text=""/>
+        <Label text="Move: hold middle mouse | ctrl+left mouse " styleClass="our_label"/>
+        <Label text=""/>
+        <Label text=""/>
+        <Label text=""/>
+        <Button styleClass="our_button" text="Reset graph" fx:id="autoLayoutGraphButton">
+            <tooltip>
+                <Tooltip text="Reset the positions of all nodes and edges."/>
+            </tooltip>
+        </Button>
+        <Label text=""/>
+        <!--
+        <Label text="Search: " styleClass="our_label"/>
+        <TextField></TextField>
+        -->
+    </HBox>
+    <ScrollPane styleClass="graphView" fx:id="graphViewScrollPane"/>
+</VBox>

@@ -12,6 +12,7 @@
     </top>
     <center>
         <SplitPane styleClass="boobs" fx:id="centerSplitPane" orientation="HORIZONTAL" dividerPositions="0.2,0.8">
+            <!-- Left window -->
             <VBox styleClass="paneParent">
                 <VBox styleClass="topRigthAlign">
                     <Button styleClass="minimizeButton" text="-" fx:id="minimizeLeftSide">
@@ -26,71 +27,19 @@
                             <fx:include fx:id="attributeTab" source="/attributeTab.fxml"/>
                         </Tab>
                         <Tab text="Class overview"  fx:id="classOverviewTabNode">
-                            <VBox styleClass="paneParent" VBox.vgrow="ALWAYS">
-                                <ScrollPane styleClass="typeListView" fx:id="scrollPaneClassFilter" prefHeight="1000">
-                                    <TreeView styleClass="typeTreeView" fx:id="typeListView"/>
-                                </ScrollPane>
-                            </VBox>
+                            <fx:include fx:id="classOverview" source="/classOverviewTab.fxml" />
                         </Tab>
                     </tabs>
                 </TabPane>
             </VBox>
+            <!-- Middle window -->
             <VBox VBox.vgrow="ALWAYS">
                 <SplitPane orientation="VERTICAL" dividerPositions="0.8" fx:id="consoleAndGraphSplitPane">
                     <VBox>
-                        <TabPane tabClosingPolicy="UNAVAILABLE" fx:id="graphViewTabs">
+                        <TabPane tabClosingPolicy="UNAVAILABLE" fx:id="astViewTabs">
                             <tabs>
                                 <Tab text="Graph" fx:id="graphViewTabNode">
-                                    <VBox>
-                                        <HBox styleClass="paneParent">
-                                            <Label text="Navigate: " styleClass="our_label"/>
-                                            <Button styleClass="our_button" text="+" fx:id="zoomInButton">
-                                                <tooltip>
-                                                    <Tooltip text="Zoom in"/>
-                                                </tooltip>
-                                            </Button>
-                                            <Label text=""/>
-                                            <Button styleClass="our_button" text="-" fx:id="zoomOutButton">
-                                                <tooltip>
-                                                    <Tooltip text="Zoom out"/>
-                                                </tooltip>
-                                            </Button>
-                                            <Label text="to: " styleClass="our_label"/>
-                                            <Button styleClass="our_button" text="Root node" fx:id="showRootNodeButton">
-                                                <tooltip>
-                                                    <Tooltip text="Move camera to root node."/>
-                                                </tooltip>
-                                            </Button>
-                                            <Label text=""/>
-                                            <Button styleClass="our_button" text="Selected node" fx:id="showSelectedNodeButton">
-                                                <tooltip>
-                                                    <Tooltip text="Move camera to selected node."/>
-                                                </tooltip>
-                                            </Button>
-                                            <Label text=""/>
-                                            <Button styleClass="our_button" text="Graph" fx:id="showWholeGraphButton">
-                                                <tooltip>
-                                                    <Tooltip text="Move camera to show the whole graph."/>
-                                                </tooltip>
-                                            </Button>
-                                            <Label text=""/>
-                                            <Label text="Pan: ctrl+left mouse OR hold middle mouse" styleClass="our_label"/>
-                                            <Label text=""/>
-                                            <Label text=""/>
-                                            <Label text=""/>
-                                            <Button styleClass="our_button" text="Reset graph" fx:id="autoLayoutGraphButton">
-                                                <tooltip>
-                                                    <Tooltip text="Reset the positions of all nodes and edges."/>
-                                                </tooltip>
-                                            </Button>
-                                            <Label text=""/>
-                                            <!--
-                                            <Label text="Search: " styleClass="our_label"/>
-                                            <TextField></TextField>
-                                            -->
-                                        </HBox>
-                                        <ScrollPane styleClass="graphView" fx:id="graphViewScrollPane"/>
-                                    </VBox>
+                                    <fx:include fx:id="graphViewTab" source="/graphViewTab.fxml"/>
                                 </Tab>
                                 <Tab text="Tree" fx:id="treeViewTabNode">
                                     <fx:include fx:id="textTreeTab" source="/treeViewTab.fxml"/>
@@ -108,42 +57,24 @@
                             <Label text="|"></Label>
                         </HBox>
                     </VBox>
-                    <VBox styleClass="paneParent" VBox.vgrow="ALWAYS">
-                        <VBox styleClass="topRigthAlign">
-                            <Button styleClass="minimizeButton" text="-" fx:id="minimizeConsole">
-                                <tooltip>
-                                    <Tooltip text="Minimize"/>
-                                </tooltip>
-                            </Button>
+                    <VBox>
+                        <VBox styleClass="paneParent">
+                            <VBox styleClass="topRigthAlign">
+                                <Button styleClass="minimizeButton" text="-" fx:id="minimizeConsole">
+                                    <tooltip>
+                                        <Tooltip text="Minimize"/>
+                                    </tooltip>
+                                </Button>
+                            </VBox>
                         </VBox>
-                        <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" fx:id="consoleTabs">
-                            <tabs>
-                                <Tab text="All" fx:id="consoleTabAll">
-                                    <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneAll">
-                                        <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowAll"/>
-                                    </ScrollPane>
-                                </Tab>
-                                <Tab text="Warnings" fx:id="consoleTabWarning">
-                                    <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneWarning">
-                                        <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowWarning"/>
-                                    </ScrollPane>
-                                </Tab>
-                                <Tab text="Errors" fx:id="consoleTabError">
-                                    <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneError">
-                                        <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowError"/>
-                                    </ScrollPane>
-                                </Tab>
-                                <Tab text="Messages" fx:id="consoleTabMessage">
-                                    <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneMessage">
-                                        <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowMessage"/>
-                                    </ScrollPane>
-                                </Tab>
-                            </tabs>
-                        </TabPane>
 
+                        <fx:include fx:id="console" source="/console.fxml"/>
                     </VBox>
+
+
                 </SplitPane>
             </VBox>
+            <!-- right window -->
             <VBox styleClass="paneParent">
                     <VBox styleClass="topLeftAlign">
                         <Button styleClass="minimizeButton" text="-" fx:id="minimizeRightSide">
@@ -155,16 +86,7 @@
                 <SplitPane orientation="VERTICAL" dividerPositions="0.5">
                     <TabPane tabClosingPolicy="UNAVAILABLE">
                         <tabs>
-                            <Tab text="Filter">
-                                <VBox styleClass="paneParent">
-                                    <Button text="Apply filter" StyleClass="updateFilterButton, our_button" fx:id="saveNewFilterButton">
-                                        <tooltip>
-                                            <Tooltip text="Update the graph with the new filter. (ctrl+s)"/>
-                                        </tooltip>
-                                    </Button>
-                                    <VBox fx:id="codeAreaContainer"></VBox>
-                                </VBox>
-                            </Tab>
+                            <fx:include fx:id="filterTab" source="/filterTab.fxml"/>
                         </tabs>
                     </TabPane>
                 </SplitPane>
