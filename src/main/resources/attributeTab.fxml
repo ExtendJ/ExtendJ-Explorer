@@ -19,6 +19,9 @@
                        <Separator></Separator>
                        <Label styleClass="title_label" text="Attributes" minHeight="30"/>
                        <TreeTableView fx:id="attributeTableView" prefHeight="1000">
+                           <placeholder>
+                               <Label text="Select a node"/>
+                           </placeholder>
                            <columns>
                                <TreeTableColumn fx:id="attributeNameCol" text="Name"/>
                                <TreeTableColumn fx:id="attributeValueCol" text="Value" />
@@ -28,6 +31,9 @@
                    <VBox VBox.vgrow="ALWAYS" styleClass="VBoxParent">
                        <Label fx:id="attributeInfoLabel" minHeight="30" text="" />
                        <TableView fx:id="attributeInfoTableView" styleClass="info-table-view" prefHeight="1000">
+                           <placeholder>
+                               <Label text="Select an attribute to view its information"/>
+                           </placeholder>
                            <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
                            <columns>
                                <TableColumn fx:id="attributeInfoNameCol" text="Name"/>
@@ -41,6 +47,9 @@
                <Label text="Cluster. 0 nodes" styleClass="title_label" fx:id="clusterInfoNumberLabel" minHeight="30"></Label>
 
                <TableView fx:id="clusterInfoTableView" styleClass="info-table-view" prefHeight="1000">
+                   <placeholder>
+                       <Label text="Select a node"/>
+                   </placeholder>
                    <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
                    <columns>
                        <TableColumn fx:id="clusterInfoNameCol" text="Types"/>
