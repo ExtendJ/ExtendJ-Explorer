@@ -132,18 +132,18 @@ public class TreeNode extends GenericTreeNode {
         if(outwardReferences == null)
             outwardReferences = new HashSet<>();
         for (String s : set){
-            NodeInfo info = api.computeMethod(node, s);
-            if(info == null)
+            Object obj = api.computeMethod(node, s);
+            if(obj == null)
                 continue;
-            ArrayList<Object> refs = api.getNodeReferences(info.getValue());
+            ArrayList<Object> refs = api.getNodeReferences(obj);
             if(refs != null && refs.size() > 0) {
                 NodeReference reference = new NodeReference(s, this, refs);
                 outwardReferences.add(reference);
                 allReferences.add(reference);
                 allRefs.add(reference);
             } else {
-                graphName += String.format("<br>%s : %s </br>", s, info.getValue());
-                treeViewName += s + " : " + info.getValue();
+                graphName += String.format("<br>%s : %s </br>", s, obj);
+                treeViewName += s + " : " + obj;
             }
         }
         graphName += "</html>";

@@ -112,7 +112,7 @@ public class Attribute extends NodeInfo {
         return computedValues.get(getKey(params));
     }
 
-    public Set<Map.Entry<String, Object>> getComputedEntry(){ return computedValues.entrySet(); }
+    public Set<Map.Entry<String, Object>> getComputedEntrys(){ return computedValues.entrySet(); }
 
     public Collection<Object> getComputedValues(){
         return computedValues.values();
@@ -123,9 +123,8 @@ public class Attribute extends NodeInfo {
     }
 
     public String getLastComputedKey(){return lastComputedkey;}
+
     private String getKey(Object[] params){
-        if(params.length == 0)
-            return  "no-params";
         String key = "";
         for (Object obj : params)
             key += (obj == null ? null : obj.hashCode()) + " : ";

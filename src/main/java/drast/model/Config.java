@@ -4,6 +4,7 @@ import configAST.*;
 import drast.model.nodeinfo.NodeInfo;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,7 +23,7 @@ public class Config{
     private final String filterFileName;
     private final String filterTmpFileName;
 
-    public static final String CACHED_VALUES = "cached-values";
+    public static final String DYNAMIC_VALUES = "dynamic-values";
     public static final String NTA_DEPTH = "NTA-depth";
     public static final String NTA_COMPUTED = "NTA-computed";
 
@@ -275,23 +276,22 @@ public class Config{
                 success =  expr.validateExpr(node);
             }else {
                 BinExpr be = (BinExpr) expr;
-
-                NodeInfo a = node.getNodeData().computeMethod(api, decl);
+                Object a = api.computeMethod(node, decl);
+                Method aM = api.getMethod(node, decl);
                 if (a != null) {
                     if (be.isDoubleDecl()) {
                         String decl2 = ((LangDecl) be.getValue()).getID();
-                        NodeInfo b = node.getNodeData().computeMethod(api, decl2);
+                        Object b = api.computeMethod(node, decl2);
+                        Method bM = api.getMethod(node, decl2);
                         if (b == null)
                             success =  false;
                         else
-                            success = a.getReturnType().equals(b.getReturnType()) && be.validateExpr(a.getValue(), b.getValue(), a.getReturnType(), decl);
+                            success = aM.getReturnType().equals(bM.getReturnType()) && be.validateExpr(a, b, aM.getReturnType(), decl);
                     } else
-                        success = be.validateExpr(a.getValue());
-                } else {
+                        success = be.validateExpr(a);
+                } else
                     success = false;
-                }
             }
-
             if(!success)
                 return false;
         }
@@ -305,10 +305,9 @@ public class Config{
      */
     public HashMap<String, Value> getNodeStyle(Node node){
         HashMap<String, Value> map;
-        if(configs == null || node.isNull()){
-            //api.putWarning(ASTAPI.FILTER_WARNING, "Filter is null! No styles will be applied.");
+        if(configs == null || node.isNull())
             return new HashMap<>();
-        }
+
         if(styleCache.containsKey(node.simpleNameClass))
             return styleCache.get(node.simpleNameClass);
 

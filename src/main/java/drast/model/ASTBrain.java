@@ -281,7 +281,7 @@ public class ASTBrain {
                     continue;
                 Node ntaNode = node.showNTAChildren.get(s);
                 if (ntaNode == null) {
-                    ntaNode = Node.getNTANode(node.getNodeData().computeMethod(this, s, true).getValue(),node, this);
+                    ntaNode = Node.getNTANode(node.getNodeData().computeMethod(s), node, this);
                     node.showNTAChildren.put(s, ntaNode);
                     ASTNTAObjects.add(ntaNode.node);
                 }
@@ -297,16 +297,13 @@ public class ASTBrain {
                 }
             }
         }
-        if(filterConfig.getBoolean(Config.CACHED_VALUES)){
-            for(Node child : node.getNodeData().findCachedNTAs(this)) {
-                if(child == null || treeNodes.containsKey(child.node))
-                    continue;
-                if(!ASTNTAObjects.contains(child.node))
-                    ASTNTAObjects.add(child.node);
-                traversTree(child, parent, cluster, true, 0, futureReferences);
-            }
+        for(Node child : node.getNodeData().findCachedNTAs(this)) {
+            if(child == null || treeNodes.containsKey(child.node))
+                continue;
+            if(!ASTNTAObjects.contains(child.node))
+                ASTNTAObjects.add(child.node);
+            traversTree(child, parent, cluster, true, 0, futureReferences);
         }
-
     }
 
 
@@ -432,18 +429,12 @@ public class ASTBrain {
         return nodes;
     }
 
-    public NodeInfo computeMethod(Node node, String method) { return node.getNodeData().computeMethod(this, method); }
+    public Method getMethod(Node node, String method) { return node.getNodeData().getMethod(method); }
 
-    public void compute(Node node, boolean force) { node.getNodeData().compute(this, false, force); }
+    public Object computeMethod(Node node, String method) { return node.getNodeData().computeMethod(method); }
 
-    public void compute(Node node) { node.getNodeData().compute(this, false, false); }
+    public void compute(Node node) { node.getNodeData().compute(this); }
 
-    /**
-     * Computes the method for the NodeInfo,
-     * @param node
-     * @param info
-     * @return
-     */
     public Object compute(Node node, NodeInfo info) { return compute(node, info, null); }
 
     /**
@@ -472,6 +463,4 @@ public class ASTBrain {
         }
         return obj;
     }
-
-
 }

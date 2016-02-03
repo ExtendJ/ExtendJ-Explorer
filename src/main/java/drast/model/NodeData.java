@@ -7,6 +7,7 @@ import drast.model.nodeinfo.Token;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,31 +19,50 @@ import java.util.stream.Collectors;
  */
 public class NodeData {
 
-    private HashMap<Method, NodeInfo> attributes;
-    private HashMap<Method,NodeInfo> tokens;
-    private HashMap<Method,NodeInfo> NTAs;
-    private HashMap<Method, NodeInfo> computedMethods;
+    private ArrayList<NodeInfo> attributes;
+    private ArrayList<NodeInfo> tokens;
+    private ArrayList<NodeInfo> NTAs;
+    private HashMap<Method, HashMap<Object[], Object>> invokedValues;
     private Node node; //The node the content is a part of
     private Object nodeObject; //The node the content is a part of
-    private boolean hasComputedCachedNTAS = false;
 
     /**
      * Constructor for the NodeData, which will init the HashSet/HashMap
      * @param node
      */
     public NodeData(Node node){
-        attributes = new HashMap<>();
-        tokens = new HashMap<>();
-        NTAs = new HashMap<>();
-        computedMethods = new HashMap<>();
         this.node = node;
         this.nodeObject = node.node;
+        invokedValues = new HashMap<>();
     }
 
-    protected NodeInfo getComputed(Method method){
-        return computedMethods.get(method);
+    public Collection<NodeInfo> getAttributes(){
+        ArrayList temp = attributes;
+        attributes = null;
+        return temp;
     }
 
+    public Collection<NodeInfo> getNTAs(){
+        ArrayList temp = NTAs;
+        NTAs = null;
+        return temp;
+    }
+
+    public Collection<NodeInfo> getTokens(){
+        ArrayList temp = tokens;
+        tokens = null;
+        return temp;
+    }
+
+    /**
+     *
+     * @param e
+     */
+    private void addInvocationErrors(ASTBrain api, Throwable e, Method m){
+        String message = String.format("While computing %s in node %s. Cause : %s", m.getName(), nodeObject, e.getCause() != null ? e.getCause().toString() : e.getMessage());
+        api.putError(AlertMessage.INVOCATION_ERROR, message);
+        //e.printStackTrace();
+    }
 
     /**
      * Computes the method in the NodeInfo, with the given parameters, and adds it to the cached list of the Attribute.
@@ -52,16 +72,15 @@ public class NodeData {
      * @return true if the invocation was successful.
      */
     protected Object compute(NodeInfo nodeInfo, Object[] par, ASTBrain api) {
-        Object[] params;
+        Object[] params = par;
         Method method = nodeInfo.getMethod();
         if ((par != null && par.length != method.getParameterCount()) || (par == null && method.getParameterCount() != 0)) {
             api.putError(AlertMessage.INVOCATION_ERROR, "Wrong number of arguments for the method: " + method);
             return null;
         }
-        if(par == null)
+        if(params == null)
             params = new Object[method.getParameterCount()];
-        else
-            params = par;
+
         if(!nodeInfo.isAttribute()){
             api.putError(AlertMessage.INVOCATION_ERROR, "Can only do compute on attributes");
             return  null;
@@ -71,120 +90,104 @@ public class NodeData {
         if(attribute.containsValue(params))
             return attribute.getComputedValue(params);
 
+        Object obj;
         try{
-            Object obj =  method.invoke(nodeObject, params);
-            attribute.addComputedValue(params, obj);
-            return obj;
+            obj = method.invoke(nodeObject, params);
         }catch(Throwable e){
             addInvocationErrors(api, e, attribute.getMethod());
-            Object message = e.getCause() != null ? e.getCause() : e.getMessage();
-            attribute.addComputedValue(params, message);
-            return message;
+            obj = e.getCause() != null ? e.getCause() : e.getMessage();
         }
+
+        attribute.addComputedValue(params, obj);
+        if(!invokedValues.containsKey(method))
+            invokedValues.put(method, new HashMap<>());
+        invokedValues.get(method).put(params, obj);
+        return obj;
     }
 
     /**
      * Computes all methods of the NodeContents node, this will clear the old values except the invoked ones.
      * This is used for onDemand execution attributes values.
-     * If forceComputation is true it will compute the non-parametrized NTA:s
      * @return
      */
-    protected void compute(ASTBrain api, boolean reComputeNode, boolean forceComputation){
-        if(reComputeNode){
-            NTAs.clear();
-            attributes.clear();
-            tokens.clear();
-            computedMethods.clear();
-        }
-        compute(api, nodeObject, forceComputation);
-    }
-
-    /**
-     * Computes all methods of the given object, the values will be added to NodeContents value Lists.
-     * NOTE: it will only compute the methods with annotations of the ASTAnnotation type.
-     * If forceComputation is true it will compute the non-parametrized NTA:s
-     * @param obj
-     */
-    protected void compute(ASTBrain api, Object obj, boolean forceComputation){
+    protected void compute(ASTBrain api){
         if(node.isNull())
             return;
-        for(Method m : obj.getClass().getMethods()){
-            compute(api, m, null, forceComputation);
+        attributes = new ArrayList<>();
+        tokens = new ArrayList<>();
+        NTAs = new ArrayList<>();
+        for(Method m : nodeObject.getClass().getMethods()){
+            NodeInfo info ;
+            for (Annotation a : m.getAnnotations()) {
+                if (ASTAnnotation.isAttribute(a)) {
+                    info = computeAttribute(api, m, null);
+                    if(info.isNTA())
+                        NTAs.add(info);
+                    else
+                        attributes.add(info);
+                    break;
+                } else if (ASTAnnotation.isToken(a)) {
+                    info = computeToken(api, m);
+                    tokens.add(info);
+                    break;
+                }
+            }
         }
     }
 
-    /**
-     * Compute the attribute/token method with some given name.
-     * If forceComputation is true it will compute the non-parametrized NTA:s
-     * @param method
-     * @return
-     */
-    protected NodeInfo computeMethod(ASTBrain api, String method){
-        return computeMethod(api, method, false);
-    }
-
-    /**
-     * Compute the attribute/token method with some given name.
-     * If forceComputation is true it will compute the non-parametrized NTA:s
-     * @param method
-     * @return
-     */
-    protected NodeInfo computeMethod(ASTBrain api, String method, boolean forceComputation){
+    protected Method getMethod(String methodName){
         try{
-            Method m = nodeObject.getClass().getMethod(method);
-            return compute(api, m, null, forceComputation);
-        }  catch (NoSuchMethodException e) {
-            //api.putError(ASTAPI.INVOCATION_ERROR, "No such Method : " + e.getCause());
-        }
+            return nodeObject.getClass().getMethod(methodName);
+        } catch (NoSuchMethodException e) {}
         return null;
     }
 
     /**
-     * Computes the given method, and depending on the parameter @param add it to the list with the computed Attributes.
+     * Compute the attribute/token method with some given name.
      * If forceComputation is true it will compute the non-parametrized NTA:s
+     * @param method
+     * @return
+     */
+    protected Object computeMethod(String method){
+        try{
+            Method m = nodeObject.getClass().getMethod(method);
+            if(m.getParameterCount() > 0)
+                return null;
+            return m.invoke(nodeObject);
+        }
+        catch (NoSuchMethodException e) {}
+        catch (InvocationTargetException e) {}
+        catch (IllegalAccessException e){}
+        return null;
+    }
+
+    /**
+     * Get the Token of the method in the obj.
      * @param m
      * @return
      */
-    protected NodeInfo compute(ASTBrain api, Method m, Object[] params, boolean forceComputation){
-        if(computedMethods.containsKey(m) && !forceComputation) {
-            NodeInfo info = computedMethods.get(m);
-            if(info != null && info.isAttribute())
-                invokeAndSetValue((Attribute)info, api, node.node, m, params, forceComputation);
-            return info;
+    private Token computeToken(ASTBrain api, Method m){
+        String name = m.getName();
+        try{
+            return new Token(name, m.invoke(nodeObject), m);
+        } catch (Throwable e) {
+            addInvocationErrors(api, e, m);
+            return new Token(name, e.getCause().toString(), m);
         }
-        NodeInfo info = null;
-        for (Annotation a : m.getAnnotations()) {
-            if (ASTAnnotation.isAttribute(a)) {
-                info = computeAttribute(api, nodeObject, m, params, forceComputation);
-                if(info.isNTA())
-                    NTAs.put(m, info);
-                else
-                    attributes.put(m ,info);
-                break;
-            } else if (ASTAnnotation.isToken(a)) {
-                info = computeToken(api, nodeObject, m);
-                tokens.put(m, info);
-                break;
-            }
-        }
-        computedMethods.put(m, info);
-        return info;
     }
 
     /**
      * Creates a Attribute and invokes the method with the supplied parameters, if any.
      * Will also add the specific information about the Attribute, which is derived form the annotations.
      * If forceComputation is true it will compute the non-parametrized NTA:s
-     * @param obj
      * @param m
      * @param params
-     * @param forceComputation
      * @return
      */
-    protected Attribute computeAttribute(ASTBrain api, Object obj, Method m, Object[] params, boolean forceComputation){
+    protected Attribute computeAttribute(ASTBrain api, Method m, Object[] params){
         Attribute attribute = new Attribute(m.getName(), null, m);
         attribute.setParametrized(m.getParameterCount() > 0);
-        for(Annotation a : m.getAnnotations()) { //To many attribute specific methods so I decided to iterate through the Annotations again instead of sending them as parameters.
+        for(Annotation a : m.getAnnotations()) {
             if (ASTAnnotation.isAttribute(a)){
                 attribute.setKind(ASTAnnotation.getKind(a));
                 attribute.setCircular(ASTAnnotation.is(a, ASTAnnotation.AST_METHOD_CIRCULAR));
@@ -194,78 +197,41 @@ public class NodeData {
                 attribute.setDeclaredAt(ASTAnnotation.getString(a, ASTAnnotation.AST_METHOD_DECLARED_AT));
             }
         }
-        invokeAndSetValue(attribute, api, obj, m, params, forceComputation);
+        if(invokedValues.containsKey(m)){
+            for (Map.Entry<Object[], Object> e : invokedValues.get(m).entrySet()) {
+                attribute.addComputedValue(e.getKey(), e.getValue());
+            }
+        }
+        addCachedValues(api, m, attribute);
+        if(api.getfilterConfig().getBoolean(Config.DYNAMIC_VALUES)){
+            invokeValue(attribute, api, m, params);
+        }
         return attribute;
     }
 
-    private void invokeAndSetValue(Attribute attribute, ASTBrain api, Object obj, Method m, Object[] params, boolean forceComputation){
+    private void invokeValue(Attribute attribute, ASTBrain api, Method m, Object[] params){
         try {
             if ((attribute.isParametrized() || attribute.isNTA())) {
-                if(attribute.isNTA() && !attribute.isParametrized() && forceComputation)
-                    attribute.setValue(m.invoke(obj));
+                if(attribute.isNTA() && !attribute.isParametrized())
+                    attribute.setValue(m.invoke(nodeObject));
             }else if(params != null && params.length == m.getParameterCount())
-                attribute.setValue(m.invoke(obj, params));
-            else if(obj != null)
-                attribute.setValue(m.invoke(obj));
+                attribute.setValue(m.invoke(nodeObject, params));
+            else if(nodeObject != null)
+                attribute.setValue(m.invoke(nodeObject));
         } catch (Throwable e) {
             addInvocationErrors(api, e, m);
             attribute.setValue(e.getCause());
         }
-        if(api.getfilterConfig().getBoolean(Config.CACHED_VALUES)) {
-            addCachedValues(api, m, attribute, false);
-        }
     }
 
-    /**
-     * Get the Token of the method in the obj.
-     * @param obj
-     * @param m
-     * @return
-     */
-    private Token computeToken(ASTBrain api, Object obj, Method m){
-        String name = m.getName();
-        try{
-            return new Token(name, m.invoke(obj), m);
-        } catch (Throwable e) {
-            addInvocationErrors(api, e, m);
-            return new Token(name, e.getCause().toString(), m);
-        }
-    }
-
-    /**
-     *
-     * @param e
-     */
-    private void addInvocationErrors(ASTBrain api, Throwable e, Method m){
-        String message = String.format("While computing %s in node %s. Cause : %s", m.getName(), node.node, e.getCause() != null ? e.getCause().toString() : e.getMessage());
-        api.putError(AlertMessage.INVOCATION_ERROR, message);
-        //e.printStackTrace();
-    }
-
-    /**
-     * Creates a list of all attributes, tokens and invokedValues
-     * @return
-     */
-    protected ArrayList<NodeInfoHolder> toArray(){
-        ArrayList<NodeInfoHolder> temp = new ArrayList<>();
-        temp.addAll(NTAs.values().stream().map(NodeInfoHolder::new).collect(Collectors.toList()));
-        temp.addAll(attributes.values().stream().map(NodeInfoHolder::new).collect(Collectors.toList()));
-        temp.addAll(tokens.values().stream().map(NodeInfoHolder::new).collect(Collectors.toList()));
-        return temp;
-    }
-
-    public Collection<NodeInfo> getAttributes(){ return attributes.values(); }
-    public Collection<NodeInfo> getNTAs(){ return NTAs.values(); }
-    public Collection<NodeInfo> getTokens(){ return tokens.values(); }
-
-    //HERE BE DRAGONS, this cod is here for shits and giggles
-    public void addCachedValues(ASTBrain api, Method m, Attribute attribute, boolean force){
-        if(attribute == null || (attribute.isNTA() && !force))
+    //HERE BE DRAGONS, this code is here for shits and giggles
+    public void addCachedValues(ASTBrain api, Method m, Attribute attribute){
+        if(attribute == null)
             return;
-        Object obj = getFieldValue(node.node, getField(api, m, node.node.getClass()));
+        Object obj = getFieldValue(nodeObject, getField(api, m, nodeObject.getClass()));
         if(attribute.isParametrized() && obj != null)
             setValues(attribute, obj, m);
-        else if(attribute.isNTA() && obj != null)
+        else
             attribute.setValue(obj);
     }
 
@@ -273,15 +239,13 @@ public class NodeData {
         HashMap<Object, Method> values = new HashMap<>();
         try {
             for(Map.Entry<Method, Object> e : findFieldNames(api).entrySet()){
-                Attribute attri = (Attribute) computedMethods.get(e.getKey());
-                if(attri == null)
-                    attri = (Attribute) compute(api, e.getKey(), null, false);
-                setValues(attri, e.getValue(), e.getKey());
-                if(attri.isParametrized()) {
-                    for (Object obj : attri.getComputedValues())
+                Attribute attr = computeAttribute(api, e.getKey(), null);
+                setValues(attr, e.getValue(), e.getKey());
+                if(attr.isParametrized()) {
+                    for (Object obj : attr.getComputedValues())
                         values.put(obj, e.getKey());
                 }else
-                    values.put(attri.getValue(), e.getKey());
+                    values.put(attr.getValue(), e.getKey());
             }
         }catch (ClassCastException e){
             api.putError(AlertMessage.INVOCATION_ERROR, e.getMessage());
@@ -300,29 +264,34 @@ public class NodeData {
         return nodes;
     }
 
-    private void setValues(Attribute attri, Object v, Method m){
-        if (attri.isParametrized()) {
+    private void setValues(Attribute attr, Object v, Method m){
+        if (attr.isParametrized()) {
             if (v == null || !(v instanceof Map))
                 return;
             Map map = (Map) v;
             for (Map.Entry par : (Set<Map.Entry>) map.entrySet()) {
                 if (m.getParameterCount() > 1  && par.getKey() instanceof Collection)
-                    attri.addComputedValue(((java.util.List) par.getKey()).toArray(), par.getValue());
+                    attr.addComputedValue(((java.util.List) par.getKey()).toArray(), par.getValue());
                 else
-                    attri.addComputedValue(new Object[]{par.getKey()}, par.getValue());
+                    attr.addComputedValue(new Object[]{par.getKey()}, par.getValue());
             }
         } else
-            attri.setValue(v);
+            attr.setValue(v);
     }
 
     private Field getField(ASTBrain api, Method method, Class clazz){
-        if(clazz == null)
-            return null;
         if(api.getCachedField(method) != null)
             return api.getCachedField(method);
+        String name = method.getName();
+        if(method.getParameterCount() > 0) {
+            for (Class par : method.getParameterTypes())
+                name += "_" + par.getSimpleName();
+            name += "_values";
+        }else
+            name += "_value";
         while(clazz != null) {
             for (Field field : clazz.getDeclaredFields()) {
-                if (field.getName().contains(method.getName() + "_") && field.getName().contains("_value")) {
+                if (field.getName().contains(name)) {
                     api.putCachedField(method, field);
                     return field;
                 }
@@ -333,17 +302,15 @@ public class NodeData {
     }
 
     private HashMap<Method, Object> findFieldNames(ASTBrain api){
-        ArrayList<Method> methods = api.getNTAMethods(node.node.getClass());
+        ArrayList<Method> methods = api.getNTAMethods(nodeObject.getClass());
         HashMap<Method, Object> values = new HashMap<>();
         if(methods == null || methods.size() == 0)
             return values;
         for(Method m : methods){
-            Field f;
-            if(api.getCachedField(m) != null)
-                f = api.getCachedField(m);
-            else
-                f = getField(api, m, node.node.getClass());
-            Object value = getFieldValue(node.node, f);
+            Field f = api.getCachedField(m);
+            if(f == null)
+                f = getField(api, m, nodeObject.getClass());
+            Object value = getFieldValue(nodeObject, f);
             if(value != null)
                 values.put(m, value);
         }

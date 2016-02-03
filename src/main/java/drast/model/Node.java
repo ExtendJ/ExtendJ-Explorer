@@ -226,6 +226,5 @@ public class Node{
     public int getLevel(){ return level;}
 
     public NodeData getNodeData(){ return nodeData;}
-    public ArrayList<NodeInfoHolder> getNodeContentArray(){ return nodeData.toArray();}
 
 }

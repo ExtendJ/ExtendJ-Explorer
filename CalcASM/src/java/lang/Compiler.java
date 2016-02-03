@@ -44,8 +44,8 @@ public class Compiler {
 					System.err.println("- " + e);
 				}
 			} else {
-				DrAST_root_node = program;
 				//program.genCode(System.out);
+				DrAST_root_node = program;
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found!");
