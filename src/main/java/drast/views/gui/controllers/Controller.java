@@ -208,7 +208,7 @@ public class Controller implements Initializable {
     }
 
     protected void updateGraphInfo(){
-        nodeCountLabel.setText(mon.getApi().getNonFilteredNodeCount() + "/" + mon.getApi().getASTSize() + ".");
+        nodeCountLabel.setText(mon.getApi().getClusteredASTSize() + "/" + mon.getApi().getASTSize() + ".");
         String filters = mon.getApi().getAppliedFilters();
 
         if(filters == null) {

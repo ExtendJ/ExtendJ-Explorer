@@ -101,7 +101,7 @@ public class ASTBrain {
 
     public void putError(String type, String message){ putMessageLine(errors, type, message); }
 
-    public int getNonFilteredNodeCount(){ return normalNodes; }
+    public int getClusteredASTSize(){ return normalNodes; }
 
     public int getASTSize(){ return normalNodes + clusterNodes; }
 

@@ -37,9 +37,11 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
     public void refresh(Monitor mon){
         optimization = false;
         try {
-            int nodeThreshold = Integer.parseInt(mon.getConfig().get("nodeThreshold"));
+            int nodeThreshold = 2000;
+            if(mon.getConfig().get("nodeThreshold") != null)
+                nodeThreshold = Integer.parseInt(mon.getConfig().get("nodeThreshold"));
 
-            optimization = mon.getApi().getASTSize() > nodeThreshold;
+            optimization = mon.getApi().getClusteredASTSize() > nodeThreshold;
             if(optimization){
                 mon.getController().addWarning("Number of nodes exceed optimization threshold of " + nodeThreshold + " nodes. Navigation will be a bit more ugly, but performance will be better. ");
             }
