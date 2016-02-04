@@ -18,11 +18,13 @@
                     <Label styleClass="MenuItemText" text="Open..." ></Label>
                 </graphic>
             </MenuItem>
+            <SeparatorMenuItem/>
             <Menu text="" fx:id="topMenuExportMenu">
                 <graphic>
                         <Label styleClass="MenuItemText" text="Export"></Label>
                 </graphic>
             </Menu>
+            <SeparatorMenuItem/>
             <MenuItem text="" fx:id="exitMenuItem">
                 <graphic>
                         <Label styleClass="MenuItemText" text="Exit"></Label>

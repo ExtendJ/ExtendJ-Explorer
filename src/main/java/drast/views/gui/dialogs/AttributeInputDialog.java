@@ -44,20 +44,20 @@ public class AttributeInputDialog extends DrDialog {
     // styles
     private String backgroundColorLight = "-fx-background-color: #aaaaaa;";
     private String backgroundColorField = "-fx-background-color: #808080;";
-    private String backgroundColorParam = "-fx-background-color: #606060;";
+    private String backgroundColorParam = "-fx-background-color: #707070;";
     private String backgroundColorTopBox = "-fx-background-color: #aaaaaa;";
-    private String borderColorTopBox = "-fx-border-color: #dddddd;";
+    private String borderColorTopBox = "-fx-border-color: #606060;";
     private String borderWidthTopBox = "-fx-border-width: 0 0 1 0;";
     private String prefWidthLabel = "-fx-pref-width:150;";
     private String prefWidthInput = "-fx-pref-width:200;";
     private String labelColor = "-fx-text-fill:white;";
-    private String labelPadding = "-fx-padding:0 10 0 10;";
+    private String labelPadding = "-fx-padding:5 10 5 10;";
     private String rowPadding = "-fx-padding:10;";
     private String textColorLight = "-fx-text-fill:#ffffff;";
     private String textColorGreyedOut = "-fx-text-fill:#999999;";
     private String paramSelectedBorderColor = "-fx-border-color: #FF8C8C;";
     private String paramSelectedTextColor = "-fx-text-fill: #FFC573;";
-    private String paramUnSelectedBorderColor = "-fx-border-color: #606060;";
+    private String paramUnSelectedBorderColor = "-fx-border-color: #707070;";
     private String paramSelectedBorderWidth = "-fx-border-width: 3;";
     private String paramLabelBorderColor = "-fx-border-color: #999999;";
     private String paramLabelBorderWidth = "-fx-border-width: 0 1 0 0;";
@@ -92,11 +92,12 @@ public class AttributeInputDialog extends DrDialog {
      */
     protected Parent buildDialogContent(){
         VBox parent = new VBox();
-
+        parent.getStyleClass().add("our_root");
         // The labels above the parameters in the dialog
         HBox topBox = new HBox();
         Label label1 = new Label("Type");
         Label label2 = new Label("Input");
+        label1.setStyle(labelPadding);
         label1.setStyle(prefWidthLabel+labelPadding);
         label2.setStyle(prefWidthInput + labelPadding);
         topBox.setStyle(backgroundColorTopBox + borderColorTopBox + borderWidthTopBox);
@@ -177,7 +178,10 @@ public class AttributeInputDialog extends DrDialog {
             rowContainer.getChildren().add(fieldContainer);
         }
 
-        buttonTypeOk.setText("Invoke");
+        buttonTypeOk.setText("Compute");
+        buttonTypeOk.getStyleClass().add("done_button");
+        Label filler = new Label("");
+        parent.getChildren().add(filler);
         parent.getChildren().add(buttonTypeOk);
         return parent;
     }
@@ -295,6 +299,7 @@ public class AttributeInputDialog extends DrDialog {
 
     @Override
     protected void loadStyleSheets(Scene scene) {
+            scene.getStylesheets().add("/style/dialog.css");
 
     }
 

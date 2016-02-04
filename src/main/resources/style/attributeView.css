@@ -12,6 +12,12 @@
     -fx-padding: -1em;
  }
 
+
+
+.title_label{
+    -fx-text-fill: #FFC573;
+}
+
 .tree-table-view .column-header-background {
     -fx-background-color: #808080;
 }

@@ -88,4 +88,6 @@ public abstract class DrDialog extends Stage{
     }
 
     protected abstract void nodeSelectedChild(GenericTreeNode node);
+
+
 }

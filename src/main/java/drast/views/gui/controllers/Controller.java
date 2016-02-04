@@ -20,7 +20,7 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * This is the main controller of the UI. It holds references to all sub controllers. If some part of the UI does
+ * This is the main controller of the GUI. It holds references to all sub controllers. If some part of the GUI does
  * not have its own controller, its events will be handled here.
  */
 public class Controller implements Initializable {
@@ -126,7 +126,7 @@ public class Controller implements Initializable {
     }
 
     /**
-     * 
+     * Under the graph and tree view there is a bar with labels. This method sets the right texts in these.
      */
     protected void updateAstInfoLabels(){
         nodeCountLabel.setText(mon.getApi().getClusteredASTSize() + "/" + mon.getApi().getASTSize() + ".");
@@ -171,8 +171,7 @@ public class Controller implements Initializable {
         addMessages(mon.getApi().getMessages(AlertMessage.FILTER_MESSAGE));
         addMessage("Filter update: done after " + (System.currentTimeMillis() - timeStart) + " ms");
 
-        for(ControllerInterface controller : controllers)
-            controller.onNewAPI();
+        controllers.forEach(ControllerInterface::onNewAPI);
 
         updateAstInfoLabels();
         updateGUI();
@@ -203,9 +202,9 @@ public class Controller implements Initializable {
 
     public void updateGUI(){
         resetReferences();
-        for(ControllerInterface controller : controllers){
-            controller.updateGUI();
-        }
+
+        controllers.forEach(ControllerInterface::updateGUI);
+
         updateAstInfoLabels();
     }
 
@@ -253,9 +252,7 @@ public class Controller implements Initializable {
      */
     public void functionStarted(){
         mon.functionStart();
-        for(ControllerInterface controller : controllers){
-            controller.functionStarted();
-        }
+        controllers.forEach(ControllerInterface::functionStarted);
     }
 
     /**
@@ -263,19 +260,16 @@ public class Controller implements Initializable {
      */
     public void functionStopped(){
         mon.functionDone();
-        for(ControllerInterface controller : controllers){
-            controller.functionStopped();
-        }
+        controllers.forEach(ControllerInterface::functionStarted);
 
         if(mon.getApi().containsError(AlertMessage.SETUP_FAILURE)){
             addErrors(mon.getApi().getErrors(AlertMessage.SETUP_FAILURE));
-            return;
         }
     }
 
     /**
-     * An attribute was selected for the selected node. This method tells different parts of the UI of this event.
-     * @param info
+     * An attribute was selected for the selected node. This method tells different parts of the GUI of this event.
+     * @param info the attribute selected.
      */
     public void attributeInNodeSelected(NodeInfo info){
         for(DrDialog subWindow : mon.getSubWindows())
@@ -285,8 +279,8 @@ public class Controller implements Initializable {
     /**
      * Method for selecting a node in the graph or tree. Used for example by other controllers.
      *
-     * @param node
-     * @param caller
+     * @param node The selected node.
+     * @param caller the controller that called the method.
      */
     public void nodeSelected(GenericTreeNode node, ControllerInterface caller){
         for(DrDialog subWindow : mon.getSubWindows())
@@ -303,7 +297,7 @@ public class Controller implements Initializable {
     /**
      * Method for deselecting a node in the graph or tree. Used for example by other controllers.
      *
-     * @param caller
+     * @param caller the controller that called the method.
      */
     public void nodeDeselected(ControllerInterface caller){
 
