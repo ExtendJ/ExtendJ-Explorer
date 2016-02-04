@@ -14,10 +14,10 @@
            <VBox fx:id="nodeInfoView">
                <SplitPane fx:id="attributeSplitPane" orientation="VERTICAL" dividerPositions="0.7" styleClass="clickedNodeInfoPane">
                    <VBox VBox.vgrow="ALWAYS" styleClass="VBoxParent">
-                       <Label styleClass="title_label" text="Object inheritance" minHeight="30"/>
+                       <Label styleClass="title_label" fx:id="objectInheritanceLabel" text="" minHeight="30"/>
                        <TextFlow fx:id="nodeNameLabel" />
                        <Separator></Separator>
-                       <Label styleClass="title_label" text="Attributes" minHeight="30"/>
+                       <Label styleClass="title_label" fx:id="attributeLabel" text="" minHeight="30"/>
                        <TreeTableView fx:id="attributeTableView" prefHeight="1000">
                            <placeholder>
                                <Label text="Select a node"/>
@@ -29,7 +29,7 @@
                        </TreeTableView>
                    </VBox>
                    <VBox VBox.vgrow="ALWAYS" styleClass="VBoxParent">
-                       <Label fx:id="attributeInfoLabel" minHeight="30" text="" />
+                       <Label fx:id="attributeInfoLabel" styleClass="title_label" minHeight="30" text="" />
                        <TableView fx:id="attributeInfoTableView" styleClass="info-table-view" prefHeight="1000">
                            <placeholder>
                                <Label text="Select an attribute to view its information"/>

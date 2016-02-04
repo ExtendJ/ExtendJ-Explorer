@@ -68,6 +68,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     @FXML private TextFlow nodeNameLabel;
     @FXML private Label attributeInfoLabel;
+    @FXML private Label objectInheritanceLabel;
+    @FXML private Label attributeLabel;
 
     @FXML private VBox clickedNodeInfoPane;
     @FXML private VBox nodeInfoView;
@@ -180,6 +182,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     @Override
     public void nodeSelected(GenericTreeNode node) {
         if(node.isNode()) {
+            objectInheritanceLabel.setText("Object inheritance");
+            attributeLabel.setText("Attributes");
             showThisInAttributeTab(nodeInfoView);
             setAttributes();
         }else{
@@ -209,6 +213,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             if(attributeTableView.getRoot() != null && attributeTableView.getRoot().getChildren() != null) {
                 attributeTableView.getRoot().getChildren().clear();
                 attributeInfoTableView.getItems().clear();
+                objectInheritanceLabel.setText("");
+                attributeLabel.setText("");
             }
             clusterInfoNumberLabel.setText("");
             if(clusterInfoTableView != null){
@@ -370,11 +376,11 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      */
     private void setAttributeInfo(NodeInfo info, Object value){
         if(info == null ) {
-            attributeInfoLabel.setText("asd");
+            attributeInfoLabel.setText("");
             attributeInfoTableView.getItems().clear();
             return;
         }
-        attributeInfoLabel.setText("penisar:");
+        attributeInfoLabel.setText("Information about selected attribute");
         attributeInfoTableView.setItems(FXCollections.observableArrayList(AttributeInfo.toArray(info.getInfo(value))));
     }
 
