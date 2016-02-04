@@ -15,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 
 import java.io.File;
 import java.net.URL;
@@ -32,6 +33,7 @@ public class OpenASTDialog extends DrDialog implements Initializable, ChangeList
 
     public OpenASTDialog(Monitor mon) {
         super(mon);
+        initModality(Modality.NONE);
         setTitle("Open compiler...");
     }
 

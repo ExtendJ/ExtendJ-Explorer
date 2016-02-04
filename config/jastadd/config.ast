@@ -9,6 +9,7 @@ Node ::= ClassName:LangDecl NodeConfig*;
 
 abstract NodeConfig;
 When : NodeConfig ::= Expr*;
+SubTree : NodeConfig ::= Expr*;
 Style : NodeConfig ::= Binding*;
 Show : NodeConfig ::= LangDecl*;
 
@@ -19,6 +20,7 @@ Binding ::= Name:IdDecl Value;
 IdDecl ::= <ID:String>;
 
 abstract Expr;
+Shown : Expr;
 ChildOf : Expr ::= Not:Bool LangDecl;
 ParentOf : Expr ::= Not:Bool LangDecl;
 

@@ -228,7 +228,7 @@ public class NodeData {
     public void addCachedValues(ASTBrain api, Method m, Attribute attribute){
         if(attribute == null)
             return;
-        Object obj = getFieldValue(nodeObject, getField(api, m, nodeObject.getClass()));
+        Object obj = getFieldValue(getField(api, m, nodeObject.getClass()));
         if(attribute.isParametrized() && obj != null)
             setValues(attribute, obj, m);
         else
@@ -310,19 +310,19 @@ public class NodeData {
             Field f = api.getCachedField(m);
             if(f == null)
                 f = getField(api, m, nodeObject.getClass());
-            Object value = getFieldValue(nodeObject, f);
+            Object value = getFieldValue(f);
             if(value != null)
                 values.put(m, value);
         }
         return values;
     }
 
-    private Object getFieldValue(Object obj, Field field){
-        if(obj == null || field == null)
+    private Object getFieldValue(Field field){
+        if(field == null)
             return null;
         try {
             field.setAccessible(true);
-            return field.get(obj);
+            return field.get(nodeObject);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }

@@ -76,6 +76,8 @@ List node_config_list =
 NodeConfig node_config =
 	 WHEN LBRACKET expr_list.a RBRACKET {: return new When(a); :}
 	| WHEN LBRACKET RBRACKET {: return new When(new List()); :}
+	| SUBTREE LBRACKET expr_list.a RBRACKET {: return new SubTree(a); :}
+	| SUBTREE LBRACKET RBRACKET {: return new SubTree(new List()); :}
 	| STYLE LBRACKET binding_list.a RBRACKET {: return new Style(a); :}
 	| STYLE LBRACKET RBRACKET {: return new Style(new List()); :}
 	| SHOW LBRACKET lang_decl_list.a RBRACKET {: return new Show(a); :}
@@ -105,6 +107,7 @@ Expr expr =
 	| NOT PARENT OF lang_id_decl.a SEMI {: return new ParentOf(new Bool("true"), a); :}
 	| lang_id_decl.a SEMI {: return new EQ(a, new Bool("true")); :}
 	| NOT lang_id_decl.a SEMI {: return new EQ(a, new Bool("false")); :}
+	| WHEN SHOWN SEMI {: return new Shown(); :}
 	| binexpr;
 
 BinExpr binexpr =

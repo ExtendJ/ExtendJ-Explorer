@@ -10,7 +10,7 @@
 
 .menu-item {
     -fx-text-fill: white;
-    -fx-pref-width:200;
+    -fx-pref-width:250;
 }
 /*
 .menu-item:focused {

@@ -214,7 +214,6 @@ public class Node{
         }
     }
 
-    public String nodeName() { return isNull() ? "null" : node.toString(); }
     public boolean isOpt(){return isOpt;}
     public boolean isList(){ return isList; }
     public boolean isNull(){ return node == null; }

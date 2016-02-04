@@ -1,0 +1,46 @@
+
+aspect WhenAttributes{
+
+    syn ArrayList<Expr> DebuggerConfig.getSubTreeExpressions(drast.model.Node node){
+        ArrayList<Expr> exprs = new ArrayList<Expr>();
+        Class clazz = node.node.getClass();
+        while(clazz != null){
+            for(NodeFilter filter : nodeFilters()){
+                if(filter.getClassName().equals(clazz.getSimpleName())){
+                    exprs.addAll(filter.subTreeExpressions());
+                    break;
+                }
+            }
+            clazz = clazz.getSuperclass();
+        }
+        return exprs;
+    }
+
+    // ArrayList with all expressions for each NodeFilter
+    coll ArrayList<Expr> NodeFilter.subTreeExpressions() [new ArrayList<Expr> ()] with addAll root DebuggerConfig;
+    Node contributes getSubTreeExpressions()
+        when isThisFilterActive()
+        to NodeFilter.subTreeExpressions()
+        for debuggerConfig().nodeFilter(getClassName().getID());
+
+    // ArrayList with all When expressions
+    syn ArrayList<Expr> Node.getSubTreeExpressions(){
+        ArrayList<Expr> list = new ArrayList<Expr>();
+        SubTree subtree = getSubTree();
+        if(subtree == null)
+            return list;
+
+        for(Expr thing : subtree.getExprs()){
+            list.add(thing);
+        }
+        return list;
+    }
+
+    syn SubTree Node.getSubTree(){
+        for(NodeConfig config : getNodeConfigs()){
+            if(config.isSubTree())
+                return (SubTree) config;
+        }
+        return null;
+    }
+}

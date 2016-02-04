@@ -47,6 +47,7 @@ CommentEndOfLine = \/\/[^\n]*
 "configs"       { return sym(Terminals.CONFIGS); }
 "filter"       { return sym(Terminals.FILTER); }
 "when"       { return sym(Terminals.WHEN); }
+"subtree"       { return sym(Terminals.SUBTREE); }
 "style"       { return sym(Terminals.STYLE); }
 "show"       { return sym(Terminals.SHOW); }
 "="        		{ return sym(Terminals.ASSIGNMENT); }
@@ -64,6 +65,7 @@ CommentEndOfLine = \/\/[^\n]*
 "{"       	    { return sym(Terminals.LBRACKET); }
 "}"       	    { return sym(Terminals.RBRACKET); }
 "use"  	        { return sym(Terminals.USE); }
+"shown"       { return sym(Terminals.SHOWN); }
 "child"  	    { return sym(Terminals.CHILD); }
 "parent"  	    { return sym(Terminals.PARENT); }
 "of"  	        { return sym(Terminals.OF); }

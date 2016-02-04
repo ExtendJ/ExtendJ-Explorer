@@ -10,7 +10,7 @@
         <items>
             <MenuItem text="" fx:id="rerunCompiler">
                 <graphic>
-                        <Label styleClass="MenuItemText" text="Run compiler"></Label>
+                        <Label styleClass="MenuItemText" text="Run compiler again"></Label>
                 </graphic>
             </MenuItem>
             <MenuItem text="" fx:id="openMenuItem" >
@@ -34,7 +34,7 @@
         <items>
             <MenuItem text="" fx:id="toggleMinimizeMenuItem">
                 <graphic>
-                        <Label styleClass="MenuItemText" text="Toggle minimize all"></Label>
+                        <Label styleClass="MenuItemText" text="Fullscreen"></Label>
                 </graphic>
             </MenuItem>
         </items>

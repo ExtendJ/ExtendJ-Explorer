@@ -1,5 +1,6 @@
 package drast.views.gui.graph;
 
+import drast.views.gui.controllers.GraphViewController;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
@@ -47,6 +48,7 @@ import java.util.HashMap;
 public class GraphView extends SwingNode implements ItemListener { //TODO needs a performance overhaul when it comes to HUGE graphs
     private Monitor mon;
     private Controller con;
+    private GraphViewController myController;
     private VisualizationViewer<GenericTreeNode, GraphEdge> vs;
     private DelegateForest<GenericTreeNode, GraphEdge> graph;
 
@@ -65,6 +67,8 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         setListeners();
         setContent(vs);
     }
+
+    public void setMyController(GraphViewController controller){ myController = controller;}
 
     /**
      * Recursively iterate through the Filtered AST to create Jung vertexes and edges.
@@ -101,7 +105,6 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         TreeLayout<GenericTreeNode, GraphEdge> layout = new TreeLayout<>(g, 150, 100);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         vs = new VisualizationViewer<>(layout, screenSize);
-        vs.setBackground(new Color(255,255,255));
         vs.setRenderer(new CustomRenderer(mon));
         setVisualizationTransformers(vs);
     }
@@ -283,6 +286,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
      * @param bvs
      */
     public void setVisualizationTransformers(BasicVisualizationServer<GenericTreeNode, GraphEdge> bvs){
+        bvs.setBackground(new Color(255,255,255));
 
         // Vertex text transformer
         Transformer <GenericTreeNode, String> toStringTransformer = fNode -> fNode.toGraphString();
@@ -379,9 +383,9 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
             Object subject = e.getItem();
             if (subject != null && subject instanceof GenericTreeNode) {
                 if(e.getStateChange() == ItemEvent.SELECTED)
-                    con.nodeSelected((GenericTreeNode) subject, true);
+                    con.nodeSelected((GenericTreeNode) subject, myController);
                 else
-                    con.nodeDeselected(true);
+                    con.nodeDeselected(myController);
             }
         });
     }

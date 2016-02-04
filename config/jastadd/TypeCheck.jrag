@@ -24,10 +24,12 @@ aspect TypeCheck{
 
     // is When, style, show
 	syn boolean NodeConfig.isWhen() = false;
+	syn boolean NodeConfig.isSubTree() = false;
 	syn boolean NodeConfig.isStyle() = false;
 	syn boolean NodeConfig.isShow() = false;
 
 	eq When.isWhen() = true;
+	eq SubTree.isSubTree() = true;
 	eq Style.isStyle() = true;
 	eq Show.isShow() = true;
 
