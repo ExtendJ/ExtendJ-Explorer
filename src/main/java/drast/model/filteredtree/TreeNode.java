@@ -15,7 +15,6 @@ import java.util.*;
  */
 public class TreeNode extends GenericTreeNode {
     private final Node node;
-    private boolean enabled;
     private String graphName;
     private String treeViewName;
 
@@ -26,7 +25,6 @@ public class TreeNode extends GenericTreeNode {
     public TreeNode(Node data, GenericTreeNode parent){
         super(parent);
         node = data;
-        enabled = true;
         allRefs = new HashSet<>();
         setExpandable(true);
     }

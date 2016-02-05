@@ -31,6 +31,7 @@ public class Monitor {
     private ArrayList<DrDialog> subWindows;
     private ArrayList<GenericTreeNode> dialogSelectedNodes;
     private ArrayList<GenericTreeNode> selectedParameterNodes;
+    private ArrayList<GenericTreeNode> referenceHighlightNodes;
     private boolean functionRunning;
     private ArrayList<String> highlightedSimpleClassNames;
     private DrAST jaaAPI;
@@ -53,6 +54,7 @@ public class Monitor {
         subWindows = new ArrayList<>();
         dialogSelectedNodes = new ArrayList<>();
         selectedParameterNodes = new ArrayList<>();
+        referenceHighlightNodes = new ArrayList<>();
         highlightedSimpleClassNames = new ArrayList<>();
         functionRunning = false;
         selectedNode = null;
@@ -86,14 +88,18 @@ public class Monitor {
     public void addhighlightedSimpleClassName(String className){ highlightedSimpleClassNames.add(className); }
     public void removehighlightedSimpleClassName(String className){ highlightedSimpleClassNames.remove(className); }
 
-    public ArrayList<GenericTreeNode> getSelectedParameterNodes() {
-        return selectedParameterNodes;
-    }
+    public ArrayList<GenericTreeNode> getSelectedParameterNodes() {return selectedParameterNodes; }
+
     public void addSelectedParameterNodes(GenericTreeNode node){
         selectedParameterNodes.add(node);
     }
-
     public void clearSelectedParameterNodes(){ selectedParameterNodes.clear();}
+
+
+    public void addHighlightReferencesNodes(GenericTreeNode node){
+        referenceHighlightNodes.add(node);
+    }
+    public ArrayList<GenericTreeNode> getHighlightReferencesNodes(){ return referenceHighlightNodes; }
 
     public ArrayList<GenericTreeNode> getDialogSelectedNodes() {
         return dialogSelectedNodes;

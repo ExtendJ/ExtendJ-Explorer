@@ -342,12 +342,11 @@ public class ASTBrain extends Observable{
         addReferences(futureReferences, true);
     }
 
-    public FilterConfig getfilterConfig(){ return filterConfig; }
+    public FilterConfig getFilterConfig(){ return filterConfig; }
     public GenericTreeNode getFilteredTree() { return filteredTree; }
 
     public LinkedHashSet<Class> getInheritanceChain(String simpleClassName){ return inheritedTypes.get(simpleClassName); }
 
-    public boolean isASTType(String className){ return inheritedTypes.containsKey(className); }
     public boolean isASTType(Class type){ return allTypes.contains(type); }
 
     public HashSet<Class> getAllASTTypes(){ return allTypes; }
@@ -364,15 +363,6 @@ public class ASTBrain extends Observable{
 
     public void clearDisplayedReferences(){ displayedReferences.clear(); }
     public ArrayList<NodeReference> getDisplayedReferences(){ return displayedReferences; }
-
-    public ArrayList<GenericTreeNode> getNodeReferencesAndHighlightThem(Object value, boolean highlight){ //Todo move this code to attributeController, this is GUI specific
-        ArrayList<GenericTreeNode> nodes = new ArrayList<>();
-        for(Object o : getNodeReferences(value)){
-            if(isTreeNode(o))
-                nodes.add(getTreeNode(o).setReferenceHighlight(highlight));
-        }
-        return nodes;
-    }
 
     public ArrayList<Object> getNodeReferences(Object value){
         ArrayList<Object> nodes = new ArrayList<>();

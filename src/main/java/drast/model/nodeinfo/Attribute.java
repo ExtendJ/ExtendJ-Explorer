@@ -114,9 +114,7 @@ public class Attribute extends NodeInfo {
 
     public Set<Map.Entry<String, Object>> getComputedEntrys(){ return computedValues.entrySet(); }
 
-    public Collection<Object> getComputedValues(){
-        return computedValues.values();
-    }
+    public Collection<Object> getComputedValues(){ return computedValues.values(); }
 
     public HashMap<String, Object[]> getUsedParameters(){
         return usedParameters;

@@ -115,7 +115,7 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             DelegateForest<GenericTreeNode, GraphEdge> inGraph = (DelegateForest<GenericTreeNode, GraphEdge>) vs.getGraphLayout().getGraph();
             TreeCluster newCluster = new TreeCluster(lastClicked.getNode(), lastClicked);
             newCluster.setExpandable(true);
-            newCluster.setStyles(mon.getBrain().getfilterConfig());
+            newCluster.setStyles(mon.getBrain().getFilterConfig());
 
             // remove all reference edges
             if(mon.getReferenceEdges() != null) {

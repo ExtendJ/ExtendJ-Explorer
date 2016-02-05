@@ -201,7 +201,7 @@ public class NodeData {
             }
         }
         addCachedValues(api, m, attribute);
-        if(api.getfilterConfig().getBoolean(FilterConfig.DYNAMIC_VALUES)){
+        if(api.getFilterConfig().getBoolean(FilterConfig.DYNAMIC_VALUES)){
             invokeValue(attribute, api, m, params);
         }
         return attribute;

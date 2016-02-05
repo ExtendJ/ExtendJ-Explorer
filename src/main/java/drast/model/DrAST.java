@@ -50,9 +50,9 @@ public class DrAST {
 		noAstData = false;
 	}
 
-    public boolean hasRun(){
-        return done;
-    }
+    public boolean hasRun(){ return done; }
+
+	public boolean hasRoot(){ return !noAstData; }
 
     /**
      * Sets the directory of the projects

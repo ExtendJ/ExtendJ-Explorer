@@ -113,7 +113,7 @@ public class DrASTSetup {
             // If we got the root without crashing sent the root a task.(success)
             if (task == null) {
                 switch (taskName) {
-                    case "DrASTUI":
+                    case "DrASTGUI":
                         this.task = new DrASTGUI(root);
                         break;
                     case "DrASTXML":

@@ -334,7 +334,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     public void changed(ObservableValue<? extends TreeItem<NodeInfoView>> observable, TreeItem<NodeInfoView> oldValue, TreeItem<NodeInfoView> newValue) {
         mon.clearSelectedParameterNodes();
         if(oldValue != null && oldValue.getValue() != null)
-            mon.getBrain().getNodeReferencesAndHighlightThem(oldValue.getValue().getValue(), false);
+            mon.getHighlightReferencesNodes().clear();
 
         if(newValue != null) {
             NodeInfoView infoHolder = newValue.getValue();
@@ -387,8 +387,20 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     public void setReference(Object value){
         ArrayList<GenericTreeNode> newRefs = null;
         if(value != null)
-            newRefs = mon.getBrain().getNodeReferencesAndHighlightThem(value, true);
+            newRefs = getNodeReferencesAndHighlightThem(value);
         mon.getGraphView().setReferenceEdges(newRefs, mon.getSelectedNode());
+    }
+
+    public ArrayList<GenericTreeNode> getNodeReferencesAndHighlightThem(Object value){
+        ArrayList<GenericTreeNode> nodes = new ArrayList<>();
+        for(Object o : mon.getBrain().getNodeReferences(value)){
+            if(mon.getBrain().isTreeNode(o)) {
+                GenericTreeNode node = mon.getBrain().getTreeNode(o);
+                nodes.add(node);
+                mon.addHighlightReferencesNodes(node);
+            }
+        }
+        return nodes;
     }
 
     /**

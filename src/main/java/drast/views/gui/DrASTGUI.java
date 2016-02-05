@@ -118,6 +118,8 @@ public class DrASTGUI extends Application implements DrASTView {
         ScrollPane center = (ScrollPane) rootView.lookup("#graphViewScrollPane");
         center.setContent(graphview);
         graphview.setPreferredSize((int)center.getWidth(), (int)center.getHeight());
+        if (DrAST.hasRoot())
+            return;
         Platform.runLater(() -> {
             OpenASTDialog dialog = new OpenASTDialog(mon);
             dialog.init();

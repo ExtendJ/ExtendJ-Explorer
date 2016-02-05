@@ -20,7 +20,6 @@ import java.util.List;
  */
 public abstract class GenericTreeNode {
     protected List<GenericTreeNode> children;
-    protected boolean referenceHighlight;
     protected GenericTreeNode clusterRef;
     protected GenericTreeNode parent;
     protected HashMap<String, Value> styles;
@@ -54,19 +53,6 @@ public abstract class GenericTreeNode {
     public abstract void addChild(Node node, GenericTreeNode child);
 
     /**
-     * Sets a reference flag, someone has a reference to This node.
-     * @param highlight
-     * @return
-     */
-    public GenericTreeNode setReferenceHighlight(boolean highlight){
-        referenceHighlight = highlight;
-        if(clusterRef != null){
-            return clusterRef.setReferenceHighlight(highlight);
-        }
-        return this;
-    }
-
-    /**
      * Returns the api.Node of the filterNode, the Node containing the AST object
      * @return
      */
@@ -82,11 +68,6 @@ public abstract class GenericTreeNode {
      * @return
      */
     public abstract boolean isNullNode();
-
-    /**
-     * Check if the a reference flag is set
-     */
-    public boolean isReferenceHighlight(){ return referenceHighlight; }
 
     /**
      * Check if the node is a "real" node

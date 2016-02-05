@@ -155,8 +155,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
     public void panToNode(GenericTreeNode node){
         Layout<GenericTreeNode,GraphEdge> layout = vs.getGraphLayout();
         Point2D q = layout.transform(node);
-        Point2D lvc =
-                vs.getRenderContext().getMultiLayerTransformer().inverseTransform(vs.getCenter());
+        Point2D lvc = vs.getRenderContext().getMultiLayerTransformer().inverseTransform(vs.getCenter());
         final double dx = (lvc.getX() - q.getX());
         final double dy = (lvc.getY() - q.getY());
         vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT).translate(dx, dy);
