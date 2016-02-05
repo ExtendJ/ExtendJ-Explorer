@@ -228,7 +228,7 @@
 }
 
 .consoleTextError{
-    -fx-fill: red;
+    -fx-fill: #cc0000;
     -fx-font-size:13;
 }
 

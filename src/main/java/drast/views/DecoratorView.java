@@ -43,5 +43,5 @@ public abstract class DecoratorView implements DrASTView {
     protected abstract void onNewRoot();
 
     @Override
-    public void printMessage(String type, String message){}
+    public void printMessage(int type, String message){}
 }

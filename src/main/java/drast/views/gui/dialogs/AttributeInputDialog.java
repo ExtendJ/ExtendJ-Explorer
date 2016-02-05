@@ -190,9 +190,9 @@ public class AttributeInputDialog extends DrDialog {
     public void attributeSelected(NodeInfo info) {
         if(info == null)
             return;
-        if(mon.getApi().isTreeNode(info.getValue())) {
+        if(mon.getBrain().isTreeNode(info.getValue())) {
             mon.getController().addMessage("1(" + info + ")");
-            GenericTreeNode aNode = mon.getApi().getTreeNode(info.getValue());
+            GenericTreeNode aNode = mon.getBrain().getTreeNode(info.getValue());
             if(!aNode.isNode())
                 return;
             mon.getController().addMessage("2(" + info + ")");
@@ -371,7 +371,7 @@ public class AttributeInputDialog extends DrDialog {
     }
 
     private boolean isNodeParam(Class type){
-        return mon.getApi().isASTType(type);
+        return mon.getBrain().isASTType(type);
     }
 
     public Object[] getResult(){

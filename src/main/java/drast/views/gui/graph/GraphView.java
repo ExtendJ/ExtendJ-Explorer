@@ -232,7 +232,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
      * Add edges based on attributes. This is defined in the filter language by the user.
      */
     public void addDisplayedReferences(){
-        ArrayList<NodeReference> refs = mon.getApi().getDisplayedReferences();
+        ArrayList<NodeReference> refs = mon.getBrain().getDisplayedReferences();
         if(refs == null || refs.size() == 0)
             return;
         HashMap<GenericTreeNode, ArrayList<GraphEdge>> displayedRefs = new HashMap<>();

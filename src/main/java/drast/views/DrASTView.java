@@ -8,7 +8,7 @@ import drast.model.DrAST;
  */
 public interface DrASTView {
     void run();
-    void printMessage(String type, String message);
+    void printMessage(int type, String message);
     DrAST getAPI();
     void setRoot(Object root, String filterPath, String defaultDir, boolean opened);
 }

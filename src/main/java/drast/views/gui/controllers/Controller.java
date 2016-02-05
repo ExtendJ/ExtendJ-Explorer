@@ -129,8 +129,8 @@ public class Controller implements Initializable {
      * Under the graph and tree view there is a bar with labels. This method sets the right texts in these.
      */
     protected void updateAstInfoLabels(){
-        nodeCountLabel.setText(mon.getApi().getClusteredASTSize() + "/" + mon.getApi().getASTSize() + ".");
-        String filters = mon.getApi().getAppliedFilters();
+        nodeCountLabel.setText(mon.getBrain().getClusteredASTSize() + "/" + mon.getBrain().getASTSize() + ".");
+        String filters = mon.getBrain().getAppliedFilters();
 
         if(filters == null) {
             appliedFiltersLabelLabel.setText("No filters.");
@@ -158,17 +158,9 @@ public class Controller implements Initializable {
     public void onNewAPI(){
         long timeStart = System.currentTimeMillis();
         mon.getDrASTAPI().run();
-        if(mon.getApi().containsError(AlertMessage.AST_STRUCTURE_ERROR) || mon.getApi().containsError(AlertMessage.FILTER_ERROR)){
-            addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
-            addErrors(mon.getApi().getErrors(AlertMessage.FILTER_ERROR));
-            addWarnings(mon.getApi().getWarnings(AlertMessage.AST_STRUCTURE_WARNING));
-            addErrors(mon.getApi().getErrors(AlertMessage.AST_STRUCTURE_ERROR));
+        if(mon.getBrain().containsError(AlertMessage.AST_STRUCTURE_ERROR) || mon.getBrain().containsError(AlertMessage.FILTER_ERROR)){
             return;
         }
-
-        addMessages(mon.getApi().getMessages(AlertMessage.AST_STRUCTURE_WARNING));
-        addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
-        addMessages(mon.getApi().getMessages(AlertMessage.FILTER_MESSAGE));
         addMessage("Filter update: done after " + (System.currentTimeMillis() - timeStart) + " ms");
 
         controllers.forEach(ControllerInterface::onNewAPI);
@@ -179,24 +171,18 @@ public class Controller implements Initializable {
 
     public void saveNewFilter(){
         //addMessage("Filter update: starting");
-        if(mon.getApi().getRoot() == null)
+        if(mon.getBrain().getRoot() == null)
             return;
 
         long timeStart = System.currentTimeMillis();
         String filter = filterTabController.getFilterText();
-        boolean noError = mon.getApi().saveNewFilter(filter);
+        boolean noError = mon.getBrain().saveNewFilter(filter);
         if (noError) {
             updateGUI();
-            addMessages(mon.getApi().getMessages(AlertMessage.FILTER_MESSAGE));
-            addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
             addMessage("Filter update: done after " + (System.currentTimeMillis() - timeStart) + " ms");
             updateAstInfoLabels();
         } else {
-            //addError("Could not update graph: ");
-            addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
-            addErrors(mon.getApi().getErrors(AlertMessage.FILTER_ERROR));
-            addWarning("New filter is not applied, old filter is enabled. ");
-            //addMessage("Filter update: something is wrong!");
+            addWarning("The filter has errors and is not used. The previous filter is enabled. ");
         }
     }
 
@@ -261,10 +247,6 @@ public class Controller implements Initializable {
     public void functionStopped(){
         mon.functionDone();
         controllers.forEach(ControllerInterface::functionStarted);
-
-        if(mon.getApi().containsError(AlertMessage.SETUP_FAILURE)){
-            addErrors(mon.getApi().getErrors(AlertMessage.SETUP_FAILURE));
-        }
     }
 
     /**
@@ -316,7 +298,7 @@ public class Controller implements Initializable {
         GenericTreeNode node = mon.getLastRealNode();
         if(node == null)
             return;
-        node = mon.getApi().getTreeNode(node.getNode().node);
+        node = mon.getBrain().getTreeNode(node.getNode().node);
         if(node == null)
             return;
         mon.setSelectedNode(node);
@@ -324,5 +306,4 @@ public class Controller implements Initializable {
         if(mon.getSelectedInfo() != null)
             attributeTabController.setReference(mon.getSelectedInfo().getValue());
     }
-
 }

@@ -55,7 +55,7 @@ public class NodeData {
         Object[] params;
         Method method = nodeInfo.getMethod();
         if ((par != null && par.length != method.getParameterCount()) || (par == null && method.getParameterCount() != 0)) {
-            api.putError(AlertMessage.INVOCATION_ERROR, "Wrong number of arguments for the method: " + method);
+            api.putMessage(AlertMessage.INVOCATION_ERROR, "Wrong number of arguments for the method: " + method);
             return null;
         }
         if(par == null)
@@ -63,7 +63,7 @@ public class NodeData {
         else
             params = par;
         if(!nodeInfo.isAttribute()){
-            api.putError(AlertMessage.INVOCATION_ERROR, "Can only do compute on attributes");
+            api.putMessage(AlertMessage.INVOCATION_ERROR, "Can only do compute on attributes");
             return  null;
         }
 
@@ -238,7 +238,7 @@ public class NodeData {
      */
     private void addInvocationErrors(ASTBrain api, Throwable e, Method m){
         String message = String.format("While computing %s in node %s. Cause : %s", m.getName(), node.node, e.getCause() != null ? e.getCause().toString() : e.getMessage());
-        api.putError(AlertMessage.INVOCATION_ERROR, message);
+        api.putMessage(AlertMessage.INVOCATION_ERROR, message);
         //e.printStackTrace();
     }
 
@@ -284,7 +284,7 @@ public class NodeData {
                     values.put(attri.getValue(), e.getKey());
             }
         }catch (ClassCastException e){
-            api.putError(AlertMessage.INVOCATION_ERROR, e.getMessage());
+            api.putMessage(AlertMessage.INVOCATION_ERROR, e.getMessage());
         }
         ArrayList<Node> nodes = new ArrayList<>();
         for (Map.Entry<Object, Method> e : values.entrySet()) {

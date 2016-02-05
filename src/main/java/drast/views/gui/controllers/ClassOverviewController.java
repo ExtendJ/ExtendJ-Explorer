@@ -34,10 +34,10 @@ public class ClassOverviewController implements Initializable, ControllerInterfa
         TreeItem<String> superRoot = new TreeItem<>("Abstract AST classes");
         astRoot.setExpanded(true);
         root.setExpanded(true);
-        HashMap<Class, HashSet<Class>> parents = mon.getApi().getDirectParents();
-        HashMap<Class, HashSet<Class>> children = mon.getApi().getDirectChildren();
+        HashMap<Class, HashSet<Class>> parents = mon.getBrain().getDirectParents();
+        HashMap<Class, HashSet<Class>> children = mon.getBrain().getDirectChildren();
         int superClass;
-        for (Class type : mon.getApi().getAllASTTypes()) {
+        for (Class type : mon.getBrain().getAllASTTypes()) {
             TreeItem<String> parent = new TreeItem<>(type.getSimpleName());
             superClass = loadChildrenOrParents(parent, "AST Parents", parents.get(type));
             superClass += loadChildrenOrParents(parent, "AST children", children.get(type));

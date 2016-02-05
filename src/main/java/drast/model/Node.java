@@ -149,7 +149,7 @@ public class Node{
                 if (isList) {
                     for (Object child : (Iterable<?>) root) {
                         if (child instanceof Collection && child.getClass().getSimpleName().equals("List") && isOpt)
-                            api.putWarning(AlertMessage.AST_STRUCTURE_WARNING, "A List is a direct child to a Opt parent, parent : " + root + ", -> child : " + child);
+                            api.putMessage(AlertMessage.AST_STRUCTURE_WARNING, "A List is a direct child to a Opt parent, parent : " + root + ", -> child : " + child);
                         children.add(new Node(child, this, isOpt ? nameFromParent : "", child instanceof Collection, false, isNTA, 1, api));
                     }
                 }
@@ -159,7 +159,7 @@ public class Node{
                     message = "Object : " + root + " is not a type of the AST";
                 }else
                     message = e.getMessage();
-                api.putError(AlertMessage.AST_STRUCTURE_ERROR, message);
+                api.putMessage(AlertMessage.AST_STRUCTURE_ERROR, message);
                 return;
             }
             traversDown(root, api);
@@ -210,7 +210,7 @@ public class Node{
 
     private void nullCheck(Object obj, ASTBrain api, String name){
         if(obj == null) {
-            api.putError(AlertMessage.AST_STRUCTURE_ERROR, String.format("The child %s is null, can't continue the traversal of this path", name));
+            api.putMessage(AlertMessage.AST_STRUCTURE_ERROR, String.format("The child %s is null, can't continue the traversal of this path", name));
         }
     }
 

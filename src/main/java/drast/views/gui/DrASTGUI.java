@@ -66,14 +66,13 @@ public class DrASTGUI extends Application implements DrASTView {
         mon.setDefaultDirectory(defaultDir);
         mon.setRerunable(opened);
         con.onNewAPI();
-
     }
 
     @Override
-    public void printMessage(String type, String message){
-        if(mon == null || mon.getApi() == null)
+    public void printMessage(int type, String message){
+        if(mon == null || mon.getBrain() == null)
             return;
-        mon.getApi().putError(type, message);
+        mon.getBrain().putMessage(type, message);
     }
 
     public void setFilterDir(String dir){DrAST.setFilterPath(dir);}
