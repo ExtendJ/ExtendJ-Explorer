@@ -103,4 +103,5 @@
     <stylesheets>style/topmenu.css</stylesheets>
     <stylesheets>style/attributeView.css</stylesheets>
     <stylesheets>style/configLanguageStyle.css</stylesheets>
+    <stylesheets>style/console.css</stylesheets>
 </BorderPane>
