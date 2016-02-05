@@ -48,10 +48,7 @@ public abstract class DrDialog extends Stage{
     public void init(){
         buttonTypeOk = new Button("yes");
         buttonTypeOk.setOnMouseClicked(event -> {
-            if(yesButtonClicked()) {
-                invokeButtonPressed = true;
-                closeDialog();
-            }
+            clickYesButton();
 
         });
         Parent parent = buildDialogContent();
@@ -59,13 +56,20 @@ public abstract class DrDialog extends Stage{
             if (ke.getCode().equals(KeyCode.ESCAPE)){
                 closeDialog();
             }else if (ke.getCode().equals(KeyCode.ENTER)){
-                yesButtonClicked();
+                clickYesButton();
             }
         });
         Scene scene = new Scene(parent);
         loadStyleSheets(scene);
         setScene(scene);
 
+    }
+
+    private void clickYesButton(){
+        if(yesButtonClicked()) {
+            invokeButtonPressed = true;
+            closeDialog();
+        }
     }
 
     public void closeDialog(){
