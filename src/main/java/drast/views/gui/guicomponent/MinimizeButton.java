@@ -6,18 +6,16 @@ import javafx.scene.control.Button;
  * Created by gda10jth on 2/5/16.
  */
 public class MinimizeButton extends Button {
-    private boolean minimize;
+    private boolean minimizeNext;
 
     public MinimizeButton(){
         super();
-        minimize = false;
+        minimizeNext = true;
         setText("-");
-        setOnAction(e->{
-            System.out.println("KLICKAD");
-            minimize = !minimize;
-        });
     }
 
-    public boolean minimizeNext(){return minimize;}
-    public boolean isMinimized(){return !minimize;}
+    public void setMinimized(boolean minimized){ minimizeNext = !minimized;}
+
+    public boolean minimizeNext(){return minimizeNext;}
+    public boolean isMinimized(){return !minimizeNext;}
 }

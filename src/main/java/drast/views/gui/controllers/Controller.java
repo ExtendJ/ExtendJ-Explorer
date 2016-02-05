@@ -139,36 +139,56 @@ public class Controller implements Initializable {
     }
 
     private void maximizeLeftWindow(){
-        leftWindow.getChildren().add(leftWindowContent);
-        leftWindow.maxWidthProperty().bind(centerSplitPane.widthProperty());
-        centerSplitPane.setDividerPosition(0, 0.2);
+
+        if(minimizeLeftSide.isMinimized()) {
+            minimizeLeftSide.setMinimized(false);
+            leftWindow.getChildren().add(leftWindowContent);
+            leftWindow.maxWidthProperty().bind(centerSplitPane.widthProperty());
+            centerSplitPane.setDividerPosition(0, 0.2);
+        }
     }
 
     private void maximizeRightWindow(){
-        rightWindow.getChildren().add(rightWindowContent);
-        rightWindow.maxWidthProperty().bind(centerSplitPane.widthProperty());
-        centerSplitPane.setDividerPosition(1, 0.8);
+        if(minimizeRightSide.isMinimized()) {
+            minimizeRightSide.setMinimized(false);
+            rightWindow.getChildren().add(rightWindowContent);
+            rightWindow.maxWidthProperty().bind(centerSplitPane.widthProperty());
+            centerSplitPane.setDividerPosition(1, 0.8);
+        }
+
     }
 
     private void maximizeConsoleWindow(){
-        consoleWindow.getChildren().add(consoleWindowContent);
-        consoleWindow.maxHeightProperty().bind(consoleAndGraphSplitPane.heightProperty());
-        consoleAndGraphSplitPane.setDividerPosition(0, 0.8);
+        if(minimizeConsole.isMinimized()) {
+            minimizeConsole.setMinimized(false);
+            consoleWindow.getChildren().add(consoleWindowContent);
+            consoleWindow.maxHeightProperty().bind(consoleAndGraphSplitPane.heightProperty());
+            consoleAndGraphSplitPane.setDividerPosition(0, 0.8);
+        }
     }
 
     private void minimizeLeftWindow(){
-        leftWindow.getChildren().remove(leftWindowContent);
-        leftWindow.maxWidthProperty().bind(minimizeLeftSide.widthProperty());
+        if(minimizeLeftSide.minimizeNext()) {
+            minimizeLeftSide.setMinimized(true);
+            leftWindow.getChildren().remove(leftWindowContent);
+            leftWindow.maxWidthProperty().bind(minimizeLeftSide.widthProperty());
+        }
     }
 
     private void minimizeRightWindow(){
-        rightWindow.getChildren().remove(rightWindowContent);
-        rightWindow.maxWidthProperty().bind(minimizeRightSide.widthProperty());
+        if(minimizeRightSide.minimizeNext()) {
+            minimizeRightSide.setMinimized(true);
+            rightWindow.getChildren().remove(rightWindowContent);
+            rightWindow.maxWidthProperty().bind(minimizeRightSide.widthProperty());
+        }
     }
 
     private void minimizeConsoleWindow(){
-        consoleWindow.getChildren().remove(consoleWindowContent);
-        consoleWindow.maxHeightProperty().bind(minimizeConsole.heightProperty());
+        if(minimizeConsole.minimizeNext()) {
+            minimizeConsole.setMinimized(true);
+            consoleWindow.getChildren().remove(consoleWindowContent);
+            consoleWindow.maxHeightProperty().bind(minimizeConsole.heightProperty());
+        }
     }
 
     /**
