@@ -6,7 +6,6 @@ import drast.views.gui.guicomponent.FilterEditor;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 
 import java.io.BufferedReader;
@@ -52,9 +51,9 @@ public class FilterTabController implements Initializable, ControllerInterface {
     private void loadFilterFileText() {
         String line;
         String textContent = "";
-        if(mon.getApi().getFilterFilePath() != null) {
+        if(mon.getBrain().getFilterFilePath() != null) {
             try {
-                BufferedReader reader = new BufferedReader(new FileReader(mon.getApi().getFilterFilePath()));
+                BufferedReader reader = new BufferedReader(new FileReader(mon.getBrain().getFilterFilePath()));
                 while ((line = reader.readLine()) != null) {
                     textContent += line + "\n";
                 }

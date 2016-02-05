@@ -8,34 +8,43 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * Created by gda10jth on 2/3/16.
  */
-public class ConsoleController implements Initializable, ControllerInterface {
+public class ConsoleController implements Initializable, ControllerInterface, Observer {
     private Monitor mon;
+    private ArrayList<AlertMessage> messages;
+
 
     // Console stuff
     @FXML private TextFlow consoleTextFlowAll;
     @FXML private TextFlow consoleTextFlowWarning;
     @FXML private TextFlow consoleTextFlowError;
     @FXML private TextFlow consoleTextFlowMessage;
+    @FXML private TextFlow consoleTextFlowNewShit;
 
     @FXML private ScrollPane consoleScrollPaneAll;
     @FXML private ScrollPane consoleScrollPaneError;
     @FXML private ScrollPane consoleScrollPaneMessage;
     @FXML private ScrollPane consoleScrollPaneWarning;
+    @FXML private ScrollPane consoleScrollPaneNewShit;
+
+    @FXML private CheckBox allBox;
+    @FXML private CheckBox messagesBox;
+    @FXML private CheckBox warningsBox;
+    @FXML private CheckBox errorsBox;
 
     @Override
     public void onNewAPI() {
-
+        mon.getBrain().addObserver(this);
     }
 
     @Override
@@ -64,16 +73,19 @@ public class ConsoleController implements Initializable, ControllerInterface {
     }
 
     private enum ConsoleFilter {
-        ALL, ERROR, WARNING, MESSAGE
+        ALL, ERROR, WARNING, MESSAGE, NEWSHIT
     }
 
     private DoubleProperty consoleHeightAll;
     private DoubleProperty consoleHeightError;
     private DoubleProperty consoleHeightWarning;
     private DoubleProperty consoleHeightMessage;
+    private DoubleProperty consoleHeightNewShit;
 
     public void init(Monitor mon){
         this.mon = mon;
+        mon.getBrain().addObserver(this);
+        messages = new ArrayList<>();
     }
 
     @Override
@@ -82,20 +94,13 @@ public class ConsoleController implements Initializable, ControllerInterface {
         consoleHeightError = new SimpleDoubleProperty();
         consoleHeightWarning = new SimpleDoubleProperty();
         consoleHeightMessage = new SimpleDoubleProperty();
+        consoleHeightNewShit = new SimpleDoubleProperty();
 
         setConsoleScrollHeightListener(consoleHeightAll, consoleScrollPaneAll, consoleTextFlowAll);
         setConsoleScrollHeightListener(consoleHeightError, consoleScrollPaneError, consoleTextFlowError);
         setConsoleScrollHeightListener(consoleHeightWarning, consoleScrollPaneWarning, consoleTextFlowWarning);
         setConsoleScrollHeightListener(consoleHeightMessage, consoleScrollPaneMessage, consoleTextFlowMessage);
-
-        Platform.runLater(() -> {
-            addWarnings(mon.getApi().getWarnings(AlertMessage.AST_STRUCTURE_WARNING));
-            addWarnings(mon.getApi().getWarnings(AlertMessage.INVOCATION_WARNING));
-            addWarnings(mon.getApi().getWarnings(AlertMessage.FILTER_WARNING));
-            addErrors(mon.getApi().getErrors(AlertMessage.AST_STRUCTURE_ERROR));
-            addErrors(mon.getApi().getErrors(AlertMessage.INVOCATION_ERROR));
-            addErrors(mon.getApi().getErrors(AlertMessage.FILTER_ERROR));
-        });
+        setConsoleScrollHeightListener(consoleHeightNewShit, consoleScrollPaneNewShit, consoleTextFlowNewShit);
     }
 
     private void setConsoleScrollHeightListener(DoubleProperty consoleHeight, ScrollPane consoleScrollPane, TextFlow textFlow){
@@ -106,36 +111,75 @@ public class ConsoleController implements Initializable, ControllerInterface {
     }
 
     public void addErrors(Collection<AlertMessage> errors){
-        addConsoleTexts("consoleTextError", ConsoleFilter.ERROR, errors);
+        addConsoleTexts(errors);
     }
 
     public void addWarnings(Collection<AlertMessage> warnings){
-        addConsoleTexts("consoleTextWarning", ConsoleFilter.WARNING, warnings);
+        addConsoleTexts(warnings);
     }
 
     public void addMessages(Collection<AlertMessage> messages){
-        addConsoleTexts("consoleTextMessage", ConsoleFilter.MESSAGE, messages);
+        addConsoleTexts(messages);
     }
 
     public void addMessage(String message) {
-        Platform.runLater(() -> addConsoleText(message, "consoleTextMessage", ConsoleFilter.MESSAGE));
+        Platform.runLater(() -> addMessage(new AlertMessage(AlertMessage.VIEW_MESSAGE, message)));
     }
     public void addError(String message){
-        Platform.runLater(() -> addConsoleText(message, "consoleTextError", ConsoleFilter.ERROR));
+        Platform.runLater(() -> addMessage(new AlertMessage(AlertMessage.VIEW_ERROR, message)));
     }
 
     public void addWarning(String message) {
-        Platform.runLater(() -> addConsoleText(message, "consoleTextWarning", ConsoleFilter.WARNING));
+        Platform.runLater(() -> addMessage(new AlertMessage(AlertMessage.VIEW_WARNING, message)));
     }
 
-    private void addConsoleTexts(String console, ConsoleFilter filter, Collection<AlertMessage> warnings){
+    private void addConsoleTexts(Collection<AlertMessage> messages){
         Platform.runLater(() -> {
-            for (AlertMessage warning : warnings)
-                addConsoleText(warning.type + ": " + warning.message, console, filter);
+            for (AlertMessage message : messages)
+                addMessage(message);
+                //addConsoleText(warning.type + ": " + warning.message, console, filter);
         });
     }
 
+    @Override
+    public void update(Observable o, Object arg) {
+        if(o != mon.getBrain())
+            return;
+        addMessage((AlertMessage)arg);
+    }
 
+    public void addMessage(AlertMessage message){
+        messages.add(message);
+        buildConsoleText();
+    }
+
+    private void buildConsoleText(){
+        consoleTextFlowNewShit.getChildren().clear();
+        for(AlertMessage message : messages){
+            if(isVisible(message)){
+                Text text1 = new Text(message.message + "\n");
+                text1.getStyleClass().add(getStyleString(message));
+                text1.getStyleClass().add("consoleText");
+                consoleTextFlowNewShit.getChildren().add(text1);
+                consoleScrollPaneNewShit.setVvalue(1.0);
+
+                //addConsoleText(message.message, getStyleString(message), ConsoleFilter.NEWSHIT);
+            }
+        }
+    }
+
+    private boolean isVisible(AlertMessage message){
+        return allBox.isSelected() ||
+                (errorsBox.isSelected() && message.isError()) ||
+                (warningsBox.isSelected() && message.isWarning()) ||
+                (messagesBox.isSelected() && message.isMessage());
+    }
+
+    private String getStyleString(AlertMessage message){
+        if(message.isError()) return "consoleTextError";
+        if(message.isWarning()) return "consoleTextWarning";
+        return "consoleTextMessage";
+    }
 
     /**
      * used by the public methods addMessage, addError, addWarning
@@ -172,6 +216,8 @@ public class ConsoleController implements Initializable, ControllerInterface {
                 return consoleTextFlowError;
             case WARNING:
                 return consoleTextFlowWarning;
+            case NEWSHIT:
+                return consoleTextFlowNewShit;
             default:
                 return consoleTextFlowAll;
         }

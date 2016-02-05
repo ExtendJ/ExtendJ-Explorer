@@ -57,8 +57,8 @@ public class NodeData {
      * @param e
      */
     private void addInvocationErrors(ASTBrain api, Throwable e, Method m){
-        String message = String.format("While computing %s in node %s. Cause : %s", m.getName(), nodeObject, e.getCause() != null ? e.getCause().toString() : e.getMessage());
-        api.putError(AlertMessage.INVOCATION_ERROR, message);
+        String message = String.format("While computing %s in node %s. Cause : %s", m.getName(), node.node, e.getCause() != null ? e.getCause().toString() : e.getMessage());
+        api.putMessage(AlertMessage.INVOCATION_ERROR, message);
         //e.printStackTrace();
     }
 
@@ -73,14 +73,14 @@ public class NodeData {
         Object[] params = par;
         Method method = nodeInfo.getMethod();
         if ((par != null && par.length != method.getParameterCount()) || (par == null && method.getParameterCount() != 0)) {
-            api.putError(AlertMessage.INVOCATION_ERROR, "Wrong number of arguments for the method: " + method);
+            api.putMessage(AlertMessage.INVOCATION_ERROR, "Wrong number of arguments for the method: " + method);
             return null;
         }
         if(params == null)
             params = new Object[method.getParameterCount()];
 
         if(!nodeInfo.isAttribute()){
-            api.putError(AlertMessage.INVOCATION_ERROR, "Can only do compute on attributes");
+            api.putMessage(AlertMessage.INVOCATION_ERROR, "Can only do compute on attributes");
             return  null;
         }
 
@@ -222,6 +222,7 @@ public class NodeData {
         }
     }
 
+
     //HERE BE DRAGONS, this code is here for shits and giggles
     public void addCachedValues(ASTBrain api, Method m, Attribute attribute){
         if(attribute == null)
@@ -246,7 +247,7 @@ public class NodeData {
                     values.put(attr.getValue(), e.getKey());
             }
         }catch (ClassCastException e){
-            api.putError(AlertMessage.INVOCATION_ERROR, e.getMessage());
+            api.putMessage(AlertMessage.INVOCATION_ERROR, e.getMessage());
         }
         ArrayList<Node> nodes = new ArrayList<>();
         for (Map.Entry<Object, Method> e : values.entrySet()) {

@@ -91,7 +91,7 @@ public class FilterConfig {
                         "}\n\t" +
                         "*/\n" +
                         "}");
-                api.putWarning(AlertMessage.FILTER_WARNING, "No filter file found. One was created at: " + fullFilePath);
+                api.putMessage(AlertMessage.FILTER_WARNING, "No filter file found. One was created at: " + fullFilePath);
                 writer.close();
             }
             // create the scanner
@@ -106,11 +106,11 @@ public class FilterConfig {
                     String error = "";
                     error += "Errors: ";
                     if(tmpFilter.errors().size() > 1 )
-                        api.putError(AlertMessage.FILTER_ERROR, "Multiple errors: ");
+                        api.putMessage(AlertMessage.FILTER_ERROR, "Multiple errors: ");
                     else
-                        api.putError(AlertMessage.FILTER_ERROR, "");
+                        api.putMessage(AlertMessage.FILTER_ERROR, "");
                     for (ErrorMessage e: tmpFilter.errors()) {
-                        api.putError(AlertMessage.FILTER_ERROR, e.toString());
+                        api.putMessage(AlertMessage.FILTER_ERROR, e.toString());
                         error += "\n " + e;
                     }
                     System.err.println(error);
@@ -120,28 +120,28 @@ public class FilterConfig {
 
                 configs = tmpFilter;
             } catch (IOException e) {
-                api.putError(AlertMessage.FILTER_ERROR, "IOException when reading filter file");
+                api.putMessage(AlertMessage.FILTER_ERROR, "IOException when reading filter file");
                 e.printStackTrace(System.err);
                 return false;
             } catch (ConfigParser.SyntaxError e) {
-                api.putError(AlertMessage.FILTER_ERROR, e.getMessage());
+                api.putMessage(AlertMessage.FILTER_ERROR, e.getMessage());
                 return false;
             }catch (Exception e) {
-                api.putError(AlertMessage.FILTER_ERROR, "Exception when reading filter file: " + e.toString());
+                api.putMessage(AlertMessage.FILTER_ERROR, "Exception when reading filter file: " + e.toString());
                 e.printStackTrace();
                 return false;
             }
         }catch (FileNotFoundException e) {
             System.out.println("filter full path thing: " + fullFilePath);
             String errorText = "Could not create a filter file! Maybe this program does not have writing rights to: " + fullFilePath+ "?";
-            api.putError(AlertMessage.FILTER_ERROR, errorText);
+            api.putMessage(AlertMessage.FILTER_ERROR, errorText);
             System.out.println(errorText);
             e.printStackTrace();
             return false;
         }catch (UnsupportedEncodingException e) {
             String errorText = "Could not create a filter file! Maybe this program does not have writing rights to: " + fullFilePath+ "?";
             e.printStackTrace();
-            api.putError(AlertMessage.FILTER_ERROR, errorText);
+            api.putMessage(AlertMessage.FILTER_ERROR, errorText);
         }
         return true;
     }
@@ -162,11 +162,11 @@ public class FilterConfig {
             writer.print(text);
             writer.close();
         } catch (FileNotFoundException e) {
-            api.putError(AlertMessage.FILTER_ERROR, "File not found when writing to filter file");
+            api.putMessage(AlertMessage.FILTER_ERROR, "File not found when writing to filter file");
             e.printStackTrace();
             noError = false;
         } catch (UnsupportedEncodingException e) {
-            api.putError(AlertMessage.FILTER_ERROR, "Unsupported encoding exception");
+            api.putMessage(AlertMessage.FILTER_ERROR, "Unsupported encoding exception");
             e.printStackTrace();
             noError = false;
         }
@@ -184,7 +184,7 @@ public class FilterConfig {
             }
         }catch(Exception e){
             e.printStackTrace();
-            api.putError(AlertMessage.FILTER_ERROR, "Could not delete or remove new or old filter file. Permission problem?");
+            api.putMessage(AlertMessage.FILTER_ERROR, "Could not delete or remove new or old filter file. Permission problem?");
         }
         return noError;
     }

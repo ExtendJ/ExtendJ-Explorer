@@ -33,7 +33,7 @@
                 </TabPane>
             </VBox>
             <!-- Middle window -->
-            <VBox VBox.vgrow="ALWAYS">
+            <VBox >
                 <SplitPane orientation="VERTICAL" dividerPositions="0.8" fx:id="consoleAndGraphSplitPane">
                     <VBox>
                         <TabPane tabClosingPolicy="UNAVAILABLE" fx:id="astViewTabs">

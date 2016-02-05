@@ -69,6 +69,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     @FXML private TextFlow nodeNameLabel;
     @FXML private Label attributeInfoLabel;
+    @FXML private Label objectInheritanceLabel;
+    @FXML private Label attributeLabel;
 
     @FXML private VBox clickedNodeInfoPane;
     @FXML private VBox nodeInfoView;
@@ -78,7 +80,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     public void init(Monitor mon){
         this.mon = mon;
         if(mon.getRootNode() != null)
-            formatter = new TextFormatter(mon.getApi().getRoot().node.getClass());
+            formatter = new TextFormatter(mon.getBrain().getRoot().node.getClass());
     }
 
     /**
@@ -151,13 +153,10 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      * @return
      */
     private boolean printToConsole(Object value){
-        if(mon.getApi().containsError(AlertMessage.INVOCATION_ERROR)) {
-            mon.getController().addErrors(mon.getApi().getErrors(AlertMessage.INVOCATION_ERROR));
-            mon.getController().addWarnings(mon.getApi().getWarnings(AlertMessage.INVOCATION_WARNING));
+        if(mon.getBrain().containsError(AlertMessage.INVOCATION_ERROR)) {
             mon.getController().addMessage("Computation unsuccessful");
             return false;
         }
-        mon.getController().addWarnings(mon.getApi().getWarnings(AlertMessage.INVOCATION_WARNING));
         mon.getController().addMessage("Computation successful : " + value);
         return true;
     }
@@ -181,6 +180,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     @Override
     public void nodeSelected(GenericTreeNode node) {
         if(node.isNode()) {
+            objectInheritanceLabel.setText("Object inheritance");
+            attributeLabel.setText("Attributes");
             showThisInAttributeTab(nodeInfoView);
             setAttributes();
         }else{
@@ -210,6 +211,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             if(attributeTableView.getRoot() != null && attributeTableView.getRoot().getChildren() != null) {
                 attributeTableView.getRoot().getChildren().clear();
                 attributeInfoTableView.getItems().clear();
+                objectInheritanceLabel.setText("");
+                attributeLabel.setText("");
             }
             clusterInfoNumberLabel.setText("");
             if(clusterInfoTableView != null){
@@ -218,7 +221,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             return;
         }
 
-        LinkedList list = new LinkedList(mon.getApi().getInheritanceChain(node.getNode().simpleNameClass));
+        LinkedList list = new LinkedList(mon.getBrain().getInheritanceChain(node.getNode().simpleNameClass));
         Iterator<Class> it = list.descendingIterator();
         Text parent = null;
         String indent = "....";
@@ -250,9 +253,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     public void setAttributeList(TreeNode node, boolean compute){
         Node n = node.getNode();
         if(compute) {
-            mon.getApi().compute(n);
-            if(mon.getApi().containsError(AlertMessage.INVOCATION_ERROR))
-                mon.getController().addErrors(mon.getApi().getErrors(AlertMessage.INVOCATION_ERROR));
+            mon.getBrain().compute(n);
             attributeTableView.getSelectionModel().clearSelection();
         }
 
@@ -333,7 +334,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     public void changed(ObservableValue<? extends TreeItem<NodeInfoView>> observable, TreeItem<NodeInfoView> oldValue, TreeItem<NodeInfoView> newValue) {
         mon.clearSelectedParameterNodes();
         if(oldValue != null && oldValue.getValue() != null)
-            mon.getApi().getNodeReferencesAndHighlightThem(oldValue.getValue().getValue(), false);
+            mon.getBrain().getNodeReferencesAndHighlightThem(oldValue.getValue().getValue(), false);
 
         if(newValue != null) {
             NodeInfoView infoHolder = newValue.getValue();
@@ -346,7 +347,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
             if(infoHolder.isParameter()){
                 for(Object param : ((NodeInfoParameter)infoHolder).getParams()){
-                    GenericTreeNode tmp = mon.getApi().getTreeNode(param);
+                    GenericTreeNode tmp = mon.getBrain().getTreeNode(param);
                     if(tmp != null)
                         mon.addSelectedParameterNodes(tmp);
                 }
@@ -371,11 +372,11 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      */
     private void setAttributeInfo(NodeInfo info, Object value){
         if(info == null ) {
-            attributeInfoLabel.setText("asd");
+            attributeInfoLabel.setText("");
             attributeInfoTableView.getItems().clear();
             return;
         }
-        attributeInfoLabel.setText("penisar:");
+        attributeInfoLabel.setText("Information about selected attribute");
         attributeInfoTableView.setItems(FXCollections.observableArrayList(AttributeInfo.toArray(info.getInfo(value))));
     }
 
@@ -386,7 +387,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     public void setReference(Object value){
         ArrayList<GenericTreeNode> newRefs = null;
         if(value != null)
-            newRefs = mon.getApi().getNodeReferencesAndHighlightThem(value, true);
+            newRefs = mon.getBrain().getNodeReferencesAndHighlightThem(value, true);
         mon.getGraphView().setReferenceEdges(newRefs, mon.getSelectedNode());
     }
 
@@ -417,7 +418,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
         NodeInfo info = selectedInfo.getNodeInfo();
         if(info.isNTA() && !info.isParametrized()){ //Handle the non-parametrized NTA:s
-            Object obj = mon.getApi().compute(node.getNode(), info);
+            Object obj = mon.getBrain().compute(node.getNode(), info);
             setAttributeList(node, false);
             if(printToConsole(obj))
                 mon.getController().updateGUI();
@@ -438,7 +439,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 return;
 
             NodeInfo dialogInfo = dialog.getInfo();
-            Object value = mon.getApi().compute(dialog.getTreeNode().getNode(), dialogInfo, result);
+            Object value = mon.getBrain().compute(dialog.getTreeNode().getNode(), dialog.getInfo(), result);
             printToConsole(value);
             if(info.isNTA())
                 mon.getController().updateGUI();
@@ -475,7 +476,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     }
 
     public void onNewAPI() {
-        formatter = new TextFormatter(mon.getApi().getRoot().node.getClass());
+        formatter = new TextFormatter(mon.getBrain().getRoot().node.getClass());
         setAttributes();
     }
 

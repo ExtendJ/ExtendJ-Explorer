@@ -28,12 +28,18 @@ public class DrAST {
     private String filterPath;
     private boolean done;
 	private boolean listRoot;
-	private boolean holderAPI;
+	private boolean noAstData;
+
+	public DrAST(){
+		done = false;
+		noAstData = true;
+	}
 	
 	public DrAST(Object root){
         this.root = root;
 		filterPath = DEFAULT_FILTER_NAME;
         done = false;
+		noAstData = false;
 	}
 
 	public DrAST(Object root, boolean listRoot){
@@ -41,11 +47,7 @@ public class DrAST {
 		filterPath = DEFAULT_FILTER_NAME;
 		done = false;
 		this.listRoot = listRoot;
-	}
-
-	public DrAST(){
-		done = false;
-		holderAPI = true;
+		noAstData = false;
 	}
 
     public boolean hasRun(){
@@ -62,7 +64,7 @@ public class DrAST {
      * run() generates the AST
      */
 	public void run(){
-        api = holderAPI ? new ASTBrain() : new ASTBrain(root, filterPath, listRoot);
+        api = noAstData ? new ASTBrain() : new ASTBrain(root, filterPath, listRoot);
         done = true;
 	}
 

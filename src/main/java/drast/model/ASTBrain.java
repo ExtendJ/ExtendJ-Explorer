@@ -1,5 +1,6 @@
 package drast.model;
 
+import configAST.Bool;
 import drast.model.filteredtree.*;
 import drast.model.nodeinfo.NodeInfo;
 import javafx.util.Pair;
@@ -16,7 +17,7 @@ import java.util.*;
  * This file takes the root Object of the JastAdd AST and travers the tree.
  * Each node in the filtered AST is a sub class of the GenericTreeNode.
  */
-public class ASTBrain {
+public class ASTBrain extends Observable{
 
     public static final String VERSION = "alphabuild-0.3.1";
 
@@ -35,11 +36,10 @@ public class ASTBrain {
     private HashMap<Node, HashSet<Node>> computedNTAs; //This might be a temporary solution,
     private HashSet<Object> ASTObjects;
     private HashSet<Object> ASTNTAObjects;
-    private HashMap<String, ArrayList<AlertMessage>> errors;
-    private HashMap<String, ArrayList<AlertMessage>> warnings;
-    private HashMap<String, ArrayList<AlertMessage>> messages;
     private ArrayList<NodeReference> displayedReferences;
+    private HashMap<Integer, Boolean> typeErrorTracker;
     private String directoryPath;
+    private boolean error;
 
     private int normalNodes = 0;
     private int clusterNodes = 0;
@@ -56,9 +56,6 @@ public class ASTBrain {
         inheritedTypes = new HashMap<>();
         directParents = new HashMap<>();
         directChildren = new HashMap<>();
-        errors = new HashMap<>();
-        warnings = new HashMap<>();
-        messages = new HashMap<>();
         computedNTAs = new HashMap<>();
         ASTObjects = new HashSet<>();
         ASTNTAObjects = new HashSet<>();
@@ -67,8 +64,13 @@ public class ASTBrain {
         NTAMethods = new HashMap<>();
         methods = new HashMap<>();
         methodCacheField = new HashMap<>();
+        typeErrorTracker = new HashMap<>();
+
+        // new Node will recreate the AST and be the low level data structure of this program.
         tree = new Node(root, this, listRoot);
+
         this.filteredTree = null;
+        // Here we use our recreated tree to build our filtered tree
         filterConfig = new FilterConfig(this, filterDir);
         createFilteredTree(this.tree, true);
     }
@@ -87,19 +89,16 @@ public class ASTBrain {
     public String getFilterFilePath(){return directoryPath; }
     public String getDirectoryPath(){return directoryPath;}
 
-    public boolean containsError(String type){ return errors.containsKey(type) && errors.get(type).size() > 0; }
+    public boolean containsError(int type){ return typeErrorTracker.containsKey(type) && typeErrorTracker.get(type); }
 
-    public ArrayList<AlertMessage> getMessages(String type){ return getMessageLine(messages, type); }
-
-    public ArrayList<AlertMessage> getWarnings(String type){ return getMessageLine(warnings, type); }
-
-    public ArrayList<AlertMessage> getErrors(String type){ return getMessageLine(errors, type); }
-
-    public void putMessage(String type, String message){ putMessageLine(messages, type, message); }
-
-    public void putWarning(String type, String message){ putMessageLine(warnings, type, message); }
-
-    public void putError(String type, String message){ putMessageLine(errors, type, message); }
+    public void putMessage(int type, String message){
+        AlertMessage newMessage = new AlertMessage(type, message);
+        if(newMessage.isError()){
+            typeErrorTracker.put(type, true);
+        }
+        setChanged();
+        notifyObservers(newMessage);
+    }
 
     public int getClusteredASTSize(){ return normalNodes; }
 
@@ -115,7 +114,7 @@ public class ASTBrain {
      * @param type
      * @return
      */
-    private ArrayList<AlertMessage> getMessageLine(HashMap<String, ArrayList<AlertMessage>> map, String type){
+    private ArrayList<AlertMessage> getMessageLine(HashMap<Integer, ArrayList<AlertMessage>> map, int type){
         if(!map.containsKey(type)) {
             map.put(type, new ArrayList<>());
             return map.get(type);
@@ -123,12 +122,6 @@ public class ASTBrain {
         ArrayList<AlertMessage> ret = map.get(type);
         map.put(type, new ArrayList<>());
         return ret;
-    }
-
-    private void putMessageLine(HashMap<String, ArrayList<AlertMessage>> map, String type, String message){
-        if(!map.containsKey(type))
-            map.put(type, new ArrayList<>());
-        map.get(type).add(new AlertMessage(type,message));
     }
 
     /**
@@ -426,7 +419,7 @@ public class ASTBrain {
             buildFilteredSubTree(astNode, (TreeNode) treeNodes.get(node.node));
         else {
             String message = String.format("Computed NTA successfully, but the configuration %s is either not set or off, so the NTA will not be shown.", FilterConfig.NTA_COMPUTED);
-            putWarning(AlertMessage.INVOCATION_WARNING, message);
+            putMessage(AlertMessage.INVOCATION_WARNING, message);
         }
         return obj;
     }

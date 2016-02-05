@@ -2,34 +2,50 @@
 
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Tooltip?>
 
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.text.TextFlow?>
-<TabPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="drast.views.gui.controllers.ConsoleController"
-        tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" fx:id="consoleTabs">
-    <tabs>
-        <Tab text="All" fx:id="consoleTabAll">
-            <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneAll">
-                <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowAll"/>
-            </ScrollPane>
-        </Tab>
-        <Tab text="Warnings" fx:id="consoleTabWarning">
-            <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneWarning">
-                <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowWarning"/>
-            </ScrollPane>
-        </Tab>
-        <Tab text="Errors" fx:id="consoleTabError">
-            <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneError">
-                <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowError"/>
-            </ScrollPane>
-        </Tab>
-        <Tab text="Messages" fx:id="consoleTabMessage">
-            <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneMessage">
-                <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowMessage"/>
-            </ScrollPane>
-        </Tab>
-    </tabs>
-</TabPane>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.CheckBox?>
+
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="drast.views.gui.controllers.ConsoleController"
+      VBox.vgrow="ALWAYS">
+    <HBox styleClass="paneParent">
+        <CheckBox fx:id="allBox" text="All" selected="true" />
+        <CheckBox fx:id="messagesBox" text="Messages" selected="true" />
+        <CheckBox fx:id="warningsBox" text="Warnings" selected="true" />
+        <CheckBox fx:id="errorsBox" text="Errors" selected="true" />
+    </HBox>
+
+    <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" fx:id="consoleTabs">
+        <tabs>
+            <Tab text="New Shit" fx:id="consoleTabNewShit">
+
+                <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneNewShit">
+                    <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowNewShit"/>
+                </ScrollPane>
+            </Tab>
+            <Tab text="All" fx:id="consoleTabAll">
+                <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneAll">
+                    <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowAll"/>
+                </ScrollPane>
+            </Tab>
+            <Tab text="Warnings" fx:id="consoleTabWarning">
+                <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneWarning">
+                    <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowWarning"/>
+                </ScrollPane>
+            </Tab>
+            <Tab text="Errors" fx:id="consoleTabError">
+                <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneError">
+                    <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowError"/>
+                </ScrollPane>
+            </Tab>
+            <Tab text="Messages" fx:id="consoleTabMessage">
+                <ScrollPane styleClass="consoleScrollPane" fx:id="consoleScrollPaneMessage">
+                    <TextFlow styleClass="consoleTextFlow" fx:id="consoleTextFlowMessage"/>
+                </ScrollPane>
+            </Tab>
+        </tabs>
+    </TabPane>
+</VBox>
