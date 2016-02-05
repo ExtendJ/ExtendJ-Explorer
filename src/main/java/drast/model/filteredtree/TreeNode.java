@@ -4,9 +4,8 @@ import configAST.Color;
 import configAST.Str;
 import configAST.Value;
 import drast.model.ASTBrain;
-import drast.model.Config;
+import drast.model.FilterConfig;
 import drast.model.Node;
-import drast.model.nodeinfo.NodeInfo;
 
 import java.util.*;
 
@@ -24,10 +23,10 @@ public class TreeNode extends GenericTreeNode {
     private HashMap<NodeReference, NodeReference> inwardReferences;
     private HashSet<NodeReference> allRefs;
 
-    public TreeNode(Node data, GenericTreeNode parent, Config filter){
+    public TreeNode(Node data, GenericTreeNode parent){
         super(parent);
         node = data;
-        enabled = setEnabled(filter);
+        enabled = true;
         allRefs = new HashSet<>();
         setExpandable(true);
     }
@@ -37,34 +36,11 @@ public class TreeNode extends GenericTreeNode {
      * @return
      */
     public Node getNode(){ return node; }
-    /**
-     * Sets the flag which determine that if the node is filtered of not.
-     * @param enabled
-     */
 
-    public void setEnabled(boolean enabled){ this.enabled = enabled; }
-
-    /**
-     * Check with the filter if the node is filtered.
-     * @param filter
-     * @return
-     */
-    private boolean setEnabled(Config filter){
-        return filter.isEnabled(node);
-    }
-
-    /**
-     * Check if the node is filtered
-     * @return
-     */
-    public boolean isEnabled(){ return enabled; }
-
-    /**
-     * Add a child node, and set its edge
-     * @param child
-     */
     @Override
-    public void addChild(GenericTreeNode child){ children.add(child); }
+    public void addChild(Node node, GenericTreeNode child){
+        children.add(child);
+    }
 
     @Override
     public boolean isNTANode(){ return node.isNTA(); }
@@ -98,7 +74,7 @@ public class TreeNode extends GenericTreeNode {
      * @param filter
      */
     @Override
-    public void setStyles(Config filter) {
+    public void setStyles(FilterConfig filter) {
         if(node.isList() || node.isOpt()) {
             styles.put("node-color", new Color("#dddddd"));
             styles.put("node-shape", new Str("\"rectangle\""));
@@ -124,6 +100,7 @@ public class TreeNode extends GenericTreeNode {
      * @param set
      * @param api
      */
+    @Override
     public void setDisplayedAttributes(ArrayList<NodeReference> allReferences, HashSet<String> set , ASTBrain api){
         if(set.size() == 0)
             return;

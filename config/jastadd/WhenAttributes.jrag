@@ -1,12 +1,25 @@
 
 aspect WhenAttributes{
-    syn ArrayList<Expr> DebuggerConfig.getFilterExpressions(drast.model.Node node){
+
+    syn ArrayList<Expr> DebuggerConfig.getFilterExpressions(Class nodeClass){
         ArrayList<Expr> exprs = new ArrayList<Expr>();
-        boolean found = getFilterExpressions(node.node.getClass(), exprs, false);
+        boolean found = false;
+        Class clazz = nodeClass;
+        while(clazz != null){
+            for(NodeFilter filter : nodeFilters()){
+                if(filter.getClassName().equals(clazz.getSimpleName())){
+                    exprs.addAll(filter.whenExpressions());
+                    found = true;
+                    break;
+                }
+            }
+            clazz = clazz.getSuperclass();
+        }
         return found ? exprs : null;
     }
 
-    private boolean DebuggerConfig.getFilterExpressions(Class nodeClass, ArrayList<Expr> exprs, boolean found){
+/*
+    syn boolean DebuggerConfig.getFilterExpressions(Class nodeClass, ArrayList<Expr> exprs, boolean found){
         Class clazz = nodeClass;
         while(clazz != null){
             for(NodeFilter filter : nodeFilters()){
@@ -20,7 +33,7 @@ aspect WhenAttributes{
         }
         return found;
     }
-
+*/
     // ArrayList with all expressions for each NodeFilter
     coll ArrayList<Expr> NodeFilter.whenExpressions() [new ArrayList<Expr> ()] with addAll root DebuggerConfig;
     Node contributes getWhenExprs()

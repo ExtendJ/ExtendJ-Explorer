@@ -14,7 +14,7 @@ import java.util.HashSet;
  * It can read and parse the file with the configuration
  */
 
-public class Config{
+public class FilterConfig {
     private DebuggerConfig configs; //The top node of configurations
     private boolean noError;
     private ASTBrain api; //Reference to the ASTAPI, mainly used to contribute errors
@@ -28,19 +28,21 @@ public class Config{
     public static final String NTA_COMPUTED = "NTA-computed";
 
     private HashMap<String, ArrayList<Expr>> filterCache;
+    private HashMap<String, ArrayList<Expr>> subTreeCache;
     private HashMap<String, HashMap<String, Value>> styleCache;
     private HashMap<String, HashSet<String>> showCache;
     private HashMap<String, Value> configsCache;
 
     private String filterDir; //Directory of the filter file.
 
-    public Config(ASTBrain api, String filterPath){
+    public FilterConfig(ASTBrain api, String filterPath){
         File file = new File(filterPath);
         filterFileName = file.getName();
         filterTmpFileName = "tmp_" + filterFileName;
         this.api = api;
         this.filterDir = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(file.separator)) + file.separator;
         filterCache = new HashMap<>();
+        subTreeCache = new HashMap<>();
         styleCache = new HashMap<>();
         showCache = new HashMap<>();
         configsCache = new HashMap<>();
@@ -189,6 +191,7 @@ public class Config{
 
     private void clearCaches(){
         filterCache.clear();
+        subTreeCache.clear();
         styleCache.clear();
         showCache.clear();
         configsCache.clear();
@@ -229,7 +232,7 @@ public class Config{
      */
 
     private Value getConfigValue(String name) {
-        Value v = null;
+        Value v;
         if(configs == null)
             return null;
         if (configsCache.containsKey(name))
@@ -249,10 +252,8 @@ public class Config{
      * @return true if not filtered.
      */
     public boolean isEnabled(Node node){
-        if(configs == null || node.isNull()){
-            //api.putWarning(ASTAPI.FILTER_WARNING, "Filter is null! Will enable all nodes.");
+        if(configs == null || node.isNull())
             return false;
-        }
 
         if(!configs.getConfigs().hasUse())
             return true;
@@ -260,15 +261,37 @@ public class Config{
         if(filterCache.containsKey(node.simpleNameClass))
             exprs = filterCache.get(node.simpleNameClass);
         else{
-            exprs = configs.getFilterExpressions(node);
+            exprs = configs.getFilterExpressions(node.node.getClass());
             filterCache.put(node.simpleNameClass, exprs);
         }
 
         if(exprs == null)
             return false;
+        return getValidateExprs(exprs, node);
+    }
 
+    public boolean hasSubTree(Node node){
+        if(configs == null || node.isNull())
+            return false;
+
+        if(!configs.getConfigs().hasUse())
+            return true;
+
+        ArrayList<Expr> exprs;
+        if(subTreeCache.containsKey(node.simpleNameClass))
+            exprs = subTreeCache.get(node.simpleNameClass);
+        else{
+            exprs = configs.getSubTreeExpressions(node.node.getClass());
+            subTreeCache.put(node.simpleNameClass, exprs);
+        }
+
+        if(exprs == null)
+            return false;
+        return getValidateExprs(exprs, node);
+    }
+
+    private boolean getValidateExprs(ArrayList<Expr> exprs, Node node){
         boolean success = true;
-
         for(Expr expr : exprs){
             String decl = expr.getDecl().getID();
 
@@ -311,7 +334,7 @@ public class Config{
         if(styleCache.containsKey(node.simpleNameClass))
             return styleCache.get(node.simpleNameClass);
 
-        map = configs.getNodeStyles(node);
+        map = configs.getNodeStyles(node.node.getClass());
         styleCache.put(node.simpleNameClass, map);
         return map;
     }
@@ -329,7 +352,7 @@ public class Config{
         if(showCache.containsKey(node.simpleNameClass))
             show = showCache.get(node.simpleNameClass);
         else{
-            show = configs.getShow(node);
+            show = configs.getShow(node.node.getClass());
             showCache.put(node.simpleNameClass, show);
         }
         return show;

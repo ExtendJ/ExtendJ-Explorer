@@ -26,7 +26,7 @@ public class ASTBrain {
 
     private Node tree;
     private GenericTreeNode filteredTree;
-    private Config filterConfig;
+    private FilterConfig filterConfig;
     private HashSet<Class> allTypes;
     private HashMap<String, LinkedHashSet<Class>> inheritedTypes;
     private HashMap<Class, HashSet<Class>> directParents;
@@ -62,15 +62,15 @@ public class ASTBrain {
         computedNTAs = new HashMap<>();
         ASTObjects = new HashSet<>();
         ASTNTAObjects = new HashSet<>();
-        if(isAPIHolder)
+        if(isAPIHolder) //No root node, will stop here
             return;
         NTAMethods = new HashMap<>();
         methods = new HashMap<>();
         methodCacheField = new HashMap<>();
         tree = new Node(root, this, listRoot);
         this.filteredTree = null;
-        filterConfig = new Config(this, filterDir);
-        traversTree(this.tree, true);
+        filterConfig = new FilterConfig(this, filterDir);
+        createFilteredTree(this.tree, true);
     }
 
     protected ArrayList<Pair<Method, Annotation>> getMethods(Class clazz){ return methods.get(clazz); }
@@ -103,7 +103,7 @@ public class ASTBrain {
 
     public int getClusteredASTSize(){ return normalNodes; }
 
-    public int getASTSize(){ return normalNodes + clusterNodes; }
+    public int getASTSize(){ return ASTObjects.size() + ASTNTAObjects.size(); }
 
     public String getAppliedFilters(){
         return filterConfig != null ? filterConfig.getEnabledFilterNames() : null;
@@ -176,104 +176,94 @@ public class ASTBrain {
      * @param node
      * @param firstTime
      */
-    private void traversTree(Node node, boolean firstTime){
+    private void createFilteredTree(Node node, boolean firstTime){
         normalNodes = 0;
-        clusterNodes = 0;
         ArrayList<NodeReference> futureReferences = new ArrayList<>();
         long time = System.currentTimeMillis();
-        traversTree(node, null, null, firstTime, filterConfig.getInt(Config.NTA_DEPTH), futureReferences);
-        // Add reference edges that is defined in the filter language
-        addReferences(futureReferences, false);
+        createFilteredTree(node, null, firstTime, filterConfig.getInt(FilterConfig.NTA_DEPTH), futureReferences);
+        addReferences(futureReferences, false); // Add reference edges that is defined in the filter language
         System.out.println("Time for AST filter : " + (System.currentTimeMillis() - time));
     }
 
-    private void traversTree(Node node, GenericTreeNode parent, TreeCluster cluster, boolean firstTime, int depth, ArrayList<NodeReference> futureReferences){
-        if(node == null) {
-            return;
-        }
-        GenericTreeNode addToParent = null;
-        TreeNode fNode = new TreeNode(node, parent, filterConfig);
-        fNode.setStyles(filterConfig);
-        treeNodes.put(node.node, fNode);
-        TreeCluster tmpCluster = cluster;
+    private GenericTreeNode getNode(Node node, GenericTreeNode parent){
+        if(node == null)
+            return null;
 
-        if(node.isNull()){
-            fNode.setEnabled(true);
-            if(parent != null)
-                parent.addChild(fNode);
-            else
-                filteredTree = fNode;
-            return;
+        GenericTreeNode gNode;
+        boolean enabled = filterConfig.isEnabled(node);
+        if(enabled) {
+            normalNodes++;
+            gNode = new TreeNode(node, parent);
+            gNode.setStyles(filterConfig);
+        }else if (node.isNull()) {
+            gNode = new TreeNode(node, parent);
+        }else if(parent != null && parent.isCluster()) {
+            gNode = parent;
+        }else {
+            gNode = new TreeCluster(node, parent);
+            gNode.setStyles(filterConfig);
         }
+
+        return gNode;
+
+    }
+
+    private void createFilteredTree(Node node, GenericTreeNode parent, boolean firstTime, int depth, ArrayList<NodeReference> futureReferences){
+        if(node == null)
+            return;
+
+        GenericTreeNode gNode = getNode(node, parent);
+        treeNodes.put(node.node, gNode);
+
+        if(parent != null)
+            parent.addChild(node, gNode);
+        else
+            filteredTree = gNode;
+
+        if(gNode.isNullNode())
+            return;
 
         if(firstTime) {
             addTypeInheritance(node);
             setDirectParentsAndChildren(node);
         }
 
-        // if the class is not filtered
-        if(fNode.isEnabled()){
-            // is this the root?
-            if(parent == null){
-                filteredTree = fNode;
-            }else{
-                // if the above node a cluster?
-                if(tmpCluster == null){
-                    addToParent = fNode;
-                }else{
-                    tmpCluster.addChild(fNode);
-                }
-            }
-            tmpCluster = null;
-        }else{
-            // first node in this cluster?
-            if(tmpCluster == null){
-                tmpCluster = new TreeCluster(fNode, parent);
-                tmpCluster.setStyles(filterConfig);
-                // is this cluster the root of the tree?
-                if(parent != null)
-                    addToParent = tmpCluster;
-            }else{
-                // add node to cluster but not to the filtered tree
-                addToParent = fNode;
-            }
-            if(parent == null) // first node in tree
-                filteredTree = tmpCluster;
-        }
-
         HashSet<String> displayedAttributes = filterConfig.getDisplayedAttributes(node);
+        addNTAs(node, gNode, depth, futureReferences, displayedAttributes);
+        gNode.setDisplayedAttributes(futureReferences, displayedAttributes, this);
 
-       // if(tmpCluster == null) //Only add NTAs if the node is not a Cluster
-        addNTAs(node, fNode, tmpCluster, depth, futureReferences, displayedAttributes);
-
-        fNode.setClusterReference(tmpCluster);
-
-        if(tmpCluster != null)
-            tmpCluster.addToTypeList(fNode);
-
-        // travers down the tree
         for(Node child : node.children)
-            traversTree(child, fNode, tmpCluster, firstTime, depth,futureReferences);
+            createFilteredTree(child, gNode, firstTime, depth, futureReferences);
 
-        if(tmpCluster == null)
-            normalNodes++;
-        else
-            clusterNodes++;
+        clusterClusters(gNode);
+    }
 
-
-        clusterClusters(fNode);
-
-        if(addToParent != null){
-            parent.addChild(addToParent);
+    /**
+     * Put child clusters together in a parent cluster if they have no children in the filtered tree
+     * @param gNode
+     */
+    private void clusterClusters(GenericTreeNode gNode){
+        if(gNode.isNode()) {
+            TreeClusterParent clusterParent = new TreeClusterParent(gNode);
+            clusterParent.setStyles(filterConfig);
+            // get all children cluster children that have no children
+            for (GenericTreeNode fChild : gNode.getChildren()) {
+                if (fChild.isCluster() && fChild.getChildren().size() == 0)
+                    clusterParent.addChild(null, fChild);
+            }
+            if(clusterParent.getClusters().size() > 0) {
+                for(GenericTreeNode cChild : clusterParent.getClusters()) {
+                    gNode.getChildren().remove(cChild);
+                }
+                gNode.addChild(gNode.getNode(), clusterParent);
+            }
         }
-
-        fNode.setDisplayedAttributes(futureReferences, displayedAttributes, this);
     }
 
     /**
      * Adds the NTA that should be visible to the filtered tree
      */
-    private void addNTAs(Node node, GenericTreeNode parent, TreeCluster cluster, int depth, ArrayList<NodeReference> futureReferences, HashSet<String> displayedAttributes){
+   private void addNTAs(Node node, GenericTreeNode parent, int depth, ArrayList<NodeReference> futureReferences, HashSet<String> displayedAttributes){
         // Create the nta nodes specified by the Configuration language, and traverse down the NTA:s
         if(depth > 0) {
             for (String s : displayedAttributes) {
@@ -285,15 +275,15 @@ public class ASTBrain {
                     node.showNTAChildren.put(s, ntaNode);
                     ASTNTAObjects.add(ntaNode.node);
                 }
-                traversTree(ntaNode, parent, cluster,  true, depth - 1, futureReferences);
+                createFilteredTree(ntaNode, parent, true, depth - 1, futureReferences);
             }
         }
 
         // travers down the tree for the Computed NTA:s
-        if(computedNTAs.containsKey(node) && filterConfig.getBoolean(Config.NTA_COMPUTED)){
+        if(computedNTAs.containsKey(node) && filterConfig.getBoolean(FilterConfig.NTA_COMPUTED)){
             for(Node child : computedNTAs.get(node)) {
                 if(!treeNodes.containsKey(child.node)) {
-                    traversTree(child, parent, cluster, true, 0, futureReferences);
+                    createFilteredTree(child, parent, true, 0, futureReferences);
                 }
             }
         }
@@ -302,30 +292,7 @@ public class ASTBrain {
                 continue;
             if(!ASTNTAObjects.contains(child.node))
                 ASTNTAObjects.add(child.node);
-            traversTree(child, parent, cluster, true, 0, futureReferences);
-        }
-    }
-
-
-    /**
-     * Put child clusters together in a parent cluster if they have no children in the filtered tree
-     * @param fNode
-     */
-    private void clusterClusters(TreeNode fNode){
-        if(fNode.isNode()) {
-            TreeClusterParent clusterParent = new TreeClusterParent(fNode);
-            clusterParent.setStyles(filterConfig);
-            // get all children cluster children that have no children
-            for (GenericTreeNode fChild : fNode.getChildren()) {
-                if (fChild.isCluster() && fChild.getChildren().size() == 0)
-                    clusterParent.addCluster((TreeCluster)fChild);
-            }
-            if(clusterParent.getClusters().size() > 0) {
-                for(GenericTreeNode cChild : clusterParent.getClusters()) {
-                    fNode.getChildren().remove(cChild);
-                }
-                fNode.addChild(clusterParent);
-            }
+            createFilteredTree(child, parent, true, 0, futureReferences);
         }
     }
 
@@ -367,7 +334,7 @@ public class ASTBrain {
             ASTNTAObjects.forEach(treeNodes::remove);
             clearDisplayedReferences();
             filteredTree = null;
-            traversTree(this.tree, false);
+            createFilteredTree(this.tree, false);
         }
         return res;
     }
@@ -378,11 +345,11 @@ public class ASTBrain {
     public void buildFilteredSubTree(Node node, TreeNode parent){
         ArrayList<NodeReference> futureReferences = new ArrayList<>();
         parent.setDisplayedAttributes(futureReferences, filterConfig.getDisplayedAttributes(node), this);
-        traversTree(node, parent, null, true, 0, displayedReferences);
+        createFilteredTree(node, parent, true, 0, displayedReferences);
         addReferences(futureReferences, true);
     }
 
-    public Config getfilterConfig(){ return filterConfig; }
+    public FilterConfig getfilterConfig(){ return filterConfig; }
     public GenericTreeNode getFilteredTree() { return filteredTree; }
 
     public LinkedHashSet<Class> getInheritanceChain(String simpleClassName){ return inheritedTypes.get(simpleClassName); }
@@ -405,7 +372,7 @@ public class ASTBrain {
     public void clearDisplayedReferences(){ displayedReferences.clear(); }
     public ArrayList<NodeReference> getDisplayedReferences(){ return displayedReferences; }
 
-    public ArrayList<GenericTreeNode> getNodeReferencesAndHighlightThem(Object value, boolean highlight){
+    public ArrayList<GenericTreeNode> getNodeReferencesAndHighlightThem(Object value, boolean highlight){ //Todo move this code to attributeController, this is GUI specific
         ArrayList<GenericTreeNode> nodes = new ArrayList<>();
         for(Object o : getNodeReferences(value)){
             if(isTreeNode(o))
@@ -455,10 +422,10 @@ public class ASTBrain {
             computedNTAs.put(node, new HashSet<>());
         computedNTAs.get(node).add(astNode);
         node.showNTAChildren.put(NodeInfo.getName(info.getMethod(), params), astNode);
-        if(filterConfig.getBoolean(Config.NTA_COMPUTED))
+        if(filterConfig.getBoolean(FilterConfig.NTA_COMPUTED))
             buildFilteredSubTree(astNode, (TreeNode) treeNodes.get(node.node));
         else {
-            String message = String.format("Computed NTA successfully, but the configuration %s is either not set or off, so the NTA will not be shown.", Config.NTA_COMPUTED);
+            String message = String.format("Computed NTA successfully, but the configuration %s is either not set or off, so the NTA will not be shown.", FilterConfig.NTA_COMPUTED);
             putWarning(AlertMessage.INVOCATION_WARNING, message);
         }
         return obj;

@@ -3,7 +3,8 @@ package drast.model.filteredtree;
 import configAST.Color;
 import configAST.Str;
 import configAST.Value;
-import drast.model.Config;
+import drast.model.ASTBrain;
+import drast.model.FilterConfig;
 import drast.model.Node;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public abstract class GenericTreeNode {
     protected HashMap<String, Value> styles;
     private boolean isExpandable;
 
-    public GenericTreeNode(GenericTreeNode parent){
+        public GenericTreeNode(GenericTreeNode parent){
         this.parent = parent;
         children = new ArrayList();
         styles = new HashMap<>();
@@ -50,9 +51,7 @@ public abstract class GenericTreeNode {
 
     public List<GenericTreeNode> getChildren(){ return children; }
 
-    public void addChild(GenericTreeNode child) {
-        children.add(child);
-    }
+    public abstract void addChild(Node node, GenericTreeNode child);
 
     /**
      * Sets a reference flag, someone has a reference to This node.
@@ -123,7 +122,7 @@ public abstract class GenericTreeNode {
      * Sets the style of the nodes
      * @return
      */
-    public abstract void setStyles(Config filter);
+    public abstract void setStyles(FilterConfig filter);
 
     /**
      * Returns a list of the node references pointing inwards
@@ -145,16 +144,18 @@ public abstract class GenericTreeNode {
 
     public abstract boolean addInWardNodeReference(NodeReference ref);
 
+    public abstract void setDisplayedAttributes(ArrayList<NodeReference> allReferences, HashSet<String> set , ASTBrain api);
+
     public HashMap<String, Value> getStyles(){ return styles; }
 
     /**
      * Returns the top cluster that this node is a part of, if it a "real" node it will return itself
      * @return
      */
-    public GenericTreeNode getClusterNode(){
+    public GenericTreeNode getTreeNode(){
         if(clusterRef == null)
             return this;
-        return clusterRef != null ? clusterRef.getClusterNode() : clusterRef;
+        return clusterRef != null ? clusterRef.getTreeNode() : clusterRef;
     }
 
     /**

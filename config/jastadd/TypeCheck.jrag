@@ -34,8 +34,10 @@ aspect TypeCheck{
 	eq Show.isShow() = true;
 
 	//Child- and Parent Of
+    syn boolean Expr.isShown() = false;
 	syn boolean Expr.isChildOf() = false;
 	syn boolean Expr.isParentOf() = false;
+    eq Shown.isShown() = true;
 	eq ChildOf.isChildOf() = true;
 	eq ParentOf.isParentOf() = true;
 

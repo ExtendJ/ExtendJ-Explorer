@@ -9,7 +9,6 @@ import java.util.ArrayList;
 public class NodeReference {
     private String label;
     private GenericTreeNode from;
-    private GenericTreeNode to;
     private ArrayList<GenericTreeNode> refList;
     private ArrayList<Object> futureRefList;
 

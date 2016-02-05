@@ -49,7 +49,7 @@ public class VertexPaintTransformer implements Transformer<GenericTreeNode,Paint
         if(fNode.isNTANode())
             return new Color(120, 160, 200);
         try{
-            return Color.decode( fNode.getStyles().get("node-color").getColor());
+            return Color.decode(fNode.getStyles().get("node-color").getColor());
         }catch (NumberFormatException e){
             e.printStackTrace();
             return new Color(200, 240, 230);

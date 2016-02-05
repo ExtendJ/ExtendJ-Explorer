@@ -2,9 +2,11 @@ package drast.model.filteredtree;
 
 import configAST.Color;
 import configAST.Str;
-import drast.model.Config;
+import drast.model.ASTBrain;
+import drast.model.FilterConfig;
 import drast.model.Node;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -24,6 +26,7 @@ public abstract  class GenericTreeCluster extends GenericTreeNode{
     }
 
     public void setNodeCount(int count){ nodeCount=count; }
+
     public void addToTypeList(GenericTreeNode node, String addToName){
         if(node.isNode()) {
             String name = node.getNode().simpleNameClass + addToName;
@@ -53,7 +56,7 @@ public abstract  class GenericTreeCluster extends GenericTreeNode{
     public String toTreeViewString(){return toString() + " " + getNodeCount(); }
 
     @Override
-    public void setStyles(Config filter) {
+    public void setStyles(FilterConfig filter) {
         if(isExpandable())
             styles.put("node-color", new Color("#DCDCaa"));
         else
@@ -73,6 +76,13 @@ public abstract  class GenericTreeCluster extends GenericTreeNode{
      */
     @Override
     public boolean isNTANode(){ return false; }
+
+    /**
+     * Clusters contains no references
+     * @return
+     */
+    @Override
+    public void setDisplayedAttributes(ArrayList<NodeReference> allReferences, HashSet<String> set , ASTBrain api){}
 
     /**
      * Clusters can't be nullNodes

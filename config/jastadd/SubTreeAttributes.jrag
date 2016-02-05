@@ -1,19 +1,28 @@
 
-aspect WhenAttributes{
+aspect subTreeAttributes{
 
-    syn ArrayList<Expr> DebuggerConfig.getSubTreeExpressions(drast.model.Node node){
+    syn ArrayList<Expr> DebuggerConfig.getSubTreeExpressions(Class nodeClass){
         ArrayList<Expr> exprs = new ArrayList<Expr>();
-        Class clazz = node.node.getClass();
+        boolean found = false, hasShown = false, addedWhen = false;
+        Class clazz = nodeClass;
         while(clazz != null){
             for(NodeFilter filter : nodeFilters()){
                 if(filter.getClassName().equals(clazz.getSimpleName())){
-                    exprs.addAll(filter.subTreeExpressions());
+                    for(Expr e : filter.subTreeExpressions()){
+                        if(e.isShown() && !hasShown)
+                            hasShown = true;
+                    }
+                    if(hasShown && !addedWhen){
+                        addedWhen = true;
+                        exprs.addAll(getFilterExpressions(clazz));
+                    }
+                    found = true;
                     break;
                 }
             }
             clazz = clazz.getSuperclass();
         }
-        return exprs;
+        return found ? exprs : null;
     }
 
     // ArrayList with all expressions for each NodeFilter

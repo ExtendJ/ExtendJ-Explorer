@@ -1,5 +1,7 @@
 package drast.model.filteredtree;
 
+import drast.model.Node;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,18 @@ public class TreeClusterParent extends GenericTreeCluster {
     }
 
     @Override
+    public void addChild(Node node, GenericTreeNode child) {
+        if(child.isCluster())
+            return;
+        TreeCluster cluster = (TreeCluster) child;
+        clusters.add(cluster);
+        cluster.clusterRef = this;
+        nodeCount += cluster.getNodeCount();
+        for(Map.Entry<String, Integer> e : cluster.typeList.entrySet())
+            typeList.put(e.getKey(),typeList.containsKey(e.getKey()) ? typeList.get(e.getKey()) + e.getValue() : e.getValue());
+    }
+
+    @Override
     public boolean isCluster() {
         return false;
     }
@@ -26,17 +40,8 @@ public class TreeClusterParent extends GenericTreeCluster {
         return true;
     }
 
-    public void addCluster(TreeCluster cluster){
-        clusters.add(cluster);
-        cluster.clusterRef = this;
-        nodeCount += cluster.getNodeCount();
-        for(Map.Entry<String, Integer> e : cluster.typeList.entrySet())
-            typeList.put(e.getKey(),typeList.containsKey(e.getKey()) ? typeList.get(e.getKey()) + e.getValue() : e.getValue());
-    }
-
     public List<TreeCluster> getClusters(){
         return clusters;
     }
-
 
 }

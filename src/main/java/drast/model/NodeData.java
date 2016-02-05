@@ -2,7 +2,6 @@ package drast.model;
 
 import drast.model.nodeinfo.Attribute;
 import drast.model.nodeinfo.NodeInfo;
-import drast.model.nodeinfo.NodeInfoHolder;
 import drast.model.nodeinfo.Token;
 
 import java.lang.annotation.Annotation;
@@ -10,7 +9,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * This class holds all information about the a node, all attribute values and tokens
@@ -203,7 +201,7 @@ public class NodeData {
             }
         }
         addCachedValues(api, m, attribute);
-        if(api.getfilterConfig().getBoolean(Config.DYNAMIC_VALUES)){
+        if(api.getfilterConfig().getBoolean(FilterConfig.DYNAMIC_VALUES)){
             invokeValue(attribute, api, m, params);
         }
         return attribute;

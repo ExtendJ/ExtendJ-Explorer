@@ -320,7 +320,7 @@ public class Controller implements Initializable {
         if(node == null)
             return;
         mon.setSelectedNode(node);
-        graphViewTabController.nodeSelected(node.getClusterNode());
+        graphViewTabController.nodeSelected(node.getTreeNode());
         if(mon.getSelectedInfo() != null)
             attributeTabController.setReference(mon.getSelectedInfo().getValue());
     }

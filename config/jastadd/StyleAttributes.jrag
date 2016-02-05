@@ -1,8 +1,22 @@
 aspect StyleAttributes{
 
-	syn HashMap<String, Value> DebuggerConfig.getNodeStyles(drast.model.Node node){
-		HashMap<String, Value> bindings = new HashMap<String, Value>();
-		return getNodeStyles(node.node.getClass(), bindings);
+	syn HashMap<String, Value> DebuggerConfig.getNodeStyles(Class nodeClass){
+		HashMap<String, Value> styles = new HashMap<String, Value>();
+		Class clazz = nodeClass;
+		while(clazz != null){
+			for(NodeFilter filter : nodeFilters()){
+				if(filter.getClassName().equals(nodeClass.getSimpleName())){
+					for(Binding b : filter.styles()){
+						if(!styles.containsKey(b.getName().getID())){
+							styles.put(b.getName().getID(), b.getValue());
+						}
+					}
+					break;
+				}
+			}
+            clazz = clazz.getSuperclass();
+		}
+		return styles;
 	}
 
 	private HashMap<String, Value> DebuggerConfig.getNodeStyles(Class nodeClass, HashMap<String, Value> styles){

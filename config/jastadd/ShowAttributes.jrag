@@ -1,24 +1,22 @@
 aspect ShowAttributes{
 
-    syn HashSet<String> DebuggerConfig.getShow(drast.model.Node node){
+    syn HashSet<String> DebuggerConfig.getShow(Class nodeClass){
         HashSet<String> attrs = new HashSet<String>();
-        return getShow(node.node.getClass(), attrs);
-    }
-
-    private HashSet<String> DebuggerConfig.getShow(Class nodeClass, HashSet<String> attrs){
-        if(nodeClass == null)
-            return attrs;
-        for(NodeFilter filter : nodeFilters()){
-            if(!filter.getClassName().equals(nodeClass.getSimpleName()))
-                continue;
-            for(LangDecl d : filter.shows()){
-                if(!attrs.contains(d.getID())){
-                    attrs.add(d.getID());
+        Class clazz = nodeClass;
+        while(clazz != null){
+            for(NodeFilter filter : nodeFilters()){
+                if(!filter.getClassName().equals(nodeClass.getSimpleName()))
+                    continue;
+                for(LangDecl d : filter.shows()){
+                    if(!attrs.contains(d.getID())){
+                        attrs.add(d.getID());
+                    }
                 }
+                break;
             }
-            break;
+            clazz = clazz.getSuperclass();
         }
-        return getShow(nodeClass.getSuperclass(), attrs);
+        return attrs;
     }
 
     // Arraylist with all shown attributes for each NodeFilter

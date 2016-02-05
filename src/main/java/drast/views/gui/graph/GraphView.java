@@ -93,6 +93,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
 
             g.addEdge(edge, parent, child);
             createTree(g, child, false);
+
         }
     }
 
@@ -181,7 +182,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         for(GenericTreeNode ref : newRefs) {
             GraphEdge edge = new GraphEdge(GraphEdge.ATTRIBUTE_REF);
             edges.add(edge);
-            graph.addEdge(edge, from.getClusterNode(), ref.getClusterNode());
+            graph.addEdge(edge, from.getTreeNode(), ref.getTreeNode());
         }
         mon.setReferenceEdges(edges);
         vs.repaint();
@@ -258,12 +259,12 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
     private void addReferences(ArrayList<NodeReference> refs, HashMap<GenericTreeNode, ArrayList<GraphEdge>> displayedRefs){
         for(NodeReference ref : refs) {
             GenericTreeNode from  = ref.getReferenceFrom();
-            if(!from.getClusterNode().isNode())
+            if(!from.getTreeNode().isNode())
                 continue;
-            from = from.getClusterNode();
+            from = from.getTreeNode();
             for(GenericTreeNode to : ref.getReferences()) {
                 GraphEdge edge = new GraphEdge(GraphEdge.DISPLAYED_REF).setLabel(ref.getLabel());
-                graph.addEdge(edge, from, to.getClusterNode());
+                graph.addEdge(edge, from, to.getTreeNode());
                 if(!displayedRefs.containsKey(from))
                     displayedRefs.put(from, new ArrayList<>());
                 displayedRefs.get(from).add(edge);

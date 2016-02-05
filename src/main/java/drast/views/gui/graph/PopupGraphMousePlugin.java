@@ -59,16 +59,6 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
                 //System.out.println("Vertex " + v + " was right clicked");
                 if(lastClicked.isExpandable())
                     vertexPopup.show(vs, e.getX(), e.getY());
-            } else {
-                /*
-                final E edge = pickSupport.getEdge(vv.getGraphLayout(), p.getX(), p.getY());
-                if(edge != null) {
-                    System.out.println("Edge " + edge + " was right clicked");
-                    updateEdgeMenu(edge, vv, p);
-                    edgePopup.show(vv, e.getX(), e.getY());
-
-                }
-                */
             }
         }
     }
@@ -104,14 +94,11 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
         vertexPopup.add(item = new JMenuItem("Toggle collapse"));
         item.setHorizontalTextPosition(JMenuItem.RIGHT);
         item.addActionListener(e -> {
-            if(lastClicked.isNode())
+            if (lastClicked.isNode())
                 collapse();
-            else{
+            else
                 expand();
-            }
-            });
-        vertexPopup.addSeparator();
-        vertexPopup.add(new JMenuItem("More is coming"));
+        });
     }
 
     /**
@@ -126,7 +113,7 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
     private void collapse(){
         if(lastClicked.isNode()) {
             DelegateForest<GenericTreeNode, GraphEdge> inGraph = (DelegateForest<GenericTreeNode, GraphEdge>) vs.getGraphLayout().getGraph();
-            TreeCluster newCluster = new TreeCluster(lastClicked, lastClicked.getParent());
+            TreeCluster newCluster = new TreeCluster(lastClicked.getNode(), lastClicked);
             newCluster.setExpandable(true);
             newCluster.setStyles(mon.getApi().getfilterConfig());
 
@@ -137,11 +124,11 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
                 }
             }
 
-            // store the parent vertex the edge pointing to the collapsed vertex
+            // store the parent vertex in the edge pointing to the collapsed vertex
             GenericTreeNode parent = null;
             GraphEdge edge = null;
             if(lastClicked.getParent() != null) {
-                parent = lastClicked.getParent().getClusterNode();
+                parent = lastClicked.getParent().getTreeNode();
                 for(GraphEdge e : inGraph.getInEdges(lastClicked)) {
                     if (!e.isReference())
                         edge = e;
@@ -150,9 +137,7 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             // store the position of the node
             Point2D d = vs.getGraphLayout().transform(lastClicked);
             // set the cluster reference of all children to the new cluster
-            setClusterRef(newCluster, newCluster.getClusterRoot());
-
-            mon.getController().resetReferences();
+            setClusterRef(newCluster, lastClicked);
 
             // remove vertexes
             HashSet<NodeReference> nodeRef = new HashSet<>();
@@ -162,12 +147,12 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             clusterCount = 0;
             // add references to the new cluster
             graphView.addDisplayedReferences(new ArrayList<>(nodeRef));
+            mon.getController().resetReferences();
 
-            if (parent != null) {
+            if (parent != null)
                 inGraph.addEdge(edge, parent, newCluster);
-            } else {
+            else
                 inGraph.addVertex(newCluster);
-            }
 
             vs.getGraphLayout().setLocation(newCluster, d);
             vs.repaint();
@@ -186,19 +171,16 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
     private void expand(){
         if(lastClicked.isCluster()){
             DelegateForest<GenericTreeNode, GraphEdge> inGraph = (DelegateForest<GenericTreeNode, GraphEdge>) vs.getGraphLayout().getGraph();
-            TreeCluster cluster = (TreeCluster) lastClicked;
-            GenericTreeNode node = cluster.getClusterRoot();
+            GenericTreeNode node = ((TreeCluster)lastClicked).getClusterRoot();
 
             if(mon.getSelectedNode() == lastClicked){
-                Platform.runLater(() -> {
-                    mon.getController().nodeDeselected(null);
-                });
+                Platform.runLater(() -> mon.getController().nodeDeselected(null));
             }
             // get the parent vertex and the edge from this one.
             GenericTreeNode parent = null;
             GraphEdge edge = null;
-            if(lastClicked.getParent() != null) {
-                parent = node.getParent().getClusterNode();
+            if(node.getParent() != null) {
+                parent = node.getParent().getTreeNode();
                 for(GraphEdge e : inGraph.getInEdges(lastClicked)) {
                     if (!e.isReference()) {
                         edge = e;
@@ -223,14 +205,11 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             // add references to the children
             graphView.addDisplayedReferences(nodeRef);
 
-
             // remove the cluster vertex
             inGraph.removeVertex(lastClicked, false);
-            if (parent != null && edge != null) {
+
+            if (parent != null && edge != null)
                 inGraph.addEdge(edge, parent, node);
-            }else{
-                System.out.println("Top node");
-            }
 
             // add references to the children
             mon.getController().resetReferences();
@@ -272,6 +251,13 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             }
         }
 
+        // Remove references from the vertex
+        if(mon.getReferenceEdges() != null) {
+            for (GraphEdge e : mon.getReferenceEdges()) {
+                inGraph.removeEdge(e, false);
+            }
+        }
+
         // Remove all children
         for(GenericTreeNode child : inGraph.getChildren(parent))
             removeVertexes(child, inGraph, nodeRef, newCluster);
@@ -305,7 +291,7 @@ class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             nodeRef.addAll(parent.getOutwardNodeReferences());
         if(parent.getInwardNodeReferences() != null) {
             for(NodeReference ref : parent.getInwardNodeReferences().values()) {
-                if(!ref.getReferenceFrom().getClusterNode().equals(parent.getClusterNode()))
+                if(!ref.getReferenceFrom().getTreeNode().equals(parent.getTreeNode()))
                     nodeRef.add(ref);
             }
         }
