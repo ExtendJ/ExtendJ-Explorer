@@ -3,6 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.TextFlow?>
+<?import drast.views.gui.guicomponent.MinimizeButton?>
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="drast.views.gui.controllers.Controller" fx:id="root">
     <top>
@@ -13,15 +14,15 @@
     <center>
         <SplitPane styleClass="boobs" fx:id="centerSplitPane" orientation="HORIZONTAL" dividerPositions="0.2,0.8">
             <!-- Left window -->
-            <VBox styleClass="paneParent">
+            <VBox styleClass="paneParent" fx:id="leftWindow">
                 <VBox styleClass="topRigthAlign">
-                    <Button styleClass="minimizeButton" text="-" fx:id="minimizeLeftSide">
+                    <MinimizeButton styleClass="minimizeButton" fx:id="minimizeLeftSide">
                         <tooltip>
                             <Tooltip text="Minimize"/>
                         </tooltip>
-                    </Button>
+                    </MinimizeButton>
                 </VBox>
-                <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+                <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" fx:id="leftWindowContent">
                     <tabs>
                         <Tab text="Node data">
                             <fx:include fx:id="attributeTab" source="/attributeTab.fxml"/>
@@ -57,33 +58,34 @@
                             <Label text="|"></Label>
                         </HBox>
                     </VBox>
-                    <VBox>
+                    <VBox fx:id="consoleWindow">
                         <VBox styleClass="paneParent">
                             <VBox styleClass="topRigthAlign">
-                                <Button styleClass="minimizeButton" text="-" fx:id="minimizeConsole">
+                                <MinimizeButton styleClass="minimizeButton" fx:id="minimizeConsole">
                                     <tooltip>
                                         <Tooltip text="Minimize"/>
                                     </tooltip>
-                                </Button>
+                                </MinimizeButton>
                             </VBox>
                         </VBox>
-
-                        <fx:include fx:id="console" source="/console.fxml"/>
+                        <VBox fx:id="consoleWindowContent" VBox.vgrow="ALWAYS" >
+                            <fx:include fx:id="console" source="/console.fxml"/>
+                        </VBox>
                     </VBox>
 
 
                 </SplitPane>
             </VBox>
             <!-- right window -->
-            <VBox styleClass="paneParent">
+            <VBox styleClass="paneParent" fx:id="rightWindow">
                     <VBox styleClass="topLeftAlign">
-                        <Button styleClass="minimizeButton" text="-" fx:id="minimizeRightSide">
+                        <MinimizeButton styleClass="minimizeButton" fx:id="minimizeRightSide">
                             <tooltip>
                                 <Tooltip text="Minimize"/>
                             </tooltip>
-                        </Button>
+                        </MinimizeButton>
                     </VBox>
-                <SplitPane orientation="VERTICAL" dividerPositions="0.5">
+                <SplitPane orientation="VERTICAL" dividerPositions="0.5" fx:id="rightWindowContent">
                     <TabPane tabClosingPolicy="UNAVAILABLE">
                         <tabs>
                             <fx:include fx:id="filterTab" source="/filterTab.fxml"/>
