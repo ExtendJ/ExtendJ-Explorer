@@ -6,6 +6,8 @@ import drast.views.gui.Monitor;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
@@ -25,61 +27,18 @@ public class ConsoleController implements Initializable, ControllerInterface, Ob
 
 
     // Console stuff
-    @FXML private TextFlow consoleTextFlowAll;
-    @FXML private TextFlow consoleTextFlowWarning;
-    @FXML private TextFlow consoleTextFlowError;
-    @FXML private TextFlow consoleTextFlowMessage;
-    @FXML private TextFlow consoleTextFlowNewShit;
-
-    @FXML private ScrollPane consoleScrollPaneAll;
-    @FXML private ScrollPane consoleScrollPaneError;
-    @FXML private ScrollPane consoleScrollPaneMessage;
-    @FXML private ScrollPane consoleScrollPaneWarning;
-    @FXML private ScrollPane consoleScrollPaneNewShit;
+    @FXML private TextFlow consoleTextFlow;
+    @FXML private ScrollPane consoleScrollPane;
 
     @FXML private CheckBox allBox;
     @FXML private CheckBox messagesBox;
     @FXML private CheckBox warningsBox;
     @FXML private CheckBox errorsBox;
 
-    @Override
-    public void onNewAPI() {
-        mon.getBrain().addObserver(this);
-    }
-
-    @Override
-    public void functionStarted() {
-
-    }
-
-    @Override
-    public void functionStopped() {
-
-    }
-
-    @Override
-    public void nodeSelected(GenericTreeNode node) {
-
-    }
-
-    @Override
-    public void nodeDeselected() {
-
-    }
-
-    @Override
-    public void updateGUI() {
-
-    }
-
     private enum ConsoleFilter {
         ALL, ERROR, WARNING, MESSAGE, NEWSHIT
     }
 
-    private DoubleProperty consoleHeightAll;
-    private DoubleProperty consoleHeightError;
-    private DoubleProperty consoleHeightWarning;
-    private DoubleProperty consoleHeightMessage;
     private DoubleProperty consoleHeightNewShit;
 
     public void init(Monitor mon){
@@ -90,17 +49,22 @@ public class ConsoleController implements Initializable, ControllerInterface, Ob
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        consoleHeightAll = new SimpleDoubleProperty();
-        consoleHeightError = new SimpleDoubleProperty();
-        consoleHeightWarning = new SimpleDoubleProperty();
-        consoleHeightMessage = new SimpleDoubleProperty();
         consoleHeightNewShit = new SimpleDoubleProperty();
 
-        setConsoleScrollHeightListener(consoleHeightAll, consoleScrollPaneAll, consoleTextFlowAll);
-        setConsoleScrollHeightListener(consoleHeightError, consoleScrollPaneError, consoleTextFlowError);
-        setConsoleScrollHeightListener(consoleHeightWarning, consoleScrollPaneWarning, consoleTextFlowWarning);
-        setConsoleScrollHeightListener(consoleHeightMessage, consoleScrollPaneMessage, consoleTextFlowMessage);
-        setConsoleScrollHeightListener(consoleHeightNewShit, consoleScrollPaneNewShit, consoleTextFlowNewShit);
+        setConsoleScrollHeightListener(consoleHeightNewShit, consoleScrollPane, consoleTextFlow);
+
+        allBox.setOnAction(e-> buildConsoleText() );
+        messagesBox.setOnAction(e->checkBoxClickEvent(messagesBox));
+        warningsBox.setOnAction(e->checkBoxClickEvent(warningsBox));
+        errorsBox.setOnAction(e->checkBoxClickEvent(errorsBox));
+    }
+
+    private void checkBoxClickEvent(CheckBox box){
+        if (!box.isSelected() && allBox.isSelected())
+            allBox.setSelected(false);
+        else if (messagesBox.isSelected() && warningsBox.isSelected() && errorsBox.isSelected())
+            allBox.setSelected(true);
+        buildConsoleText();
     }
 
     private void setConsoleScrollHeightListener(DoubleProperty consoleHeight, ScrollPane consoleScrollPane, TextFlow textFlow){
@@ -154,18 +118,17 @@ public class ConsoleController implements Initializable, ControllerInterface, Ob
     }
 
     private void buildConsoleText(){
-        consoleTextFlowNewShit.getChildren().clear();
+        consoleTextFlow.getChildren().clear();
         for(AlertMessage message : messages){
             if(isVisible(message)){
                 Text text1 = new Text(message.message + "\n");
                 text1.getStyleClass().add(getStyleString(message));
                 text1.getStyleClass().add("consoleText");
-                consoleTextFlowNewShit.getChildren().add(text1);
-                consoleScrollPaneNewShit.setVvalue(1.0);
-
+                consoleTextFlow.getChildren().add(text1);
                 //addConsoleText(message.message, getStyleString(message), ConsoleFilter.NEWSHIT);
             }
         }
+        consoleScrollPane.setVvalue(consoleScrollPane.getVmax());
     }
 
     private boolean isVisible(AlertMessage message){
@@ -181,45 +144,33 @@ public class ConsoleController implements Initializable, ControllerInterface, Ob
         return "consoleTextMessage";
     }
 
-    /**
-     * used by the public methods addMessage, addError, addWarning
-     *
-     * @param message
-     * @param style
-     * @param filterType
-     */
-    private void addConsoleText(String message, String style, ConsoleFilter filterType){
-        Text text1 = new Text(message + "\n");
-        Text text2 = new Text(message + "\n");
-        text1.getStyleClass().add(style);
-        text1.getStyleClass().add("consoleText");
-        text2.getStyleClass().add(style);
-        text2.getStyleClass().add("consoleText");
-        getConsoleArray(filterType).getChildren().add(text1);
-        if(filterType != ConsoleFilter.ALL)
-            consoleTextFlowAll.getChildren().add(text2);
-
-        consoleScrollPaneAll.setVvalue(1.0);
+    @Override
+    public void onNewAPI() {
+        mon.getBrain().addObserver(this);
     }
 
-    /**
-     * get the array with messages of a certain type (e.g. MESSAGE, ERROR, WARNING).
-     *
-     * @param filterType
-     * @return
-     */
-    private TextFlow getConsoleArray(ConsoleFilter filterType){
-        switch (filterType) {
-            case MESSAGE:
-                return consoleTextFlowMessage;
-            case ERROR:
-                return consoleTextFlowError;
-            case WARNING:
-                return consoleTextFlowWarning;
-            case NEWSHIT:
-                return consoleTextFlowNewShit;
-            default:
-                return consoleTextFlowAll;
-        }
+    @Override
+    public void functionStarted() {
+
+    }
+
+    @Override
+    public void functionStopped() {
+
+    }
+
+    @Override
+    public void nodeSelected(GenericTreeNode node) {
+
+    }
+
+    @Override
+    public void nodeDeselected() {
+
+    }
+
+    @Override
+    public void updateGUI() {
+
     }
 }

@@ -1,0 +1,32 @@
+.consoleTextFlow, .consoleScrollPane, .console_parent{
+    -fx-background-color:#363636;
+}
+
+.console_extra_padding{
+    -fx-padding:3;
+}
+
+.consoleTextFlow{
+    -fx-padding:10 0 0 10;
+}
+
+.consoleTextWarning{
+    -fx-fill: yellow;
+    -fx-font-size:13;
+    -fx-font-family:sans-serif;
+}
+
+.consoleTextError{
+    -fx-fill: #cc0000;
+    -fx-font-size:13;
+}
+
+.consoleTextMessage{
+    -fx-fill: white;
+    -fx-font-size:13;
+}
+
+.consoleScrollPane{
+    -fx-fit-to-height:true;
+    -fx-fit-to-width:true;
+}

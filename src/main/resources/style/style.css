@@ -216,33 +216,6 @@
     -fx-text-fill: white;
 }
 
-.consoleTextFlow{
-    -fx-background-color:#363636;
-    -fx-padding:10 0 0 10;
-}
-
-.consoleTextWarning{
-    -fx-fill: yellow;
-    -fx-font-size:13;
-    -fx-font-family:sans-serif;
-}
-
-.consoleTextError{
-    -fx-fill: #cc0000;
-    -fx-font-size:13;
-}
-
-.consoleTextMessage{
-    -fx-fill: white;
-    -fx-font-size:13;
-}
-
-.consoleScrollPane{
-    -fx-fit-to-height:true;
-    -fx-fit-to-width:true;
-    -fx-background-color: #363636;
-}
-
 .minimizeButton{
     -fx-background-color:#404040;
     -fx-text-fill:white;
