@@ -7,7 +7,10 @@ import drast.model.filteredtree.GenericTreeNode;
 import drast.views.gui.Monitor;
 import drast.views.gui.graph.GraphEdge;
 
+import java.awt.*;
+import java.util.Collection;
 import java.util.ConcurrentModificationException;
+import java.util.List;
 
 /**
  * Created by gda10jth on 1/21/16.
@@ -22,9 +25,12 @@ import java.util.ConcurrentModificationException;
 public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
     private boolean moving;
     private boolean optimization;
+    private CustomVertexLabelRenderer labelRenderer;
     public CustomRenderer(Monitor mon){
         moving = false;
         refresh(mon);
+        labelRenderer = new CustomVertexLabelRenderer();
+        setVertexLabelRenderer(labelRenderer);
     }
 
     /**
@@ -69,16 +75,26 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
         if(!optimization || (optimization && !moving)) {
             // paint all the edges
             try {
-                for (GraphEdge e : layout.getGraph().getEdges()) {
-
-                    renderEdge(
-                            renderContext,
-                            layout,
-                            e);
-                    renderEdgeLabel(
-                            renderContext,
-                            layout,
-                            e);
+                Collection<GraphEdge> edges = layout.getGraph().getEdges();
+                /*boolean reduce = edges.size() > 500;
+                int step = edges.size() / 200;
+                int count = -1;
+                boolean hide;*/
+                for (GraphEdge e : edges) {
+                    /*if(reduce){
+                        count = count == step ? 0 : count+1;
+                    }
+                    hide = reduce && count != 0;
+                    if(!hide) {*/
+                        renderEdge(
+                                renderContext,
+                                layout,
+                                e);
+                        renderEdgeLabel(
+                                renderContext,
+                                layout,
+                                e);
+                    //}
                 }
             } catch (ConcurrentModificationException cme) {
                 renderContext.getScreenDevice().repaint();
@@ -87,18 +103,25 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
         // paint all the vertices
         try {
             for(GenericTreeNode v : layout.getGraph().getVertices()) {
-
+                //Shape p = renderContext.getVertexShapeTransformer().transform(v);
+                //System.out.println(p.getBounds().toString());
                 renderVertex(
                         renderContext,
                         layout,
                         v);
-                renderVertexLabel(
-                        renderContext,
-                        layout,
-                        v);
+                if(!optimization || (optimization && !moving)) {
+                    kuk(
+                            renderContext,
+                            layout,
+                            v);
+                }
             }
         } catch(ConcurrentModificationException cme) {
             renderContext.getScreenDevice().repaint();
         }
+    }
+
+    private void kuk(RenderContext<GenericTreeNode,GraphEdge> rc, Layout<GenericTreeNode,GraphEdge> layout, GenericTreeNode v) {
+        labelRenderer.labelVertex(rc, layout, v);
     }
 }

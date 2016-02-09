@@ -4,6 +4,7 @@ package drast.views.gui.graph.jungcomponents;
  * Created by gda10jli on 12/4/15.
  */
 
+import drast.model.filteredtree.TreeNode;
 import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.renderers.VertexLabelAsShapeRenderer;
 import drast.model.filteredtree.GenericTreeNode;
@@ -29,10 +30,16 @@ public class VertexShapeTransformer extends VertexLabelAsShapeRenderer<GenericTr
      */
     @Override
     public Shape transform(GenericTreeNode fNode) {
-        Component component = prepareRenderer(rc, rc.getVertexLabelRenderer(), rc.getVertexLabelTransformer().transform(fNode),
-                rc.getPickedVertexState().isPicked(fNode), fNode);
-        Dimension size = component.getPreferredSize();
 
+        //Component component = prepareRenderer(rc, rc.getVertexLabelRenderer(), rc.getVertexLabelTransformer().transform(fNode),
+          //      rc.getPickedVertexState().isPicked(fNode), fNode);
+        boolean pickedState = rc.getPickedVertexState().isPicked(fNode);
+        Dimension size = ((CustomDefaultVertexLabelRenderer)rc.getVertexLabelRenderer()).getLabelDimension(rc, fNode, pickedState);
+
+        return transform(fNode, size);
+    }
+
+    public Shape transform(GenericTreeNode fNode, Dimension size){
         int centerX = -size.width/2 -10;
         int centerY = -size.height/2 -10;
         int height = size.height+20;

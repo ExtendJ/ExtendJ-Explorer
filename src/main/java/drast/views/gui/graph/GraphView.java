@@ -126,7 +126,8 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         TreeLayout<GenericTreeNode, GraphEdge> layout = new TreeLayout<>(graph, 150, 100);
         vs.setGraphLayout(layout);
         addDisplayedReferences();
-        showWholeGraphOnScreen();
+        panToNode(mon.getRootNode());
+        //showWholeGraphOnScreen();
         vs.repaint();
     }
 
@@ -322,7 +323,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
 
         bvs.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
         bvs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
-        bvs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
+        vs.getRenderContext().setVertexLabelRenderer(new CustomDefaultVertexLabelRenderer(java.awt.Color.blue));
         bvs.getRenderContext().setVertexShapeTransformer(new VertexShapeTransformer(vs.getRenderContext()));
         bvs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
 

@@ -41,7 +41,7 @@ public class CustomScalingGraphMousePlugin extends ScalingGraphMousePlugin {
         if(timer != null)
             timer.cancel();
         timer = new Timer();
-        timer.schedule(new RemindTask(vv), 200);
+        timer.schedule(new RemindTask(vv), 400);
     }
 
     /**
