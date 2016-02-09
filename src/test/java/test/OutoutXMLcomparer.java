@@ -1,6 +1,7 @@
 package test;
-import DrAST.api.DrASTAPI;
-import DrAST.api.filteredtree.GenericTreeNode;
+
+import drast.model.DrAST;
+import drast.model.filteredtree.GenericTreeNode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -47,7 +48,7 @@ public class OutoutXMLcomparer {
     private String nodeName(GenericTreeNode node){
         String name = node.toString();
         if(!node.isNode())
-            name = DrASTAPI.CLUSTER_STRING;
+            name = DrAST.CLUSTER_STRING;
         return name;
     }
 

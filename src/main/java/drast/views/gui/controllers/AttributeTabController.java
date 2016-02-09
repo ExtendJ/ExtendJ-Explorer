@@ -486,7 +486,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     }
 
     public void onNewAPI() {
-        formatter = new TextFormatter(mon.getBrain().getRoot().node.getClass());
+        if(mon.getBrain().getRoot().node != null)
+            formatter = new TextFormatter(mon.getBrain().getRoot().node.getClass());
         setAttributes();
     }
 

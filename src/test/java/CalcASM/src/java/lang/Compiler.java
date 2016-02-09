@@ -1,11 +1,11 @@
 package CalcASM.src.java.lang;
 
 import beaver.Parser.Exception;
-import DrAST.ui.DrASTUI;
 import CalcASM.src.gen.lang.ast.ErrorMessage;
 import CalcASM.src.gen.lang.ast.LangParser;
 import CalcASM.src.gen.lang.ast.LangScanner;
 import CalcASM.src.gen.lang.ast.Program;
+import drast.views.gui.DrASTGUI;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -41,7 +41,7 @@ public class Compiler {
 					System.err.println("- " + e);
 				}
 			} else {
-				DrASTUI debugger = new DrASTUI(program);
+				DrASTGUI debugger = new DrASTGUI(program);
 				debugger.run();
 				//program.genCode(System.out);
 			}

@@ -8,15 +8,15 @@ import configAST.ConfigParser;
 import configAST.ConfigScanner;
 import configAST.DebuggerConfig;
 import configAST.ErrorMessage;
+import drast.model.ASTBrain;
+import drast.model.DrAST;
+import drast.model.filteredtree.GenericTreeNode;
+import drast.views.gui.Monitor;
+import drast.views.gui.controllers.Controller;
+import drast.views.gui.graph.GraphEdge;
+import drast.views.gui.graph.GraphView;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.Graph;
-import DrAST.api.ASTAPI;
-import DrAST.api.DrASTAPI;
-import DrAST.api.filteredtree.GenericTreeNode;
-import DrAST.ui.UIMonitor;
-import DrAST.ui.controllers.Controller;
-import DrAST.ui.graph.GraphView;
-import DrAST.ui.graph.UIEdge;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
@@ -42,7 +42,7 @@ import static org.junit.Assert.*;
  */
 public class UIComponentTestSuite extends UIApplicationTestHelper {
 
-    private String inDirectory = "tests/uiTests/allBlocks/";
+    private String inDirectory = "tests/allBlocks/";
 
     protected Object getRootNode() {
         try {
@@ -75,8 +75,8 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         return null;
     }
 
-    protected static UIMonitor mon;
-    protected static DrASTAPI DrAST;
+    protected static Monitor mon;
+    protected static DrAST drAST;
     protected static Controller con;
     private static boolean init = true;
 
@@ -85,10 +85,10 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         if(!init)
             return;
         init = false;
-        DrAST = new DrASTAPI(getRootNode());
-        DrAST.setFilterDir(inDirectory);
-        DrAST.run();
-        mon = new UIMonitor(DrAST);
+        drAST = new DrAST(getRootNode());
+        drAST.setFilterPath(inDirectory);
+        drAST.run();
+        mon = new Monitor(drAST);
         FXMLLoader loader = new FXMLLoader();
         Parent rootView = loader.load(getClass().getResource("/main.fxml").openStream());
         con = loader.<Controller>getController();
@@ -97,7 +97,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         mon.setGraphView(graphview);
         con.init(mon, graphview);
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-        stage.setTitle("JastAddDebugger " + ASTAPI.VERSION);
+        stage.setTitle("JastAddDebugger " + ASTBrain.VERSION);
         stage.setScene(new Scene(rootView, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
         stage.setMaximized(true);
         stage.show();
@@ -131,7 +131,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
     public void treeViewStructure(){
         TreeView<GenericTreeNode> tree = find("#graphTreeView");
         TreeItem<GenericTreeNode> treeItem = tree.getTreeItem(0);
-        compareTreeView(treeItem, mon.getApi().getFilteredTree());
+        compareTreeView(treeItem, mon.getBrain().getFilteredTree());
     }
 
     private void compareTreeView(TreeItem<GenericTreeNode> parent, GenericTreeNode node) {
@@ -197,16 +197,16 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
 
     @Test
     public void compareApiTreeAndGraphTree(){
-        DelegateForest<GenericTreeNode, UIEdge> graph = mon.getGraphView().getJungGraph();
+        DelegateForest<GenericTreeNode, GraphEdge> graph = mon.getGraphView().getJungGraph();
         GenericTreeNode apiRoot = mon.getRootNode();
         //assertEquals("Graph tree and API tree does not have the same root. api root: " + apiRoot.toString() + " graph root: " + graph.getRoot().toString(), apiRoot, graph.getRoot());
         compareTrees(apiRoot, graph);
     }
 
-    private void compareTrees(GenericTreeNode apiRoot, Graph<GenericTreeNode, UIEdge> graph) {
+    private void compareTrees(GenericTreeNode apiRoot, Graph<GenericTreeNode, GraphEdge> graph) {
 
         ArrayList<GenericTreeNode> graphChildren = new ArrayList<>();
-        for(UIEdge graphEdge : graph.getOutEdges(apiRoot)){
+        for(GraphEdge graphEdge : graph.getOutEdges(apiRoot)){
             if(!graphEdge.isReference()){
                 graphChildren.add(graph.getDest(graphEdge));
             }

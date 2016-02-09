@@ -15,9 +15,8 @@ import java.util.*;
  */
 public class TreeNode extends GenericTreeNode {
     private final Node node;
-    private String graphName;
     private String treeViewName;
-
+    private ArrayList<String> labelAttributes;
     private HashSet<NodeReference> outwardReferences;
     private HashMap<NodeReference, NodeReference> inwardReferences;
     private HashSet<NodeReference> allRefs;
@@ -26,10 +25,12 @@ public class TreeNode extends GenericTreeNode {
         super(parent);
         node = data;
         allRefs = new HashSet<>();
+        labelAttributes = new ArrayList<>();
         setExpandable(true);
         setStyles(filterConfig);
     }
 
+    public ArrayList<String> getLabelAttributes(){ return labelAttributes;}
     /**
      * Returns the Object of the AST
      * @return
@@ -58,12 +59,10 @@ public class TreeNode extends GenericTreeNode {
     public boolean isClusterParent(){return false;}
 
     @Override
-    public String toString(){
-        return node.toString();
-    }
+    public String toString(){ return node.toString(); }
 
     @Override
-    public String toGraphString(){ return graphName != null ? graphName : "<html>" + toString() + "</html>"; }
+    public String toGraphString(){ return toString(); }
 
     @Override
     public String toTreeViewString() { return treeViewName != null ? treeViewName : toString(); }
@@ -103,7 +102,6 @@ public class TreeNode extends GenericTreeNode {
     public void setDisplayedAttributes(ArrayList<NodeReference> allReferences, HashSet<String> set , ASTBrain api){
         if(set.size() == 0)
             return;
-        graphName = "<html>" + toString();
         treeViewName = toString() + " : ";
         if(outwardReferences == null)
             outwardReferences = new HashSet<>();
@@ -118,11 +116,10 @@ public class TreeNode extends GenericTreeNode {
                 allReferences.add(reference);
                 allRefs.add(reference);
             } else {
-                graphName += String.format("<br>%s : %s </br>", s, obj);
+                labelAttributes.add(s + " : " + obj);
                 treeViewName += s + " : " + obj;
             }
         }
-        graphName += "</html>";
     }
 
     @Override

@@ -2,10 +2,10 @@ let
 	a = 2
 	b = let
 		x = 3
-		y = 4
-	in
-		x * y
-	end
+		y = a / b
+	    in
+		    a * x * y
+	    end
 in
 	a * b
 end

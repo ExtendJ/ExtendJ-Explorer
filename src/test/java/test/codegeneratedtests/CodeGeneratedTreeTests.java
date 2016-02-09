@@ -3,9 +3,8 @@ package test.codegeneratedtests;
 import CalcASM.src.gen.lang.ast.Mul;
 import CalcASM.src.gen.lang.ast.Numeral;
 import CalcASM.src.gen.lang.ast.Program;
-import DrAST.api.DrASTAPI;
-import DrAST.tasks.DrASTXML;
-import DrAST.ui.DrASTUI;
+import drast.model.DrAST;
+import drast.views.DrASTXML;
 import org.junit.Test;
 import test.OutoutXMLcomparer;
 
@@ -28,8 +27,8 @@ public class CodeGeneratedTreeTests {
 
     private void runThisTree(Object program, String expectedFile){
         String inDirectory = "tests/codeGeneratedTreeTests/";
-        DrASTAPI debugger = new DrASTAPI(program);
-        debugger.setFilterDir("tests/codeGeneratedTreeTests/");
+        DrAST debugger = new DrAST(program);
+        debugger.setFilterPath("tests/codeGeneratedTreeTests/filter.fcl");
         debugger.run();
         DrASTXML xmlPrinter = new DrASTXML(debugger);
         xmlPrinter.printXml(inDirectory, expectedFile, ".out");

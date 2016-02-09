@@ -160,5 +160,6 @@ public class DrASTGUI extends Application implements DrASTView {
      */
     public static void main(String[] args) {
         new DrASTGUI().run();
+        //CalcASMGenerator poop = new CalcASMGenerator(10);
     }
 }
