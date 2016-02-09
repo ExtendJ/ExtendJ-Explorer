@@ -50,6 +50,7 @@ dependencies {
 	compile 'net.sf.jung:jung-visualization:2.0.1'
 	compile 'net.sf.jung:jung-algorithms:2.0.1'
 
+
 	testCompile 'junit:junit:4.+'
 	testCompile "org.testfx:testfx-core:4.0.+"
 	testCompile "org.testfx:testfx-junit:4.0.+"

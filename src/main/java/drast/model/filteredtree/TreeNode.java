@@ -22,11 +22,12 @@ public class TreeNode extends GenericTreeNode {
     private HashMap<NodeReference, NodeReference> inwardReferences;
     private HashSet<NodeReference> allRefs;
 
-    public TreeNode(Node data, GenericTreeNode parent){
+    public TreeNode(Node data, GenericTreeNode parent, FilterConfig filterConfig){
         super(parent);
         node = data;
         allRefs = new HashSet<>();
         setExpandable(true);
+        setStyles(filterConfig);
     }
 
     /**

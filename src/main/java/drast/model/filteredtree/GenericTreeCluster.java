@@ -16,30 +16,22 @@ import java.util.HashSet;
  */
 public abstract  class GenericTreeCluster extends GenericTreeNode{
 
-    protected HashMap<String, Integer> typeList;
     protected int nodeCount;
+    protected ArrayList<GenericTreeCluster> clusters;
 
     public GenericTreeCluster(GenericTreeNode parent) {
         super(parent);
-        typeList = new HashMap<>();
         nodeCount = 0;
+        this.clusters = new ArrayList<>();
     }
 
-    public void setNodeCount(int count){ nodeCount=count; }
+    protected abstract HashMap<String, Integer> fillTypeList(HashMap<String, Integer> types);
 
-    public void addToTypeList(GenericTreeNode node, String addToName){
-        if(node.isNode()) {
-            String name = node.getNode().simpleNameClass + addToName;
-            typeList.put(name, typeList.containsKey(name) ? typeList.get(name) + 1 : 1);
-        }else{
-            GenericTreeCluster cluster = (GenericTreeCluster) node;
-            typeList.put("Cluster" + addToName, cluster.getNodeCount());
-        }
-    }
+    public HashMap<String, Integer> getTypeList(){ return fillTypeList(new HashMap<>()); }
 
-    public int getNodeCount(){
-        return nodeCount;
-    }
+    public ArrayList<GenericTreeCluster> getClusters(){ return clusters; }
+
+    public int getNodeCount(){ return nodeCount; }
 
     @Override
     public boolean isNode() {
@@ -50,7 +42,7 @@ public abstract  class GenericTreeCluster extends GenericTreeNode{
     public String toString(){ return "..."; }
 
     @Override
-    public String toGraphString(){return getNodeCount()+""; }
+    public String toGraphString(){return String.valueOf(nodeCount); }
 
     @Override
     public String toTreeViewString(){return toString() + " " + getNodeCount(); }
@@ -121,7 +113,4 @@ public abstract  class GenericTreeCluster extends GenericTreeNode{
     @Override
     public boolean addInWardNodeReference(NodeReference ref){ return false; }
 
-    public HashMap<String, Integer> getTypeList() {
-        return typeList;
-    }
 }

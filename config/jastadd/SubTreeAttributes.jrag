@@ -3,7 +3,7 @@ aspect subTreeAttributes{
 
     syn ArrayList<Expr> DebuggerConfig.getSubTreeExpressions(Class nodeClass){
         ArrayList<Expr> exprs = new ArrayList<Expr>();
-        boolean found = false, hasShown = false, addedWhen = false;
+        boolean hasShown = false, addedWhen = false;
         Class clazz = nodeClass;
         while(clazz != null){
             for(NodeFilter filter : nodeFilters()){
@@ -11,18 +11,19 @@ aspect subTreeAttributes{
                     for(Expr e : filter.subTreeExpressions()){
                         if(e.isShown() && !hasShown)
                             hasShown = true;
+                        else
+                            exprs.add(e);
                     }
                     if(hasShown && !addedWhen){
                         addedWhen = true;
                         exprs.addAll(getFilterExpressions(clazz));
                     }
-                    found = true;
                     break;
                 }
             }
             clazz = clazz.getSuperclass();
         }
-        return found ? exprs : null;
+        return exprs;
     }
 
     // ArrayList with all expressions for each NodeFilter

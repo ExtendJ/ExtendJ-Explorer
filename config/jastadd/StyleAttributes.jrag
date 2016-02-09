@@ -5,7 +5,7 @@ aspect StyleAttributes{
 		Class clazz = nodeClass;
 		while(clazz != null){
 			for(NodeFilter filter : nodeFilters()){
-				if(filter.getClassName().equals(nodeClass.getSimpleName())){
+				if(filter.getClassName().equals(clazz.getSimpleName())){
 					for(Binding b : filter.styles()){
 						if(!styles.containsKey(b.getName().getID())){
 							styles.put(b.getName().getID(), b.getValue());

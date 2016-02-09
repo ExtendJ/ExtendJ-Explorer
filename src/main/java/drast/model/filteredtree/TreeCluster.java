@@ -1,31 +1,44 @@
 package drast.model.filteredtree;
 
+import drast.model.FilterConfig;
 import drast.model.Node;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by gda10jth on 10/21/15.
  */
 public class TreeCluster extends GenericTreeCluster {
 
-    private Node node;
     private ArrayList<Node> nodes;
-    public TreeCluster(Node node, GenericTreeNode parent){
+    public TreeCluster(Node node, GenericTreeNode parent, FilterConfig filterConfig){
         super(parent);
-        this.node = node;
         this.nodes = new ArrayList<>();
-        addToTypeList(node);
         nodes.add(node);
+        nodeCount++;
+        setStyles(filterConfig);
     }
 
-    public void addToTypeList(Node node){
-        nodeCount++;
-        Integer nbr = typeList.get(node.simpleNameClass);
-        if (nbr == null)
-            nbr = 0;
-        nbr++;
-        typeList.put(node.simpleNameClass, nbr);
+    @Override
+    protected HashMap<String, Integer> fillTypeList(HashMap<String, Integer> types) {
+        for (Node node : nodes) {
+            Integer nbr = types.get(node.simpleNameClass);
+            if (nbr == null)
+                nbr = 0;
+            nbr++;
+            types.put(node.simpleNameClass, nbr);
+        }
+        int cc = 0;
+        for(GenericTreeCluster cNode : getClusters()) {
+            if(cNode.isCluster() && cNode.getClusters().size() > 0){
+                for (GenericTreeCluster cluster : cNode.getClusters())
+                    types.put("Cluster " + ++cc, cluster.getNodeCount());
+            }else
+                types.put("Cluster " + ++cc, cNode.getNodeCount());
+        }
+        return types;
     }
 
     /**
@@ -36,21 +49,24 @@ public class TreeCluster extends GenericTreeCluster {
 
     @Override
     public void addChild(Node node, GenericTreeNode child) {
-        if(child.isCluster()){
+        if(node != null && child.isCluster()) {
             nodes.add(node);
-            addToTypeList(node);
-        }else{
+            nodeCount++;
+        } else
             children.add(child);
-        }
+    }
+
+    public void addToCluster(GenericTreeNode child) {
+        nodeCount++;
+        if(child.isCluster() || child.isClusterParent())
+            clusters.add((GenericTreeCluster) child);
+         else
+            nodes.add(child.getNode());
     }
 
     @Override
-    public boolean isCluster() {
-        return true;
-    }
+    public boolean isCluster() { return true; }
 
     @Override
-    public boolean isClusterParent() {
-        return false;
-    }
+    public boolean isClusterParent() { return false; }
 }

@@ -105,7 +105,7 @@ public class DrASTSetup {
         } catch (InvocationTargetException e) {
             if(e.getTargetException().getClass() != SystemExitControl.ExitTrappedException.class) {
                 e.printStackTrace();
-                print("compiler error :");
+                print("compiler error : " + (e.getMessage() != null ? e.getMessage() : e.getCause()));
             }
         }
 

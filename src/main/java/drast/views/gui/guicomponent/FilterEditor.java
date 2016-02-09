@@ -27,7 +27,7 @@ public class FilterEditor extends CodeArea {
 
     // words that will be highlighet with orange
     private static final String[] KEYWORDS = new String[] {
-            "when", "style", "show", "use", "configs",
+            "when", "style", "show", "subtree", "use", "configs",
             "child", "parent", "of", "on", "off", "in", "not", "filter"
     };
 

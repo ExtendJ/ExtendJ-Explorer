@@ -188,9 +188,7 @@ public class Controller implements Initializable {
 
     public void updateGUI(){
         resetReferences();
-
         controllers.forEach(ControllerInterface::updateGUI);
-
         updateAstInfoLabels();
     }
 
@@ -208,18 +206,6 @@ public class Controller implements Initializable {
             Stage stage = (Stage) root.getScene().getWindow();
             stage.close();
         }
-    }
-
-    public void addErrors(Collection<AlertMessage> errors){
-        consoleController.addErrors(errors);
-    }
-
-    public void addWarnings(Collection<AlertMessage> warnings){
-        consoleController.addWarnings(warnings);
-    }
-
-    public void addMessages(Collection<AlertMessage> messages){
-        consoleController.addMessages(messages);
     }
 
     public void addMessage(String message) {

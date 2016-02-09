@@ -1,7 +1,6 @@
 package drast.model;
 
 
-import drast.model.nodeinfo.NodeInfoHolder;
 import javafx.util.Pair;
 
 import java.lang.annotation.Annotation;
@@ -148,17 +147,13 @@ public class Node{
             try {
                 if (isList) {
                     for (Object child : (Iterable<?>) root) {
-                        if (child instanceof Collection && child.getClass().getSimpleName().equals("List") && isOpt)
+                        if (child instanceof Collection && child.getClass().getSimpleName().equals("List") && isOpt) //Todo remove this when we have the AST in the annotations
                             api.putMessage(AlertMessage.AST_STRUCTURE_WARNING, "A List is a direct child to a Opt parent, parent : " + root + ", -> child : " + child);
                         children.add(new Node(child, this, isOpt ? nameFromParent : "", child instanceof Collection, false, isNTA, 1, api));
                     }
                 }
             }catch (ClassCastException e){
-                String message;
-                if(isNTA){
-                    message = "Object : " + root + " is not a type of the AST";
-                }else
-                    message = e.getMessage();
+                String message = isNTA ? "Object : " + root + " is not a type of the AST" : e.getMessage();
                 api.putMessage(AlertMessage.AST_STRUCTURE_ERROR, message);
                 return;
             }

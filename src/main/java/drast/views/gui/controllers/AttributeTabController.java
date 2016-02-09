@@ -394,11 +394,9 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     public ArrayList<GenericTreeNode> getNodeReferencesAndHighlightThem(Object value){
         ArrayList<GenericTreeNode> nodes = new ArrayList<>();
         for(Object o : mon.getBrain().getNodeReferences(value)){
-            if(mon.getBrain().isTreeNode(o)) {
-                GenericTreeNode node = mon.getBrain().getTreeNode(o);
-                nodes.add(node);
-                mon.addHighlightReferencesNodes(node);
-            }
+            GenericTreeNode node = mon.getBrain().getTreeNode(o);
+            nodes.add(node);
+            mon.addHighlightReferencesNodes(node);
         }
         return nodes;
     }

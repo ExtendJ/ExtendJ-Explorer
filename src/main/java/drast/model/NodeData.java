@@ -234,7 +234,7 @@ public class NodeData {
             attribute.setValue(obj);
     }
 
-    protected Collection<Node> findCachedNTAs(ASTBrain api){
+    protected void setCachedNTAs(ASTBrain api){
         HashMap<Object, Method> values = new HashMap<>();
         try {
             for(Map.Entry<Method, Object> e : findFieldNames(api).entrySet()){
@@ -249,18 +249,13 @@ public class NodeData {
         }catch (ClassCastException e){
             api.putMessage(AlertMessage.INVOCATION_ERROR, e.getMessage());
         }
-        ArrayList<Node> nodes = new ArrayList<>();
         for (Map.Entry<Object, Method> e : values.entrySet()) {
             Object obj = e.getKey();
-            if (node.NTAChildren.containsKey(obj))
-                nodes.add(node.NTAChildren.get(obj));
-            else {
+            if (!node.NTAChildren.containsKey(obj)){
                 Node temp = Node.getNTANode(obj, node, api);
                 node.NTAChildren.put(obj, temp);
-                nodes.add(temp);
             }
         }
-        return nodes;
     }
 
     private void setValues(Attribute attr, Object v, Method m){
@@ -278,6 +273,13 @@ public class NodeData {
             attr.setValue(v);
     }
 
+    /** "Finds" the "correct" field value for the attribute.
+     * Lets be clear on this, this method is not safe at all. It can find a "false" field because we are shooting in the dark here
+     * @param api
+     * @param method
+     * @param clazz
+     * @return
+     */
     private Field getField(ASTBrain api, Method method, Class clazz){
         if(api.getCachedField(method) != null)
             return api.getCachedField(method);
@@ -306,9 +308,7 @@ public class NodeData {
         if(methods == null || methods.size() == 0)
             return values;
         for(Method m : methods){
-            Field f = api.getCachedField(m);
-            if(f == null)
-                f = getField(api, m, nodeObject.getClass());
+            Field f = getField(api, m, nodeObject.getClass());
             Object value = getFieldValue(f);
             if(value != null)
                 values.put(m, value);

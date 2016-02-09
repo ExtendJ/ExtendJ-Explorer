@@ -26,6 +26,7 @@ public class FilterConfig {
     public static final String DYNAMIC_VALUES = "dynamic-values";
     public static final String NTA_DEPTH = "NTA-depth";
     public static final String NTA_COMPUTED = "NTA-computed";
+    public static final String NTA_CACHED = "NTA-cached";
 
     private HashMap<String, ArrayList<Expr>> filterCache;
     private HashMap<String, ArrayList<Expr>> subTreeCache;
@@ -226,6 +227,16 @@ public class FilterConfig {
     }
 
     /**
+     * Get the boolean value for the config with the name "name"
+     * @param name
+     * @return
+     */
+    public boolean getBoolean(String name, boolean standardValue){
+        Value v = getConfigValue(name);
+        return v != null && v.isBool() ? v.getBool() : standardValue;
+    }
+
+    /**
      * Call to the debuggerConfig to get the config value, and caches the config
      * @param name
      * @return
@@ -272,7 +283,7 @@ public class FilterConfig {
 
     public boolean hasSubTree(Node node){
         if(configs == null || node.isNull())
-            return false;
+            return true;
 
         if(!configs.getConfigs().hasUse())
             return true;
@@ -284,9 +295,8 @@ public class FilterConfig {
             exprs = configs.getSubTreeExpressions(node.node.getClass());
             subTreeCache.put(node.simpleNameClass, exprs);
         }
-
-        if(exprs == null)
-            return false;
+        if(exprs.size() == 0)
+            return true;
         return getValidateExprs(exprs, node);
     }
 

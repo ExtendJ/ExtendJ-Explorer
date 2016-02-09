@@ -5,7 +5,7 @@ aspect ShowAttributes{
         Class clazz = nodeClass;
         while(clazz != null){
             for(NodeFilter filter : nodeFilters()){
-                if(!filter.getClassName().equals(nodeClass.getSimpleName()))
+                if(!filter.getClassName().equals(clazz.getSimpleName()))
                     continue;
                 for(LangDecl d : filter.shows()){
                     if(!attrs.contains(d.getID())){

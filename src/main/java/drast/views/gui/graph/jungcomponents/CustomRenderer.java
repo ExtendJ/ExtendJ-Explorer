@@ -92,10 +92,12 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
                         renderContext,
                         layout,
                         v);
-                renderVertexLabel(
-                        renderContext,
-                        layout,
-                        v);
+                if(!moving) {
+                    renderVertexLabel(
+                            renderContext,
+                            layout,
+                            v);
+                }
             }
         } catch(ConcurrentModificationException cme) {
             renderContext.getScreenDevice().repaint();

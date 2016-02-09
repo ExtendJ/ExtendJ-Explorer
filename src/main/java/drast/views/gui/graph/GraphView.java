@@ -13,12 +13,14 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.*;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
+import edu.uci.ics.jung.visualization.renderers.BasicVertexLabelRenderer;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.filteredtree.NodeReference;
 import drast.views.gui.Monitor;
 import drast.views.gui.controllers.Controller;
 import drast.views.gui.graph.jungcomponents.*;
+import edu.uci.ics.jung.visualization.renderers.VertexLabelAsShapeRenderer;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import org.apache.commons.collections15.Transformer;
@@ -110,10 +112,6 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         setVisualizationTransformers(vs);
     }
 
-    public DelegateForest<GenericTreeNode, GraphEdge> getJungGraph(){
-        return (DelegateForest<GenericTreeNode, GraphEdge> )vs.getGraphLayout().getGraph();
-    }
-
     /**
      *
      */
@@ -143,7 +141,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
     }
 
     public void setPreferredSize(int width, int height){
-        vs.setPreferredSize(new Dimension(width, height)); //TODO THIS BREAKS THE PROGRAM
+        vs.setPreferredSize(new Dimension(width, height));
         vs.scaleToLayout(scaler);
         vs.repaint();
     }
@@ -323,13 +321,13 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         bvs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
         bvs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
         bvs.getRenderContext().setVertexShapeTransformer(new VertexShapeTransformer(vs.getRenderContext()));
-        bvs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
 
         bvs.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
         bvs.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
         bvs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.QuadCurve<>());
         bvs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<>());
         bvs.getRenderContext().setLabelOffset(15);
+
         //Override the default renderers
         bvs.getRenderer().setEdgeLabelRenderer(new EdgeLabelRenderer<>());
     }
@@ -345,7 +343,6 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         gm.add(new PopupGraphMousePlugin(vs, mon, this));
         gm.add(new PickingGraphMousePlugin());
         gm.add(new CustomScalingGraphMousePlugin(new ScalingControllerMinLimit(), 0, 1.1f, 0.9f));
-        //gm.add(new RotatingGraphMousePlugin());
         vs.setGraphMouse(gm);
     }
 

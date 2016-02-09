@@ -1,6 +1,5 @@
 package drast.model;
 
-import configAST.Bool;
 import drast.model.filteredtree.*;
 import drast.model.nodeinfo.NodeInfo;
 import javafx.util.Pair;
@@ -107,22 +106,6 @@ public class ASTBrain extends Observable{
     public String getAppliedFilters(){
         return filterConfig != null ? filterConfig.getEnabledFilterNames() : null;
     }
-    /**
-     * Return all messages with the give type.
-     * The messages will be removed and can not be fetched again through this method.
-     * @param map
-     * @param type
-     * @return
-     */
-    private ArrayList<AlertMessage> getMessageLine(HashMap<Integer, ArrayList<AlertMessage>> map, int type){
-        if(!map.containsKey(type)) {
-            map.put(type, new ArrayList<>());
-            return map.get(type);
-        }
-        ArrayList<AlertMessage> ret = map.get(type);
-        map.put(type, new ArrayList<>());
-        return ret;
-    }
 
     /**
      * Saves all types and their class inheritance chain
@@ -173,39 +156,47 @@ public class ASTBrain extends Observable{
         normalNodes = 0;
         ArrayList<NodeReference> futureReferences = new ArrayList<>();
         long time = System.currentTimeMillis();
-        createFilteredTree(node, null, firstTime, filterConfig.getInt(FilterConfig.NTA_DEPTH), futureReferences);
+        createFilteredTree(node, null, false ,firstTime, filterConfig.getInt(FilterConfig.NTA_DEPTH), futureReferences);
         addReferences(futureReferences, false); // Add reference edges that is defined in the filter language
         System.out.println("Time for AST filter : " + (System.currentTimeMillis() - time));
     }
 
-    private GenericTreeNode getNode(Node node, GenericTreeNode parent){
+    private GenericTreeNode getNode(Node node, GenericTreeNode parent, boolean collapse){
         if(node == null)
             return null;
+
+        if(collapse && parent != null && parent.isCluster())
+            return parent;
+        else if (collapse)
+            return new TreeCluster(node, parent, filterConfig);
 
         GenericTreeNode gNode;
         boolean enabled = filterConfig.isEnabled(node);
         if(enabled) {
             normalNodes++;
-            gNode = new TreeNode(node, parent);
-            gNode.setStyles(filterConfig);
-        }else if (node.isNull()) {
-            gNode = new TreeNode(node, parent);
-        }else if(parent != null && parent.isCluster()) {
+            gNode = new TreeNode(node, parent, filterConfig);
+        }else if (node.isNull())
+            gNode = new TreeNode(node, parent, filterConfig);
+        else if(parent != null && parent.isCluster())
             gNode = parent;
-        }else {
-            gNode = new TreeCluster(node, parent);
-            gNode.setStyles(filterConfig);
-        }
+        else
+            gNode = new TreeCluster(node, parent, filterConfig);
+
 
         return gNode;
 
     }
 
-    private void createFilteredTree(Node node, GenericTreeNode parent, boolean firstTime, int depth, ArrayList<NodeReference> futureReferences){
+    private void createFilteredTree(Node node, GenericTreeNode parent, boolean collapseTree, boolean firstTime, int depth, ArrayList<NodeReference> futureReferences){
         if(node == null)
             return;
+        boolean collapse = collapseTree;
 
-        GenericTreeNode gNode = getNode(node, parent);
+        GenericTreeNode gNode = getNode(node, parent, collapse);
+
+        if (!collapse)
+            collapse = !filterConfig.hasSubTree(node);
+
         treeNodes.put(node.node, gNode);
 
         if(parent != null)
@@ -222,11 +213,14 @@ public class ASTBrain extends Observable{
         }
 
         HashSet<String> displayedAttributes = filterConfig.getDisplayedAttributes(node);
-        addNTAs(node, gNode, depth, futureReferences, displayedAttributes);
-        gNode.setDisplayedAttributes(futureReferences, displayedAttributes, this);
+
+        addNTAs(node, gNode, collapse, depth, futureReferences, displayedAttributes);
+
+        if(!collapse)
+            gNode.setDisplayedAttributes(futureReferences, displayedAttributes, this);
 
         for(Node child : node.children)
-            createFilteredTree(child, gNode, firstTime, depth, futureReferences);
+            createFilteredTree(child, gNode, collapse, firstTime, depth, futureReferences);
 
         clusterClusters(gNode);
     }
@@ -241,8 +235,9 @@ public class ASTBrain extends Observable{
             clusterParent.setStyles(filterConfig);
             // get all children cluster children that have no children
             for (GenericTreeNode fChild : gNode.getChildren()) {
-                if (fChild.isCluster() && fChild.getChildren().size() == 0)
+                if (fChild.isCluster() && fChild.getChildren().size() == 0) {
                     clusterParent.addChild(null, fChild);
+                }
             }
             if(clusterParent.getClusters().size() > 0) {
                 for(GenericTreeNode cChild : clusterParent.getClusters()) {
@@ -256,7 +251,7 @@ public class ASTBrain extends Observable{
     /**
      * Adds the NTA that should be visible to the filtered tree
      */
-   private void addNTAs(Node node, GenericTreeNode parent, int depth, ArrayList<NodeReference> futureReferences, HashSet<String> displayedAttributes){
+   private void addNTAs(Node node, GenericTreeNode parent, boolean collapse, int depth, ArrayList<NodeReference> futureReferences, HashSet<String> displayedAttributes){
         // Create the nta nodes specified by the Configuration language, and traverse down the NTA:s
         if(depth > 0) {
             for (String s : displayedAttributes) {
@@ -268,7 +263,7 @@ public class ASTBrain extends Observable{
                     node.showNTAChildren.put(s, ntaNode);
                     ASTNTAObjects.add(ntaNode.node);
                 }
-                createFilteredTree(ntaNode, parent, true, depth - 1, futureReferences);
+                createFilteredTree(ntaNode, parent, collapse, true, depth - 1, futureReferences);
             }
         }
 
@@ -276,16 +271,19 @@ public class ASTBrain extends Observable{
         if(computedNTAs.containsKey(node) && filterConfig.getBoolean(FilterConfig.NTA_COMPUTED)){
             for(Node child : computedNTAs.get(node)) {
                 if(!treeNodes.containsKey(child.node)) {
-                    createFilteredTree(child, parent, true, 0, futureReferences);
+                    createFilteredTree(child, parent, collapse, true, 0, futureReferences);
                 }
             }
         }
-        for(Node child : node.getNodeData().findCachedNTAs(this)) {
-            if(child == null || treeNodes.containsKey(child.node))
-                continue;
-            if(!ASTNTAObjects.contains(child.node))
-                ASTNTAObjects.add(child.node);
-            createFilteredTree(child, parent, true, 0, futureReferences);
+        if(filterConfig.getBoolean(FilterConfig.NTA_CACHED, true)) {
+            node.getNodeData().setCachedNTAs(this);
+            for (Node child : node.NTAChildren.values()) {
+                if (child == null || treeNodes.containsKey(child.node))
+                    continue;
+                if (!ASTNTAObjects.contains(child.node))
+                    ASTNTAObjects.add(child.node);
+                createFilteredTree(child, parent, collapse, true, 0, futureReferences);
+            }
         }
     }
 
@@ -338,7 +336,7 @@ public class ASTBrain extends Observable{
     public void buildFilteredSubTree(Node node, TreeNode parent){
         ArrayList<NodeReference> futureReferences = new ArrayList<>();
         parent.setDisplayedAttributes(futureReferences, filterConfig.getDisplayedAttributes(node), this);
-        createFilteredTree(node, parent, true, 0, displayedReferences);
+        createFilteredTree(node, parent, false, true, 0, displayedReferences);
         addReferences(futureReferences, true);
     }
 
