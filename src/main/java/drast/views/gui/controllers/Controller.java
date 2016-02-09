@@ -6,11 +6,13 @@ import drast.model.nodeinfo.NodeInfo;
 import drast.views.gui.Monitor;
 import drast.views.gui.dialogs.DrDialog;
 import drast.views.gui.graph.GraphView;
+import drast.views.gui.guicomponent.MinimizeButton;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -35,15 +37,24 @@ public class Controller implements Initializable {
     @FXML private FilterTabController filterTabController;
     @FXML private ClassOverviewController classOverviewController;
 
+    @FXML private VBox leftWindow;
+    @FXML private VBox rightWindow;
+    @FXML private VBox consoleWindow;
+
     @FXML
     private TabPane astViewTabs;
 
+    @FXML private TabPane leftWindowContent;
+    @FXML private SplitPane rightWindowContent;
+    @FXML private VBox consoleWindowContent;
+
+
     @FXML
-    private Button minimizeLeftSide;
+    private MinimizeButton minimizeLeftSide;
     @FXML
-    private Button minimizeRightSide;
+    private MinimizeButton minimizeRightSide;
     @FXML
-    private Button minimizeConsole;
+    private MinimizeButton minimizeConsole;
 
     @FXML
     private SplitPane centerSplitPane;
@@ -87,27 +98,29 @@ public class Controller implements Initializable {
         // minimize buttons for each side bar
         minimizeLeftSide.setOnMouseClicked(event2 -> {
             if(event2.getButton() == MouseButton.PRIMARY) {
-                if (centerSplitPane.getDividers().get(0).getPosition() < 0.05)
-                    centerSplitPane.setDividerPosition(0, 0.2);
+                if(minimizeLeftSide.minimizeNext())
+                    minimizeLeftWindow();
                 else
-                    centerSplitPane.setDividerPosition(0, 0);
+                    maximizeLeftWindow();
             }
         });
         minimizeRightSide.setOnMouseClicked(event2 -> {
             if (event2.getButton() == MouseButton.PRIMARY) {
-                if (centerSplitPane.getDividers().get(1).getPosition() > 0.95)
-                    centerSplitPane.setDividerPosition(1, 0.8);
-                else
-                    centerSplitPane.setDividerPosition(1, 1);
+                if(minimizeRightSide.minimizeNext()){
+                    minimizeRightWindow();
+                }else{
+                    maximizeRightWindow();
+                }
             }
 
         });
         minimizeConsole.setOnMouseClicked(event2 -> {
             if(event2.getButton() == MouseButton.PRIMARY) {
-                if (consoleAndGraphSplitPane.getDividers().get(0).getPosition() > 0.95)
-                    consoleAndGraphSplitPane.setDividerPosition(0, 0.8);
-                else
-                    consoleAndGraphSplitPane.setDividerPosition(0, 1);
+                if(minimizeConsole.minimizeNext()){
+                    minimizeConsoleWindow();
+                }else{
+                    maximizeConsoleWindow();
+                }
             }
 
         });
@@ -123,6 +136,59 @@ public class Controller implements Initializable {
         );
 
         updateAstInfoLabels();
+    }
+
+    private void maximizeLeftWindow(){
+
+        if(minimizeLeftSide.isMinimized()) {
+            minimizeLeftSide.setMinimized(false);
+            leftWindow.getChildren().add(leftWindowContent);
+            leftWindow.maxWidthProperty().bind(centerSplitPane.widthProperty());
+            centerSplitPane.setDividerPosition(0, 0.2);
+        }
+    }
+
+    private void maximizeRightWindow(){
+        if(minimizeRightSide.isMinimized()) {
+            minimizeRightSide.setMinimized(false);
+            rightWindow.getChildren().add(rightWindowContent);
+            rightWindow.maxWidthProperty().bind(centerSplitPane.widthProperty());
+            centerSplitPane.setDividerPosition(1, 0.8);
+        }
+
+    }
+
+    private void maximizeConsoleWindow(){
+        if(minimizeConsole.isMinimized()) {
+            minimizeConsole.setMinimized(false);
+            consoleWindow.getChildren().add(consoleWindowContent);
+            consoleWindow.maxHeightProperty().bind(consoleAndGraphSplitPane.heightProperty());
+            consoleAndGraphSplitPane.setDividerPosition(0, 0.8);
+        }
+    }
+
+    private void minimizeLeftWindow(){
+        if(minimizeLeftSide.minimizeNext()) {
+            minimizeLeftSide.setMinimized(true);
+            leftWindow.getChildren().remove(leftWindowContent);
+            leftWindow.maxWidthProperty().bind(minimizeLeftSide.widthProperty());
+        }
+    }
+
+    private void minimizeRightWindow(){
+        if(minimizeRightSide.minimizeNext()) {
+            minimizeRightSide.setMinimized(true);
+            rightWindow.getChildren().remove(rightWindowContent);
+            rightWindow.maxWidthProperty().bind(minimizeRightSide.widthProperty());
+        }
+    }
+
+    private void minimizeConsoleWindow(){
+        if(minimizeConsole.minimizeNext()) {
+            minimizeConsole.setMinimized(true);
+            consoleWindow.getChildren().remove(consoleWindowContent);
+            consoleWindow.maxHeightProperty().bind(minimizeConsole.heightProperty());
+        }
     }
 
     /**
@@ -142,7 +208,16 @@ public class Controller implements Initializable {
     }
 
     public void toggleMinimizeWindows(){
-        if(centerSplitPane.getDividers().get(0).getPosition() < 0.05 &&
+        if(minimizeLeftSide.isMinimized() && minimizeRightSide.isMinimized() && minimizeConsole.isMinimized()){
+            maximizeLeftWindow();
+            maximizeRightWindow();
+            maximizeConsoleWindow();
+        }else{
+            minimizeLeftWindow();
+            minimizeRightWindow();
+            minimizeConsoleWindow();
+        }
+        /*if(centerSplitPane.getDividers().get(0).getPosition() < 0.05 &&
                 centerSplitPane.getDividers().get(1).getPosition() > 0.95 &&
                 consoleAndGraphSplitPane.getDividers().get(0).getPosition() > 0.95){
             centerSplitPane.setDividerPosition(0, 0.2);
@@ -152,7 +227,7 @@ public class Controller implements Initializable {
             centerSplitPane.setDividerPosition(0, 0);
             centerSplitPane.setDividerPosition(1, 1);
             consoleAndGraphSplitPane.setDividerPosition(0, 1);
-        }
+        }*/
     }
 
     public void onNewAPI(){
