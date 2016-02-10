@@ -147,6 +147,10 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         vs.repaint();
     }
 
+    public DelegateForest<GenericTreeNode, GraphEdge> getJungGraph(){
+        return graph;
+    }
+
     /**
      *
      * @param node
@@ -390,10 +394,10 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
     }
 
     public void zoomIn() {
-        scaler.scale(vs, 2 > 0 ? 1.1f : 1 / 1.1f, vs.getCenter());
+        scaler.scale(vs, 1 / 1.1f, vs.getCenter());
     }
 
     public void zoomOut() {
-        scaler.scale(vs, -2 > 0 ? 1.1f : 1 / 1.1f, vs.getCenter());
+        scaler.scale(vs, 1 / 1.1f, vs.getCenter());
     }
 }

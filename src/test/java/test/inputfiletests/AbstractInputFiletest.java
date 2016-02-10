@@ -8,7 +8,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import static org.junit.Assert.assertEquals;
 
 /**
  * A parameterized test suite. Adds helper methods for
@@ -78,6 +77,7 @@ abstract public class AbstractInputFiletest {
 		DrAST debugger = new DrAST(program);
 		debugger.setFilterPath(inDirectory + "/filter.fcl");
 		debugger.run();
+		System.out.println(program);
 		DrASTXML xmlPrinter = new DrASTXML(debugger);
 		xmlPrinter.run();
 		xmlPrinter.printXml(inDirectory, AbstractInputFiletest.OUT_EXTENSION);
