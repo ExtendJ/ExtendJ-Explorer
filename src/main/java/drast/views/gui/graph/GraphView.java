@@ -52,7 +52,7 @@ import java.util.HashMap;
  *
  * Created by gda10jli on 10/15/15.
  */
-public class GraphView extends SwingNode implements ItemListener { //TODO needs a performance overhaul when it comes to HUGE graphs
+public class GraphView extends SwingNode implements ItemListener {
     private Monitor mon;
     private GraphViewController myController;
     private CustomVisualizationViewer<GenericTreeNode, GraphEdge> vs;

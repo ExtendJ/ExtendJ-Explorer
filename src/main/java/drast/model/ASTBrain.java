@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class ASTBrain extends Observable{
 
-    public static final String VERSION = "alphabuild-0.3.1";
+    public static final String VERSION = "alphabuild-0.4.0";
 
     private HashMap<Class, ArrayList<Pair<Method, Annotation>>> methods;
     private HashMap<Class, ArrayList<Method>> NTAMethods;
@@ -40,7 +40,6 @@ public class ASTBrain extends Observable{
     private ArrayList<NodeReference> displayedReferences;
     private HashMap<Integer, Boolean> typeErrorTracker;
     private String directoryPath;
-    private boolean error;
 
     private int normalNodes = 0;
     private int clusterNodes = 0;
@@ -60,12 +59,12 @@ public class ASTBrain extends Observable{
         computedNTAs = new HashMap<>();
         ASTObjects = new HashSet<>();
         ASTNTAObjects = new HashSet<>();
+        typeErrorTracker = new HashMap<>();
         if(isAPIHolder) //No root node, will stop here
             return;
         NTAMethods = new HashMap<>();
         methods = new HashMap<>();
         methodCacheField = new HashMap<>();
-        typeErrorTracker = new HashMap<>();
 
         // new Node will recreate the AST and be the low level data structure of this program.
         long time = System.currentTimeMillis();

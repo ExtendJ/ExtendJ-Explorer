@@ -7,9 +7,10 @@ This readme has the following content
     - Get the project on you machine
     - Building the project
     - Create jar file
-    - See if things are working
+    - Running DrAST
+         - The easy way
+         - The hard way
     - Try out an example project
-    - Running DrAST on your project
     - Lib dependencies for Linux
     - The Filter Configuration Language
 
@@ -42,34 +43,43 @@ Note! The second one will run both normal and GUI tests.
 ## Create jar file ##
 After assembling the project, create the jar by writing the following command:
 ```
-./gradlew fatJar
+./gradlew gui
 ```
 ## See if things are working ##
-To test if the DrAST is ready to run on your computer you can just run the jar with the following command:
+To test if the DrASTGUI is ready to run on your computer you can just run the jar with the following command:
 ```
-java -jar jastadddebugger-exjobb.jar
+java -jar DrAST.jar
 ```
-This should run a sample JastAdd project and run the DrASTUI program. see Lib dependencis below if it's not working.
+This should should start up the graphical user interface for DrAST. see Lib dependencis below if it's not working.
 
-Note! The debugger will run on the sample.fcl file in your directory. The file sample.fcl contain some Configuration Language code which will be described later.
+## Running DrAST ##
+There are two ways of starting DrAST, the easy way and the hard way.
+Both require some changes to your compiler code.
 
-## Try out an example project ##
-Alternatively you can look at the small project CaclASM, that follows when you clone this project. This version of CalcASM is configured to run JastAddUI after its parsing. See row 43-44 in the file CalcASM/src/java/lang/compiler.java to see how it works. 
+### The easy way ###
+The easy way is to add a static field in you main class file, for example compiler.java .
+The field you need to add is named ``` DrAST_root_node ```. 
+Just add this field to your main class and then simply assign it the root node of your AST, in your compiler.
 
-To run this version of CalcASM go to the directory and run the following command: 
+Here is an example in how this is done.
 ```
-ant jar
-```
-This will create a jar named compiler which contains the compiler for the CalcASM language. 
-To start the DrASTUI simply run:
-```
-java -jar compiler.jar testfiles/asm/mul2.calc
+...
+public static Object DrAST_root_node;
+...
+YourParser parser = new YourParser();
+RootNode rootNode = (RootNode) parser.parse(scanner);
+DrAST_root_node = rootNode; // Where rootNode is the Object of your AST:s root.
+...
 ```
 
-## Running DrAST on your project ##
-There are a few things that must be done to run DrAST on your own project.
+Now simply build your compiler and start DrAST with:
+´´´
+java -jar DrAST.jar
+´´´
+This will start the GUI, so choose your compiler and add some arguments, for example a source file.
 
-* Add created Jar to your projects Library path.
+### The hard way ###
+First you need to add the DrAST .jar file to your projects Library path.
 For example if you are using an ant build script do something like this:
 Add the jar as a library to the script:
 ```
@@ -90,13 +100,17 @@ DrAST.ui.DrASTUI debugger = new DrAST.ui.DrASTUI(rootNode);// Where rootNode is 
 debugger.run();
 ```
 
-Now your done! Next time you run your project on your source code, DrASTUI will start up after the parsing and scanning is done.
+Now your done! Next time you run your project on your source code, DrASTGUI will start up after the parsing and scanning is done.
 
-NOTE! You don't need to run the GUI of DrAST. All computations are done in a class DrASTAPI. If you want to get the data without an GUI, run the following code:
+## Try out an example project ##
+You can test DrAST on the small CaclASM compiler, which is located in the ``` CalcASM/ ``` folder.
+First of you need to build this version of the CalcASM compiler, so simply go to the directory and run the following command: 
 ```
-DrAST.api.DrASTAPI debugger = new DrAST.api.DrASTAPI(rootNode); // Where rootNode is the Object of your AST:s root
-debugger.run();
+ant jar
 ```
+This will create a .jar file named compiler that will contain the compiler for the CalcASM language. 
+Now you can just choose the compiler with DrAST and a argument file, for example nesting2.calc under ``` CalcASM/testfiles/asm/nesting2.calc ```.
+This will now display the CalcASM AST.
 
 ## Lib dependencies for Linux ##
 
@@ -118,8 +132,9 @@ configs{
 }
 filter f1{
   :ASTNode{
-    show{}
     when{}
+    subtree{}
+    show{}
     style{}
   }
 }
