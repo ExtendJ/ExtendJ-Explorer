@@ -15,6 +15,6 @@ configs{
 }
 filter include{
     :ASTNode;
-    :NodeConfig{ when{ :c != 2;}
-    }
+    :NodeConfig{ when{ :c != 2;} }
 }
+

@@ -33,10 +33,10 @@ public class ScalingControllerMinLimit extends CrossoverScalingControl {
         double viewScale = viewTransformer.getScale();
         double viewScaleX = viewTransformer.getScaleX();
         double viewScaleY = viewTransformer.getScaleY();
-
+        System.out.println(viewScaleX + " " + viewScaleY + " " + viewScale);
         double scale = modelScale * viewScale;
 
-        if(scale < scaleLimit && amount < 1)
+        if(viewScale < scaleLimit && amount < 1)
             return;
 
         double inverseModelScale = Math.sqrt(crossover)/modelScale;
@@ -47,24 +47,33 @@ public class ScalingControllerMinLimit extends CrossoverScalingControl {
             // close to the control point, return both transformers to a scale of sqrt crossover value
             layoutTransformer.scale(inverseModelScale, inverseModelScale, transformedAt);
             viewTransformer.scale(inverseViewScale, inverseViewScale, at);
+
+
         } else if(scale*amount < crossover) {
             // scale the viewTransformer, return the layoutTransformer to sqrt crossover value
             viewTransformer.scale(amount, amount, at);
             layoutTransformer.scale(inverseModelScale, inverseModelScale, transformedAt);
+
         } else {
             // scale the layoutTransformer, return the viewTransformer to crossover value
             layoutTransformer.scale(amount, amount, transformedAt);
             viewTransformer.scale(inverseViewScale, inverseViewScale, at);
+
         }
         double newModelScale = layoutTransformer.getScale();
         double newViewScale = viewTransformer.getScale();
         scale = newModelScale * newViewScale;
-
-/*        if(scale < scaleLimit){
-            layoutTransformer.setScale(modelScaleX, modelScaleY, transformedAt);
-            viewTransformer.setScale(viewScaleX, viewScaleY, transformedAt);
+/*
+        if(viewTransformer.getScale() < scaleLimit){
+            viewTransformer.setScale(scaleLimit, scaleLimit, at);
         }
 */
         vv.repaint();
+    }
+
+    private double getScale(MutableTransformer layoutTransformer, MutableTransformer viewTransformer){
+        double modelScale = layoutTransformer.getScale();
+        double viewScale = viewTransformer.getScale();
+        return modelScale * viewScale;
     }
 }

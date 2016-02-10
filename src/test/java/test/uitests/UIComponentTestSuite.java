@@ -174,7 +174,6 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         clickOn("#messagesBox");
         clickOn("#warningsBox");
         clickOn("#errorsBox");
-        clickOn("#allBox");
     }
 
     @Test
