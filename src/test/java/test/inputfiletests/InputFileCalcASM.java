@@ -32,7 +32,6 @@ public class InputFileCalcASM extends AbstractInputFiletest {
 		super(TEST_DIR, dir, DrAST.FILE_NAME);
 	}
 
-
 	@Test
 	public void runInputTests() {
 		System.out.println("start test in: " + inDirectory);

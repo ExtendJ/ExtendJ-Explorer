@@ -8,7 +8,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import static org.junit.Assert.assertEquals;
 
 /**
  * A parameterized test suite. Adds helper methods for
@@ -70,6 +69,7 @@ abstract public class AbstractInputFiletest {
 			if(f.isDirectory())
 				tests.add(new Object[] {testDirectory + f.getName()});
 		}
+		System.out.println(tests);
 		return tests;
 	}
 
