@@ -1,4 +1,4 @@
-package drast.views.gui.graph.jungcomponents;
+package drast.views.gui.graph.jungcomponents.renderers;
 
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.visualization.RenderContext;
@@ -7,10 +7,8 @@ import drast.model.filteredtree.GenericTreeNode;
 import drast.views.gui.Monitor;
 import drast.views.gui.graph.GraphEdge;
 
-import java.awt.*;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
-import java.util.List;
 
 /**
  * Created by gda10jth on 1/21/16.
@@ -26,9 +24,11 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
     private boolean moving;
     private boolean optimization;
     private CustomVertexLabelRenderer labelRenderer;
+    private Monitor mon;
     public CustomRenderer(Monitor mon){
+        this.mon = mon;
         moving = false;
-        refresh(mon);
+        refresh();
         labelRenderer = new CustomVertexLabelRenderer();
         setVertexLabelRenderer(labelRenderer);
     }
@@ -37,10 +37,9 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
      * This method tries to get the threshold from the configuration file and see if optimizations needs to be done.
      * No optimization will be enabled if something goes wrong with reading the configuration value.
      *
-     * @param mon
      */
 
-    public void refresh(Monitor mon){
+    public void refresh(){
         optimization = false;
         try {
             int nodeThreshold = 2000;
@@ -71,7 +70,8 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
      */
     @Override
     public void render(RenderContext<GenericTreeNode, GraphEdge> renderContext, Layout<GenericTreeNode, GraphEdge> layout) {
-
+        if(!moving)
+            mon.getController().getGraphViewTabController().graphIsLoading();
         if(!optimization || (optimization && !moving)) {
             // paint all the edges
             try {
@@ -107,6 +107,8 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
         } catch(ConcurrentModificationException cme) {
             renderContext.getScreenDevice().repaint();
         }
+        if(!moving)
+            mon.getController().getGraphViewTabController().graphIsLoading();
     }
 
     @Override

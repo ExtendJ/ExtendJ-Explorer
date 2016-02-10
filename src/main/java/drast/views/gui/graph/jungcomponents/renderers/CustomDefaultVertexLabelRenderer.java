@@ -1,4 +1,4 @@
-package drast.views.gui.graph.jungcomponents;
+package drast.views.gui.graph.jungcomponents.renderers;
 
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.filteredtree.TreeNode;

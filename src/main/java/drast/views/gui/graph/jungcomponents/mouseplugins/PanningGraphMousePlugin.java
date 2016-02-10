@@ -1,5 +1,6 @@
-package drast.views.gui.graph.jungcomponents;
+package drast.views.gui.graph.jungcomponents.mouseplugins;
 
+import drast.views.gui.graph.jungcomponents.renderers.CustomRenderer;
 import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.TranslatingGraphMousePlugin;
@@ -11,9 +12,9 @@ import java.awt.geom.Point2D;
 /**
  * Created by gda10jli on 12/14/15.
  */
-public class DraggingGraphMousePlugin extends TranslatingGraphMousePlugin {
+public class PanningGraphMousePlugin extends TranslatingGraphMousePlugin {
 
-    public DraggingGraphMousePlugin(int modifiers) {
+    public PanningGraphMousePlugin(int modifiers) {
         super(modifiers);
     }
 

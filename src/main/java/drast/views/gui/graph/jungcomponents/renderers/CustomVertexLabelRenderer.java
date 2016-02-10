@@ -1,26 +1,24 @@
-package drast.views.gui.graph.jungcomponents;
+package drast.views.gui.graph.jungcomponents.renderers;
 
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.filteredtree.TreeNode;
 import drast.views.gui.graph.GraphEdge;
+import drast.views.gui.graph.jungcomponents.transformers.VertexShapeTransformer;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.Context;
 import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.RenderContext;
-import edu.uci.ics.jung.visualization.picking.PickedState;
 import edu.uci.ics.jung.visualization.renderers.BasicVertexLabelRenderer;
 import edu.uci.ics.jung.visualization.transform.BidirectionalTransformer;
 import edu.uci.ics.jung.visualization.transform.shape.GraphicsDecorator;
 import edu.uci.ics.jung.visualization.transform.shape.ShapeTransformer;
 import edu.uci.ics.jung.visualization.transform.shape.TransformingGraphics;
 
-import javax.management.openmbean.CompositeType;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
 
 /**
  * Created by gda10jth on 2/8/16.

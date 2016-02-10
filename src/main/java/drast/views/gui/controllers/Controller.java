@@ -367,4 +367,6 @@ public class Controller implements Initializable {
         if(mon.getSelectedInfo() != null)
             attributeTabController.setReference(mon.getSelectedInfo().getValue());
     }
+
+    public GraphViewController getGraphViewTabController(){ return graphViewTabController;}
 }

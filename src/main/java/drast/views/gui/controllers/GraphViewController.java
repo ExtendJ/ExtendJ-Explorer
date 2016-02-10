@@ -8,6 +8,7 @@ import drast.views.gui.dialogs.OpenASTDialog;
 import drast.views.gui.graph.GraphView;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -69,6 +70,16 @@ public class GraphViewController implements Initializable, ControllerInterface {
         this.mon = mon;
         this.graphView = mon.getGraphView();
         graphView.setMyController(this);
+    }
+
+    public void graphIsLoading(){
+        if(graphView != null)
+            graphView.setCursor(Cursor.WAIT);
+    }
+
+    public void graphIsDone(){
+        if(graphView != null)
+            graphView.setCursor(Cursor.DEFAULT);
     }
 
     /**
