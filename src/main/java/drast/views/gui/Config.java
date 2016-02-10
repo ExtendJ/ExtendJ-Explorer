@@ -75,6 +75,7 @@ public class Config{
 				writer.println("nodeThreshold=1000");
 				writer.println("showNodes=1");
 				writer.println("showEdges=1");
+				writer.println("niceEdges=1");
 				writer.close();
 			}
 

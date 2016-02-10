@@ -333,7 +333,7 @@ public class GraphView extends SwingNode implements ItemListener {
 
         bvs.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
         bvs.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
-        bvs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.QuadCurve<>());
+        setNiceEdges(mon.getConfig().isEnabled("niceEdges"));
         bvs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<>());
         bvs.getRenderContext().setLabelOffset(15);
 
@@ -359,6 +359,15 @@ public class GraphView extends SwingNode implements ItemListener {
     public void repaintHard(){
         vs.repaint();
         setContent(vs);
+    }
+
+    public void setNiceEdges(boolean niceEdges){
+        if(niceEdges)
+            vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.QuadCurve<>());
+        else
+            vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<>());
+        vs.repaint();
+
     }
 
     public void repaint(){

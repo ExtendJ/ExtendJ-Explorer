@@ -3,6 +3,7 @@ package drast.views.gui.controllers;
 import drast.DrASTSetup;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.views.DrASTXML;
+import drast.views.gui.Config;
 import drast.views.gui.dialogs.OpenASTDialog;
 import drast.views.gui.Monitor;
 import javafx.fxml.FXML;
@@ -41,12 +42,18 @@ public class TopMenuController implements Initializable, ControllerInterface {
     @FXML private MenuItem rerunCompiler;
     @FXML private CheckMenuItem showEdgesCheckMenuItem;
     @FXML private CheckMenuItem showNodesCheckMenuItem;
+    @FXML private CheckMenuItem niceLookingEdgesCheckMenuItem;
 
     public void init(Monitor mon){
         this.mon = mon;
         prevJarPath = "";
         prevFilterPath = "";
         prevArgString = "";
+        Config config = mon.getConfig();
+        showEdgesCheckMenuItem.setSelected(config.isEnabled("showEdges"));
+        showNodesCheckMenuItem.setSelected(config.isEnabled("showNodes"));
+        niceLookingEdgesCheckMenuItem.setSelected(config.isEnabled("niceEdges"));
+        mon.getController().getGraphViewTabController().setNiceEdges(niceLookingEdgesCheckMenuItem.isSelected());
     }
 
     /**
@@ -78,12 +85,19 @@ public class TopMenuController implements Initializable, ControllerInterface {
         });
 
         showEdgesCheckMenuItem.setOnAction(e->{
-            mon.getConfig().put("showEdges", showEdgesCheckMenuItem.isSelected() ? "1" : "0");
+            saveConfig("showEdges", showEdgesCheckMenuItem);
+            mon.getController().getGraphViewTabController().repaintGraph();
+
+        });
+
+        showNodesCheckMenuItem.setOnAction(e->{
+            saveConfig("showNodes", showNodesCheckMenuItem);
             mon.getController().getGraphViewTabController().repaintGraph();
         });
-        showNodesCheckMenuItem.setOnAction(e->{
-            mon.getConfig().put("showNodes", showNodesCheckMenuItem.isSelected() ? "1" : "0");
-            mon.getController().getGraphViewTabController().repaintGraph();
+
+        niceLookingEdgesCheckMenuItem.setOnAction(e->{
+            saveConfig("niceEdges", niceLookingEdgesCheckMenuItem);
+            mon.getController().getGraphViewTabController().setNiceEdges(niceLookingEdgesCheckMenuItem.isSelected());
         });
 
         MenuItem exportXml = new MenuItem("XML");
@@ -128,6 +142,12 @@ public class TopMenuController implements Initializable, ControllerInterface {
         imageMenu.getItems().add(exportImage);
         imageMenu.getItems().add(exportImagePrintScreen);
 
+    }
+
+    private void saveConfig(String key, CheckMenuItem Value){
+        Config config = mon.getConfig();
+        config.put(key, Value.isSelected() ? "1" : "0");
+        config.saveConfigFile();
     }
 
     private File openDirectoryBrowser(String title, String fileName){
