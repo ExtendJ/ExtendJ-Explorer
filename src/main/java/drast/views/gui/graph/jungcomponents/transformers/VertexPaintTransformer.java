@@ -1,4 +1,4 @@
-package drast.views.gui.graph.jungcomponents;
+package drast.views.gui.graph.jungcomponents.transformers;
 
 /**
  * Created by gda10jli on 12/4/15.

@@ -6,38 +6,42 @@ import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.transform.MutableTransformer;
 
 import java.awt.geom.Point2D;
+import java.util.Random;
 
 /**
  * Scaling class for the zoom, has a limit in how much it is allowed to scale down the view and layout
  */
 public class ScalingControllerMinLimit extends CrossoverScalingControl {
     private final double scaleLimit;
+    private final double scaleLimitZoom;
+    private boolean maxedOutZoom;
 
     public ScalingControllerMinLimit(double scaleLimit){
         super();
         this.scaleLimit = scaleLimit;
+        this.scaleLimitZoom = scaleLimit+0.003;
+        maxedOutZoom = false;
     }
     public ScalingControllerMinLimit(){
         super();
         this.scaleLimit = 0.025;
+        this.scaleLimitZoom = scaleLimit+0.003;
+        maxedOutZoom = false;
     }
 
     @Override
     public void scale(VisualizationServer<?,?> vv, float amount, Point2D at) {
         MutableTransformer layoutTransformer = vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT);
         MutableTransformer viewTransformer = vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW);
-        double modelScale = layoutTransformer.getScale();
-        double modelScaleX = layoutTransformer.getScaleX();
-        double modelScaleY = layoutTransformer.getScaleY();
 
+        double modelScale = layoutTransformer.getScale();
         double viewScale = viewTransformer.getScale();
-        double viewScaleX = viewTransformer.getScaleX();
-        double viewScaleY = viewTransformer.getScaleY();
-        System.out.println(viewScaleX + " " + viewScaleY + " " + viewScale);
         double scale = modelScale * viewScale;
 
-        if(viewScale < scaleLimit && amount < 1)
+        if(amount < 1 && (maxedOutZoom || (amount > 0.5 && viewScale < scaleLimitZoom)))
             return;
+
+        maxedOutZoom = false;
 
         double inverseModelScale = Math.sqrt(crossover)/modelScale;
         double inverseViewScale = Math.sqrt(crossover)/viewScale;
@@ -60,20 +64,12 @@ public class ScalingControllerMinLimit extends CrossoverScalingControl {
             viewTransformer.scale(inverseViewScale, inverseViewScale, at);
 
         }
-        double newModelScale = layoutTransformer.getScale();
-        double newViewScale = viewTransformer.getScale();
-        scale = newModelScale * newViewScale;
-/*
+
         if(viewTransformer.getScale() < scaleLimit){
+            maxedOutZoom = true;
             viewTransformer.setScale(scaleLimit, scaleLimit, at);
         }
-*/
-        vv.repaint();
-    }
 
-    private double getScale(MutableTransformer layoutTransformer, MutableTransformer viewTransformer){
-        double modelScale = layoutTransformer.getScale();
-        double viewScale = viewTransformer.getScale();
-        return modelScale * viewScale;
+        vv.repaint();
     }
 }

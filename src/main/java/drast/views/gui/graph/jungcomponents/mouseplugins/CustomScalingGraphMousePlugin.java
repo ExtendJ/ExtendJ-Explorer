@@ -1,5 +1,6 @@
-package drast.views.gui.graph.jungcomponents;
+package drast.views.gui.graph.jungcomponents.mouseplugins;
 
+import drast.views.gui.graph.jungcomponents.renderers.CustomRenderer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
 import edu.uci.ics.jung.visualization.control.ScalingGraphMousePlugin;

@@ -1,6 +1,16 @@
 package drast.views.gui.graph;
 
+import drast.model.filteredtree.GenericTreeNode;
+import drast.model.filteredtree.NodeReference;
 import drast.views.gui.controllers.GraphViewController;
+import drast.views.gui.graph.jungcomponents.mouseplugins.CustomPickingGraphMousePlugin;
+import drast.views.gui.graph.jungcomponents.mouseplugins.CustomScalingGraphMousePlugin;
+import drast.views.gui.graph.jungcomponents.mouseplugins.PanningGraphMousePlugin;
+import drast.views.gui.graph.jungcomponents.renderers.CustomDefaultVertexLabelRenderer;
+import drast.views.gui.graph.jungcomponents.renderers.CustomRenderer;
+import drast.views.gui.graph.jungcomponents.renderers.EdgeLabelRenderer;
+import drast.views.gui.graph.jungcomponents.transformers.VertexPaintTransformer;
+import drast.views.gui.graph.jungcomponents.transformers.VertexShapeTransformer;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
@@ -9,18 +19,13 @@ import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationImageServer;
-import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.*;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
-import edu.uci.ics.jung.visualization.renderers.BasicVertexLabelRenderer;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
-import drast.model.filteredtree.GenericTreeNode;
-import drast.model.filteredtree.NodeReference;
 import drast.views.gui.Monitor;
 import drast.views.gui.controllers.Controller;
 import drast.views.gui.graph.jungcomponents.*;
-import edu.uci.ics.jung.visualization.renderers.VertexLabelAsShapeRenderer;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import org.apache.commons.collections15.Transformer;
@@ -49,16 +54,14 @@ import java.util.HashMap;
  */
 public class GraphView extends SwingNode implements ItemListener {
     private Monitor mon;
-    private Controller con;
     private GraphViewController myController;
-    private VisualizationViewer<GenericTreeNode, GraphEdge> vs;
+    private CustomVisualizationViewer<GenericTreeNode, GraphEdge> vs;
     private DelegateForest<GenericTreeNode, GraphEdge> graph;
 
     private ScalingControllerMinLimit scaler;
     public GraphView(Monitor mon){
         scaler = new ScalingControllerMinLimit();
         this.mon = mon;
-        this.con = mon.getController();
         DirectedOrderedSparseMultigraph<GenericTreeNode, GraphEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, GraphEdge>();
         graph = new DelegateForest<>(n);
         if(mon.getRootNode() != null) {
@@ -107,7 +110,7 @@ public class GraphView extends SwingNode implements ItemListener {
     public void createLayout(Forest<GenericTreeNode, GraphEdge> g){
         TreeLayout<GenericTreeNode, GraphEdge> layout = new TreeLayout<>(g, 150, 100);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        vs = new VisualizationViewer<>(layout, screenSize);
+        vs = new CustomVisualizationViewer<>(layout, screenSize);
         vs.setRenderer(new CustomRenderer(mon));
         setVisualizationTransformers(vs);
     }
@@ -118,14 +121,14 @@ public class GraphView extends SwingNode implements ItemListener {
     public void updateGraph(){
         DirectedOrderedSparseMultigraph<GenericTreeNode, GraphEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, GraphEdge>();
         graph = new DelegateForest<>(n);
-        ((CustomRenderer)vs.getRenderer()).refresh(mon);
+        ((CustomRenderer)vs.getRenderer()).refresh();
         if(mon.getRootNode() != null)
             createTree(graph, mon.getRootNode(), true);
         TreeLayout<GenericTreeNode, GraphEdge> layout = new TreeLayout<>(graph, 150, 100);
         vs.setGraphLayout(layout);
         addDisplayedReferences();
         panToNode(mon.getRootNode());
-        //showWholeGraphOnScreen();
+        showWholeGraphOnScreen();
         vs.repaint();
     }
 
@@ -133,11 +136,12 @@ public class GraphView extends SwingNode implements ItemListener {
      *
      */
     public void showWholeGraphOnScreen(){
-        vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT).setToIdentity();
-        vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW).setToIdentity();
+        //vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT).setToIdentity();
+        //vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW).setToIdentity();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        vs.setPreferredSize(screenSize);
-        vs.scaleToLayout(scaler);
+        //vs.setPreferredSize(screenSize);
+        vs.zoomOutMax(scaler);
+        //panToNode(mon.getRootNode());
         vs.repaint();
     }
 
@@ -319,7 +323,7 @@ public class GraphView extends SwingNode implements ItemListener {
         };
 
         // Build the VisualizationViewer that holds the graph and all transformers.
-        bvs.scaleToLayout(new ScalingControllerMinLimit());
+        bvs.scaleToLayout(scaler);
 
         bvs.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
         bvs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
@@ -344,11 +348,11 @@ public class GraphView extends SwingNode implements ItemListener {
     public void setListeners(){
         vs.getPickedVertexState().addItemListener(this);
         PluggableGraphMouse gm = new PluggableGraphMouse();
-        gm.add(new DraggingGraphMousePlugin(MouseEvent.BUTTON2_MASK));
-        gm.add(new DraggingGraphMousePlugin(MouseEvent.BUTTON1_MASK + MouseEvent.CTRL_MASK));
+        gm.add(new PanningGraphMousePlugin(MouseEvent.BUTTON2_MASK));
+        gm.add(new PanningGraphMousePlugin(MouseEvent.BUTTON1_MASK + MouseEvent.CTRL_MASK));
         gm.add(new PopupGraphMousePlugin(vs, mon, this));
-        gm.add(new PickingGraphMousePlugin());
-        gm.add(new CustomScalingGraphMousePlugin(new ScalingControllerMinLimit(), 0, 1.1f, 0.9f));
+        gm.add(new CustomPickingGraphMousePlugin());
+        gm.add(new CustomScalingGraphMousePlugin(scaler, 0, 1.1f, 0.9f));
         vs.setGraphMouse(gm);
     }
 
@@ -386,9 +390,9 @@ public class GraphView extends SwingNode implements ItemListener {
             Object subject = e.getItem();
             if (subject != null && subject instanceof GenericTreeNode) {
                 if(e.getStateChange() == ItemEvent.SELECTED)
-                    con.nodeSelected((GenericTreeNode) subject, myController);
+                    mon.getController().nodeSelected((GenericTreeNode) subject, myController);
                 else
-                    con.nodeDeselected(myController);
+                    mon.getController().nodeDeselected(myController);
             }
         });
     }

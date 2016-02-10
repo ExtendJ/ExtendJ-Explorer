@@ -26,9 +26,7 @@ public class InputFileCalcASMPerformance  {
      */
     private static final String TEST_DIR = "tests/inputFileTests/performance-time/";
 
-    public InputFileCalcASMPerformance() {
-        System.out.println("SKIT BAJS HASLFHASIFUHÖ");
-    }
+    public InputFileCalcASMPerformance() {}
 
     @Test
     public void runInputTests() {
