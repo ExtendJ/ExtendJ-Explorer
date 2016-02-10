@@ -1,13 +1,10 @@
 package test.uitests;
 
-import CalcASM.src.gen.lang.ast.LangParser;
-import CalcASM.src.gen.lang.ast.LangScanner;
-import CalcASM.src.gen.lang.ast.Program;
+import CalcASM.src.java.gen.ErrorMessage;
+import CalcASM.src.java.gen.LangParser;
+import CalcASM.src.java.gen.LangScanner;
+import CalcASM.src.java.gen.Program;
 import beaver.Parser;
-import configAST.ConfigParser;
-import configAST.ConfigScanner;
-import configAST.DebuggerConfig;
-import configAST.ErrorMessage;
 import drast.model.ASTBrain;
 import drast.model.DrAST;
 import drast.model.filteredtree.GenericTreeNode;
@@ -51,15 +48,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
                 LangScanner scanner = new LangScanner(new FileReader(inDirectory + "input.calc"));
                 LangParser parser = new LangParser();
                 Program program = (Program) parser.parse(scanner);
-                if (!program.errors().isEmpty()) {
-                    System.err.println();
-                    System.err.println("Errors: ");
-                    for (CalcASM.src.gen.lang.ast.ErrorMessage e : program.errors()) {
-                        System.err.println("- " + e);
-                    }
-                } else {
-                    return program;
-                }
+                return program;
             } catch (FileNotFoundException e) {
                 System.out.println("File not found!");
                 System.exit(1);

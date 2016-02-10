@@ -1,8 +1,9 @@
 package test.inputfiletests;
 
-import CalcASM.src.gen.lang.ast.LangParser;
-import CalcASM.src.gen.lang.ast.LangScanner;
-import CalcASM.src.gen.lang.ast.Program;
+import CalcASM.src.java.gen.ErrorMessage;
+import CalcASM.src.java.gen.LangParser;
+import CalcASM.src.java.gen.LangScanner;
+import CalcASM.src.java.gen.Program;
 import beaver.Parser;
 import drast.model.DrAST;
 import org.junit.Test;
@@ -40,15 +41,7 @@ public class InputFileCalcASM extends AbstractInputFiletest {
 			LangScanner scanner = new LangScanner(new FileReader(filename));
 			LangParser parser = new LangParser();
 			Program program = (Program) parser.parse(scanner);
-			if (!program.errors().isEmpty()) {
-				System.err.println();
-				System.err.println("Errors: ");
-				for (CalcASM.src.gen.lang.ast.ErrorMessage e : program.errors()) {
-					System.err.println("- " + e);
-				}
-			} else {
-				compareWithExpectedFile(program);
-			}
+			compareWithExpectedFile(program);
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found!");
 			System.exit(1);

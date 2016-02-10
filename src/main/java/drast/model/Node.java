@@ -36,7 +36,6 @@ public class Node{
      * @param api used for contributing errors and warnings, during the traversal of the AST.
      */
     public Node(Object root, ASTBrain api, boolean isList){
-        long time = System.currentTimeMillis();
         this.children = new ArrayList<>();
         this.NTAChildren = new HashMap<>();
         this.showNTAChildren = new HashMap<>();
@@ -50,8 +49,6 @@ public class Node{
         fullName = simpleNameClass;
         id = System.identityHashCode(this.toString());
         init(root, isList, false, false, 1, api);
-        System.out.println("Time for AST recreation : " + (System.currentTimeMillis() - time));
-
     }
 
 

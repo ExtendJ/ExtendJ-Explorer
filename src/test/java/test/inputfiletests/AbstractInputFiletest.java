@@ -69,7 +69,6 @@ abstract public class AbstractInputFiletest {
 			if(f.isDirectory())
 				tests.add(new Object[] {testDirectory + f.getName()});
 		}
-		System.out.println(tests);
 		return tests;
 	}
 
