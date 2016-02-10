@@ -60,12 +60,12 @@ public class ASTBrain extends Observable{
         computedNTAs = new HashMap<>();
         ASTObjects = new HashSet<>();
         ASTNTAObjects = new HashSet<>();
+        typeErrorTracker = new HashMap<>();
         if(isAPIHolder) //No root node, will stop here
             return;
         NTAMethods = new HashMap<>();
         methods = new HashMap<>();
         methodCacheField = new HashMap<>();
-        typeErrorTracker = new HashMap<>();
 
         // new Node will recreate the AST and be the low level data structure of this program.
         long time = System.currentTimeMillis();

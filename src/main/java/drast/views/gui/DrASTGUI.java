@@ -1,5 +1,6 @@
 package drast.views.gui;
 
+import drast.DrASTSetup;
 import drast.model.ASTBrain;
 import drast.model.DrAST;
 import drast.views.DrASTView;
@@ -30,14 +31,19 @@ import java.io.IOException;
 
 public class DrASTGUI extends Application implements DrASTView {
     protected static Monitor mon;
-    protected static drast.model.DrAST DrAST;
+    protected static DrAST drAST;
     protected static Controller con;
+    private static boolean hasRun = false;
 
     private Parent rootView;
-    public DrASTGUI() { DrAST = new DrAST(); } // This one is used by Application
+
+    public DrASTGUI() { // This one is used by Application
+        if(drAST == null)
+            drAST = new DrAST();
+    }
 
     public DrASTGUI(Object root) {
-        DrAST = new DrAST(root);
+        drAST = new DrAST(root);
     }
 
     public Parent getRoot(){
@@ -47,25 +53,31 @@ public class DrASTGUI extends Application implements DrASTView {
      * run() generates the AST and then opens the UI
      */
     public void run() {
-        DrAST.run();
-        this.mon = new Monitor(DrAST);
+        drAST.run();
+        hasRun = true;
+        this.mon = new Monitor(drAST);
         launch(new String[0]);
-
     }
 
     @Override
     public drast.model.DrAST getAPI() {
-        return DrAST;
+        return drAST;
     }
 
     @Override
     public void setRoot(Object root, String filterPath, String defaultDir, boolean opened) {
-        DrAST = new DrAST(root);
-        DrAST.setFilterPath(filterPath);
-        mon.clean(DrAST);
-        mon.setDefaultDirectory(defaultDir);
-        mon.setRerunable(opened);
-        con.onNewAPI();
+        drAST = new DrAST(root);
+        System.out.println(drAST + " : " + drAST.noRoot() + ": " + hasRun);
+        drAST.setFilterPath(filterPath);
+        if(!hasRun){
+            run();
+        }else {
+            drAST.run();
+            mon.clean(drAST);
+            mon.setDefaultDirectory(defaultDir);
+            mon.setRerunable(opened);
+            con.onNewAPI();
+        }
     }
 
     @Override
@@ -75,7 +87,7 @@ public class DrASTGUI extends Application implements DrASTView {
         mon.getBrain().putMessage(type, message);
     }
 
-    public void setFilterDir(String dir){DrAST.setFilterPath(dir);}
+    public void setFilterDir(String dir){ drAST.setFilterPath(dir);}
 
     /**
      * start the UI and is by JavaFX. Load the FXML files and generates the GUI. It also embeds the Swing based graph.
@@ -84,7 +96,7 @@ public class DrASTGUI extends Application implements DrASTView {
      * @throws IOException
      */
     @Override
-    public void start (Stage stage) throws Exception {
+    public void start(Stage stage) throws Exception {
 
         FXMLLoader loader = new FXMLLoader();
         rootView = loader.load(getClass().getResource("/main.fxml").openStream());
@@ -117,8 +129,8 @@ public class DrASTGUI extends Application implements DrASTView {
         stage.show();
         ScrollPane center = (ScrollPane) rootView.lookup("#graphViewScrollPane");
         center.setContent(graphview);
-        graphview.setPreferredSize((int)center.getWidth(), (int)center.getHeight());
-        if (DrAST.hasRoot())
+        Platform.runLater(() -> graphview.setPreferredSize((int) center.getWidth(), (int) center.getHeight()));
+        if (!drAST.noRoot())
             return;
         Platform.runLater(() -> {
             OpenASTDialog dialog = new OpenASTDialog(mon);
@@ -126,7 +138,8 @@ public class DrASTGUI extends Application implements DrASTView {
             dialog.show();
         });
 
-    }
+
+        }
 
     public static boolean openFile(File file) {
         try {
@@ -160,6 +173,10 @@ public class DrASTGUI extends Application implements DrASTView {
      */
     public static void main(String[] args) {
         new DrASTGUI().run();
-        //CalcASMGenerator poop = new CalcASMGenerator(10);
+        /*String jarPath = "/home/gda10jli/Documents/extendj/extendj.jar";
+        String[] args2 = {"/home/gda10jli/Documents/jastadddebugger-exjobb/test.java"};
+        String filterPath = "/home/gda10jli/Documents/jastadddebugger-exjobb/filter.fcl";
+        DrASTSetup setup = new DrASTSetup("DrASTGUI", jarPath, filterPath, args2);
+        setup.run();*/
     }
 }

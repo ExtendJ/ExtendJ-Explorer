@@ -114,7 +114,7 @@ public class DrASTSetup {
             if (task == null) {
                 switch (taskName) {
                     case "DrASTGUI":
-                        this.task = new DrASTGUI(root);
+                        this.task = new DrASTGUI();
                         break;
                     case "DrASTXML":
                         this.task = new DrASTXML(root);

@@ -211,8 +211,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         // same children??
         for(GenericTreeNode child : apiRoot.getChildren()){
             boolean s = graphChildren.contains(child);
-            assertTrue("API tree node: " + apiRoot.toString() + " is missing in graph.",
-                    s);
+            assertTrue("API tree node: " + apiRoot.toString() + " is missing in graph.", s);
         }
 
         // next iteration
