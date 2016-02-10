@@ -48,13 +48,13 @@ After assembling the project, create the jar by writing the following command:
 ## See if things are working ##
 To test if the DrASTGUI is ready to run on your computer you can just run the jar with the following command:
 ```
-java -jar jastadddebugger-exjobb.jar
+java -jar DrAST.jar
 ```
 This should should start up the graphical user interface for DrAST. see Lib dependencis below if it's not working.
 
 ## Running DrAST ##
-There are a few simple things that must be done to run DrAST on your project.
-And there are two ways of starting DrAST, the easy way and the hard way. 
+There are two ways of starting DrAST, the easy way and the hard way.
+Both require some changes to your compiler code.
 
 ### The easy way ###
 The easy way is to add a static field in you main class file, for example ``` compiler.java ```.
