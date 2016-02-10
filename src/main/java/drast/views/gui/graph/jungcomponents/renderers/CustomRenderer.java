@@ -42,7 +42,7 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
     public void refresh(){
         optimization = false;
         try {
-            int nodeThreshold = 2000;
+            int nodeThreshold = 1000;
             if(mon.getConfig().get("nodeThreshold") != null)
                 nodeThreshold = Integer.parseInt(mon.getConfig().get("nodeThreshold"));
 
@@ -72,7 +72,7 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
     public void render(RenderContext<GenericTreeNode, GraphEdge> renderContext, Layout<GenericTreeNode, GraphEdge> layout) {
         if(!moving)
             mon.getController().getGraphViewTabController().graphIsLoading();
-        if(!optimization || (optimization && !moving)) {
+        if(mon.getConfig().isEnabled("showEdges") && (!optimization || (optimization && !moving))) {
             // paint all the edges
             try {
                 Collection<GraphEdge> edges = layout.getGraph().getEdges();
@@ -90,22 +90,24 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
                 renderContext.getScreenDevice().repaint();
             }
         }
-        // paint all the vertices
-        try {
-            for(GenericTreeNode v : layout.getGraph().getVertices()) {
-                renderVertex(
-                        renderContext,
-                        layout,
-                        v);
-                if(!optimization || (optimization && !moving)) {
-                    renderVertexLabel(
+        if(mon.getConfig().isEnabled("showNodes")) {
+            // paint all the vertices
+            try {
+                for (GenericTreeNode v : layout.getGraph().getVertices()) {
+                    renderVertex(
                             renderContext,
                             layout,
                             v);
+                    if (!optimization || (optimization && !moving)) {
+                        renderVertexLabel(
+                                renderContext,
+                                layout,
+                                v);
+                    }
                 }
+            } catch (ConcurrentModificationException cme) {
+                renderContext.getScreenDevice().repaint();
             }
-        } catch(ConcurrentModificationException cme) {
-            renderContext.getScreenDevice().repaint();
         }
         if(!moving)
             mon.getController().getGraphViewTabController().graphIsLoading();

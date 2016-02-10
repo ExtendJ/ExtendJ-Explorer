@@ -7,6 +7,7 @@ import drast.views.gui.dialogs.OpenASTDialog;
 import drast.views.gui.Monitor;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
@@ -38,6 +39,8 @@ public class TopMenuController implements Initializable, ControllerInterface {
     @FXML private MenuItem toggleMinimizeMenuItem;
     @FXML private MenuItem openMenuItem;
     @FXML private MenuItem rerunCompiler;
+    @FXML private CheckMenuItem showEdgesCheckMenuItem;
+    @FXML private CheckMenuItem showNodesCheckMenuItem;
 
     public void init(Monitor mon){
         this.mon = mon;
@@ -72,6 +75,15 @@ public class TopMenuController implements Initializable, ControllerInterface {
             if(mon.isRerunable()){
                 reRunCompiler();
             }
+        });
+
+        showEdgesCheckMenuItem.setOnAction(e->{
+            mon.getConfig().put("showEdges", showEdgesCheckMenuItem.isSelected() ? "1" : "0");
+            mon.getController().getGraphViewTabController().repaintGraph();
+        });
+        showNodesCheckMenuItem.setOnAction(e->{
+            mon.getConfig().put("showNodes", showNodesCheckMenuItem.isSelected() ? "1" : "0");
+            mon.getController().getGraphViewTabController().repaintGraph();
         });
 
         MenuItem exportXml = new MenuItem("XML");

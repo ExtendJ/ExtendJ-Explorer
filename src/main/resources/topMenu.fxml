@@ -41,4 +41,8 @@
             </MenuItem>
         </items>
     </Menu>
+    <Menu text="Performance">
+        <CheckMenuItem text="show edges" selected="true" fx:id="showEdgesCheckMenuItem"/>
+        <CheckMenuItem text="show nodes" selected="true" fx:id="showNodesCheckMenuItem"/>
+    </Menu>
 </MenuBar>

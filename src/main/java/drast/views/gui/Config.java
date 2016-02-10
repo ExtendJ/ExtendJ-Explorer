@@ -70,21 +70,23 @@ public class Config{
 		try{
 
 			File file = new File(fullFilePath);
-			if(file.exists()) {
-				BufferedReader reader = new BufferedReader(new FileReader(file));
-				String line = null;
-				while ((line = reader.readLine()) != null) {
-					if (line.length() > 0) {
-						if (!line.startsWith("#")) {
-							String[] one_config = line.split("=");
-							configs.put(one_config[0], one_config[1]);
-						}
+			if(!file.exists()) {
+				PrintWriter writer = new PrintWriter(fullFilePath, "UTF-8");
+				writer.println("nodeThreshold=1000");
+				writer.println("showNodes=1");
+				writer.println("showEdges=1");
+				writer.close();
+			}
+
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				if (line.length() > 0) {
+					if (!line.startsWith("#")) {
+						String[] one_config = line.split("=");
+						configs.put(one_config[0], one_config[1]);
 					}
 				}
-			}else{
-				PrintWriter writer = new PrintWriter(fullFilePath, "UTF-8");
-				writer.println("nodeThreshold=600");
-				writer.close();
 			}
 		}catch(IOException e){
 			e.printStackTrace();

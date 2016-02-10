@@ -66,6 +66,10 @@ public class GraphViewController implements Initializable, ControllerInterface {
         zoomOutButton.setOnMouseClicked(e-> graphView.zoomOut());
     }
 
+    public void repaintGraph(){
+        graphView.repaint();
+    }
+
     public void init(Monitor mon){
         this.mon = mon;
         this.graphView = mon.getGraphView();
