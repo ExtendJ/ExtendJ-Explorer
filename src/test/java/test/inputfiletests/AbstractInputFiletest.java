@@ -69,6 +69,7 @@ abstract public class AbstractInputFiletest {
 			if(f.isDirectory())
 				tests.add(new Object[] {testDirectory + f.getName()});
 		}
+		System.out.println(tests);
 		return tests;
 	}
 
@@ -77,7 +78,6 @@ abstract public class AbstractInputFiletest {
 		DrAST debugger = new DrAST(program);
 		debugger.setFilterPath(inDirectory + "/filter.fcl");
 		debugger.run();
-		System.out.println(program);
 		DrASTXML xmlPrinter = new DrASTXML(debugger);
 		xmlPrinter.run();
 		xmlPrinter.printXml(inDirectory, AbstractInputFiletest.OUT_EXTENSION);

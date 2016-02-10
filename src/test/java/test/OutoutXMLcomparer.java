@@ -29,8 +29,8 @@ public class OutoutXMLcomparer {
 
     private void checkOutput(GenericTreeNode root, Tree expectedRoot, String inDirectory, int level) {
         level++;
-        System.out.println("==================" + nodeName(root) );
-        System.out.println("==================" + expectedRoot.getName());
+       // System.out.println("==================" + nodeName(root) );
+       // System.out.println("==================" + expectedRoot.getName());
         assertEquals("Output is not the same", nodeName(root), expectedRoot.getName());
         for(GenericTreeNode child : root.getChildren()){
             //System.out.println(nodeName(child));

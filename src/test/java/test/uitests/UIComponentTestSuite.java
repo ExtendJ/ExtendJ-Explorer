@@ -42,7 +42,7 @@ import static org.junit.Assert.*;
  */
 public class UIComponentTestSuite extends UIApplicationTestHelper {
 
-    private String inDirectory = "tests/allBlocks/";
+    private String inDirectory = "tests/uiTests/allBlocks/";
 
     protected Object getRootNode() {
         try {
@@ -86,7 +86,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
             return;
         init = false;
         drAST = new DrAST(getRootNode());
-        drAST.setFilterPath(inDirectory);
+        drAST.setFilterPath(inDirectory + "/filter.fcl");
         drAST.run();
         mon = new Monitor(drAST);
         FXMLLoader loader = new FXMLLoader();
@@ -113,7 +113,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
     @Test
     public void treeViewTab(){ //Todo add some checks, atm it does nothing
         clickOn("#treeViewTabNode");
-        TreeView<GenericTreeNode> tree = find("#graphTreeView");
+        TreeView<GenericTreeNode> tree = find("#treeView");
         expandTreeView(tree.getTreeItem(0));
         tree.getTreeItem(0).setExpanded(false);
         clickOn("#graphViewTabNode");
@@ -129,7 +129,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
 
     @Test
     public void treeViewStructure(){
-        TreeView<GenericTreeNode> tree = find("#graphTreeView");
+        TreeView<GenericTreeNode> tree = find("#treeView");
         TreeItem<GenericTreeNode> treeItem = tree.getTreeItem(0);
         compareTreeView(treeItem, mon.getBrain().getFilteredTree());
     }
@@ -165,13 +165,16 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
 
    @Test
     public void testConsole() {//Todo add some checks, atm it does nothing
-        clickOn("#consoleTabWarning");
         mon.getController().addWarning("Test warning");
-        clickOn("#consoleTabError");
         mon.getController().addError("Test error");
-        clickOn("#consoleTabMessage");
         mon.getController().addMessage("Test message");
-        clickOn("#consoleTabAll");
+        clickOn("#messagesBox");
+        clickOn("#warningsBox");
+        clickOn("#errorsBox");
+        clickOn("#messagesBox");
+        clickOn("#warningsBox");
+        clickOn("#errorsBox");
+        clickOn("#allBox");
     }
 
     @Test

@@ -394,7 +394,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
     }
 
     public void zoomIn() {
-        scaler.scale(vs, 1 / 1.1f, vs.getCenter());
+        scaler.scale(vs, 1.1f, vs.getCenter());
     }
 
     public void zoomOut() {
