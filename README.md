@@ -59,7 +59,9 @@ Both require some changes to your compiler code.
 ### The easy way ###
 The easy way is to add a static field in you main class file, for example ``` compiler.java ```.
 The field you need to add is named ``` DrAST_root_node ```. 
-Just add this filed to your main class and them simply assign it the root node of your AST, in your compiler.
+Just add this field to your main class and then simply assign it the root node of your AST, in your compiler.
+
+Here is an example in how this is done.
 ```
 ...
 public static Object DrAST_root_node;
@@ -74,8 +76,7 @@ Now simply build your compiler and start DrAST with:
 ´´´
 java -jar DrAST.jar
 ´´´
-
-In the GUI choose your compiler and add some arguments, for example a source file.
+This will start the GUI, so choose your compiler and add some arguments, for example a source file.
 
 ### The hard way ###
 First you need to add the DrAST .jar file to your projects Library path.
