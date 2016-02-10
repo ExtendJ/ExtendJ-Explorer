@@ -33,7 +33,6 @@ public class ScalingControllerMinLimit extends CrossoverScalingControl {
         double viewScale = viewTransformer.getScale();
         double viewScaleX = viewTransformer.getScaleX();
         double viewScaleY = viewTransformer.getScaleY();
-        System.out.println(viewScaleX + " " + viewScaleY + " " + viewScale);
         double scale = modelScale * viewScale;
 
         if(viewScale < scaleLimit && amount < 1)
@@ -63,11 +62,11 @@ public class ScalingControllerMinLimit extends CrossoverScalingControl {
         double newModelScale = layoutTransformer.getScale();
         double newViewScale = viewTransformer.getScale();
         scale = newModelScale * newViewScale;
-/*
+
         if(viewTransformer.getScale() < scaleLimit){
             viewTransformer.setScale(scaleLimit, scaleLimit, at);
         }
-*/
+
         vv.repaint();
     }
 

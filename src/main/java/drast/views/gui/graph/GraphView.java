@@ -1,5 +1,7 @@
 package drast.views.gui.graph;
 
+import drast.model.filteredtree.GenericTreeNode;
+import drast.model.filteredtree.NodeReference;
 import drast.views.gui.controllers.GraphViewController;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.TreeLayout;
@@ -15,8 +17,6 @@ import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.BasicVertexLabelRenderer;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
-import drast.model.filteredtree.GenericTreeNode;
-import drast.model.filteredtree.NodeReference;
 import drast.views.gui.Monitor;
 import drast.views.gui.controllers.Controller;
 import drast.views.gui.graph.jungcomponents.*;
@@ -51,7 +51,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
     private Monitor mon;
     private Controller con;
     private GraphViewController myController;
-    private VisualizationViewer<GenericTreeNode, GraphEdge> vs;
+    private CustomVisualizationViewer<GenericTreeNode, GraphEdge> vs;
     private DelegateForest<GenericTreeNode, GraphEdge> graph;
 
     private ScalingControllerMinLimit scaler;
@@ -107,7 +107,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
     public void createLayout(Forest<GenericTreeNode, GraphEdge> g){
         TreeLayout<GenericTreeNode, GraphEdge> layout = new TreeLayout<>(g, 150, 100);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        vs = new VisualizationViewer<>(layout, screenSize);
+        vs = new CustomVisualizationViewer<>(layout, screenSize);
         vs.setRenderer(new CustomRenderer(mon));
         setVisualizationTransformers(vs);
     }
@@ -137,7 +137,7 @@ public class GraphView extends SwingNode implements ItemListener { //TODO needs 
         vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW).setToIdentity();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         vs.setPreferredSize(screenSize);
-        vs.scaleToLayout(scaler);
+        vs.zoomOutMax(scaler);
         vs.repaint();
     }
 
