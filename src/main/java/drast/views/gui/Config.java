@@ -83,6 +83,7 @@ public class Config{
 				}
 			}else{
 				PrintWriter writer = new PrintWriter(fullFilePath, "UTF-8");
+				writer.println("nodeThreshold=600");
 				writer.close();
 			}
 		}catch(IOException e){
