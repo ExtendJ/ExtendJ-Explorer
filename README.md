@@ -57,7 +57,7 @@ There are two ways of starting DrAST, the easy way and the hard way.
 Both require some changes to your compiler code.
 
 ### The easy way ###
-The easy way is to add a static field in you main class file, for example ``` compiler.java ```.
+The easy way is to add a static field in you main class file, for example compiler.java .
 The field you need to add is named ``` DrAST_root_node ```. 
 Just add this field to your main class and then simply assign it the root node of your AST, in your compiler.
 
@@ -108,7 +108,7 @@ First of you need to build this version of the CalcASM compiler, so simply go to
 ```
 ant jar
 ```
-This will create a .jar file named ``` compiler ``` which contains the compiler for the CalcASM language. 
+This will create a .jar file named compiler that will contain the compiler for the CalcASM language. 
 Now you can just choose the compiler with DrAST and a argument file, for example nesting2.calc under ``` CalcASM/testfiles/asm/nesting2.calc ```.
 This will now display the CalcASM AST.
 
