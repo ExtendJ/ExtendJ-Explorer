@@ -67,11 +67,10 @@ public class DrASTGUI extends Application implements DrASTView {
     @Override
     public void setRoot(Object root, String filterPath, String defaultDir, boolean opened) {
         drAST = new DrAST(root);
-        System.out.println(drAST + " : " + drAST.noRoot() + ": " + hasRun);
         drAST.setFilterPath(filterPath);
-        if(!hasRun){
+        if(!hasRun)
             run();
-        }else {
+        else {
             drAST.run();
             mon.clean(drAST);
             mon.setDefaultDirectory(defaultDir);
