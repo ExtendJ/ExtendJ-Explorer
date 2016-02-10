@@ -1,0 +1,11 @@
+configs{
+	use = include;
+}
+
+filter include{
+  :ASTNode{
+      when{}
+      style{}
+      show{}
+  }
+}
