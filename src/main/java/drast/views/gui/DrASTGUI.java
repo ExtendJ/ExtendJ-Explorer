@@ -13,13 +13,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ScrollPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * This is the main class for the DrAST system if the user wants the GUI. This class will create an DrAST
@@ -112,7 +116,7 @@ public class DrASTGUI extends Application implements DrASTView {
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         stage.setTitle("DrAST " + ASTBrain.VERSION);
         stage.setScene(new Scene(rootView, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()-100));
-/*
+
         stage.setOnCloseRequest(we -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirm Exit");
@@ -124,7 +128,7 @@ public class DrASTGUI extends Application implements DrASTView {
             } else {
                 we.consume();
             }
-        });*/
+        });
         stage.show();
         ScrollPane center = (ScrollPane) rootView.lookup("#graphViewScrollPane");
         center.setContent(graphview);

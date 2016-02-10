@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class ASTBrain extends Observable{
 
-    public static final String VERSION = "alphabuild-0.3.1";
+    public static final String VERSION = "alphabuild-0.4.0";
 
     private HashMap<Class, ArrayList<Pair<Method, Annotation>>> methods;
     private HashMap<Class, ArrayList<Method>> NTAMethods;
@@ -40,7 +40,6 @@ public class ASTBrain extends Observable{
     private ArrayList<NodeReference> displayedReferences;
     private HashMap<Integer, Boolean> typeErrorTracker;
     private String directoryPath;
-    private boolean error;
 
     private int normalNodes = 0;
     private int clusterNodes = 0;
