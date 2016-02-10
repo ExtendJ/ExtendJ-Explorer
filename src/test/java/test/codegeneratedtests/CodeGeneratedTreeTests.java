@@ -1,8 +1,8 @@
 package test.codegeneratedtests;
 
-import CalcASM.src.gen.lang.ast.Mul;
-import CalcASM.src.gen.lang.ast.Numeral;
-import CalcASM.src.gen.lang.ast.Program;
+import CalcASM.src.java.gen.Mul;
+import CalcASM.src.java.gen.Numeral;
+import CalcASM.src.java.gen.Program;
 import drast.model.DrAST;
 import drast.views.DrASTXML;
 import org.junit.Test;

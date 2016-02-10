@@ -24,6 +24,8 @@ public class ASTBrain extends Observable{
     private HashMap<Class, ArrayList<Method>> NTAMethods;
     private HashMap<Method, Field> methodCacheField;
 
+    private long reflectedTreeTime;
+    private long filteredTreeTime;
     private Node tree;
     private GenericTreeNode filteredTree;
     private FilterConfig filterConfig;
@@ -66,7 +68,9 @@ public class ASTBrain extends Observable{
         typeErrorTracker = new HashMap<>();
 
         // new Node will recreate the AST and be the low level data structure of this program.
+        long time = System.currentTimeMillis();
         tree = new Node(root, this, listRoot);
+        reflectedTreeTime = System.currentTimeMillis() - time;
 
         this.filteredTree = null;
         // Here we use our recreated tree to build our filtered tree
@@ -84,6 +88,9 @@ public class ASTBrain extends Observable{
     protected void putCachedField(Method method, Field field){ this.methodCacheField.put(method, field); }
 
     public Node getRoot(){return tree; }
+
+    public long getReflectedTreeTime(){ return reflectedTreeTime; }
+    public long getFilteredTreeTime(){ return filteredTreeTime; }
 
     public String getFilterFilePath(){return directoryPath; }
     public String getDirectoryPath(){return directoryPath;}
@@ -154,11 +161,11 @@ public class ASTBrain extends Observable{
      */
     private void createFilteredTree(Node node, boolean firstTime){
         normalNodes = 0;
-        ArrayList<NodeReference> futureReferences = new ArrayList<>();
         long time = System.currentTimeMillis();
+        ArrayList<NodeReference> futureReferences = new ArrayList<>();
         createFilteredTree(node, null, false ,firstTime, filterConfig.getInt(FilterConfig.NTA_DEPTH), futureReferences);
         addReferences(futureReferences, false); // Add reference edges that is defined in the filter language
-        System.out.println("Time for AST filter : " + (System.currentTimeMillis() - time));
+        filteredTreeTime = System.currentTimeMillis() - time;
     }
 
     private GenericTreeNode getNode(Node node, GenericTreeNode parent, boolean collapse){
