@@ -1,4 +1,4 @@
-### Work in progress. please contact gda10jth@student.lu.se and gda10jli@student.lu.se if you want to try it out. ###
+### Latest stable build is tagged as v0.4.2 ###
 
 # DrAST readme #
 This readme has the following content
@@ -24,6 +24,10 @@ This readme has the following content
 Start of by cloning 
 ```
 git clone https://git@bitbucket.org/jastadd/jastadddebugger-exjobb.git
+```
+OR checkout the latest stable build:
+```
+git fetch && git checkout v0.4.2
 ```
 Then go to the directory where you cloned the project, with your terminal
 
