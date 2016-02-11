@@ -59,8 +59,11 @@ public class GraphView extends SwingNode implements ItemListener {
     private DelegateForest<GenericTreeNode, GraphEdge> graph;
 
     private ScalingControllerMinLimit scaler;
+    private boolean hugeGraph; //the graph is so big that we can not show the whole graph on screen;
+
     public GraphView(Monitor mon){
-        scaler = new ScalingControllerMinLimit();
+        hugeGraph = false;
+        scaler = new ScalingControllerMinLimit(this);
         this.mon = mon;
         DirectedOrderedSparseMultigraph<GenericTreeNode, GraphEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, GraphEdge>();
         graph = new DelegateForest<>(n);
@@ -72,6 +75,11 @@ public class GraphView extends SwingNode implements ItemListener {
         setListeners();
         setContent(vs);
     }
+
+
+
+    public void setHugeGraph(boolean trueFalse){ hugeGraph = trueFalse;}
+    public boolean isHugeGraph(){ return hugeGraph;}
 
     public void setMyController(GraphViewController controller){ myController = controller;}
 
@@ -119,7 +127,8 @@ public class GraphView extends SwingNode implements ItemListener {
      *
      */
     public void updateGraph(){
-        DirectedOrderedSparseMultigraph<GenericTreeNode, GraphEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, GraphEdge>();
+        hugeGraph = false;
+        DirectedOrderedSparseMultigraph<GenericTreeNode, GraphEdge> n = new DirectedOrderedSparseMultigraph<>();
         graph = new DelegateForest<>(n);
         ((CustomRenderer)vs.getRenderer()).refresh();
         if(mon.getRootNode() != null)
@@ -136,10 +145,12 @@ public class GraphView extends SwingNode implements ItemListener {
      *
      */
     public void showWholeGraphOnScreen(){
-        //vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT).setToIdentity();
-        //vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW).setToIdentity();
+        if(!hugeGraph) {
+            vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT).setToIdentity();
+            vs.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW).setToIdentity();
+        }
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        //vs.setPreferredSize(screenSize);
+        vs.setPreferredSize(screenSize);
         vs.zoomOutMax(scaler);
         //panToNode(mon.getRootNode());
         vs.repaint();

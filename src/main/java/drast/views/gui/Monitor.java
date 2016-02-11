@@ -41,6 +41,7 @@ public class Monitor {
     private Config config;
     private boolean rerunable;
 
+
     public Monitor(){
         clean(null);
     }

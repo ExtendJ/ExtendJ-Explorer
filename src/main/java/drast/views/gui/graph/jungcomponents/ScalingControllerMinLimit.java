@@ -1,5 +1,6 @@
 package drast.views.gui.graph.jungcomponents;
 
+import drast.views.gui.graph.GraphView;
 import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationServer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
@@ -12,21 +13,29 @@ import java.util.Random;
  * Scaling class for the zoom, has a limit in how much it is allowed to scale down the view and layout
  */
 public class ScalingControllerMinLimit extends CrossoverScalingControl {
+    private double scrollZoomAmountThreshold;
     private final double scaleLimit;
-    private final double scaleLimitZoom;
+    private double scaleLimitZoom;
     private boolean maxedOutZoom;
+    GraphView graphView;
 
-    public ScalingControllerMinLimit(double scaleLimit){
+
+    public ScalingControllerMinLimit(GraphView graphView, double scaleLimit){
         super();
         this.scaleLimit = scaleLimit;
-        this.scaleLimitZoom = scaleLimit+0.003;
-        maxedOutZoom = false;
+        init(graphView);
     }
-    public ScalingControllerMinLimit(){
+    public ScalingControllerMinLimit(GraphView graphView){
         super();
         this.scaleLimit = 0.025;
+        init(graphView);
+    }
+
+    private void init(GraphView graphView){
+        this.graphView = graphView;
         this.scaleLimitZoom = scaleLimit+0.003;
         maxedOutZoom = false;
+        scrollZoomAmountThreshold = 0.5;
     }
 
     @Override
@@ -38,7 +47,7 @@ public class ScalingControllerMinLimit extends CrossoverScalingControl {
         double viewScale = viewTransformer.getScale();
         double scale = modelScale * viewScale;
 
-        if(amount < 1 && (maxedOutZoom || (amount > 0.5 && viewScale < scaleLimitZoom)))
+        if(amount < 1 && (maxedOutZoom || (amount > scrollZoomAmountThreshold && viewScale < scaleLimitZoom)))
             return;
 
         maxedOutZoom = false;
@@ -68,6 +77,10 @@ public class ScalingControllerMinLimit extends CrossoverScalingControl {
         if(viewTransformer.getScale() < scaleLimit){
             maxedOutZoom = true;
             viewTransformer.setScale(scaleLimit, scaleLimit, at);
+            if(amount < scrollZoomAmountThreshold){
+                graphView.setHugeGraph(true);
+                graphView.showWholeGraphOnScreen();
+            }
         }
 
         vv.repaint();

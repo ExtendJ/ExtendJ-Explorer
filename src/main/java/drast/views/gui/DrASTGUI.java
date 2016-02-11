@@ -176,6 +176,7 @@ public class DrASTGUI extends Application implements DrASTView {
      */
     public static void main(String[] args) {
         new DrASTGUI().run();
+        System.exit(0);
         /*String jarPath = "/home/gda10jli/Documents/extendj/extendj.jar";
         String[] args2 = {"/home/gda10jli/Documents/jastadddebugger-exjobb/test.java"};
         String filterPath = "/home/gda10jli/Documents/jastadddebugger-exjobb/filter.fcl";
