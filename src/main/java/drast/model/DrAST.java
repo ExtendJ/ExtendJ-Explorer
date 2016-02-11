@@ -18,6 +18,8 @@ import java.io.IOException;
  *
  */
 public class DrAST {
+	public static final String VERSION = "alphabuild-0.4.3";
+
 	public final static String FILE_NAME = "DrAST-result";
     public final static String CLUSTER_STRING = "cluster";
     public final static String DEFAULT_FILTER_NAME = "filter.fcl";

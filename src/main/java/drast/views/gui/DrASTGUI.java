@@ -114,7 +114,7 @@ public class DrASTGUI extends Application implements DrASTView {
         mon.setGraphView(graphview);
         con.init(mon, graphview);
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-        stage.setTitle("DrAST " + ASTBrain.VERSION);
+        stage.setTitle("DrAST " + DrAST.VERSION);
         stage.setScene(new Scene(rootView, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()-100));
 
         stage.setOnCloseRequest(we -> {
