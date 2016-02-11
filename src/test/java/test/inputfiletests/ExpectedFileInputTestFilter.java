@@ -21,7 +21,7 @@ import static org.junit.Assert.fail;
  * Created by gda10jth on 12/15/15.
  */
 @RunWith(Parameterized.class)
-public class InputFileFilter extends AbstractInputFiletest {
+public class ExpectedFileInputTestFilter extends AbstractFileInputTest {
     /**
      * Directory where test files live
      */
@@ -31,7 +31,7 @@ public class InputFileFilter extends AbstractInputFiletest {
      * Construct a new JastAdd test
      * @param dir filename of test input file
      */
-    public InputFileFilter(String dir) {
+    public ExpectedFileInputTestFilter(String dir) {
         super(TEST_DIR, dir, DrAST.FILE_NAME);
     }
 
@@ -71,6 +71,6 @@ public class InputFileFilter extends AbstractInputFiletest {
     @SuppressWarnings("javadoc")
     @Parameterized.Parameters(name = "{0}")
     public static Iterable<Object[]> getTests() {
-        return AbstractInputFiletest.getTestParameters(TEST_DIR);
+        return AbstractFileInputTest.getTestParameters(TEST_DIR);
     }
 }

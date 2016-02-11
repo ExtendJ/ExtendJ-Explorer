@@ -1,0 +1,4 @@
+This test makes sure the time for the model to compute the filtered tree is ok.
+This test could fail on very slow machines and in those cases should be ignored, but the
+time frame given for this test is quite large, and should not be a problem
+ for any everyday machine.

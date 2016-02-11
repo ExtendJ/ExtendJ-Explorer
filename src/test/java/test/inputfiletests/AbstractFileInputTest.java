@@ -13,7 +13,7 @@ import java.util.LinkedList;
  * A parameterized test suite. Adds helper methods for
  * parameterized testing.
  */
-abstract public class AbstractInputFiletest {
+abstract public class AbstractFileInputTest {
 
 	/**
 	 * File extension for test input files. EDIT ME
@@ -38,7 +38,7 @@ abstract public class AbstractInputFiletest {
 	 * @param testDirectory
 	 * @param fileName
 	 */
-	public AbstractInputFiletest(String testDirectory, String inDirectory, String fileName) {
+	public AbstractFileInputTest(String testDirectory, String inDirectory, String fileName) {
 		this.testDirectory = new File(testDirectory);
 		this.inDirectory = inDirectory;
 		inputFile = getTestinputFile(fileName);
@@ -79,7 +79,7 @@ abstract public class AbstractInputFiletest {
 		debugger.run();
 		DrASTXML xmlPrinter = new DrASTXML(debugger);
 		xmlPrinter.run();
-		xmlPrinter.printXml(inDirectory, AbstractInputFiletest.OUT_EXTENSION);
+		xmlPrinter.printXml(inDirectory, AbstractFileInputTest.OUT_EXTENSION);
 		//int numberOfErrors = debugger.api().getErrors(AlertMessage.FILTER_ERROR).size();
 		//assertEquals("Errors parsing filter language", numberOfErrors, 0);
 		new OutoutXMLcomparer().checkOutput(debugger.getFilteredTree(), expectedFile, inDirectory);

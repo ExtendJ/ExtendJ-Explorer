@@ -1,0 +1,2 @@
+This test is to make sure the structure of the filter language remains the same.
+This test also filters the AST and make sure the filtered tree is what it should be.

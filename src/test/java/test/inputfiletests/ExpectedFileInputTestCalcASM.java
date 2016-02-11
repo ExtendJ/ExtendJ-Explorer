@@ -1,6 +1,5 @@
 package test.inputfiletests;
 
-import CalcASM.src.java.gen.ErrorMessage;
 import CalcASM.src.java.gen.LangParser;
 import CalcASM.src.java.gen.LangScanner;
 import CalcASM.src.java.gen.Program;
@@ -19,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 
 
 @RunWith(Parameterized.class)
-public class InputFileCalcASM extends AbstractInputFiletest {
+public class ExpectedFileInputTestCalcASM extends AbstractFileInputTest {
 	/**
 	 * Directory where test files live
 	 */
@@ -29,7 +28,7 @@ public class InputFileCalcASM extends AbstractInputFiletest {
 	 * Construct a new JastAdd test
 	 * @param dir filename of test input file
 	 */
-	public InputFileCalcASM(String dir) {
+	public ExpectedFileInputTestCalcASM(String dir) {
 		super(TEST_DIR, dir, DrAST.FILE_NAME);
 	}
 
@@ -56,6 +55,6 @@ public class InputFileCalcASM extends AbstractInputFiletest {
 	@SuppressWarnings("javadoc")
 	@Parameters(name = "{0}")
 	public static Iterable<Object[]> getTests() {
-		return AbstractInputFiletest.getTestParameters(TEST_DIR);
+		return AbstractFileInputTest.getTestParameters(TEST_DIR);
 	}
 }

@@ -20,13 +20,13 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by gda10jli on 2/10/16.
  */
-public class InputFileCalcASMPerformance  {
+public class PerformanceCalcASM {
     /**
      * Directory where test files live
      */
     private static final String TEST_DIR = "tests/inputFileTests/performance-time/";
 
-    public InputFileCalcASMPerformance() {}
+    public PerformanceCalcASM() {}
 
     @Test
     public void runInputTests() {
