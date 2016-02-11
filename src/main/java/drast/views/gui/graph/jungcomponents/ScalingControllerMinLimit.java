@@ -38,6 +38,10 @@ public class ScalingControllerMinLimit extends CrossoverScalingControl {
         scrollZoomAmountThreshold = 0.5;
     }
 
+    public void resetScaler(){
+        maxedOutZoom = false;
+    }
+
     @Override
     public void scale(VisualizationServer<?,?> vv, float amount, Point2D at) {
         MutableTransformer layoutTransformer = vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT);

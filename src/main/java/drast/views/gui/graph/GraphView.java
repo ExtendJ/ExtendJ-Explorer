@@ -128,6 +128,7 @@ public class GraphView extends SwingNode implements ItemListener {
      */
     public void updateGraph(){
         hugeGraph = false;
+        scaler.resetScaler();
         DirectedOrderedSparseMultigraph<GenericTreeNode, GraphEdge> n = new DirectedOrderedSparseMultigraph<>();
         graph = new DelegateForest<>(n);
         ((CustomRenderer)vs.getRenderer()).refresh();
