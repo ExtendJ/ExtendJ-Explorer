@@ -20,7 +20,6 @@ This readme has the following content
 ### Important 2: This tool is based on a new JastAdd version that is not in production yet. It is included in this project at tools/jastadd2.jar. ###
 ## Get the project on you machine ##
 
-
 Start of by cloning 
 ```
 git clone https://git@bitbucket.org/jastadd/jastadddebugger-exjobb.git
@@ -29,6 +28,8 @@ OR checkout the latest stable build:
 ```
 git fetch && git checkout v0.4.2
 ```
+OR just get the latest stable jar file from the Downloads section on bitbucket (https://bitbucket.org/jastadd/jastadddebugger-exjobb/downloads)
+
 Then go to the directory where you cloned the project, with your terminal
 
 ## Building the project ##
