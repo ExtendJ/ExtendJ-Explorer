@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class ASTBrain extends Observable{
 
-    public static final String VERSION = "alphabuild-0.4.0";
+    public static final String VERSION = "alphabuild-0.4.1";
 
     private HashMap<Class, ArrayList<Pair<Method, Annotation>>> methods;
     private HashMap<Class, ArrayList<Method>> NTAMethods;
