@@ -28,7 +28,7 @@ OR checkout the latest stable build:
 ```
 git fetch && git checkout v0.4.2
 ```
-OR just get the latest stable jar file from the Downloads section on bitbucket (https://bitbucket.org/jastadd/jastadddebugger-exjobb/downloads)
+OR just get the latest stable jar file from the Downloads section on Bitbucket (https://bitbucket.org/jastadd/jastadddebugger-exjobb/downloads). 
 
 Then go to the directory where you cloned the project, with your terminal
 
