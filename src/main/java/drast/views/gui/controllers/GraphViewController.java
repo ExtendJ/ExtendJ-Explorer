@@ -1,5 +1,6 @@
 package drast.views.gui.controllers;
 
+import configAST.ConfigParser;
 import drast.DrASTSetup;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.views.DrASTXML;
@@ -42,6 +43,8 @@ public class GraphViewController implements Initializable, ControllerInterface {
     private Button showWholeGraphButton;
     @FXML
     private Button autoLayoutGraphButton;
+    @FXML
+    private Button FPSCOUNTERTEST;
 
     /**
      * Initialize all buttons in the menu.
@@ -64,6 +67,14 @@ public class GraphViewController implements Initializable, ControllerInterface {
         zoomInButton.setOnMouseClicked(e -> graphView.zoomIn());
 
         zoomOutButton.setOnMouseClicked(e-> graphView.zoomOut());
+
+        FPSCOUNTERTEST.setOnAction(e->{
+            System.out.println("GOGOOG");
+            long start = System.currentTimeMillis();
+            while((System.currentTimeMillis() - start) < 13000){
+                graphView.repaint();
+            }
+        });
     }
 
     public void setNiceEdges(boolean niceEdges){

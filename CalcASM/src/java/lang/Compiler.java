@@ -1,6 +1,7 @@
 package lang;
 
 import beaver.Parser.Exception;
+import drast.model.DrAST;
 import lang.ast.ErrorMessage;
 import lang.ast.LangParser;
 import lang.ast.LangScanner;
@@ -15,8 +16,13 @@ import java.lang.System;
  * Computes the maximum statement nesting depth for a Calc program.
  */
 public class Compiler {
+	private static final long MEGABYTE = 1024L * 1024L;
 
-	public static Object DrAST_root_node;
+	public static long bytesToMegabytes(long bytes) {
+		return bytes / MEGABYTE;
+	}
+
+	//public static Object DrAST_root_node;
 
 	/**
 	 * Entry point
@@ -44,7 +50,14 @@ public class Compiler {
 					System.err.println("- " + e);
 				}
 			} else {
-				DrAST_root_node = program;
+				///DrAST_root_node = program;
+
+				printMemoryUse("After compiler");
+
+				DrAST drast = new DrAST(program);
+				drast.run();
+
+				printMemoryUse("After DrAST model");
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found!");
@@ -54,6 +67,15 @@ public class Compiler {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static void printMemoryUse(String prepend){
+		Runtime runtime = Runtime.getRuntime();
+		// Run the garbage collector
+		runtime.gc();
+		// Calculate the used memory
+		long memory = runtime.totalMemory() - runtime.freeMemory();
+		System.out.println(prepend + ": " + memory + "bytes (" + bytesToMegabytes(memory) + "megabytes)");
 	}
 
 	private static void printUsage() {

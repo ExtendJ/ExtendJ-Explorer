@@ -2,7 +2,6 @@ package drast.model;
 
 import drast.model.filteredtree.*;
 import drast.model.nodeinfo.NodeInfo;
-import javafx.util.Pair;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -18,7 +17,7 @@ import java.util.*;
  */
 public class ASTBrain extends Observable{
 
-    private HashMap<Class, ArrayList<Pair<Method, Annotation>>> methods;
+    private HashMap<Class, ArrayList<AbstractMap.SimpleEntry<Method, Annotation>>> methods;
     private HashMap<Class, ArrayList<Method>> NTAMethods;
     private HashMap<Method, Field> methodCacheField;
 
@@ -75,8 +74,8 @@ public class ASTBrain extends Observable{
         createFilteredTree(this.tree, true);
     }
 
-    protected ArrayList<Pair<Method, Annotation>> getMethods(Class clazz){ return methods.get(clazz); }
-    protected void putMethods(Class clazz, ArrayList<Pair<Method, Annotation>> methods){ this.methods.put(clazz, methods); }
+    protected ArrayList<AbstractMap.SimpleEntry<Method, Annotation>> getMethods(Class clazz){ return methods.get(clazz); }
+    protected void putMethods(Class clazz, ArrayList<AbstractMap.SimpleEntry<Method, Annotation>> methods){ this.methods.put(clazz, methods); }
 
     protected ArrayList<Method> getNTAMethods(Class clazz){ return NTAMethods.get(clazz); }
     protected void putNTAMethods(Class clazz, ArrayList<Method> methods){ this.NTAMethods.put(clazz, methods); }

@@ -43,5 +43,6 @@ public class CustomPickingGraphMousePlugin<V, E> extends PickingGraphMousePlugin
         VisualizationViewer<V,E> vv = (VisualizationViewer)e.getSource();
         ((CustomRenderer)vv.getRenderer()).setMoving(false);
         super.mouseReleased(e);
+        System.out.println("Picked: " + vv.getPickedVertexState().getPicked().size());
     }
 }
