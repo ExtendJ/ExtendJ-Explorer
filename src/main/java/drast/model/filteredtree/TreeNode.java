@@ -102,7 +102,7 @@ public class TreeNode extends GenericTreeNode {
     public void setDisplayedAttributes(ArrayList<NodeReference> allReferences, HashSet<String> set , ASTBrain api){
         if(set.size() == 0)
             return;
-        treeViewName = toString() + " : ";
+        treeViewName = toString();
         if(outwardReferences == null)
             outwardReferences = new HashSet<>();
         for (String s : set){
@@ -117,7 +117,7 @@ public class TreeNode extends GenericTreeNode {
                 allRefs.add(reference);
             } else {
                 labelAttributes.add(s + " : " + obj);
-                treeViewName += s + " : " + obj;
+                treeViewName += "        " + s + " : " + obj ;
             }
         }
     }

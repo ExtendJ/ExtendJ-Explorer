@@ -1,4 +1,4 @@
-### Work in progress. please contact gda10jth@student.lu.se and gda10jli@student.lu.se if you want to try it out. ###
+### Latest stable build is tagged as v0.4.3 ###
 
 # DrAST readme #
 This readme has the following content
@@ -18,13 +18,18 @@ This readme has the following content
 # Getting started #
 ### Important 1: This tool is based on Java 8. If you have an older version installed the tool will not work. ###
 ### Important 2: This tool is based on a new JastAdd version that is not in production yet. It is included in this project at tools/jastadd2.jar. ###
+### Important 3: If your only interested in using the tool, get the latest stable jar file from the Downloads section on Bitbucket. ###
 ## Get the project on you machine ##
-
 
 Start of by cloning 
 ```
 git clone https://git@bitbucket.org/jastadd/jastadddebugger-exjobb.git
 ```
+OR checkout the latest stable build:
+```
+git fetch && git checkout v0.4.3
+```
+
 Then go to the directory where you cloned the project, with your terminal
 
 ## Building the project ##

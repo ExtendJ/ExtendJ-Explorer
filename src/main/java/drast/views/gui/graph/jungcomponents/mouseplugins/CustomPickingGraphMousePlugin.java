@@ -14,6 +14,11 @@ import java.awt.event.MouseEvent;
 public class CustomPickingGraphMousePlugin<V, E> extends PickingGraphMousePlugin<V, E> {
 
     @Override
+    public void mousePressed(MouseEvent e) {
+        super.mousePressed(e);
+    }
+
+    @Override
     /**
      * See PickingGraphMousePlugin.mouseDragged(e) for full description.
      * This method extends the parent mouseDragged(e) by telling the CustomRenderer
