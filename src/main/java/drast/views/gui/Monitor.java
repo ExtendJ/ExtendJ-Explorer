@@ -115,7 +115,7 @@ public class Monitor {
 
     public void clearDialogSelectedNodes(){ dialogSelectedNodes.clear();}
 
-    public ASTBrain getBrain(){ return jaaAPI.api(); }
+    public ASTBrain getBrain(){ return jaaAPI.brain(); }
     public DrAST getDrASTAPI(){ return jaaAPI; }
 
     public GenericTreeNode getRootNode(){ return jaaAPI.getFilteredTree(); }

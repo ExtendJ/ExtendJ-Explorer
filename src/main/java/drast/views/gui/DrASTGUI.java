@@ -1,6 +1,7 @@
 package drast.views.gui;
 
 import drast.DrASTSetup;
+import drast.EvaluatorTime;
 import drast.model.ASTBrain;
 import drast.model.DrAST;
 import drast.views.DrASTView;
@@ -175,11 +176,8 @@ public class DrASTGUI extends Application implements DrASTView {
      * @param args
      */
     public static void main(String[] args) {
-        new DrASTGUI().run();
-        /*String jarPath = "/home/gda10jli/Documents/extendj/extendj.jar";
-        String[] args2 = {"/home/gda10jli/Documents/jastadddebugger-exjobb/test.java"};
-        String filterPath = "/home/gda10jli/Documents/jastadddebugger-exjobb/filter.fcl";
-        DrASTSetup setup = new DrASTSetup("DrASTGUI", jarPath, filterPath, args2);
-        setup.run();*/
+        new EvaluatorTime().run();
+        //new DrASTGUI().run();
+        System.exit(0);
     }
 }

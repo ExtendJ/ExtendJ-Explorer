@@ -2,7 +2,6 @@ package drast.model;
 
 import drast.model.filteredtree.*;
 import drast.model.nodeinfo.NodeInfo;
-import javafx.util.Pair;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -20,7 +19,7 @@ public class ASTBrain extends Observable{
 
     public static final String VERSION = "alphabuild-0.4.1";
 
-    private HashMap<Class, ArrayList<Pair<Method, Annotation>>> methods;
+    private HashMap<Class, ArrayList<AbstractMap.SimpleEntry<Method, Annotation>>> methods;
     private HashMap<Class, ArrayList<Method>> NTAMethods;
     private HashMap<Method, Field> methodCacheField;
 
@@ -77,8 +76,8 @@ public class ASTBrain extends Observable{
         createFilteredTree(this.tree, true);
     }
 
-    protected ArrayList<Pair<Method, Annotation>> getMethods(Class clazz){ return methods.get(clazz); }
-    protected void putMethods(Class clazz, ArrayList<Pair<Method, Annotation>> methods){ this.methods.put(clazz, methods); }
+    protected ArrayList<AbstractMap.SimpleEntry<Method, Annotation>> getMethods(Class clazz){ return methods.get(clazz); }
+    protected void putMethods(Class clazz, ArrayList<AbstractMap.SimpleEntry<Method, Annotation>> methods){ this.methods.put(clazz, methods); }
 
     protected ArrayList<Method> getNTAMethods(Class clazz){ return NTAMethods.get(clazz); }
     protected void putNTAMethods(Class clazz, ArrayList<Method> methods){ this.NTAMethods.put(clazz, methods); }
@@ -320,6 +319,22 @@ public class ASTBrain extends Observable{
         else
             displayedReferences.addAll(futureReferences);
     }
+
+    /**
+     * Reapplies the filter from file.
+     * @return true if the filter was saved to file and a new filtered AST was successfully created, otherwise false
+     */
+    public boolean reApplyFilter(){
+        boolean res = filterConfig.readFilter(filterConfig.getFilterFileName());
+        if (res) {
+            ASTNTAObjects.forEach(treeNodes::remove);
+            clearDisplayedReferences();
+            filteredTree = null;
+            createFilteredTree(this.tree, false);
+        }
+        return res;
+    }
+
     /**
      * Write the new filter text to file and generate a new filtered AST
      * @param text

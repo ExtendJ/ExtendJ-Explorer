@@ -6,6 +6,7 @@ import javafx.util.Pair;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -164,14 +165,14 @@ public class Node{
      * @param api
      */
     private void traversDown(Object root, ASTBrain api) {
-        ArrayList<Pair<Method, Annotation>> methods = api.getMethods(root.getClass());
+        ArrayList<AbstractMap.SimpleEntry<Method, Annotation>> methods = api.getMethods(root.getClass());
         if(methods == null) {
             methods = new ArrayList<>();
             ArrayList<Method> NTAMethods = new ArrayList<>();
             for (Method m : root.getClass().getMethods()) {
                 for (Annotation a : m.getAnnotations()) {
                     if (ASTAnnotation.isChild(a)) {
-                        methods.add(new Pair<>(m,a));
+                        methods.add(new AbstractMap.SimpleEntry<>(m,a));
                     } else if (ASTAnnotation.isAttribute(a) && ASTAnnotation.is(a, ASTAnnotation.AST_METHOD_NTA)) {
                         if (m.getParameterCount() == 0)
                             showNTAChildren.put(m.getName(), null);
@@ -183,7 +184,7 @@ public class Node{
             api.putNTAMethods(root.getClass(), NTAMethods);
         }
         try {
-            for (Pair<Method, Annotation> p : methods) {
+            for (AbstractMap.SimpleEntry<Method, Annotation> p : methods) {
                 Annotation a = p.getValue();
                 Object obj = p.getKey().invoke(root, new Object[p.getKey().getParameterCount()]);
                 String name = ASTAnnotation.getString(a, ASTAnnotation.AST_METHOD_NAME);

@@ -27,12 +27,18 @@ public class DrASTSetup {
     private String jarPath;
     private String[] args;
     private String filterPath;
+    private Object root;
+    private long compilerTime;
+
+    public DrASTSetup( String jarPath, String filterPath, String[] args) {
+        init(jarPath, filterPath, args);
+    }
 
     public DrASTSetup(String taskName, String jarPath, String filterPath, String[] args) {
         this.taskName = taskName;
-        this.task = null;
         init(jarPath, filterPath, args);
     }
+
 
     public DrASTSetup(DrASTView task, String jarPath, String filterPath, String[] args) {
         this.task = task;
@@ -51,8 +57,12 @@ public class DrASTSetup {
             task.printMessage(AlertMessage.SETUP_FAILURE, message);
     }
 
+    public long getCompilerTime(){ return compilerTime; }
+
+
+    public Object getRoot(){return root; }
+
     public void run(){
-        Object root = null;
         boolean success = false;
         String defaultDir = "";
         try {
@@ -77,8 +87,8 @@ public class DrASTSetup {
             Field rootField = cl.getField("DrAST_root_node");
             rootField.setAccessible(true);
             root = rootField.get(main);
-            time = System.currentTimeMillis() - time;
-            System.out.println("Time for compiler : " + time);
+            compilerTime = System.currentTimeMillis() - time;
+            print("Compiler finished after : " + compilerTime + " ms");
             SystemExitControl.enableSystemExitCall();
 
             success = true;
@@ -111,7 +121,7 @@ public class DrASTSetup {
 
         if(success){
             // If we got the root without crashing sent the root a task.(success)
-            if (task == null) {
+            if (task == null && taskName != null) {
                 switch (taskName) {
                     case "DrASTGUI":
                         this.task = new DrASTGUI();
@@ -121,8 +131,10 @@ public class DrASTSetup {
                         break;
                 }
             }
-            task.setRoot(root, filterPath, defaultDir, true);
+            if(task != null)
+                task.setRoot(root, filterPath, defaultDir, true);
         }
     }
+
 }
 

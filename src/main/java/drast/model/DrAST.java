@@ -22,7 +22,7 @@ public class DrAST {
     public final static String CLUSTER_STRING = "cluster";
     public final static String DEFAULT_FILTER_NAME = "filter.fcl";
 
-	private ASTBrain api;
+	private ASTBrain brain;
 
     private Object root;
     private String filterPath;
@@ -64,14 +64,14 @@ public class DrAST {
      * run() generates the AST
      */
 	public void run(){
-        api = noAstData ? new ASTBrain() : new ASTBrain(root, filterPath, listRoot);
+        brain = noAstData ? new ASTBrain() : new ASTBrain(root, filterPath, listRoot);
         done = true;
 	}
 
-    public ASTBrain api(){ return api; }
+    public ASTBrain brain(){ return brain; }
 
 	public GenericTreeNode getFilteredTree(){
-		return api.getFilteredTree();
+		return brain.getFilteredTree();
 	}
 
     /**
@@ -79,28 +79,6 @@ public class DrAST {
      * @param args
      */
 	public static void main(String[] args) {
-		String filename = "sample.fcl";
-		try{
-			ConfigScanner scanner = new ConfigScanner(new FileReader(filename));
-			ConfigParser parser = new ConfigParser();
-			DebuggerConfig program = (DebuggerConfig) parser.parse(scanner);
-			if (!program.errors().isEmpty()) {
-				System.err.println();
-				System.err.println("Errors: ");
-				for (ErrorMessage e: program.errors()) {
-					System.err.println("- " + e);
-				}
-			} else {
-				DrAST debugger = new DrAST(program);
-                debugger.run();
-			}
-		} catch (FileNotFoundException e) {
-			System.out.println("File not found: " + filename);
-			System.exit(1);
-		} catch (IOException e) {
-			e.printStackTrace(System.err);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		System.exit(0);
 	}
 }

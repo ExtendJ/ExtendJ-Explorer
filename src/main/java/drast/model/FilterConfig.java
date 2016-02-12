@@ -20,7 +20,7 @@ public class FilterConfig {
     private ASTBrain api; //Reference to the ASTAPI, mainly used to contribute errors
 
     //Variable farm
-    private final String filterFileName;
+    private final String filterFileName; //TODO change to private
     private final String filterTmpFileName;
 
     public static final String DYNAMIC_VALUES = "dynamic-values";
@@ -50,6 +50,8 @@ public class FilterConfig {
         noError = readFilter(filterFileName);
     }
 
+    public String getFilterFileName(){ return filterFileName; }
+
     /**
      * Scans and parses the file with the given filename.
      * If no such file can found it will create a standard Configuration file, and then parse that one.
@@ -57,7 +59,7 @@ public class FilterConfig {
      * @param fileName
      * @return
      */
-    private boolean readFilter(String fileName){
+    public boolean readFilter(String fileName){
         String fullFilePath = filterDir + fileName;
         //System.out.println(fullFilePath);
         DebuggerConfig tmpFilter;
