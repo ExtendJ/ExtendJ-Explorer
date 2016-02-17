@@ -69,7 +69,7 @@ public class EvaluatorTime {
     private void start(PrintWriter writer, String jarPath, String filterPath, ArrayList<String[]> args2){
         for (int i = 0; i < args2.size(); i++) {
             String[] arg = args2.get(i);
-            DrASTSetup setup = new DrASTSetup(jarPath, filterPath, arg);
+            DrASTStarter setup = new DrASTStarter(jarPath, filterPath, arg);
             setup.run();
             iter(writer, i , arg[arg.length - 1], setup.getRoot());
         }

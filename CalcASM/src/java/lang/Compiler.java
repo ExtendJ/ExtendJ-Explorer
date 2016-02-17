@@ -18,6 +18,14 @@ public class Compiler {
 
 	public static Object DrAST_root_node;
 
+	private static final long MEGABYTE = 1024L * 1024L;
+
+	public static long bytesToMegabytes(long bytes) {
+		return bytes / MEGABYTE;
+	}
+
+	//public static Object DrAST_root_node;
+
 	/**
 	 * Entry point
 	 * @param args
@@ -31,7 +39,6 @@ public class Compiler {
 				System.exit(1);
 				return;
 			}
-
 			String filename = args[0];
 
 			LangScanner scanner = new LangScanner(new FileReader(filename));
@@ -45,6 +52,18 @@ public class Compiler {
 				}
 			} else {
 				DrAST_root_node = program;
+
+				//printMemoryUse("");
+
+				//DrAST drast = new DrAST(program);
+				//drast.run();
+
+				//printMemoryUse("");
+
+				//DrASTGUI gui = new DrASTGUI(drast);
+				//gui.run();
+
+				//printMemoryUse("");
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found!");
@@ -54,6 +73,16 @@ public class Compiler {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		System.exit(0);
+	}
+
+	private static void printMemoryUse(String prepend){
+		Runtime runtime = Runtime.getRuntime();
+		// Run the garbage collector
+		runtime.gc();
+		// Calculate the used memory
+		long memory = runtime.totalMemory() - runtime.freeMemory();
+		System.out.println(bytesToMegabytes(memory));
 	}
 
 	private static void printUsage() {

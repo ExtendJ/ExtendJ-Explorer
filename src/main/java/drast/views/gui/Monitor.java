@@ -40,7 +40,8 @@ public class Monitor {
     private String defaultDirectory;
     private Config config;
     private boolean rerunable;
-
+    private boolean optimization;
+    private boolean optimizationVarCalculated;
 
     public Monitor(){
         clean(null);
@@ -65,6 +66,36 @@ public class Monitor {
         defaultDirectory = tmp.substring(0,tmp.length()-1);
         config = new Config(defaultDirectory);
         rerunable = false;
+        optimizationVarCalculated = false;
+        optimization = false;
+    }
+
+
+    /**
+     * This method tries to get the threshold from the configuration file and see if optimizations needs to be done.
+     * No optimization will be enabled if something goes wrong with reading the configuration value.
+     *
+     */
+    public boolean isOptimization(){
+        if(optimizationVarCalculated)
+            return optimization;
+
+        try {
+            int nodeThreshold = 1000;
+            if(config.get("nodeThreshold") != null)
+                nodeThreshold = Integer.parseInt(config.get("nodeThreshold"));
+
+            optimization = getBrain().getClusteredASTSize() > nodeThreshold;
+            if(optimization){
+                controller.addWarning("Number of nodes exceed optimization threshold of " + nodeThreshold + " nodes. Navigation will be a bit more ugly, but performance will be better. ");
+            }
+            config.put("nodeThreshold", String.valueOf(nodeThreshold));
+        }catch (Exception e){
+            e.printStackTrace();
+            optimization = false;
+        }
+        optimizationVarCalculated = true;
+        return optimization;
     }
 
     public void setDrASTUI(DrASTGUI jaaUI){ this.jaaUI = jaaUI;}

@@ -1,5 +1,7 @@
 package drast.model;
 
+import drast.model.analyzer.Analyzer;
+import drast.model.analyzer.AnalyzerHolder;
 import drast.model.analyzer.FTAnalyzer;
 import drast.model.analyzer.RTAnalyzer;
 import drast.model.filteredtree.*;
@@ -19,22 +21,17 @@ import java.util.*;
  * Each node in the filtered AST is a sub class of the GenericTreeNode.
  */
 public class ASTBrain extends Observable{
-
-    public static final String VERSION = "alphabuild-0.4.1";
-
     private HashMap<Class, ArrayList<AbstractMap.SimpleEntry<Method, Annotation>>> methods;
     private HashMap<Class, ArrayList<Method>> NTAMethods;
     private HashMap<Method, Field> methodCacheField;
 
-    private ArrayList<RTAnalyzer> RTAnalyzers;
-    private ArrayList<RTAnalyzer> continuousRTAnalyzers;
-    private ArrayList<FTAnalyzer> FTAnalyzers;
 
     private long reflectedTreeTime;
     private long filteredTreeTime;
     private Node tree;
     private GenericTreeNode filteredTree;
     private FilterConfig filterConfig;
+    private AnalyzerHolder analyzer;
     private Config config;
     private HashSet<Class> allTypes;
     private HashMap<String, LinkedHashSet<Class>> inheritedTypes;
@@ -66,6 +63,8 @@ public class ASTBrain extends Observable{
         ASTObjects = new HashSet<>();
         ASTNTAObjects = new HashSet<>();
         typeErrorTracker = new HashMap<>();
+        analyzer = new AnalyzerHolder();
+
         if(isAPIHolder) //No root node, will stop here
             return;
         NTAMethods = new HashMap<>();
@@ -84,8 +83,7 @@ public class ASTBrain extends Observable{
         // Here we use our recreated tree to build our filtered tree
         filterConfig = new FilterConfig(this, filterDir);
         createFilteredTree(this.tree, true);
-        System.out.println("REF : " + reflectedTreeTime);
-        System.out.println("FIL : " + filteredTreeTime);
+
     }
 
     protected ArrayList<AbstractMap.SimpleEntry<Method, Annotation>> getMethods(Class clazz){ return methods.get(clazz); }
@@ -96,6 +94,8 @@ public class ASTBrain extends Observable{
 
     protected Field getCachedField(Method method){ return methodCacheField.get(method); }
     protected void putCachedField(Method method, Field field){ this.methodCacheField.put(method, field); }
+
+    public AnalyzerHolder getAnalyzer(){ return analyzer; }
 
     public Node getRoot(){return tree; }
 

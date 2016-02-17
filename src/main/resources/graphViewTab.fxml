@@ -50,6 +50,7 @@
             </tooltip>
         </Button>
         <Label text=""/>
+        <Button text="WHILE" fx:id="FPSCOUNTERTEST"></Button>
         <!--
         <Label text="Search: " styleClass="our_label"/>
         <TextField></TextField>

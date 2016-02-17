@@ -28,8 +28,6 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
 
     public Method getMethod(){ return method; }
 
-    public boolean hasCachedValues(){ return false; }
-
     /**
      * Returns the kind of the method, i.e. syn, syn, etc.
      * @return

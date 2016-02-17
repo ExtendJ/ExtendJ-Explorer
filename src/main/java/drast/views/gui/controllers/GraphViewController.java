@@ -1,26 +1,15 @@
 package drast.views.gui.controllers;
 
-import drast.DrASTSetup;
 import drast.model.filteredtree.GenericTreeNode;
-import drast.views.DrASTXML;
 import drast.views.gui.Monitor;
-import drast.views.gui.dialogs.OpenASTDialog;
 import drast.views.gui.graph.GraphView;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.stage.FileChooser;
+import javafx.scene.control.ScrollPane;
 
-import java.io.File;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.ResourceBundle;
 
 /**
@@ -42,6 +31,13 @@ public class GraphViewController implements Initializable, ControllerInterface {
     private Button showWholeGraphButton;
     @FXML
     private Button autoLayoutGraphButton;
+    /*
+    @FXML
+    private Button FPSCOUNTERTEST;
+    */
+    @FXML
+    private ScrollPane graphViewScrollPane;
+
 
     /**
      * Initialize all buttons in the menu.
@@ -64,6 +60,16 @@ public class GraphViewController implements Initializable, ControllerInterface {
         zoomInButton.setOnMouseClicked(e -> graphView.zoomIn());
 
         zoomOutButton.setOnMouseClicked(e-> graphView.zoomOut());
+
+        /*
+        FPSCOUNTERTEST.setOnAction(e->{
+            System.out.println("GOGOOG");
+            long start = System.currentTimeMillis();
+            while((System.currentTimeMillis() - start) < 13000){
+                graphView.repaint();
+            }
+        });
+        */
     }
 
     public void setNiceEdges(boolean niceEdges){

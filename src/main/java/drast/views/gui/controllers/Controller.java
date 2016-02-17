@@ -1,12 +1,16 @@
 package drast.views.gui.controllers;
 
+import drast.DrASTStarter;
 import drast.model.AlertMessage;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.nodeinfo.NodeInfo;
+import drast.views.DrASTView;
 import drast.views.gui.Monitor;
 import drast.views.gui.dialogs.DrDialog;
+import drast.views.gui.dialogs.LoadingDialog;
 import drast.views.gui.graph.GraphView;
 import drast.views.gui.guicomponent.MinimizeButton;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -220,13 +224,6 @@ public class Controller implements Initializable {
     }
 
     public void onNewAPI(){
-        long timeStart = System.currentTimeMillis();
-        mon.getDrASTAPI().run();
-        if(mon.getBrain().containsError(AlertMessage.AST_STRUCTURE_ERROR) || mon.getBrain().containsError(AlertMessage.FILTER_ERROR)){
-            return;
-        }
-        addMessage("Filter update: done after " + (System.currentTimeMillis() - timeStart) + " ms");
-
         controllers.forEach(ControllerInterface::onNewAPI);
 
         updateAstInfoLabels();
@@ -296,7 +293,7 @@ public class Controller implements Initializable {
      */
     public void functionStopped(){
         mon.functionDone();
-        controllers.forEach(ControllerInterface::functionStarted);
+        controllers.forEach(ControllerInterface::functionStopped);
     }
 
     /**
@@ -324,6 +321,15 @@ public class Controller implements Initializable {
             if(controller != caller)
                 controller.nodeSelected(node);
         }
+    }
+
+    public void runCompiler(DrASTView task, String jarPath, String filterPath, String[] args){
+            LoadingDialog loadingDialog = new LoadingDialog(mon, "Waiting for compiler");
+            loadingDialog.init();
+            loadingDialog.show();
+            DrASTStarter setup = new DrASTStarter(task, jarPath, filterPath, args);
+            setup.run();
+            loadingDialog.closeDialog();
     }
 
     /**

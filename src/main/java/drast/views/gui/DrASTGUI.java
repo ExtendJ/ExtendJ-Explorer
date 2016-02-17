@@ -1,5 +1,6 @@
 package drast.views.gui;
 
+import drast.model.AlertMessage;
 import drast.model.DrAST;
 import drast.views.DrASTView;
 import drast.views.gui.controllers.Controller;
@@ -36,7 +37,6 @@ public class DrASTGUI extends Application implements DrASTView {
     protected static DrAST drAST;
     protected static Controller con;
     private static boolean hasRun = false;
-
     private Parent rootView;
 
     public DrASTGUI() { // This one is used by Application
@@ -46,6 +46,10 @@ public class DrASTGUI extends Application implements DrASTView {
 
     public DrASTGUI(Object root) {
         drAST = new DrAST(root);
+    }
+
+    public DrASTGUI(DrAST drAST) {
+        this.drAST = drAST;
     }
 
     public Parent getRoot(){
@@ -76,6 +80,16 @@ public class DrASTGUI extends Application implements DrASTView {
             mon.clean(drAST);
             mon.setDefaultDirectory(defaultDir);
             mon.setRerunable(opened);
+
+            long timeStart = System.currentTimeMillis();
+            mon.getDrASTAPI().run();
+            if(mon.getBrain().containsError(AlertMessage.AST_STRUCTURE_ERROR) || mon.getBrain().containsError(AlertMessage.FILTER_ERROR)){
+                return;
+            }
+            con.addMessage("Filter update: done after " + (System.currentTimeMillis() - timeStart) + " ms");
+
+            if(mon.isOptimization())
+                mon.getConfig().put("niceEdges", "0");
             con.onNewAPI();
         }
     }

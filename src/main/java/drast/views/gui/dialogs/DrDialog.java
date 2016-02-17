@@ -24,9 +24,19 @@ public abstract class DrDialog extends Stage{
 
     protected DrDialog(Monitor mon){
         super(StageStyle.UNIFIED);
+        constructor(mon);
+    }
+
+    protected DrDialog(Monitor mon, StageStyle style){
+        super(style);
+        constructor(mon);
+    }
+
+    private void constructor(Monitor mon){
         this.mon = mon;
         mon.getController().functionStarted();
         invokeButtonPressed = false;
+
 
         mon.addSubWindow(this);
 
@@ -62,7 +72,6 @@ public abstract class DrDialog extends Stage{
         Scene scene = new Scene(parent);
         loadStyleSheets(scene);
         setScene(scene);
-
     }
 
     private void clickYesButton(){
