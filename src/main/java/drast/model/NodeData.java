@@ -281,8 +281,9 @@ public class NodeData {
      * @return
      */
     private Field getField(ASTBrain api, Method method, Class clazz){
-        if(api.getCachedField(method) != null)
+        if(api.getCachedField(method) != null) {
             return api.getCachedField(method);
+        }
         String name = method.getName();
         if(method.getParameterCount() > 0) {
             for (Class par : method.getParameterTypes())

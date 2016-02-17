@@ -16,7 +16,6 @@ import java.util.*;
  * Each node in the filtered AST is a sub class of the GenericTreeNode.
  */
 public class ASTBrain extends Observable{
-
     private HashMap<Class, ArrayList<AbstractMap.SimpleEntry<Method, Annotation>>> methods;
     private HashMap<Class, ArrayList<Method>> NTAMethods;
     private HashMap<Method, Field> methodCacheField;
@@ -317,6 +316,22 @@ public class ASTBrain extends Observable{
         else
             displayedReferences.addAll(futureReferences);
     }
+
+    /**
+     * Reapplies the filter from file.
+     * @return true if the filter was saved to file and a new filtered AST was successfully created, otherwise false
+     */
+    public boolean reApplyFilter(){
+        boolean res = filterConfig.readFilter(filterConfig.getFilterFileName());
+        if (res) {
+            ASTNTAObjects.forEach(treeNodes::remove);
+            clearDisplayedReferences();
+            filteredTree = null;
+            createFilteredTree(this.tree, false);
+        }
+        return res;
+    }
+
     /**
      * Write the new filter text to file and generate a new filtered AST
      * @param text

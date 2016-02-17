@@ -22,7 +22,6 @@ import java.util.ConcurrentModificationException;
  */
 public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
     private boolean moving;
-    private boolean optimization;
     private CustomVertexLabelRenderer labelRenderer;
     private Monitor mon;
 
@@ -34,34 +33,9 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
     public CustomRenderer(Monitor mon){
         this.mon = mon;
         moving = false;
-        refresh();
         labelRenderer = new CustomVertexLabelRenderer();
         setVertexLabelRenderer(labelRenderer);
         lastFrame = 0;
-    }
-
-    /**
-     * This method tries to get the threshold from the configuration file and see if optimizations needs to be done.
-     * No optimization will be enabled if something goes wrong with reading the configuration value.
-     *
-     */
-
-    public void refresh(){
-        optimization = false;
-        try {
-            int nodeThreshold = 1000;
-            if(mon.getConfig().get("nodeThreshold") != null)
-                nodeThreshold = Integer.parseInt(mon.getConfig().get("nodeThreshold"));
-
-            optimization = mon.getBrain().getClusteredASTSize() > nodeThreshold;
-            if(optimization){
-                mon.getController().addWarning("Number of nodes exceed optimization threshold of " + nodeThreshold + " nodes. Navigation will be a bit more ugly, but performance will be better. ");
-            }
-            mon.getConfig().put("nodeThreshold", String.valueOf(nodeThreshold));
-        }catch (Exception e){
-            e.printStackTrace();
-            optimization = false;
-        }
     }
 
     private void calculateFPS(){
@@ -89,6 +63,7 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
      */
     @Override
     public void render(RenderContext<GenericTreeNode, GraphEdge> renderContext, Layout<GenericTreeNode, GraphEdge> layout) {
+        boolean optimization = mon.isOptimization();
         // calculateFPS();
         if(!moving)
             mon.getController().getGraphViewTabController().graphIsLoading();

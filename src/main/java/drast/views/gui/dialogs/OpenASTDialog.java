@@ -1,11 +1,12 @@
 package drast.views.gui.dialogs;
 
-import drast.DrASTSetup;
+import drast.DrASTStarter;
 import drast.model.DrAST;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.nodeinfo.NodeInfo;
 import drast.views.gui.Monitor;
 import drast.views.gui.guicomponent.nodeinfotreetableview.NodeInfoView;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.Initializable;
@@ -29,7 +30,8 @@ public class OpenASTDialog extends DrDialog implements Initializable, ChangeList
     private TextField filterField;
     private TextField arg1Field;
     private TextField args;
-
+    private String filterPath;
+    private String[] argString;
 
     public OpenASTDialog(Monitor mon) {
         super(mon);
@@ -39,10 +41,10 @@ public class OpenASTDialog extends DrDialog implements Initializable, ChangeList
 
     @Override
     protected boolean yesButtonClicked() {
-        String[] argString = (arg1Field.getText().length() == 0 ? args.getText() : arg1Field.getText() + " " + args.getText()).split(" ");
+        argString = (arg1Field.getText().length() == 0 ? args.getText() : arg1Field.getText() + " " + args.getText()).split(" ");
         if(argString[0].equals(""))
             argString = new String[0];
-        String filterPath = filterField.getText();
+        filterPath = filterField.getText();
 
         boolean done = true;
 
@@ -79,9 +81,6 @@ public class OpenASTDialog extends DrDialog implements Initializable, ChangeList
             fullArgString += s + " ";
         mon.getConfig().put("prevFullArgs", fullArgString);
         mon.getConfig().saveConfigFile();
-
-        DrASTSetup setup = new DrASTSetup(mon.getDrASTUI(), jarField.getText(), filterPath, argString);
-        setup.run();
         return true;
     }
 
@@ -89,7 +88,7 @@ public class OpenASTDialog extends DrDialog implements Initializable, ChangeList
 
     @Override
     protected void dialogClose() {
-
+        mon.getController().runCompiler(mon.getDrASTUI(), jarField.getText(), filterPath, argString);
     }
 
     @Override
@@ -159,7 +158,8 @@ public class OpenASTDialog extends DrDialog implements Initializable, ChangeList
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open Jar File");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JAR", "*.jar"));
-            File file = fileChooser.showOpenDialog(mon.getStage());
+
+            File file = fileChooser.showOpenDialog(getScene().getWindow());
             if(file != null){
                 String path = file.getAbsolutePath();
                 jarField.setText(file.getAbsolutePath());

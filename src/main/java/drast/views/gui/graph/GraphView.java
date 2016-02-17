@@ -131,7 +131,7 @@ public class GraphView extends SwingNode implements ItemListener {
         scaler.resetScaler();
         DirectedOrderedSparseMultigraph<GenericTreeNode, GraphEdge> n = new DirectedOrderedSparseMultigraph<>();
         graph = new DelegateForest<>(n);
-        ((CustomRenderer)vs.getRenderer()).refresh();
+
         if(mon.getRootNode() != null)
             createTree(graph, mon.getRootNode(), true);
         TreeLayout<GenericTreeNode, GraphEdge> layout = new TreeLayout<>(graph, 150, 100);
@@ -345,7 +345,7 @@ public class GraphView extends SwingNode implements ItemListener {
 
         bvs.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
         bvs.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
-        setNiceEdges(mon.getConfig().isEnabled("niceEdges"));
+        setNiceEdges(mon.isOptimization());
         bvs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<>());
         bvs.getRenderContext().setLabelOffset(15);
 

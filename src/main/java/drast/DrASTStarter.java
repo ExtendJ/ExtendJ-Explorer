@@ -21,20 +21,26 @@ import java.util.jar.JarFile;
 /**
  * Created by gda10jth on 1/15/16.
  */
-public class DrASTSetup {
+public class DrASTStarter {
     private String taskName;
     private DrASTView task;
     private String jarPath;
     private String[] args;
     private String filterPath;
+    private Object root;
+    private long compilerTime;
 
-    public DrASTSetup(String taskName, String jarPath, String filterPath, String[] args) {
-        this.taskName = taskName;
-        this.task = null;
+    public DrASTStarter(String jarPath, String filterPath, String[] args) {
         init(jarPath, filterPath, args);
     }
 
-    public DrASTSetup(DrASTView task, String jarPath, String filterPath, String[] args) {
+    public DrASTStarter(String taskName, String jarPath, String filterPath, String[] args) {
+        this.taskName = taskName;
+        init(jarPath, filterPath, args);
+    }
+
+
+    public DrASTStarter(DrASTView task, String jarPath, String filterPath, String[] args) {
         this.task = task;
         this.taskName = "";
         init(jarPath, filterPath, args);
@@ -51,11 +57,18 @@ public class DrASTSetup {
             task.printMessage(AlertMessage.SETUP_FAILURE, message);
     }
 
+    public long getCompilerTime(){ return compilerTime; }
+
+
+    public Object getRoot(){return root; }
+
     public void run(){
-        Object root = null;
         boolean success = false;
         String defaultDir = "";
-        try {
+        Class cl;
+        Object main;
+        long time;
+        try{
             URL url = new URL("file:" + jarPath);
             ArrayList<URL> urlList = new ArrayList<>();
             urlList.add(url);
@@ -66,29 +79,33 @@ public class DrASTSetup {
             defaultDir = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(file.separator)) + file.separator;
             JarFile j =  new JarFile(file);
             String mainClassName = j.getManifest().getMainAttributes().getValue("Main-Class");
-            Class cl = Class.forName(mainClassName, true, urlClassLoader);
-            Object main = cl.newInstance();
+            cl = Class.forName(mainClassName, true, urlClassLoader);
+            main = cl.newInstance();
 
             // remove some java security, find the method we are looking for and invoke the method to get the new root.
             SystemExitControl.forbidSystemExitCall();
-            long time = System.currentTimeMillis();
-            Method mainMethod = cl.getMethod("main", String[].class);
-            mainMethod.invoke(main, new Object[]{args});
-            Field rootField = cl.getField("DrAST_root_node");
-            rootField.setAccessible(true);
-            root = rootField.get(main);
-            time = System.currentTimeMillis() - time;
-            System.out.println("Time for compiler : " + time);
+            time = System.currentTimeMillis();
+
+            try {
+                Method mainMethod = cl.getMethod("main", String[].class);
+                mainMethod.invoke(main, new Object[]{args});
+                SystemExitControl.enableSystemExitCall();
+                fetchRootAndStartView(cl, main, defaultDir, time);
+            }catch (NoSuchMethodException e) {
+                print("Could not find the compiler's main method");
+                //e.printStackTrace();
+            }catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }catch (InvocationTargetException e) {
+                if(e.getTargetException().getClass() != SystemExitControl.ExitTrappedException.class) {
+                    e.printStackTrace();
+                    print("compiler error : " + (e.getMessage() != null ? e.getMessage() : e.getCause()));
+                }else {
+                    fetchRootAndStartView(cl, main, defaultDir, time);
+                }
+            }
             SystemExitControl.enableSystemExitCall();
 
-            success = true;
-        } catch (NoSuchFieldException e) {
-            print("Could not find field : DrAST_root_node in the main class. \n" +
-                "Make sure this is implemented correctly check the README file for instructions");
-            //e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            print("Could not find the compiler's main method");
-            //e.printStackTrace();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -102,16 +119,30 @@ public class DrASTSetup {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            if(e.getTargetException().getClass() != SystemExitControl.ExitTrappedException.class) {
-                e.printStackTrace();
-                print("compiler error : " + (e.getMessage() != null ? e.getMessage() : e.getCause()));
-            }
+        }
+    }
+
+    private void fetchRootAndStartView(Class cl, Object main, String defaultDir, long time){
+        boolean success = false;
+        try {
+            Field rootField = cl.getField("DrAST_root_node");
+            rootField.setAccessible(true);
+            root = rootField.get(main);
+            compilerTime = System.currentTimeMillis() - time;
+            print("Compiler finished after : " + compilerTime + " ms");
+
+            success = true;
+        } catch (NoSuchFieldException e) {
+            print("Could not find field : DrAST_root_node in the main class. \n" +
+                    "Make sure this is implemented correctly check the README file for instructions");
+            //e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
 
         if(success){
             // If we got the root without crashing sent the root a task.(success)
-            if (task == null) {
+            if (task == null && taskName != null) {
                 switch (taskName) {
                     case "DrASTGUI":
                         this.task = new DrASTGUI();
@@ -121,8 +152,10 @@ public class DrASTSetup {
                         break;
                 }
             }
-            task.setRoot(root, filterPath, defaultDir, true);
+            if(task != null)
+                task.setRoot(root, filterPath, defaultDir, true);
         }
     }
+
 }
 

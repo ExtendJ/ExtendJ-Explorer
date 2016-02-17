@@ -1,7 +1,6 @@
 package lang;
 
 import beaver.Parser.Exception;
-import drast.model.DrAST;
 import lang.ast.ErrorMessage;
 import lang.ast.LangParser;
 import lang.ast.LangScanner;
@@ -16,6 +15,9 @@ import java.lang.System;
  * Computes the maximum statement nesting depth for a Calc program.
  */
 public class Compiler {
+
+	public static Object DrAST_root_node;
+
 	private static final long MEGABYTE = 1024L * 1024L;
 
 	public static long bytesToMegabytes(long bytes) {
@@ -37,7 +39,6 @@ public class Compiler {
 				System.exit(1);
 				return;
 			}
-
 			String filename = args[0];
 
 			LangScanner scanner = new LangScanner(new FileReader(filename));
@@ -50,14 +51,19 @@ public class Compiler {
 					System.err.println("- " + e);
 				}
 			} else {
-				///DrAST_root_node = program;
+				DrAST_root_node = program;
 
-				printMemoryUse("After compiler");
+				//printMemoryUse("");
 
-				DrAST drast = new DrAST(program);
-				drast.run();
+				//DrAST drast = new DrAST(program);
+				//drast.run();
 
-				printMemoryUse("After DrAST model");
+				//printMemoryUse("");
+
+				//DrASTGUI gui = new DrASTGUI(drast);
+				//gui.run();
+
+				//printMemoryUse("");
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found!");
@@ -67,6 +73,7 @@ public class Compiler {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		System.exit(0);
 	}
 
 	private static void printMemoryUse(String prepend){
@@ -75,7 +82,7 @@ public class Compiler {
 		runtime.gc();
 		// Calculate the used memory
 		long memory = runtime.totalMemory() - runtime.freeMemory();
-		System.out.println(prepend + ": " + memory + "bytes (" + bytesToMegabytes(memory) + "megabytes)");
+		System.out.println(bytesToMegabytes(memory));
 	}
 
 	private static void printUsage() {

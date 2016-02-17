@@ -1,0 +1,8 @@
+.loading_parent{
+    -fx-padding:10;
+    -fx-background-color:#363636;
+}
+
+.loading_label{
+    -fx-text-fill:#FFDD00;
+}

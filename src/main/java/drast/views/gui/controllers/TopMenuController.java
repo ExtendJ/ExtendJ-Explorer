@@ -1,6 +1,6 @@
 package drast.views.gui.controllers;
 
-import drast.DrASTSetup;
+import drast.DrASTStarter;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.views.DrASTXML;
 import drast.views.gui.Config;
@@ -14,7 +14,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -49,11 +48,15 @@ public class TopMenuController implements Initializable, ControllerInterface {
         prevJarPath = "";
         prevFilterPath = "";
         prevArgString = "";
+        setValuesOnMenuItems();
+        mon.getController().getGraphViewTabController().setNiceEdges(niceLookingEdgesCheckMenuItem.isSelected());
+    }
+
+    private void setValuesOnMenuItems(){
         Config config = mon.getConfig();
         showEdgesCheckMenuItem.setSelected(config.isEnabled("showEdges"));
         showNodesCheckMenuItem.setSelected(config.isEnabled("showNodes"));
         niceLookingEdgesCheckMenuItem.setSelected(config.isEnabled("niceEdges"));
-        mon.getController().getGraphViewTabController().setNiceEdges(niceLookingEdgesCheckMenuItem.isSelected());
     }
 
     /**
@@ -80,7 +83,7 @@ public class TopMenuController implements Initializable, ControllerInterface {
         rerunCompiler.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
         rerunCompiler.setOnAction(e->{
             if(mon.isRerunable()){
-                reRunCompiler();
+                mon.getController().runCompiler(mon.getDrASTUI(), prevJarPath, prevFilterPath, prevArgString.split(" "));
             }
         });
 
@@ -159,11 +162,6 @@ public class TopMenuController implements Initializable, ControllerInterface {
         return chooser.showSaveDialog(mon.getStage());
     }
 
-    public void reRunCompiler(){
-        DrASTSetup setup = new DrASTSetup(mon.getDrASTUI(), prevJarPath, prevFilterPath, prevArgString.split(" "));
-        setup.run();
-    }
-
     /**
      * Called when a funciton starts from the Controller. A function can be a dialog.
      */
@@ -197,5 +195,7 @@ public class TopMenuController implements Initializable, ControllerInterface {
         prevJarPath = mon.getConfig().getOrEmpty("prevJar");
         prevFilterPath = mon.getConfig().getOrEmpty("prevFilter");
         prevArgString = mon.getConfig().getOrEmpty("prevFullArgs");
+
+        setValuesOnMenuItems();
     }
 }
