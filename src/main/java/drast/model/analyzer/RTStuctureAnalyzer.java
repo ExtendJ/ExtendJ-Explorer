@@ -1,6 +1,6 @@
 package drast.model.analyzer;
 
-import configAST.Node;
+import drast.model.Node;
 
 /***
  * Analyzer for the AST structure, please implement this when the class JastAdd ASTAnnotations are in place

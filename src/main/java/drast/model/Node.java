@@ -33,7 +33,7 @@ public class Node{
      * @param root
      * @param api used for contributing errors and warnings, during the traversal of the AST.
      */
-    public Node(Object root, ASTBrain api, boolean isList){
+    public Node(Object root, ASTBrain astBrain, boolean isList){
         this.children = new ArrayList<>();
         this.NTAChildren = new HashMap<>();
         this.showNTAChildren = new HashMap<>();
@@ -46,7 +46,7 @@ public class Node{
         this.node = root;
         fullName = simpleNameClass;
         id = System.identityHashCode(this.toString());
-        init(root, isList, false, false, 1, api);
+        init(root, isList, false, false, 1, astBrain);
     }
 
 
@@ -54,14 +54,14 @@ public class Node{
      * This is the constructor used for NTA:S during the traversal of the AST.
      * Will traverse the real childs of the node
      * @param root
-     * @param api
+     * @param astBrain
      */
 
-    public static Node getNTANode(Object root, Node parent, ASTBrain api){
-        return new Node(root, parent, root.getClass().getSimpleName().equals("List"), true, api);
+    public static Node getNTANode(Object root, Node parent, ASTBrain astBrain){
+        return new Node(root, parent, root.getClass().getSimpleName().equals("List"), true, astBrain);
     }
 
-    private Node(Object root, Node parent, boolean isList, boolean NTA, ASTBrain api){
+    private Node(Object root, Node parent, boolean isList, boolean NTA, ASTBrain astBrain){
         this.children = new ArrayList<>();
         this.NTAChildren = new HashMap<>();
         this.showNTAChildren = new HashMap<>();
@@ -76,7 +76,7 @@ public class Node{
         this.parent = parent;
         fullName = simpleNameClass;
         id = System.identityHashCode(this.toString());
-        init(root, false, isList, true,  1, api);
+        init(root, false, isList, true,  1, astBrain);
     }
 
     /**
@@ -86,9 +86,9 @@ public class Node{
      * @param isList
      * @param isOpt
      * @param level
-     * @param api
+     * @param astBrain
      */
-    public Node(Object root, Node parent, String name, boolean isList, boolean isOpt, boolean isNTA, int level, ASTBrain api){
+    public Node(Object root, Node parent, String name, boolean isList, boolean isOpt, boolean isNTA, int level, ASTBrain astBrain){
         this.children = new ArrayList<>();
         this.NTAChildren = new HashMap<>();
         this.showNTAChildren = new HashMap<>();
@@ -107,7 +107,7 @@ public class Node{
             fullName = simpleNameClass + ":" + name;
         }
         id = System.identityHashCode(this.toString());
-        init(root, isList, isOpt, isNTA, level, api);
+        init(root, isList, isOpt, isNTA, level, astBrain);
     }
 
     public boolean isChildClassOf(Class parent){
@@ -130,39 +130,39 @@ public class Node{
      * @param isList
      * @param isOpt
      * @param level
-     * @param api
+     * @param astBrain
      */
-    private void init(Object root, boolean isList, boolean isOpt, boolean isNTA, int level, ASTBrain api){
+    private void init(Object root, boolean isList, boolean isOpt, boolean isNTA, int level, ASTBrain astBrain){
         this.isOpt = isOpt;
         this.isList = isList;
         this.nodeData = new NodeData(this);
         this.level = level;
         if(root != null) {
-            api.addASTObject(node, isNTA);
+            astBrain.addASTObject(node, isNTA);
             try {
                 if (isList) {
                     for (Object child : (Iterable<?>) root) {
                         if (child instanceof Collection && child.getClass().getSimpleName().equals("List") && isOpt) //Todo remove this when we have the AST in the annotations
-                            api.putMessage(AlertMessage.AST_STRUCTURE_WARNING, "A List is a direct child to a Opt parent, parent : " + root + ", -> child : " + child);
-                        children.add(new Node(child, this, isOpt ? nameFromParent : "", child instanceof Collection, false, isNTA, 1, api));
+                            astBrain.putMessage(AlertMessage.AST_STRUCTURE_WARNING, "A List is a direct child to a Opt parent, parent : " + root + ", -> child : " + child);
+                        children.add(new Node(child, this, isOpt ? nameFromParent : "", child instanceof Collection, false, isNTA, 1, astBrain));
                     }
                 }
             }catch (ClassCastException e){
                 String message = isNTA ? "Object : " + root + " is not a type of the AST" : e.getMessage();
-                api.putMessage(AlertMessage.AST_STRUCTURE_ERROR, message);
+                astBrain.putMessage(AlertMessage.AST_STRUCTURE_ERROR, message);
                 return;
             }
-            traversDown(root, api);
+            traversDown(root, astBrain);
         }
     }
 
     /**
      * Iterates through the methods of the root and fins the references to the children, for each child is traverses down
      * @param root
-     * @param api
+     * @param astBrain
      */
-    private void traversDown(Object root, ASTBrain api) {
-        ArrayList<AbstractMap.SimpleEntry<Method, Annotation>> methods = api.getMethods(root.getClass());
+    private void traversDown(Object root, ASTBrain astBrain) {
+        ArrayList<AbstractMap.SimpleEntry<Method, Annotation>> methods = astBrain.getMethods(root.getClass());
         if(methods == null) {
             methods = new ArrayList<>();
             ArrayList<Method> NTAMethods = new ArrayList<>();
@@ -177,12 +177,12 @@ public class Node{
                     }
                 }
             }
-            api.putMethods(root.getClass(), methods);
-            api.putNTAMethods(root.getClass(), NTAMethods);
+            astBrain.putMethods(root.getClass(), methods);
+            astBrain.putNTAMethods(root.getClass(), NTAMethods);
         }
 
-        if(api.getConfig().getBoolean(Config.NTA_CACHED)) {
-            getNodeData().setCachedNTAs(api);
+        if(astBrain.getConfig().getBoolean(Config.NTA_CACHED)) {
+            getNodeData().setCachedNTAs(astBrain);
         }
 
         try {
@@ -190,22 +190,23 @@ public class Node{
                 Annotation a = p.getValue();
                 Object obj = p.getKey().invoke(root, new Object[p.getKey().getParameterCount()]);
                 String name = ASTAnnotation.getString(a, ASTAnnotation.AST_METHOD_NAME);
-                nullCheck(obj, api, name);
+                nullCheck(obj, astBrain, name);
                 children.add(new Node(obj, this, name,
                         !ASTAnnotation.isSingleChild(a),
                         ASTAnnotation.isOptChild(a),
-                        isNTA, level + 1, api));
+                        isNTA, level + 1, astBrain));
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
+        astBrain.getAnalyzer().executeDuringRTAnalyzers(this);
     }
 
-    private void nullCheck(Object obj, ASTBrain api, String name){
+    private void nullCheck(Object obj, ASTBrain astBrain, String name){
         if(obj == null) {
-            api.putMessage(AlertMessage.AST_STRUCTURE_ERROR, String.format("The child %s is null, can't continue the traversal of this path", name));
+            astBrain.putMessage(AlertMessage.AST_STRUCTURE_ERROR, String.format("The child %s is null, can't continue the traversal of this path", name));
         }
     }
 

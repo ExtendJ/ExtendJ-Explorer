@@ -1,6 +1,5 @@
 package drast.model.analyzer;
 
-import configAST.Node;
 import drast.model.filteredtree.GenericTreeNode;
 
 /**

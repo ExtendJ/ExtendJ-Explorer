@@ -162,13 +162,6 @@ public class TopMenuController implements Initializable, ControllerInterface {
         return chooser.showSaveDialog(mon.getStage());
     }
 
-<<<<<<< HEAD
-    public void reRunCompiler(){
-        new DrASTSetup(mon.getDrASTUI(), prevJarPath, prevFilterPath, prevArgString.split(" ")).run();
-    }
-
-=======
->>>>>>> 59ee3072996d03acdde0ab667e26147cee54cded
     /**
      * Called when a funciton starts from the Controller. A function can be a dialog.
      */

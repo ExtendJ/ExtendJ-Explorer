@@ -1,9 +1,6 @@
 package drast.model;
 
-import drast.model.analyzer.Analyzer;
 import drast.model.analyzer.AnalyzerHolder;
-import drast.model.analyzer.FTAnalyzer;
-import drast.model.analyzer.RTAnalyzer;
 import drast.model.filteredtree.*;
 import drast.model.nodeinfo.NodeInfo;
 
@@ -79,10 +76,12 @@ public class ASTBrain extends Observable{
         tree = new Node(root, this, listRoot);
         reflectedTreeTime = System.currentTimeMillis() - time;
         this.filteredTree = null;
+        analyzer.executeRTAnalyzers(tree);
 
         // Here we use our recreated tree to build our filtered tree
         filterConfig = new FilterConfig(this, filterDir);
         createFilteredTree(this.tree, true);
+        analyzer.executeFTAnalyzers(filteredTree);
 
     }
 
@@ -418,7 +417,7 @@ public class ASTBrain extends Observable{
 
     /**
      * Computes the method for the NodeInfo.
-     * If a NTA is found it will be added to the low-level api, the represented AST, and to the filtered tree.
+     * If a NTA is found it will be added to the reflected and the filtered tree.
      * @param node
      * @param info
      * @return
