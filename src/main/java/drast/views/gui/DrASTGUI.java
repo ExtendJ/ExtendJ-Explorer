@@ -1,8 +1,5 @@
 package drast.views.gui;
 
-import drast.DrASTSetup;
-import drast.EvaluatorTime;
-import drast.model.ASTBrain;
 import drast.model.DrAST;
 import drast.views.DrASTView;
 import drast.views.gui.controllers.Controller;
@@ -76,7 +73,6 @@ public class DrASTGUI extends Application implements DrASTView {
         if(!hasRun)
             run();
         else {
-            drAST.run();
             mon.clean(drAST);
             mon.setDefaultDirectory(defaultDir);
             mon.setRerunable(opened);

@@ -183,6 +183,11 @@ public class Node{
             api.putMethods(root.getClass(), methods);
             api.putNTAMethods(root.getClass(), NTAMethods);
         }
+
+        if(api.getConfig().getBoolean(Config.NTA_CACHED)) {
+            getNodeData().setCachedNTAs(api);
+        }
+
         try {
             for (AbstractMap.SimpleEntry<Method, Annotation> p : methods) {
                 Annotation a = p.getValue();

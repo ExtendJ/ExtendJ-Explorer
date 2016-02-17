@@ -1,19 +1,21 @@
-package drast.views.gui;
+package drast.model;
+
+import configAST.Value;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Config {
-	private HashMap<String, String> configs;
-	public static final String FILE_NAME = "DrASTGUI.cfg";
-	private String fullFilePath;
+public class Config{
 
-	public Config(String filePath, String fileName){
-		configs = new HashMap<>();
-		fullFilePath = filePath + fileName;
-		readConfigFile();
-	}
+	public static final String DYNAMIC_VALUES = "dynamic-values";
+	public static final String NTA_DEPTH = "NTA-depth";
+	public static final String NTA_COMPUTED = "NTA-computed";
+	public static final String NTA_CACHED = "NTA-cached";
+
+	private HashMap<String, String> configs;
+	public static final String FILE_NAME = "DrAST.cfg";
+	private String fullFilePath;
 
 	public Config(String filePath){
 	 	configs = new HashMap<>();
@@ -30,14 +32,23 @@ public class Config {
 	}
 
 	/**
-	 * Returns the config name or an empty String
+	 * Get the int value for the config with the name "name"
+	 * @param name
+	 * @return
 	 */
-	public String getOrEmpty(String name){
-		String tmp = configs.get(name);
-		return tmp == null ? "" : tmp;
+	public int getInt(String name){
+		return  configs.get(name) != null ? Integer.parseInt(configs.get(name)) : 0;
 	}
 
-	// does the config exist and is it set to 1
+	/**
+	 * Get the boolean value for the config with the name "name"
+	 * @param name
+	 * @return
+	 */
+	public boolean getBoolean(String name){
+		return configs.get(name) != null && Integer.parseInt(configs.get(name)) == 1;
+	}
+
 	public boolean isEnabled(String name){
 		String cfg = configs.get(name);
 		return cfg != null && cfg.equals("1");
@@ -45,17 +56,15 @@ public class Config {
 
 	private void readConfigFile(){
 		try{
-
 			File file = new File(fullFilePath);
 			if(!file.exists()) {
 				PrintWriter writer = new PrintWriter(fullFilePath, "UTF-8");
-				writer.println("nodeThreshold=1000");
-				writer.println("showNodes=1");
-				writer.println("showEdges=1");
-				writer.println("niceEdges=1");
+				writer.println(DYNAMIC_VALUES + "=0");
+				writer.println(NTA_COMPUTED + "=0");
+				writer.println(NTA_CACHED + "=1");
+				writer.println(NTA_DEPTH + "=10");
 				writer.close();
 			}
-
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			String line ;
 			while ((line = reader.readLine()) != null) {

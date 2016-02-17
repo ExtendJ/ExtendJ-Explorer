@@ -89,23 +89,25 @@ public class EvaluatorTime {
         for(int i = 0; i < ITER; i ++){
             drast = new DrAST(root);
             drast.run();
-            timeRef[i] = "" + drast.brain().getReflectedTreeTime();
-            firstFilterTimes[i] =  "" + drast.brain().getFilteredTreeTime();
-            totalTime[i] = "" + (drast.brain().getFilteredTreeTime() + drast.brain().getReflectedTreeTime());
+            timeRef[i] = "" + drast.getBrain().getReflectedTreeTime();
+            firstFilterTimes[i] =  "" + drast.getBrain().getFilteredTreeTime();
+            totalTime[i] = "" + (drast.getBrain().getFilteredTreeTime() + drast.getBrain().getReflectedTreeTime());
             if(i != 0)
                 continue;
             for (int j = 0; j < ITER; j ++){
-                drast.brain().reApplyFilter();
-                filterTimes[j] = "" + drast.brain().getFilteredTreeTime();
+                drast.getBrain().reApplyFilter();
+                filterTimes[j] = "" + drast.getBrain().getFilteredTreeTime();
             }
         }
+
         writer.print("File " + (fileNbr + 1) + " : " + file.substring(file.lastIndexOf("/") + 1, file.length()) + "\n");
-        writer.print("AST Size :\n" + drast.brain().getASTSize() + "\n");
+        writer.print("AST Size :\n" + drast.getBrain().getASTSize() + "\n");
         print(writer, "TTime :", totalTime);
         print(writer, "RTime :", timeRef);
-        print(writer, "SFTime :", firstFilterTimes);
+        print(writer, "FFTime :", firstFilterTimes);
         print(writer, "FTime :", filterTimes);
     }
+
 
     private void print(PrintWriter writer, String name,  String[] times){
         writer.print(name + "\n");

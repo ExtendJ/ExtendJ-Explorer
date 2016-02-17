@@ -14,7 +14,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -160,8 +159,7 @@ public class TopMenuController implements Initializable, ControllerInterface {
     }
 
     public void reRunCompiler(){
-        DrASTSetup setup = new DrASTSetup(mon.getDrASTUI(), prevJarPath, prevFilterPath, prevArgString.split(" "));
-        setup.run();
+        new DrASTSetup(mon.getDrASTUI(), prevJarPath, prevFilterPath, prevArgString.split(" ")).run();
     }
 
     /**

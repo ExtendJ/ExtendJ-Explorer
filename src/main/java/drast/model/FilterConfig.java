@@ -20,13 +20,8 @@ public class FilterConfig {
     private ASTBrain api; //Reference to the ASTAPI, mainly used to contribute errors
 
     //Variable farm
-    private final String filterFileName; //TODO change to private
+    private final String filterFileName;
     private final String filterTmpFileName;
-
-    public static final String DYNAMIC_VALUES = "dynamic-values";
-    public static final String NTA_DEPTH = "NTA-depth";
-    public static final String NTA_COMPUTED = "NTA-computed";
-    public static final String NTA_CACHED = "NTA-cached";
 
     private HashMap<String, ArrayList<Expr>> filterCache;
     private HashMap<String, ArrayList<Expr>> subTreeCache;
@@ -89,6 +84,7 @@ public class FilterConfig {
                         "/*\n\t" +
                         ":ASTNode{\n\t\t" +
                         "when{}\n\t\t" +
+                        "subtree{}\n\t\t" +
                         "show{}\n\t\t" +
                         "style{}\n\t" +
                         "}\n\t" +

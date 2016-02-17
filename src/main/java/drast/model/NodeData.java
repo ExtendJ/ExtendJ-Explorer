@@ -201,7 +201,7 @@ public class NodeData {
             }
         }
         addCachedValues(api, m, attribute);
-        if(api.getFilterConfig().getBoolean(FilterConfig.DYNAMIC_VALUES)){
+        if(api.getConfig().getBoolean(Config.DYNAMIC_VALUES)){
             invokeValue(attribute, api, m, params);
         }
         return attribute;
@@ -228,9 +228,17 @@ public class NodeData {
         if(attribute == null)
             return;
         Object obj = getFieldValue(getField(api, m, nodeObject.getClass()));
-        if(attribute.isParametrized() && obj != null)
-            setValues(attribute, obj, m);
-        else
+        if (attribute.isParametrized()) {
+            if (obj == null || !(obj instanceof Map))
+                return;
+            Map map = (Map) obj;
+            for (Map.Entry par : (Set<Map.Entry>) map.entrySet()) {
+                if (m.getParameterCount() > 1  && par.getKey() instanceof Collection)
+                    attribute.addComputedValue(((java.util.List) par.getKey()).toArray(), par.getValue());
+                else
+                    attribute.addComputedValue(new Object[]{par.getKey()}, par.getValue());
+            }
+        } else
             attribute.setValue(obj);
     }
 
@@ -238,13 +246,16 @@ public class NodeData {
         HashMap<Object, Method> values = new HashMap<>();
         try {
             for(Map.Entry<Method, Object> e : findFieldNames(api).entrySet()){
-                Attribute attr = computeAttribute(api, e.getKey(), null);
-                setValues(attr, e.getValue(), e.getKey());
-                if(attr.isParametrized()) {
-                    for (Object obj : attr.getComputedValues())
-                        values.put(obj, e.getKey());
+                Method m = e.getKey();
+                Object obj = e.getValue();
+                if(m.getParameterCount() > 0) {
+                    if (obj == null || !(obj instanceof Map))
+                        continue;
+                    Map map = (Map) obj;
+                    for (Map.Entry par : (Set<Map.Entry>) map.entrySet())
+                        values.put(par.getValue(), m);
                 }else
-                    values.put(attr.getValue(), e.getKey());
+                    values.put(obj, m);
             }
         }catch (ClassCastException e){
             api.putMessage(AlertMessage.INVOCATION_ERROR, e.getMessage());
@@ -256,21 +267,6 @@ public class NodeData {
                 node.NTAChildren.put(obj, temp);
             }
         }
-    }
-
-    private void setValues(Attribute attr, Object v, Method m){
-        if (attr.isParametrized()) {
-            if (v == null || !(v instanceof Map))
-                return;
-            Map map = (Map) v;
-            for (Map.Entry par : (Set<Map.Entry>) map.entrySet()) {
-                if (m.getParameterCount() > 1  && par.getKey() instanceof Collection)
-                    attr.addComputedValue(((java.util.List) par.getKey()).toArray(), par.getValue());
-                else
-                    attr.addComputedValue(new Object[]{par.getKey()}, par.getValue());
-            }
-        } else
-            attr.setValue(v);
     }
 
     /** "Finds" the "correct" field value for the attribute.

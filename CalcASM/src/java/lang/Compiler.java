@@ -58,7 +58,22 @@ public class Compiler {
 
 	private static void printUsage() {
 		System.err.println("Usage: Compiler FILE");
-		System.err.println("  where FILE is the file to be compiled");
+		System.err.println("Where FILE is the file to be compiled?");
+	}
+
+	private static final long MEGABYTE = 1024L * 1024L;
+
+	public static long bytesToMegabytes(long bytes) {
+		return bytes / MEGABYTE;
+	}
+
+	private static void printMemoryUse(){
+		Runtime runtime = Runtime.getRuntime();
+		// Run the garbage collector
+		runtime.gc();
+		// Calculate the used memory
+		long memory = runtime.totalMemory() - runtime.freeMemory();
+		System.out.println(bytesToMegabytes(memory));
 	}
 }
 

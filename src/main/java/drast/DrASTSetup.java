@@ -28,7 +28,6 @@ public class DrASTSetup {
     private String[] args;
     private String filterPath;
     private Object root;
-    private long compilerTime;
 
     public DrASTSetup( String jarPath, String filterPath, String[] args) {
         init(jarPath, filterPath, args);
@@ -57,9 +56,6 @@ public class DrASTSetup {
             task.printMessage(AlertMessage.SETUP_FAILURE, message);
     }
 
-    public long getCompilerTime(){ return compilerTime; }
-
-
     public Object getRoot(){return root; }
 
     public void run(){
@@ -87,8 +83,7 @@ public class DrASTSetup {
             Field rootField = cl.getField("DrAST_root_node");
             rootField.setAccessible(true);
             root = rootField.get(main);
-            compilerTime = System.currentTimeMillis() - time;
-            print("Compiler finished after : " + compilerTime + " ms");
+            print("Compiler finished after : " + (System.currentTimeMillis() - time) + " ms");
             SystemExitControl.enableSystemExitCall();
 
             success = true;
