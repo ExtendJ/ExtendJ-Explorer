@@ -1,6 +1,6 @@
 package drast.views.gui.guicomponent.nodeinfotreetableview;
 
-import drast.model.nodeinfo.NodeInfo;
+import drast.model.terminalvalues.TerminalValue;
 
 /**
  * Created by gda10jth on 11/30/15.
@@ -13,7 +13,7 @@ public class NodeInfoParameter extends NodeInfoView {
     private Object value;
     private Object[] params;
 
-    public NodeInfoParameter(Object[] params, Object value, NodeInfo info){
+    public NodeInfoParameter(Object[] params, Object value, TerminalValue info){
         super("", info);
         this.params = params;
         String name = "";

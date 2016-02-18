@@ -1,4 +1,4 @@
-package drast.model.nodeinfo;
+package drast.model.terminalvalues;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -7,12 +7,12 @@ import java.util.ArrayList;
  This Class is a holder for the terminal attributes.
  * Created by gda10jli on 10/20/15.
  */
-public abstract class NodeInfo implements Comparable<NodeInfo>{
+public abstract class TerminalValue implements Comparable<TerminalValue>{
     protected Object value; //The value of the attribute
     protected Method method; //The method which is used to invoke the attribute
     protected String name;
 
-    public NodeInfo(String name, Object value, Method method){
+    public TerminalValue(String name, Object value, Method method){
         this.name = name;
         this.value = value;
         this.method = method;
@@ -46,7 +46,7 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
     public String toString(){ return print(); }
 
     @Override
-    public int compareTo(NodeInfo o) {
+    public int compareTo(TerminalValue o) {
         return name.compareTo(o.name);
     }
 
@@ -72,7 +72,7 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
      * This will add more type specific information to the List, used by getInfo()
      * @param al
      */
-    protected abstract void setChildInfo(ArrayList<NodeInfoHolder> al);
+    protected abstract void setChildInfo(ArrayList<TerminalValueInfo> al);
 
     /**
      * Prints the name with its parameters, if the parameters are null the type of the parameters will then be added.
@@ -98,14 +98,14 @@ public abstract class NodeInfo implements Comparable<NodeInfo>{
      *  i.e. name, value, return type, kind and more.
      * @return
      */
-    public ArrayList<NodeInfoHolder> getInfo(Object value) {
-        ArrayList<NodeInfoHolder> al = new ArrayList();
-        al.add(new NodeInfoHolder("Name", name));
-        al.add(new NodeInfoHolder("Value", isParametrized() ? value : this.value));
-        al.add(new NodeInfoHolder("Return type", method.getReturnType().getName()));
+    public ArrayList<TerminalValueInfo> getInfo(Object value) {
+        ArrayList<TerminalValueInfo> al = new ArrayList();
+        al.add(new TerminalValueInfo("Name", name));
+        al.add(new TerminalValueInfo("Value", isParametrized() ? value : this.value));
+        al.add(new TerminalValueInfo("Return type", method.getReturnType().getName()));
         for (int i = 0; i < method.getParameterCount(); i++)
-            al.add(new NodeInfoHolder("Parameter type: " + i, method.getParameterTypes()[i].getName()));
-        al.add(new NodeInfoHolder("Is parametrized", isParametrized()));
+            al.add(new TerminalValueInfo("Parameter type: " + i, method.getParameterTypes()[i].getName()));
+        al.add(new TerminalValueInfo("Is parametrized", isParametrized()));
         setChildInfo(al);
         return al;
     }

@@ -1,7 +1,7 @@
 package test.inputfiletests;
 
 import drast.model.DrAST;
-import drast.views.DrASTXML;
+import drast.views.xml.DrASTXML;
 import test.OutoutXMLcomparer;
 
 import java.io.File;

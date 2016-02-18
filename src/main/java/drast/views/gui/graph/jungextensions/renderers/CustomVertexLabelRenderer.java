@@ -1,9 +1,9 @@
-package drast.views.gui.graph.jungcomponents.renderers;
+package drast.views.gui.graph.jungextensions.renderers;
 
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.filteredtree.TreeNode;
 import drast.views.gui.graph.GraphEdge;
-import drast.views.gui.graph.jungcomponents.transformers.VertexShapeTransformer;
+import drast.views.gui.graph.jungextensions.transformers.VertexShapeTransformer;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.Context;

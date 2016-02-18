@@ -1,12 +1,10 @@
 package drast.views.gui.dialogs;
 
-import drast.DrASTStarter;
 import drast.model.DrAST;
 import drast.model.filteredtree.GenericTreeNode;
-import drast.model.nodeinfo.NodeInfo;
+import drast.model.terminalvalues.TerminalValue;
 import drast.views.gui.Monitor;
 import drast.views.gui.guicomponent.nodeinfotreetableview.NodeInfoView;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.Initializable;
@@ -158,7 +156,7 @@ public class OpenASTDialog extends DrDialog implements Initializable, ChangeList
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open Jar File");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JAR", "*.jar"));
-
+            
             File file = fileChooser.showOpenDialog(getScene().getWindow());
             if(file != null){
                 String path = file.getAbsolutePath();
@@ -199,7 +197,7 @@ public class OpenASTDialog extends DrDialog implements Initializable, ChangeList
     }
 
     @Override
-    public void attributeSelected(NodeInfo info) {
+    public void attributeSelected(TerminalValue info) {
 
     }
 

@@ -4,9 +4,8 @@ import CalcASM.src.java.gen.Mul;
 import CalcASM.src.java.gen.Numeral;
 import CalcASM.src.java.gen.Program;
 import drast.model.DrAST;
-import drast.views.DrASTXML;
+import drast.views.xml.DrASTXML;
 import org.junit.Test;
-import test.OutoutXMLcomparer;
 
 /**
  * Created by gda10jth on 11/18/15.

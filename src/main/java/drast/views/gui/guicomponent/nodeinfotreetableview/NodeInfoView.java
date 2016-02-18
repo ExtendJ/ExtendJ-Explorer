@@ -1,6 +1,6 @@
 package drast.views.gui.guicomponent.nodeinfotreetableview;
 
-import drast.model.nodeinfo.NodeInfo;
+import drast.model.terminalvalues.TerminalValue;
 
 /**
  * Created by gda10jth on 11/30/15.
@@ -12,20 +12,20 @@ import drast.model.nodeinfo.NodeInfo;
 public class NodeInfoView {
 
     protected String label;
-    protected NodeInfo nodeInfo;
+    protected TerminalValue terminalValue;
 
     public NodeInfoView(String label){
         this.label = label;
     }
 
-    public NodeInfoView(String label, NodeInfo nodeInfo){
+    public NodeInfoView(String label, TerminalValue terminalValue){
         this.label = label;
-        this.nodeInfo = nodeInfo;
+        this.terminalValue = terminalValue;
     }
 
-    public boolean isNodeInfo(){ return nodeInfo != null; }
+    public boolean getTerminalValue(){ return terminalValue != null; }
     public boolean isParameter(){ return false; }
     public String getName(){ return label; }
-    public Object getValue(){ return nodeInfo != null ? nodeInfo.getValue() : ""; }
-    public NodeInfo getNodeInfo(){ return nodeInfo; }
+    public Object getValue(){ return terminalValue != null ? terminalValue.getValue() : ""; }
+    public TerminalValue getNodeInfo(){ return terminalValue; }
 }

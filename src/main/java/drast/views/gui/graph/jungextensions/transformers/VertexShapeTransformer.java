@@ -1,4 +1,4 @@
-package drast.views.gui.graph.jungcomponents.transformers;
+package drast.views.gui.graph.jungextensions.transformers;
 
 /**
  * Created by gda10jli on 12/4/15.
@@ -6,7 +6,7 @@ package drast.views.gui.graph.jungcomponents.transformers;
 
 import drast.model.filteredtree.GenericTreeNode;
 import drast.views.gui.graph.GraphEdge;
-import drast.views.gui.graph.jungcomponents.renderers.CustomDefaultVertexLabelRenderer;
+import drast.views.gui.graph.jungextensions.renderers.CustomDefaultVertexLabelRenderer;
 import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.renderers.VertexLabelAsShapeRenderer;
 

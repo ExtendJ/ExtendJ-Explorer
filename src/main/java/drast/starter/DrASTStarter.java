@@ -1,9 +1,9 @@
-package drast;
+package drast.starter;
 
 import drast.model.AlertMessage;
 import drast.model.CompilerClassLoader;
 import drast.views.DrASTView;
-import drast.views.DrASTXML;
+import drast.views.xml.DrASTXML;
 import drast.views.gui.DrASTGUI;
 
 import java.io.File;
@@ -14,7 +14,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.Permission;
 import java.util.ArrayList;
 import java.util.jar.JarFile;
 

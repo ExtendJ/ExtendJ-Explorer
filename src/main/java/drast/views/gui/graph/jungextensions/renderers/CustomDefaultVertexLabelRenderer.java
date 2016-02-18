@@ -1,13 +1,11 @@
-package drast.views.gui.graph.jungcomponents.renderers;
+package drast.views.gui.graph.jungextensions.renderers;
 
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.filteredtree.TreeNode;
 import drast.views.gui.graph.GraphEdge;
 import edu.uci.ics.jung.visualization.RenderContext;
-import edu.uci.ics.jung.visualization.renderers.BasicVertexLabelRenderer;
 import edu.uci.ics.jung.visualization.renderers.DefaultVertexLabelRenderer;
 
-import javax.swing.*;
 import java.awt.*;
 
 /**

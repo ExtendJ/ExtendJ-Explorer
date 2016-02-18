@@ -1,4 +1,4 @@
-package drast.views.gui.graph.jungcomponents;
+package drast.views.gui.graph.jungextensions;
 
 import drast.views.gui.graph.GraphView;
 import edu.uci.ics.jung.visualization.Layer;
@@ -7,7 +7,6 @@ import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.transform.MutableTransformer;
 
 import java.awt.geom.Point2D;
-import java.util.Random;
 
 /**
  * Scaling class for the zoom, has a limit in how much it is allowed to scale down the view and layout

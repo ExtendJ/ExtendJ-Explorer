@@ -1,8 +1,8 @@
 package drast.model;
 
-import drast.model.nodeinfo.Attribute;
-import drast.model.nodeinfo.NodeInfo;
-import drast.model.nodeinfo.Token;
+import drast.model.terminalvalues.Attribute;
+import drast.model.terminalvalues.TerminalValue;
+import drast.model.terminalvalues.Token;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -11,15 +11,15 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
- * This class holds all information about the a node, all attribute values and tokens
+ * This class holds all information about a node, all attribute values and tokens
  * It can invoke methods with the compute methods.
  * Created by gda10jli on 10/14/15.
  */
 public class NodeData {
 
-    private ArrayList<NodeInfo> attributes;
-    private ArrayList<NodeInfo> tokens;
-    private ArrayList<NodeInfo> NTAs;
+    private ArrayList<TerminalValue> attributes;
+    private ArrayList<TerminalValue> tokens;
+    private ArrayList<TerminalValue> NTAs;
     private HashMap<Method, HashMap<Object[], Object>> invokedValues;
     private Node node; //The node the content is a part of
     private Object nodeObject; //The node the content is a part of
@@ -34,19 +34,19 @@ public class NodeData {
         invokedValues = new HashMap<>();
     }
 
-    public Collection<NodeInfo> getAttributes(){
+    public Collection<TerminalValue> getAttributes(){
         ArrayList temp = attributes;
         attributes = null;
         return temp;
     }
 
-    public Collection<NodeInfo> getNTAs(){
+    public Collection<TerminalValue> getNTAs(){
         ArrayList temp = NTAs;
         NTAs = null;
         return temp;
     }
 
-    public Collection<NodeInfo> getTokens(){
+    public Collection<TerminalValue> getTokens(){
         ArrayList temp = tokens;
         tokens = null;
         return temp;
@@ -65,13 +65,13 @@ public class NodeData {
     /**
      * Computes the method in the NodeInfo, with the given parameters, and adds it to the cached list of the Attribute.
      * If the params == null and the method is not parametrized it will compute the method will 0 arguments, otherwise it will return null and add a error to the api.
-     * @param nodeInfo
+     * @param terminalValue
      * @param par
      * @return true if the invocation was successful.
      */
-    protected Object compute(NodeInfo nodeInfo, Object[] par, ASTBrain api) {
+    protected Object compute(TerminalValue terminalValue, Object[] par, ASTBrain api) {
         Object[] params = par;
-        Method method = nodeInfo.getMethod();
+        Method method = terminalValue.getMethod();
         if ((par != null && par.length != method.getParameterCount()) || (par == null && method.getParameterCount() != 0)) {
             api.putMessage(AlertMessage.INVOCATION_ERROR, "Wrong number of arguments for the method: " + method);
             return null;
@@ -79,12 +79,12 @@ public class NodeData {
         if(params == null)
             params = new Object[method.getParameterCount()];
 
-        if(!nodeInfo.isAttribute()){
+        if(!terminalValue.isAttribute()){
             api.putMessage(AlertMessage.INVOCATION_ERROR, "Can only do compute on attributes");
             return  null;
         }
 
-        Attribute attribute = (Attribute) nodeInfo;
+        Attribute attribute = (Attribute) terminalValue;
         if(attribute.containsValue(params))
             return attribute.getComputedValue(params);
 
@@ -115,7 +115,7 @@ public class NodeData {
         tokens = new ArrayList<>();
         NTAs = new ArrayList<>();
         for(Method m : nodeObject.getClass().getMethods()){
-            NodeInfo info ;
+            TerminalValue info ;
             for (Annotation a : m.getAnnotations()) {
                 if (ASTAnnotation.isAttribute(a)) {
                     info = computeAttribute(api, m, null);

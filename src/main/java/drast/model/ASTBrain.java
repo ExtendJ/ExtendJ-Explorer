@@ -1,7 +1,7 @@
 package drast.model;
 
 import drast.model.filteredtree.*;
-import drast.model.nodeinfo.NodeInfo;
+import drast.model.terminalvalues.TerminalValue;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -401,7 +401,7 @@ public class ASTBrain extends Observable{
 
     public void compute(Node node) { node.getNodeData().compute(this); }
 
-    public Object compute(Node node, NodeInfo info) { return compute(node, info, null); }
+    public Object compute(Node node, TerminalValue info) { return compute(node, info, null); }
 
     /**
      * Computes the method for the NodeInfo.
@@ -410,7 +410,7 @@ public class ASTBrain extends Observable{
      * @param info
      * @return
      */
-    public Object compute(Node node, NodeInfo info, Object[]  params) {
+    public Object compute(Node node, TerminalValue info, Object[]  params) {
         if (info == null)
             return null;
         Object obj = node.getNodeData().compute(info, params, this);
@@ -420,7 +420,7 @@ public class ASTBrain extends Observable{
         if(!computedNTAs.containsKey(node))
             computedNTAs.put(node, new HashSet<>());
         computedNTAs.get(node).add(astNode);
-        node.showNTAChildren.put(NodeInfo.getName(info.getMethod(), params), astNode);
+        node.showNTAChildren.put(TerminalValue.getName(info.getMethod(), params), astNode);
         if(filterConfig.getBoolean(FilterConfig.NTA_COMPUTED))
             buildFilteredSubTree(astNode, (TreeNode) treeNodes.get(node.node));
         else {

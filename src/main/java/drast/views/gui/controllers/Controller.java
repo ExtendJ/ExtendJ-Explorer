@@ -1,22 +1,19 @@
 package drast.views.gui.controllers;
 
-import drast.DrASTStarter;
-import drast.model.AlertMessage;
+import drast.starter.DrASTStarter;
 import drast.model.filteredtree.GenericTreeNode;
-import drast.model.nodeinfo.NodeInfo;
+import drast.model.terminalvalues.TerminalValue;
 import drast.views.DrASTView;
 import drast.views.gui.Monitor;
 import drast.views.gui.dialogs.DrDialog;
 import drast.views.gui.dialogs.LoadingDialog;
 import drast.views.gui.graph.GraphView;
 import drast.views.gui.guicomponent.MinimizeButton;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -311,7 +308,7 @@ public class Controller implements Initializable {
      * An attribute was selected for the selected node. This method tells different parts of the GUI of this event.
      * @param info the attribute selected.
      */
-    public void attributeInNodeSelected(NodeInfo info){
+    public void attributeInNodeSelected(TerminalValue info){
         for(DrDialog subWindow : mon.getSubWindows())
             subWindow.attributeSelected(info);
     }

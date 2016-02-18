@@ -6,9 +6,9 @@ import drast.model.Node;
 import drast.model.filteredtree.GenericTreeCluster;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.filteredtree.TreeNode;
-import drast.model.nodeinfo.Attribute;
-import drast.model.nodeinfo.NodeInfo;
-import drast.views.gui.AttributeInfo;
+import drast.model.terminalvalues.Attribute;
+import drast.model.terminalvalues.TerminalValue;
+import drast.model.terminalvalues.TerminalValueInfo;
 import drast.views.gui.dialogs.AttributeInputDialog;
 import drast.views.gui.DrASTGUI;
 import drast.views.gui.Monitor;
@@ -18,6 +18,8 @@ import drast.views.gui.guicomponent.nodeinfotreetableview.NodeInfoView;
 import drast.views.gui.guicomponent.nodeinfotreetableview.NodeInfoParameter;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -39,7 +41,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.*;
 
@@ -59,9 +60,9 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     @FXML private TreeTableColumn<NodeInfoView, String> attributeNameCol;
     @FXML private TreeTableColumn<NodeInfoView, Object> attributeValueCol;
 
-    @FXML private TableView<AttributeInfo> attributeInfoTableView;
-    @FXML private TableColumn<AttributeInfo, String> attributeInfoNameCol;
-    @FXML private TableColumn<AttributeInfo, Object> attributeInfoValueCol;
+    @FXML private TableView<TableViewAttributeInfo> attributeInfoTableView;
+    @FXML private TableColumn<TableViewAttributeInfo, String> attributeInfoNameCol;
+    @FXML private TableColumn<TableViewAttributeInfo, Object> attributeInfoValueCol;
 
     @FXML private TableView<ClusterInfo> clusterInfoTableView;
     @FXML private TableColumn<ClusterInfo, String> clusterInfoNameCol;
@@ -125,7 +126,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 header.setVisible(false);
             }
         });
-        TreeViewSkinRefresher<AttributeInfo> a = new TreeViewSkinRefresher(attributeTableView);
+        TreeViewSkinRefresher<TableViewAttributeInfo> a = new TreeViewSkinRefresher(attributeTableView);
         this.attributeTableView.setSkin(a);
 
         attributeNameCol.prefWidthProperty().bind(attributeTableView.widthProperty().multiply(0.50));
@@ -276,7 +277,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      * @param list
      * @param parent
      */
-    private void addSectionToAttributeList(String label, Collection<NodeInfo> list, TreeItem parent){
+    private void addSectionToAttributeList(String label, Collection<TerminalValue> list, TreeItem parent){
         if(list.size() == 0)
             return;
 
@@ -284,8 +285,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         tokensItem.setExpanded(true);
 
         // go through all methods and sort them on kind
-        HashMap<String, ArrayList<NodeInfo>> methods = new HashMap<>();
-        for (NodeInfo info : list) {
+        HashMap<String, ArrayList<TerminalValue>> methods = new HashMap<>();
+        for (TerminalValue info : list) {
             if(!methods.containsKey(info.getKind())){
                 methods.put(info.getKind(), new ArrayList<>());
             }
@@ -293,7 +294,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         }
 
         // Add all methods to the list
-        for(Map.Entry<String, ArrayList<NodeInfo>> entry : methods.entrySet()){
+        for(Map.Entry<String, ArrayList<TerminalValue>> entry : methods.entrySet()){
             if(entry.getValue().size() > 0) {
                 TreeItem<NodeInfoView> kindLabel;
                 if(entry.getValue().get(0).getKind() != null) {
@@ -303,7 +304,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 }else
                     kindLabel = tokensItem;
 
-                for (NodeInfo info : entry.getValue()) {
+                for (TerminalValue info : entry.getValue()) {
                     TreeItem<NodeInfoView> methodItem = new TreeItem<>(new NodeInfoHolder(info));
                     kindLabel.getChildren().add(methodItem);
                     if(!info.isAttribute() || !info.isParametrized())
@@ -338,9 +339,9 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
         if(newValue != null) {
             NodeInfoView infoHolder = newValue.getValue();
-            NodeInfo info = null;
+            TerminalValue info = null;
             Object value = null;
-            if(infoHolder.isNodeInfo()) {
+            if(infoHolder.getTerminalValue()) {
                 info = infoHolder.getNodeInfo();
                 value = infoHolder.getValue();
             }
@@ -370,14 +371,14 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      * Fill the attributeInfoTableView with information about the attribute
      * @param info
      */
-    private void setAttributeInfo(NodeInfo info, Object value){
+    private void setAttributeInfo(TerminalValue info, Object value){
         if(info == null ) {
             attributeInfoLabel.setText("");
             attributeInfoTableView.getItems().clear();
             return;
         }
         attributeInfoLabel.setText("Information about selected attribute");
-        attributeInfoTableView.setItems(FXCollections.observableArrayList(AttributeInfo.toArray(info.getInfo(value))));
+        attributeInfoTableView.setItems(FXCollections.observableArrayList(toArray(info.getInfo(value))));
     }
 
     /**
@@ -399,6 +400,13 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             mon.addHighlightReferencesNodes(node);
         }
         return nodes;
+    }
+
+    private ArrayList<TableViewAttributeInfo> toArray(ArrayList<TerminalValueInfo> infoList){
+        ArrayList<TableViewAttributeInfo> al = new ArrayList();
+        for (TerminalValueInfo info : infoList)
+            al.add(new TableViewAttributeInfo(info.getName(), info.getValue(),info.getTerminalValue(), info.isFilePointer()));
+        return al;
     }
 
     /**
@@ -423,10 +431,10 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
         TreeNode node = (TreeNode) mon.getSelectedNode();
         NodeInfoView selectedInfo  = attributeTableView.getSelectionModel().getSelectedItem().getValue();
-        if(!selectedInfo.isNodeInfo())
+        if(!selectedInfo.getTerminalValue())
             return;
 
-        NodeInfo info = selectedInfo.getNodeInfo();
+        TerminalValue info = selectedInfo.getNodeInfo();
         if(info.isNTA() && !info.isParametrized()){ //Handle the non-parametrized NTA:s
             Object obj = mon.getBrain().compute(node.getNode(), info);
             setAttributeList(node, false);
@@ -448,7 +456,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             if(result == null ||  mon.getLastRealNode() == null)
                 return;
 
-            NodeInfo dialogInfo = dialog.getInfo();
+            TerminalValue dialogInfo = dialog.getInfo();
             Object value = mon.getBrain().compute(dialog.getTreeNode().getNode(), dialog.getInfo(), result);
             printToConsole(value);
             if(info.isNTA())
@@ -494,7 +502,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     /**
      * Class for the cells in the tableviews
      */
-    private class AttributeInfoValueCell extends TableCell<AttributeInfo, Object>{
+    private class AttributeInfoValueCell extends TableCell<TableViewAttributeInfo, Object>{
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
@@ -505,7 +513,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 return;
             }
 
-            AttributeInfo info = (AttributeInfo)getTableRow().getItem();
+            TableViewAttributeInfo info = (TableViewAttributeInfo)getTableRow().getItem();
 
             String text = item.toString();
             if(info.isFilePointer()){
@@ -559,7 +567,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             if(view.isParameter())
                 return;
 
-            NodeInfo info = view.getNodeInfo();
+            TerminalValue info = view.getNodeInfo();
             if(info == null || item != null)
                 return;
             if (info.isParametrized() || info.isNTA()) {
@@ -579,7 +587,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         }
     }
 
-    public class ClusterInfo{
+    private class ClusterInfo{
         private String typeName;
         private int count;
 
@@ -602,5 +610,43 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         public void refresh(){
             super.flow.recreateCells();
         }
+    }
+
+    /**
+     * This is a factory class for the tableViews in the AttributeTabController
+     * It has basically the same fields as NodeInfoHolder, but other types.
+     * This is done to ease the work of the programmer, so the fields in the tableview:s will auto update on change.
+     */
+    private class TableViewAttributeInfo {
+
+        private final SimpleStringProperty name;
+        private final SimpleObjectProperty value;
+        private final TerminalValue terminalValue;
+        private boolean filePointer;
+
+        public TableViewAttributeInfo(String name, Object value, TerminalValue terminalValue, boolean filePointer){
+            this.name = new SimpleStringProperty(name);
+            this.value = new SimpleObjectProperty(value);
+            this.terminalValue = terminalValue;
+            this.filePointer = filePointer;
+        }
+
+        public TerminalValue getTerminalValue(){ return terminalValue; }
+
+        public String getName(){ return name.get(); }
+
+        public void setName(String name) {
+            this.name.set(name);
+        }
+
+        public Object getValue() {
+            return value.get();
+        }
+        public void setValue(Object value) {
+            this.value.set(value);
+        }
+
+        public boolean isFilePointer(){return filePointer;}
+
     }
 }
