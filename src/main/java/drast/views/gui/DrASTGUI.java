@@ -25,10 +25,24 @@ import java.io.IOException;
 import java.util.Optional;
 
 /**
- * This is the main class for the DrAST system if the user wants the GUI. This class will create an DrAST
- * instance that in its turn creates an ASTAPI object that will generate the filtered AST. After this it opens the GUI.
+ * This is the main class for the DrAST system if the user wants the GUI. This class will first run the DrAST model. If
+ * the model is not passed to this class it will create an instance of it. Next it opens the GUI.
  *
- * DrAST can be started by calling run() method on this class or DrASTGUI.
+ * The GUI is created by using the JavaFX library, except the graph view, which uses the Jung2 library which in turn
+ * uses swing.
+ *
+ * The Run() method will run the model and then start the GUI
+ * The setRoot() method will run the model, but use the already open GUI.
+ *
+ * Packages:
+ *      gui.controllers: A number of controllers are handling all GUI interactions with the user.
+ *      gui.dialogs: All dialogs that are used in the program.
+ *      gui graph: All classes that uses the Jung2 library. This library have been extended and chaned in DrAST.
+ *      gui.guicomponents: components that the user interact with like input fields, editors, buttons and so on.
+ *
+ * A Monitor is used to share data throughout all the GUI classes.
+ *
+ * A Config class is used to connect with the configuration file of the GUI.
  *
  */
 
@@ -56,7 +70,7 @@ public class DrASTGUI extends Application implements DrASTView {
         return rootView;
     }
     /**
-     * run() generates the AST and then opens the UI
+     * run() generates the AST and then opens the GUI
      */
     public void run() {
         drAST.run();
@@ -70,6 +84,15 @@ public class DrASTGUI extends Application implements DrASTView {
         return drAST;
     }
 
+    /**
+     * When the GUI is already running, this should be used when a compiler has a new root that should be debugged.
+     *
+     * This method creates a new model, runs it and then updates the GUI.
+     * @param root
+     * @param filterPath
+     * @param defaultDir
+     * @param opened
+     */
     @Override
     public void setRoot(Object root, String filterPath, String defaultDir, boolean opened) {
         drAST = new DrAST(root);
@@ -104,14 +127,13 @@ public class DrASTGUI extends Application implements DrASTView {
     public void setFilterDir(String dir){ drAST.setFilterPath(dir);}
 
     /**
-     * start the UI and is by JavaFX. Load the FXML files and generates the GUI. It also embeds the Swing based graph.
+     * Start the GUI created by JavaFX. Load the FXML files and generates the GUI. It also embeds the Swing based graph.
      *
      * @param stage
      * @throws IOException
      */
     @Override
     public void start(Stage stage) throws Exception {
-
         FXMLLoader loader = new FXMLLoader();
         rootView = loader.load(getClass().getResource("/main.fxml").openStream());
         con = loader.<Controller>getController();
@@ -151,10 +173,15 @@ public class DrASTGUI extends Application implements DrASTView {
             dialog.init();
             dialog.show();
         });
+    }
 
-
-        }
-
+    /**
+     * This method opens the a file in its default program on the machine. How the default program is opened depends on
+     * the operating system. An OSDetector class is used to solve this issue.
+     *
+     * @param file
+     * @return
+     */
     public static boolean openFile(File file) {
         try {
             if (OSDetector.isWindows()) {

@@ -9,10 +9,10 @@ import drast.model.terminalvalues.TerminalValue;
  * This class contains a NodeInfo.
  *
  */
-public class NodeInfoHolder extends NodeInfoView {
+public class TerminalValueTreeItem extends TerminalValueTreeItemView {
 
-    public NodeInfoHolder(TerminalValue info){
-        super(info != null ? info.print() : "", info);
+    public TerminalValueTreeItem(TerminalValue value){
+        super(value != null ? value.print() : "", value);
     }
 
     @Override

@@ -9,16 +9,16 @@ import drast.model.terminalvalues.TerminalValue;
  * This is the parent class and the class the tree table view expects to contain.
  *
  */
-public class NodeInfoView {
+public class TerminalValueTreeItemView {
 
     protected String label;
     protected TerminalValue terminalValue;
 
-    public NodeInfoView(String label){
+    public TerminalValueTreeItemView(String label){
         this.label = label;
     }
 
-    public NodeInfoView(String label, TerminalValue terminalValue){
+    public TerminalValueTreeItemView(String label, TerminalValue terminalValue){
         this.label = label;
         this.terminalValue = terminalValue;
     }

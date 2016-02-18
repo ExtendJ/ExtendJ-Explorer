@@ -11,6 +11,10 @@ import java.awt.geom.Point2D;
 
 /**
  * Created by gda10jli on 12/14/15.
+ *
+ * An extension of the TranslatingGraphMousePlugin. It has the same behavior as its parent, but also tells
+ * the CustomRenderer when the user is dragging the mouse. This is so some optimizations can take place by the
+ * CustomRenderer.
  */
 public class PanningGraphMousePlugin extends TranslatingGraphMousePlugin {
 
@@ -19,7 +23,7 @@ public class PanningGraphMousePlugin extends TranslatingGraphMousePlugin {
     }
 
     /**
-     * chack the modifiers. If accepted, translate the graph according
+     * Check the modifiers. If accepted, translate the graph according
      * to the dragging of the mouse pointer
      * @param e the event
      * !NOTE! method almost unchanged, added a null check for down an exception was thrown otherwise

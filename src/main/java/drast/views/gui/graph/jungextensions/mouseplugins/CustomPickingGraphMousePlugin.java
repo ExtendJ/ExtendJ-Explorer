@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 
 /**
  * Created by gda10jth on 2/10/16.
+ *
  * This is an extension of the PickingGraphMousePlugin. It has the same behavior as its parent, but also tells
  * the CustomRenderer when the user is dragging the mouse. This is so some optimizations can take place by the
  * CustomRenderer.

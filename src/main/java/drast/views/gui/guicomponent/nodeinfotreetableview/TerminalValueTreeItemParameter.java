@@ -9,11 +9,11 @@ import drast.model.terminalvalues.TerminalValue;
  * This class represent a value from a parameterized attribute. The class contains the NodeInfo to the attribute, the
  * name is the parameters as a string and the computed value.
  */
-public class NodeInfoParameter extends NodeInfoView {
+public class TerminalValueTreeItemParameter extends TerminalValueTreeItemView {
     private Object value;
     private Object[] params;
 
-    public NodeInfoParameter(Object[] params, Object value, TerminalValue info){
+    public TerminalValueTreeItemParameter(Object[] params, Object value, TerminalValue info){
         super("", info);
         this.params = params;
         String name = "";

@@ -10,6 +10,10 @@ import java.awt.*;
 
 /**
  * Created by gda10jth on 2/9/16.
+ *
+ * This Class is extendeds the DefaultVertexLabelRenderer with a mehtod getLabelDimension(...).
+ * DrAST extension of the Jung2 library makes it possible to have multiple labels in a node.
+ * The getLabelDimension(...) method calculates the total Dimension of all labels within one node.
  */
 public class CustomDefaultVertexLabelRenderer extends DefaultVertexLabelRenderer {
 
@@ -20,6 +24,13 @@ public class CustomDefaultVertexLabelRenderer extends DefaultVertexLabelRenderer
      */
     public CustomDefaultVertexLabelRenderer(Color pickedVertexLabelColor) { super(pickedVertexLabelColor); }
 
+    /**
+     * The getLabelDimension(...) method calculates the total Dimension of all labels within one node.
+     * @param rc
+     * @param v
+     * @param pickedState
+     * @return
+     */
     public Dimension getLabelDimension(RenderContext<GenericTreeNode,GraphEdge> rc, GenericTreeNode v, boolean pickedState){
         String nodeName = rc.getVertexLabelTransformer().transform(v);
         if(!v.isNode()){

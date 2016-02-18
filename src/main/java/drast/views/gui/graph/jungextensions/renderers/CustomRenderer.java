@@ -16,7 +16,7 @@ import java.util.ConcurrentModificationException;
  * This Class replaces the BasicRenderer as the renderer for the graph view. This is done so we could decide
  * which vertexes and edges that will be shown on the screen, and when. This is to optimize navigation in the tree.
  *
- * If the number of nodes in the tree exceeds a certain number of nodes, defined in hte config file, edges will not be
+ * If the number of nodes in the tree exceeds a certain number of nodes, defined in hte config file, edges and labels will not be
  * drawn onto the screen.
  *
  */
@@ -38,6 +38,13 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
         lastFrame = 0;
     }
 
+    /**
+     * Calculate the number of times the render method gets called.
+     *
+     * Remember that the render method only gets called when the repaint method gets called,
+     * in order for the FPS count to be true, we need to be sure the repaint method
+     * as many times as possible.
+     */
     private void calculateFPS(){
         frameCount++;
         elapsedTime = System.currentTimeMillis() - lastFrame;

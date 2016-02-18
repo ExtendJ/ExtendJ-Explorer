@@ -4,6 +4,10 @@ import java.util.HashSet;
 
 /**
  * Created by gda10jli on 1/14/16.
+ *
+ * Removes some unwanted "words" from String values. Examples are java.lang and java.util.
+ * This is to make nice, short names for the GUI.
+ *
  */
 public class TextFormatter {
     private HashSet<String> rules;

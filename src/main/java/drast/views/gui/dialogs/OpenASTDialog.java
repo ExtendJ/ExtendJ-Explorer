@@ -4,7 +4,7 @@ import drast.model.DrAST;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.terminalvalues.TerminalValue;
 import drast.views.gui.Monitor;
-import drast.views.gui.guicomponent.nodeinfotreetableview.NodeInfoView;
+import drast.views.gui.guicomponent.nodeinfotreetableview.TerminalValueTreeItemView;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.Initializable;
@@ -23,7 +23,7 @@ import java.util.ResourceBundle;
 /**
  * Created by gda10jth on 1/15/16.
  */
-public class OpenASTDialog extends DrDialog implements Initializable, ChangeListener<TreeItem<NodeInfoView>> {
+public class OpenASTDialog extends DrDialog implements Initializable, ChangeListener<TreeItem<TerminalValueTreeItemView>> {
     private TextField jarField;
     private TextField filterField;
     private TextField arg1Field;
@@ -156,7 +156,7 @@ public class OpenASTDialog extends DrDialog implements Initializable, ChangeList
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open Jar File");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JAR", "*.jar"));
-            
+
             File file = fileChooser.showOpenDialog(getScene().getWindow());
             if(file != null){
                 String path = file.getAbsolutePath();
@@ -207,7 +207,7 @@ public class OpenASTDialog extends DrDialog implements Initializable, ChangeList
     }
 
     @Override
-    public void changed(ObservableValue<? extends TreeItem<NodeInfoView>> observable, TreeItem<NodeInfoView> oldValue, TreeItem<NodeInfoView> newValue) {
+    public void changed(ObservableValue<? extends TreeItem<TerminalValueTreeItemView>> observable, TreeItem<TerminalValueTreeItemView> oldValue, TreeItem<TerminalValueTreeItemView> newValue) {
 
     }
 

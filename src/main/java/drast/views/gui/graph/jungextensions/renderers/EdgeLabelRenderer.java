@@ -15,7 +15,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 
 /**
- * This is a library file from Jung, that renders the label over the Edge.
+ * This is a library file from Jung2, that renders the label over the Edge.
  * The only difference is that is has a offset, which will set the label the closer to the middle of the edge.
  */
 public class EdgeLabelRenderer<V,E> extends BasicEdgeLabelRenderer<V,E>{
