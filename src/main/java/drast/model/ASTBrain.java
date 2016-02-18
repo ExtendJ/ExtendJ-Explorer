@@ -115,8 +115,6 @@ public class ASTBrain extends Observable{
         notifyObservers(newMessage);
     }
 
-
-
     public int getClusteredASTSize(){ return normalNodes; }
 
     public int getASTSize(){ return ASTObjects.size() + ASTNTAObjects.size(); }
@@ -235,10 +233,7 @@ public class ASTBrain extends Observable{
 
         for(Node child : node.children)
             createFilteredTree(child, gNode, collapse, firstTime, depth, futureReferences);
-/**
- * /**§
- *
- */
+
         clusterClusters(gNode);
     }
 
@@ -428,6 +423,7 @@ public class ASTBrain extends Observable{
         Object obj = node.getNodeData().compute(info, params, this);
         if(!info.isNTA() || ASTNTAObjects.contains(obj) || containsError(AlertMessage.INVOCATION_ERROR))
             return obj;
+
         Node astNode = Node.getNTANode(obj, node, this);
         if(!computedNTAs.containsKey(node))
             computedNTAs.put(node, new HashSet<>());

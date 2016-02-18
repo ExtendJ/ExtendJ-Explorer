@@ -47,7 +47,6 @@ public class LoadingDialog extends DrDialog {
 
     @Override
     protected void dialogClose() {
-        System.out.println("kukar");
         timer.cancel();
         timer = null;
     }

@@ -16,18 +16,21 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.Permission;
 import java.util.ArrayList;
+import java.util.Observable;
 import java.util.jar.JarFile;
 
 /**
  * Created by gda10jth on 1/15/16.
  */
-public class DrASTStarter {
+public class DrASTStarter extends Observable {
     private String taskName;
     private DrASTView task;
     private String jarPath;
     private String[] args;
     private String filterPath;
+    private String defaultDir;
     private Object root;
+    private boolean setRoot = true;
 
     public DrASTStarter(String jarPath, String filterPath, String[] args) {
         init(jarPath, filterPath, args);
@@ -50,14 +53,18 @@ public class DrASTStarter {
         this.filterPath = filterPath;
     }
 
-    private void print(String message){
-        if(task != null)
-            task.printMessage(AlertMessage.SETUP_FAILURE, message);
+    public void setRootExecution(boolean setRoot){ this.setRoot = setRoot; }
+
+    public void setRoot(){ task.setRoot(root, filterPath, defaultDir, true);}
+
+    private void print(int type, String message){
+        setChanged();
+        notifyObservers(new AlertMessage(type, message));
     }
 
     public Object getRoot(){return root; }
 
-    public void run(){
+    public boolean run(){
         try{
             URL url = new URL("file:" + jarPath);
             ArrayList<URL> urlList = new ArrayList<>();
@@ -66,7 +73,7 @@ public class DrASTStarter {
 
             // Find and instantiate the main java file in the jar.
             File file = new File(jarPath);
-            String defaultDir = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(file.separator)) + file.separator;
+            defaultDir = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(file.separator)) + file.separator;
             JarFile j =  new JarFile(file);
             String mainClassName = j.getManifest().getMainAttributes().getValue("Main-Class");
             Class cl = Class.forName(mainClassName, true, urlClassLoader);
@@ -78,16 +85,17 @@ public class DrASTStarter {
             try {
                 Method mainMethod = cl.getMethod("main", String[].class);
                 mainMethod.invoke(main, new Object[]{args});
-                fetchRootAndStartView(cl, main, defaultDir, time);
+                SystemExitControl.enableSystemExitCall();
+                return fetchRootAndStartView(cl, main, defaultDir, time);
             }catch (NoSuchMethodException e) {
-                print("Could not find the compiler's main method");
+                print(AlertMessage.SETUP_FAILURE ,"Could not find the compiler's main method");
                 //e.printStackTrace();
             }catch (IllegalAccessException e) {
                 e.printStackTrace();
             }catch (InvocationTargetException e) {
                 if(e.getTargetException().getClass() != SystemExitControl.ExitTrappedException.class) {
                     e.printStackTrace();
-                    print("compiler error : " + (e.getMessage() != null ? e.getMessage() : e.getCause()));
+                    print(AlertMessage.SETUP_FAILURE, "compiler error : " + (e.getMessage() != null ? e.getMessage() : e.getCause()));
                 }else {
                     fetchRootAndStartView(cl, main, defaultDir, time);
                 }
@@ -99,7 +107,7 @@ public class DrASTStarter {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }catch (FileNotFoundException e) {
-            print("Could not find jar file, check path");
+            print(AlertMessage.SETUP_FAILURE, "Could not find jar file, check path");
             e.printStackTrace();
         } catch (InstantiationException e) {
             e.printStackTrace();
@@ -108,19 +116,20 @@ public class DrASTStarter {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    private void fetchRootAndStartView(Class cl, Object main, String defaultDir, long time){
+    private boolean fetchRootAndStartView(Class cl, Object main, String defaultDir, long time){
         boolean success = false;
         try {
             Field rootField = cl.getField("DrAST_root_node");
             rootField.setAccessible(true);
             root = rootField.get(main);
-            print("Compiler finished after : " + (System.currentTimeMillis() - time) + " ms");
+            print(AlertMessage.VIEW_MESSAGE , "Compiler finished after : " + (System.currentTimeMillis() - time) + " ms");
 
             success = true;
         } catch (NoSuchFieldException e) {
-            print("Could not find field : DrAST_root_node in the main class. \n" +
+            print(AlertMessage.SETUP_FAILURE, "Could not find field : DrAST_root_node in the main class. \n" +
                     "Make sure this is implemented correctly check the README file for instructions");
             //e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -139,9 +148,11 @@ public class DrASTStarter {
                         break;
                 }
             }
-            if(task != null)
+            if(setRoot && task != null)
                 task.setRoot(root, filterPath, defaultDir, true);
         }
+
+        return success;
     }
 
 }

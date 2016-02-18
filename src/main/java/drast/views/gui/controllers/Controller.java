@@ -11,6 +11,7 @@ import drast.views.gui.dialogs.LoadingDialog;
 import drast.views.gui.graph.GraphView;
 import drast.views.gui.guicomponent.MinimizeButton;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -24,6 +25,7 @@ import javafx.stage.StageStyle;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 /**
  * This is the main controller of the GUI. It holds references to all sub controllers. If some part of the GUI does
@@ -323,13 +325,24 @@ public class Controller implements Initializable {
         }
     }
 
-    public void runCompiler(DrASTView task, String jarPath, String filterPath, String[] args){
+    public void runCompiler(DrASTView view, String jarPath, String filterPath, String[] args){
+            final DrASTStarter setup = new DrASTStarter(view, jarPath, filterPath, args);
             LoadingDialog loadingDialog = new LoadingDialog(mon, "Waiting for compiler");
+
+            Task<Boolean> task = new Task<Boolean>() {
+                @Override public Boolean call() {
+                    setup.setRootExecution(false);
+                    setup.addObserver(consoleController);
+                    return setup.run();
+                }
+            };
             loadingDialog.init();
-            loadingDialog.show();
-            DrASTStarter setup = new DrASTStarter(task, jarPath, filterPath, args);
-            setup.run();
-            loadingDialog.closeDialog();
+            task.setOnRunning((e) -> loadingDialog.show());
+            task.setOnSucceeded((e) -> {
+                loadingDialog.closeDialog();
+                setup.setRoot();
+            });
+            new Thread(task).start();
     }
 
     /**

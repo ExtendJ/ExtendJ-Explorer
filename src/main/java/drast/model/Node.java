@@ -31,7 +31,7 @@ public class Node{
     /**
      * This is THE constructor for the root node of the AST
      * @param root
-     * @param api used for contributing errors and warnings, during the traversal of the AST.
+     * @param astBrain used for contributing errors and warnings, during the traversal of the AST.
      */
     public Node(Object root, ASTBrain astBrain, boolean isList){
         this.children = new ArrayList<>();

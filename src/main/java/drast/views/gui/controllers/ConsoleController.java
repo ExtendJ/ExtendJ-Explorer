@@ -101,15 +101,14 @@ public class ConsoleController implements Initializable, ControllerInterface, Ob
         Platform.runLater(() -> {
             for (AlertMessage message : messages)
                 addMessage(message);
-                //addConsoleText(warning.type + ": " + warning.message, console, filter);
         });
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        if(o != mon.getBrain())
+        if(!(arg instanceof AlertMessage))
             return;
-        addMessage((AlertMessage)arg);
+        Platform.runLater(() -> addMessage((AlertMessage) arg));
     }
 
     public void addMessage(AlertMessage message){
