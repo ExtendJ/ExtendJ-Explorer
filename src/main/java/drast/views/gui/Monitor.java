@@ -85,7 +85,7 @@ public class Monitor {
             if(config.get("nodeThreshold") != null)
                 nodeThreshold = Integer.parseInt(config.get("nodeThreshold"));
 
-            optimization = getBrain().getClusteredASTSize() > nodeThreshold;
+            optimization = getBrain()  != null && getBrain().getClusteredASTSize() > nodeThreshold;
             if(optimization){
                 controller.addWarning("Number of nodes exceed optimization threshold of " + nodeThreshold + " nodes. Navigation will be a bit more ugly, but performance will be better. ");
             }
@@ -147,7 +147,7 @@ public class Monitor {
 
     public void clearDialogSelectedNodes(){ dialogSelectedNodes.clear();}
 
-    public ASTBrain getBrain(){ return jaaAPI.brain(); }
+    public ASTBrain getBrain(){ return jaaAPI.getBrain(); }
     public DrAST getDrASTAPI(){ return jaaAPI; }
 
     public GenericTreeNode getRootNode(){ return jaaAPI.getFilteredTree(); }

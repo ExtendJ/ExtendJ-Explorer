@@ -1,8 +1,10 @@
 package drast.model;
 
+import drast.model.analyzer.AnalyzerHolder;
 import drast.model.filteredtree.*;
 import drast.model.terminalvalues.TerminalValue;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -20,11 +22,14 @@ public class ASTBrain extends Observable{
     private HashMap<Class, ArrayList<Method>> NTAMethods;
     private HashMap<Method, Field> methodCacheField;
 
+
     private long reflectedTreeTime;
     private long filteredTreeTime;
     private Node tree;
     private GenericTreeNode filteredTree;
     private FilterConfig filterConfig;
+    private AnalyzerHolder analyzer;
+    private Config config;
     private HashSet<Class> allTypes;
     private HashMap<String, LinkedHashSet<Class>> inheritedTypes;
     private HashMap<Class, HashSet<Class>> directParents;
@@ -38,7 +43,6 @@ public class ASTBrain extends Observable{
     private String directoryPath;
 
     private int normalNodes = 0;
-    private int clusterNodes = 0;
 
     public ASTBrain(Object root, String filterDir){ initialize(root, filterDir, false, false); }
     public ASTBrain(Object root, String filterDir, boolean listRoot){ initialize(root, filterDir, listRoot, false); }
@@ -56,21 +60,29 @@ public class ASTBrain extends Observable{
         ASTObjects = new HashSet<>();
         ASTNTAObjects = new HashSet<>();
         typeErrorTracker = new HashMap<>();
+        analyzer = new AnalyzerHolder();
+
         if(isAPIHolder) //No root node, will stop here
             return;
         NTAMethods = new HashMap<>();
         methods = new HashMap<>();
         methodCacheField = new HashMap<>();
 
+        String tmp = new File(".").getAbsolutePath();
+        config = new Config(tmp.substring(0,tmp.length()-1));
+
         // new Node will recreate the AST and be the low level data structure of this program.
         long time = System.currentTimeMillis();
         tree = new Node(root, this, listRoot);
         reflectedTreeTime = System.currentTimeMillis() - time;
-
         this.filteredTree = null;
+        analyzer.executeRTAnalyzers(tree);
+
         // Here we use our recreated tree to build our filtered tree
         filterConfig = new FilterConfig(this, filterDir);
         createFilteredTree(this.tree, true);
+        analyzer.executeFTAnalyzers(filteredTree);
+
     }
 
     protected ArrayList<AbstractMap.SimpleEntry<Method, Annotation>> getMethods(Class clazz){ return methods.get(clazz); }
@@ -81,6 +93,8 @@ public class ASTBrain extends Observable{
 
     protected Field getCachedField(Method method){ return methodCacheField.get(method); }
     protected void putCachedField(Method method, Field field){ this.methodCacheField.put(method, field); }
+
+    public AnalyzerHolder getAnalyzer(){ return analyzer; }
 
     public Node getRoot(){return tree; }
 
@@ -158,35 +172,31 @@ public class ASTBrain extends Observable{
         normalNodes = 0;
         long time = System.currentTimeMillis();
         ArrayList<NodeReference> futureReferences = new ArrayList<>();
-        createFilteredTree(node, null, false ,firstTime, filterConfig.getInt(FilterConfig.NTA_DEPTH), futureReferences);
+        createFilteredTree(node, null, false ,firstTime, config.getInt(Config.NTA_DEPTH), futureReferences);
         addReferences(futureReferences, false); // Add reference edges that is defined in the filter language
         filteredTreeTime = System.currentTimeMillis() - time;
     }
 
-    private GenericTreeNode getNode(Node node, GenericTreeNode parent, boolean collapse){
-        if(node == null)
+    private GenericTreeNode getNode(Node node, GenericTreeNode parent, boolean collapse) {
+        if (node == null)
             return null;
 
-        if(collapse && parent != null && parent.isCluster())
+        if (collapse && parent != null && parent.isCluster())
             return parent;
         else if (collapse)
             return new TreeCluster(node, parent, filterConfig);
 
-        GenericTreeNode gNode;
         boolean enabled = filterConfig.isEnabled(node);
-        if(enabled) {
+        if (enabled) {
             normalNodes++;
-            gNode = new TreeNode(node, parent, filterConfig);
-        }else if (node.isNull())
-            gNode = new TreeNode(node, parent, filterConfig);
-        else if(parent != null && parent.isCluster())
-            gNode = parent;
-        else
-            gNode = new TreeCluster(node, parent, filterConfig);
-
-
-        return gNode;
-
+            return new TreeNode(node, parent, filterConfig);
+        } else if (node.isNull()){
+            return new TreeNode(node, parent, filterConfig);
+        } else if(parent != null && parent.isCluster()){
+            return parent;
+        } else {
+            return new TreeCluster(node, parent, filterConfig);
+        }
     }
 
     private void createFilteredTree(Node node, GenericTreeNode parent, boolean collapseTree, boolean firstTime, int depth, ArrayList<NodeReference> futureReferences){
@@ -269,24 +279,24 @@ public class ASTBrain extends Observable{
             }
         }
 
-        // travers down the tree for the Computed NTA:s
-        if(computedNTAs.containsKey(node) && filterConfig.getBoolean(FilterConfig.NTA_COMPUTED)){
-            for(Node child : computedNTAs.get(node)) {
-                if(!treeNodes.containsKey(child.node)) {
-                    createFilteredTree(child, parent, collapse, true, 0, futureReferences);
-                }
-            }
-        }
-        if(filterConfig.getBoolean(FilterConfig.NTA_CACHED, true)) {
+        if(config.getBoolean(Config.NTA_CACHED)) { //Todo solve the reason why the we dont find all NTAs. and then remove this crap.
             node.getNodeData().setCachedNTAs(this);
             for (Node child : node.NTAChildren.values()) {
-                if (child == null || treeNodes.containsKey(child.node))
+                if (child == null)
                     continue;
                 if (!ASTNTAObjects.contains(child.node))
                     ASTNTAObjects.add(child.node);
                 createFilteredTree(child, parent, collapse, true, 0, futureReferences);
             }
         }
+       // travers down the tree for the Computed NTA:s
+       if(computedNTAs.containsKey(node) && config.getBoolean(Config.NTA_COMPUTED)){
+           for(Node child : computedNTAs.get(node)) {
+               if(!treeNodes.containsKey(child.node)) {
+                   createFilteredTree(child, parent, collapse, true, 0, futureReferences);
+               }
+           }
+       }
     }
 
     /**
@@ -324,7 +334,6 @@ public class ASTBrain extends Observable{
     public boolean reApplyFilter(){
         boolean res = filterConfig.readFilter(filterConfig.getFilterFileName());
         if (res) {
-            ASTNTAObjects.forEach(treeNodes::remove);
             clearDisplayedReferences();
             filteredTree = null;
             createFilteredTree(this.tree, false);
@@ -340,7 +349,6 @@ public class ASTBrain extends Observable{
     public boolean saveNewFilter(String text){
         boolean res = filterConfig.saveAndUpdateConfig(text);
         if (res) {
-            ASTNTAObjects.forEach(treeNodes::remove);
             clearDisplayedReferences();
             filteredTree = null;
             createFilteredTree(this.tree, false);
@@ -358,6 +366,7 @@ public class ASTBrain extends Observable{
         addReferences(futureReferences, true);
     }
 
+    public Config getConfig(){ return config; }
     public FilterConfig getFilterConfig(){ return filterConfig; }
     public GenericTreeNode getFilteredTree() { return filteredTree; }
 
@@ -372,9 +381,7 @@ public class ASTBrain extends Observable{
     public GenericTreeNode getTreeNode(Object node){ return treeNodes.get(node); }
     public boolean isTreeNode(Object node){ return treeNodes.containsKey(node); }
 
-    public boolean isASTObject(Object node){
-        return ASTObjects.contains(node) || ASTNTAObjects.contains(node);
-    }
+    public boolean isASTObject(Object node){ return ASTObjects.contains(node) || ASTNTAObjects.contains(node); }
     public boolean addASTObject(Object node, boolean nta){ return nta ? ASTNTAObjects.add(node) : ASTObjects.add(node); }
 
     public void clearDisplayedReferences(){ displayedReferences.clear(); }
@@ -405,7 +412,7 @@ public class ASTBrain extends Observable{
 
     /**
      * Computes the method for the NodeInfo.
-     * If a NTA is found it will be added to the low-level api, the represented AST, and to the filtered tree.
+     * If a NTA is found it will be added to the reflected and the filtered tree.
      * @param node
      * @param info
      * @return
@@ -416,15 +423,16 @@ public class ASTBrain extends Observable{
         Object obj = node.getNodeData().compute(info, params, this);
         if(!info.isNTA() || ASTNTAObjects.contains(obj) || containsError(AlertMessage.INVOCATION_ERROR))
             return obj;
+
         Node astNode = Node.getNTANode(obj, node, this);
         if(!computedNTAs.containsKey(node))
             computedNTAs.put(node, new HashSet<>());
         computedNTAs.get(node).add(astNode);
         node.showNTAChildren.put(TerminalValue.getName(info.getMethod(), params), astNode);
-        if(filterConfig.getBoolean(FilterConfig.NTA_COMPUTED))
+        if(config.getBoolean(Config.NTA_COMPUTED))
             buildFilteredSubTree(astNode, (TreeNode) treeNodes.get(node.node));
         else {
-            String message = String.format("Computed NTA successfully, but the configuration %s is either not set or off, so the NTA will not be shown.", FilterConfig.NTA_COMPUTED);
+            String message = String.format("Computed NTA successfully, but the configuration %s is either enabled, so the NTA will not be shown. See the DrAST.cfg file.", Config.NTA_COMPUTED);
             putMessage(AlertMessage.INVOCATION_WARNING, message);
         }
         return obj;

@@ -66,11 +66,11 @@ public class DrAST {
      * run() generates the AST
      */
 	public void run(){
-        brain = noAstData ? new ASTBrain() : new ASTBrain(root, filterPath, listRoot);
+		brain = noAstData ? new ASTBrain() : new ASTBrain(root, filterPath, listRoot);
         done = true;
 	}
 
-    public ASTBrain brain(){ return brain; }
+    public ASTBrain getBrain(){ return brain; }
 
 	public GenericTreeNode getFilteredTree(){
 		return brain.getFilteredTree();

@@ -52,18 +52,6 @@ public class Compiler {
 				}
 			} else {
 				DrAST_root_node = program;
-
-				//printMemoryUse("");
-
-				//DrAST drast = new DrAST(program);
-				//drast.run();
-
-				//printMemoryUse("");
-
-				//DrASTGUI gui = new DrASTGUI(drast);
-				//gui.run();
-
-				//printMemoryUse("");
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found!");
@@ -76,18 +64,10 @@ public class Compiler {
 		System.exit(0);
 	}
 
-	private static void printMemoryUse(String prepend){
-		Runtime runtime = Runtime.getRuntime();
-		// Run the garbage collector
-		runtime.gc();
-		// Calculate the used memory
-		long memory = runtime.totalMemory() - runtime.freeMemory();
-		System.out.println(bytesToMegabytes(memory));
-	}
 
 	private static void printUsage() {
 		System.err.println("Usage: Compiler FILE");
-		System.err.println("  where FILE is the file to be compiled");
+		System.err.println("Where FILE is the file to be compiled?");
 	}
 }
 

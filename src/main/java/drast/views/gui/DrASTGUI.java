@@ -37,7 +37,6 @@ public class DrASTGUI extends Application implements DrASTView {
     protected static DrAST drAST;
     protected static Controller con;
     private static boolean hasRun = false;
-
     private Parent rootView;
 
     public DrASTGUI() { // This one is used by Application

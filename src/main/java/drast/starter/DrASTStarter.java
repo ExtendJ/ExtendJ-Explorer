@@ -15,19 +15,21 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Observable;
 import java.util.jar.JarFile;
 
 /**
  * Created by gda10jth on 1/15/16.
  */
-public class DrASTStarter {
+public class DrASTStarter extends Observable {
     private String taskName;
     private DrASTView task;
     private String jarPath;
     private String[] args;
     private String filterPath;
+    private String defaultDir;
     private Object root;
-    private long compilerTime;
+    private boolean setRoot = true;
 
     public DrASTStarter(String jarPath, String filterPath, String[] args) {
         init(jarPath, filterPath, args);
@@ -37,7 +39,6 @@ public class DrASTStarter {
         this.taskName = taskName;
         init(jarPath, filterPath, args);
     }
-
 
     public DrASTStarter(DrASTView task, String jarPath, String filterPath, String[] args) {
         this.task = task;
@@ -51,22 +52,18 @@ public class DrASTStarter {
         this.filterPath = filterPath;
     }
 
-    private void print(String message){
-        if(task != null)
-            task.printMessage(AlertMessage.SETUP_FAILURE, message);
+    public void setRootExecution(boolean setRoot){ this.setRoot = setRoot; }
+
+    public void setRoot(){ task.setRoot(root, filterPath, defaultDir, true);}
+
+    private void print(int type, String message){
+        setChanged();
+        notifyObservers(new AlertMessage(type, message));
     }
-
-    public long getCompilerTime(){ return compilerTime; }
-
 
     public Object getRoot(){return root; }
 
-    public void run(){
-        boolean success = false;
-        String defaultDir = "";
-        Class cl;
-        Object main;
-        long time;
+    public boolean run(){
         try{
             URL url = new URL("file:" + jarPath);
             ArrayList<URL> urlList = new ArrayList<>();
@@ -78,27 +75,26 @@ public class DrASTStarter {
             defaultDir = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(file.separator)) + file.separator;
             JarFile j =  new JarFile(file);
             String mainClassName = j.getManifest().getMainAttributes().getValue("Main-Class");
-            cl = Class.forName(mainClassName, true, urlClassLoader);
-            main = cl.newInstance();
+            Class cl = Class.forName(mainClassName, true, urlClassLoader);
+            Object main = cl.newInstance();
 
             // remove some java security, find the method we are looking for and invoke the method to get the new root.
             SystemExitControl.forbidSystemExitCall();
-            time = System.currentTimeMillis();
-
+            long time = System.currentTimeMillis();
             try {
                 Method mainMethod = cl.getMethod("main", String[].class);
                 mainMethod.invoke(main, new Object[]{args});
                 SystemExitControl.enableSystemExitCall();
-                fetchRootAndStartView(cl, main, defaultDir, time);
+                return fetchRootAndStartView(cl, main, defaultDir, time);
             }catch (NoSuchMethodException e) {
-                print("Could not find the compiler's main method");
+                print(AlertMessage.SETUP_FAILURE ,"Could not find the compiler's main method");
                 //e.printStackTrace();
             }catch (IllegalAccessException e) {
                 e.printStackTrace();
             }catch (InvocationTargetException e) {
                 if(e.getTargetException().getClass() != SystemExitControl.ExitTrappedException.class) {
                     e.printStackTrace();
-                    print("compiler error : " + (e.getMessage() != null ? e.getMessage() : e.getCause()));
+                    print(AlertMessage.SETUP_FAILURE, "compiler error : " + (e.getMessage() != null ? e.getMessage() : e.getCause()));
                 }else {
                     fetchRootAndStartView(cl, main, defaultDir, time);
                 }
@@ -110,7 +106,7 @@ public class DrASTStarter {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }catch (FileNotFoundException e) {
-            print("Could not find jar file, check path");
+            print(AlertMessage.SETUP_FAILURE, "Could not find jar file, check path");
             e.printStackTrace();
         } catch (InstantiationException e) {
             e.printStackTrace();
@@ -119,20 +115,20 @@ public class DrASTStarter {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    private void fetchRootAndStartView(Class cl, Object main, String defaultDir, long time){
+    private boolean fetchRootAndStartView(Class cl, Object main, String defaultDir, long time){
         boolean success = false;
         try {
             Field rootField = cl.getField("DrAST_root_node");
             rootField.setAccessible(true);
             root = rootField.get(main);
-            compilerTime = System.currentTimeMillis() - time;
-            print("Compiler finished after : " + compilerTime + " ms");
+            print(AlertMessage.VIEW_MESSAGE , "Compiler finished after : " + (System.currentTimeMillis() - time) + " ms");
 
             success = true;
         } catch (NoSuchFieldException e) {
-            print("Could not find field : DrAST_root_node in the main class. \n" +
+            print(AlertMessage.SETUP_FAILURE, "Could not find field : DrAST_root_node in the main class. \n" +
                     "Make sure this is implemented correctly check the README file for instructions");
             //e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -151,9 +147,11 @@ public class DrASTStarter {
                         break;
                 }
             }
-            if(task != null)
+            if(setRoot && task != null)
                 task.setRoot(root, filterPath, defaultDir, true);
         }
+
+        return success;
     }
 
 }
