@@ -18,7 +18,7 @@ import javafx.stage.WindowEvent;
  * yesButtonClicked() in the child class.
  */
 public abstract class DrDialog extends Stage{
-    protected boolean invokeButtonPressed;
+    protected boolean yesButtonPressed;
     protected Monitor mon;
     protected Button buttonTypeOk;
 
@@ -35,7 +35,7 @@ public abstract class DrDialog extends Stage{
     private void constructor(Monitor mon){
         this.mon = mon;
         mon.getController().functionStarted();
-        invokeButtonPressed = false;
+        yesButtonPressed = false;
 
 
         mon.addSubWindow(this);
@@ -76,7 +76,7 @@ public abstract class DrDialog extends Stage{
 
     private void clickYesButton(){
         if(yesButtonClicked()) {
-            invokeButtonPressed = true;
+            yesButtonPressed = true;
             closeDialog();
         }
     }
@@ -96,7 +96,7 @@ public abstract class DrDialog extends Stage{
     protected abstract Parent buildDialogContent();
     public abstract void attributeSelected(NodeInfo info);
     public void nodeSelected(GenericTreeNode node){
-        if(!invokeButtonPressed)
+        if(!yesButtonPressed)
             nodeSelectedChild(node);
     }
 

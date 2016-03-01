@@ -319,10 +319,9 @@ public class Controller implements Initializable {
 
         mon.setSelectedNode(node);
 
-        for(ControllerInterface controller : controllers) {
-            if(controller != caller)
+        for(ControllerInterface controller : controllers)
+            if (controller != caller)
                 controller.nodeSelected(node);
-        }
     }
 
     public void runCompiler(DrASTView view, String jarPath, String filterPath, String[] args){

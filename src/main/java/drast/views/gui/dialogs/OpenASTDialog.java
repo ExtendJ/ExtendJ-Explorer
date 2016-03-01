@@ -88,7 +88,8 @@ public class OpenASTDialog extends DrDialog implements Initializable, ChangeList
 
     @Override
     protected void dialogClose() {
-        mon.getController().runCompiler(mon.getDrASTUI(), jarField.getText(), filterPath, argString);
+        if(yesButtonPressed)
+            mon.getController().runCompiler(mon.getDrASTUI(), jarField.getText(), filterPath, argString);
     }
 
     @Override
