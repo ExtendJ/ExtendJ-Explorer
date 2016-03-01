@@ -373,7 +373,6 @@ public class GraphView extends SwingNode implements ItemListener {
         bvs.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
         setNiceEdges(mon.isOptimization());
         bvs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<>());
-        bvs.getRenderContext().setLabelOffset(15);
 
         //Override the default renderers
         bvs.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
@@ -400,10 +399,13 @@ public class GraphView extends SwingNode implements ItemListener {
     }
 
     public void setNiceEdges(boolean niceEdges){
-        if(niceEdges)
+        if(niceEdges) {
             vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.QuadCurve<>());
-        else
+            vs.getRenderContext().setLabelOffset(-5);
+        }else {
             vs.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<>());
+            vs.getRenderContext().setLabelOffset(0);
+        }
         vs.repaint();
 
     }

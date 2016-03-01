@@ -174,7 +174,7 @@ public class OpenASTDialog extends DrDialog implements Initializable, ChangeList
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open Filter File");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("fcl", "*.fcl"));
-            File file = fileChooser.showOpenDialog(mon.getStage());
+            File file = fileChooser.showOpenDialog(getScene().getWindow());
             if(file != null){
                 filterField.setText(file.getAbsolutePath());
             }
@@ -183,7 +183,7 @@ public class OpenASTDialog extends DrDialog implements Initializable, ChangeList
         arg1Button.setOnAction(e->{
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open Argument File");
-            File file = fileChooser.showOpenDialog(mon.getStage());
+            File file = fileChooser.showOpenDialog(getScene().getWindow());
             if(file != null){
                 arg1Field.setText(file.getAbsolutePath());
             }
