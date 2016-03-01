@@ -341,7 +341,7 @@ public class AttributeInputDialog extends DrDialog {
      * @param param information about the field selected
      */
     private void paramTextFieldSelected(nodeParameter param){
-        if(invokeButtonPressed) return;
+        if(yesButtonPressed) return;
         // sets the old selected field to normal style settings and tell the UI to not highlight that type anymore
         if(focusedNodeParameter != null){
             focusedNodeParameter.hBox.setStyle(rowPadding + backgroundColorParam + paramSelectedBorderWidth + paramUnSelectedBorderColor);
@@ -375,7 +375,7 @@ public class AttributeInputDialog extends DrDialog {
     }
 
     public Object[] getResult(){
-        return invokeButtonPressed ? params : null;
+        return yesButtonPressed ? params : null;
     }
 
     public TerminalValue getInfo(){
@@ -388,7 +388,7 @@ public class AttributeInputDialog extends DrDialog {
 
     public TreeNode getTreeNode(){return node;}
     public boolean invokeButtonPressed(){
-        return invokeButtonPressed;
+        return yesButtonPressed;
     }
 
     public void nodeSelectedChild(GenericTreeNode node){

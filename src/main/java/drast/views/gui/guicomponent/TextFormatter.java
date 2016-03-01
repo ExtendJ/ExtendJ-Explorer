@@ -1,7 +1,5 @@
 package drast.views.gui.guicomponent;
 
-import java.util.HashSet;
-
 /**
  * Created by gda10jli on 1/14/16.
  *
@@ -10,13 +8,15 @@ import java.util.HashSet;
  *
  */
 public class TextFormatter {
-    private HashSet<String> rules;
+    private String rules;
 
     public TextFormatter(Class rootClass){
-        rules = new HashSet<>();
-        rules.add("java.lang.");
-        rules.add("java.util.");
-        rules.add(rootClass.getPackage().getName() + ".");
+        rules = "(java.lang.)";
+        rules += "|(java.util.)";
+        rules += "|(java.io.)";
+        rules += "|(java.net.)";
+        rules += "|(java.math.)";
+        rules += "|(" +rootClass.getPackage().getName() + ".)";
     }
 
     public String format(Object obj){
@@ -25,10 +25,5 @@ public class TextFormatter {
        return format(obj.toString());
     }
 
-    public String format(String obj){
-        String name = obj;
-        for(String rule : rules)
-            name = name.replace(rule, "");
-        return name;
-    }
+    public String format(String obj){ return obj.replaceAll(rules, ""); }
 }

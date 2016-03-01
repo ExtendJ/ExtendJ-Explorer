@@ -181,9 +181,8 @@ public class Node{
             astBrain.putNTAMethods(root.getClass(), NTAMethods);
         }
 
-        if(astBrain.getConfig().getBoolean(Config.NTA_CACHED)) {
+        if(astBrain.getConfig().getBoolean(Config.NTA_CACHED))
             getNodeData().setCachedNTAs(astBrain);
-        }
 
         try {
             for (AbstractMap.SimpleEntry<Method, Annotation> p : methods) {

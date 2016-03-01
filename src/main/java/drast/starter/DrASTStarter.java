@@ -9,6 +9,7 @@ import drast.views.gui.DrASTGUI;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -76,16 +77,15 @@ public class DrASTStarter extends Observable {
             JarFile j =  new JarFile(file);
             String mainClassName = j.getManifest().getMainAttributes().getValue("Main-Class");
             Class cl = Class.forName(mainClassName, true, urlClassLoader);
-            Object main = cl.newInstance();
 
             // remove some java security, find the method we are looking for and invoke the method to get the new root.
             SystemExitControl.forbidSystemExitCall();
             long time = System.currentTimeMillis();
             try {
                 Method mainMethod = cl.getMethod("main", String[].class);
-                mainMethod.invoke(main, new Object[]{args});
+                mainMethod.invoke(null, new Object[]{args});
                 SystemExitControl.enableSystemExitCall();
-                return fetchRootAndStartView(cl, main, defaultDir, time);
+                return fetchRootAndStartView(cl, cl, defaultDir, time);
             }catch (NoSuchMethodException e) {
                 print(AlertMessage.SETUP_FAILURE ,"Could not find the compiler's main method");
                 //e.printStackTrace();
@@ -96,23 +96,25 @@ public class DrASTStarter extends Observable {
                     e.printStackTrace();
                     print(AlertMessage.SETUP_FAILURE, "compiler error : " + (e.getMessage() != null ? e.getMessage() : e.getCause()));
                 }else {
-                    fetchRootAndStartView(cl, main, defaultDir, time);
+                    fetchRootAndStartView(cl, cl, defaultDir, time);
                 }
             }
             SystemExitControl.enableSystemExitCall();
 
         } catch (MalformedURLException e) {
+            System.out.println("asdasdas");
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
+            System.out.println("asdasdas");
             e.printStackTrace();
         }catch (FileNotFoundException e) {
+            System.out.println("asdasdas");
             print(AlertMessage.SETUP_FAILURE, "Could not find jar file, check path");
             e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
         } catch (IOException e) {
+            System.out.println("asdas4das");
+            e.printStackTrace();
+        } catch (Throwable e ){
             e.printStackTrace();
         }
         return false;
@@ -123,7 +125,7 @@ public class DrASTStarter extends Observable {
         try {
             Field rootField = cl.getField("DrAST_root_node");
             rootField.setAccessible(true);
-            root = rootField.get(main);
+            root = rootField.get(cl);
             print(AlertMessage.VIEW_MESSAGE , "Compiler finished after : " + (System.currentTimeMillis() - time) + " ms");
 
             success = true;
