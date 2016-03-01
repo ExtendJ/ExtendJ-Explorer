@@ -1,7 +1,6 @@
 package drast.model;
 
 import configAST.*;
-import drast.model.nodeinfo.NodeInfo;
 
 import java.io.*;
 import java.lang.reflect.Method;

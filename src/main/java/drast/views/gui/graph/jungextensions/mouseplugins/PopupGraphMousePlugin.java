@@ -1,5 +1,7 @@
-package drast.views.gui.graph;
+package drast.views.gui.graph.jungextensions.mouseplugins;
 
+import drast.views.gui.graph.GraphEdge;
+import drast.views.gui.graph.GraphView;
 import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.Forest;
@@ -21,7 +23,7 @@ import java.util.HashSet;
  *
  * (Might add EdgeMenuListener or VertexMenuListener later)
  */
-class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
+public class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
     private JPopupMenu vertexPopup;
     private VisualizationViewer<GenericTreeNode, GraphEdge> vs;
     private GenericTreeNode lastClicked;

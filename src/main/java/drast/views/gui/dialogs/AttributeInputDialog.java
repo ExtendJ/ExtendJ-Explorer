@@ -2,7 +2,7 @@ package drast.views.gui.dialogs;
 
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.filteredtree.TreeNode;
-import drast.model.nodeinfo.NodeInfo;
+import drast.model.terminalvalues.TerminalValue;
 import drast.views.gui.Monitor;
 import drast.views.gui.guicomponent.inputfields.CharField;
 import drast.views.gui.guicomponent.inputfields.FloatingNumberField;
@@ -31,7 +31,7 @@ import java.util.ArrayList;
  * When the dialog is closed the resulting parameters can be fetched with getResult().
  */
 public class AttributeInputDialog extends DrDialog {
-    private NodeInfo info;
+    private TerminalValue info;
     private TreeNode node;
     private Method m;
     private nodeParameter focusedNodeParameter;
@@ -65,7 +65,7 @@ public class AttributeInputDialog extends DrDialog {
     private String clickHereString = "Click here";
     private String selectNodeString = "Click on a node";
 
-    public AttributeInputDialog(NodeInfo attribute, TreeNode node, Monitor mon){
+    public AttributeInputDialog(TerminalValue attribute, TreeNode node, Monitor mon){
         super(mon);
         initModality(Modality.NONE);
         this.info = attribute;
@@ -187,7 +187,7 @@ public class AttributeInputDialog extends DrDialog {
     }
 
     @Override
-    public void attributeSelected(NodeInfo info) {
+    public void attributeSelected(TerminalValue info) {
         if(info == null)
             return;
         if(mon.getBrain().isTreeNode(info.getValue())) {
@@ -378,7 +378,7 @@ public class AttributeInputDialog extends DrDialog {
         return yesButtonPressed ? params : null;
     }
 
-    public NodeInfo getInfo(){
+    public TerminalValue getInfo(){
         return info;
     }
 

@@ -1,4 +1,4 @@
-package drast.views.gui.graph.jungcomponents;
+package drast.views.gui.graph.jungextensions;
 
 import drast.views.gui.Monitor;
 import edu.uci.ics.jung.algorithms.layout.Layout;

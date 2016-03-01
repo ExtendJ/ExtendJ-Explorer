@@ -1,8 +1,7 @@
 package drast.views.gui.controllers;
 
-import drast.DrASTStarter;
 import drast.model.filteredtree.GenericTreeNode;
-import drast.views.DrASTXML;
+import drast.views.xml.DrASTXML;
 import drast.views.gui.Config;
 import drast.views.gui.dialogs.OpenASTDialog;
 import drast.views.gui.Monitor;

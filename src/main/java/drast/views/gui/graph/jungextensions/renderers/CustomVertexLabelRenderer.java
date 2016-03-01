@@ -1,9 +1,9 @@
-package drast.views.gui.graph.jungcomponents.renderers;
+package drast.views.gui.graph.jungextensions.renderers;
 
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.filteredtree.TreeNode;
 import drast.views.gui.graph.GraphEdge;
-import drast.views.gui.graph.jungcomponents.transformers.VertexShapeTransformer;
+import drast.views.gui.graph.jungextensions.transformers.VertexShapeTransformer;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.Context;
@@ -22,11 +22,26 @@ import java.awt.geom.Rectangle2D;
 
 /**
  * Created by gda10jth on 2/8/16.
+ *
+ * This is an extension of the BasicVertexLabelRenderer. The BasicVertexLabelRenderer only supports
+ * one label per node, this class support multiple labels per node.
+ *
+ * The reason for this is that DrAST need to have multiple lines in labels (when showing attributes in nodes).
+ * The old system supported HTML for this, but slowed down the program to an unacceptable level. By using
+ * multiple labels in a list like format we achieved the same result but with a huge performance boost.
+ *
  */
 public class CustomVertexLabelRenderer extends BasicVertexLabelRenderer<GenericTreeNode, GraphEdge> {
 
     public CustomVertexLabelRenderer(){ }
 
+    /**
+     * Label a vertex with its name and attributes that should be shown directly in the node.
+     *
+     * @param rc
+     * @param layout
+     * @param v
+     */
     public void labelVertex(RenderContext<GenericTreeNode,GraphEdge> rc, Layout<GenericTreeNode,GraphEdge> layout, GenericTreeNode v){
 
         Point2D pt = layout.transform(v);
@@ -45,7 +60,6 @@ public class CustomVertexLabelRenderer extends BasicVertexLabelRenderer<GenericT
         if(v.isNode()) {
             TreeNode node = (TreeNode) v;
 
-            //System.out.println("asd: " + node.getLabelAttributes());
             int count = 1;
             for (String attribute : node.getLabelAttributes()) {
                 component = prepareRenderer(rc, rc.getVertexLabelRenderer(), attribute, pickedState, v);
@@ -55,7 +69,20 @@ public class CustomVertexLabelRenderer extends BasicVertexLabelRenderer<GenericT
         }
     }
 
-    public void labelVertex(RenderContext<GenericTreeNode,GraphEdge> rc, Layout<GenericTreeNode,GraphEdge> layout, GenericTreeNode v, Component component, int index, double nodeCount, Point2D pt, Rectangle2D bounds, double startX) {
+    /**
+     * Label a vertex with the Component component.
+     *
+     * @param rc
+     * @param layout
+     * @param v
+     * @param component
+     * @param index
+     * @param nodeCount
+     * @param pt
+     * @param bounds
+     * @param startX
+     */
+    private void labelVertex(RenderContext<GenericTreeNode,GraphEdge> rc, Layout<GenericTreeNode,GraphEdge> layout, GenericTreeNode v, Component component, int index, double nodeCount, Point2D pt, Rectangle2D bounds, double startX) {
         //System.out.println(label);
         Graph<GenericTreeNode, GraphEdge> graph = layout.getGraph();
         if (rc.getVertexIncludePredicate().evaluate(Context.getInstance(graph, v)) == false) {
@@ -84,6 +111,15 @@ public class CustomVertexLabelRenderer extends BasicVertexLabelRenderer<GenericT
         g.draw(component, rc.getRendererPane(), p.x, p.y, d.width, d.height, true);
     }
 
+    /**
+     * Get the shape of the final node.
+     *
+     * @param rc
+     * @param v
+     * @param pt
+     * @param dimension
+     * @return
+     */
     private Shape transformedVertexShape(RenderContext<GenericTreeNode,GraphEdge> rc, GenericTreeNode v, Point2D pt, Dimension dimension){
         AffineTransform xform = AffineTransform.getTranslateInstance(pt.getX(), pt.getY());
         Shape shape = ((VertexShapeTransformer)rc.getVertexShapeTransformer()).transform(v, dimension);

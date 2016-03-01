@@ -1,4 +1,4 @@
-package drast;
+package drast.starter;
 
 import java.security.Permission;
 

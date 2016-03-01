@@ -14,6 +14,8 @@ import java.util.ResourceBundle;
 
 /**
  * Created by gda10jth on 2/3/16.
+ *
+ * Controller for the graph view and the navigation menu above it.
  */
 public class GraphViewController implements Initializable, ControllerInterface {
     private Monitor mon;

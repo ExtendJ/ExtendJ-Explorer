@@ -1,7 +1,7 @@
 package drast.views.gui.dialogs;
 
 import drast.model.filteredtree.GenericTreeNode;
-import drast.model.nodeinfo.NodeInfo;
+import drast.model.terminalvalues.TerminalValue;
 import drast.views.gui.Monitor;
 import javafx.application.Platform;
 import javafx.scene.Parent;
@@ -75,7 +75,7 @@ public class LoadingDialog extends DrDialog {
     }
 
     @Override
-    public void attributeSelected(NodeInfo info) {
+    public void attributeSelected(TerminalValue info) {
 
     }
 

@@ -3,14 +3,15 @@ package drast.views.gui.graph;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.filteredtree.NodeReference;
 import drast.views.gui.controllers.GraphViewController;
-import drast.views.gui.graph.jungcomponents.mouseplugins.CustomPickingGraphMousePlugin;
-import drast.views.gui.graph.jungcomponents.mouseplugins.CustomScalingGraphMousePlugin;
-import drast.views.gui.graph.jungcomponents.mouseplugins.PanningGraphMousePlugin;
-import drast.views.gui.graph.jungcomponents.renderers.CustomDefaultVertexLabelRenderer;
-import drast.views.gui.graph.jungcomponents.renderers.CustomRenderer;
-import drast.views.gui.graph.jungcomponents.renderers.EdgeLabelRenderer;
-import drast.views.gui.graph.jungcomponents.transformers.VertexPaintTransformer;
-import drast.views.gui.graph.jungcomponents.transformers.VertexShapeTransformer;
+import drast.views.gui.graph.jungextensions.mouseplugins.CustomPickingGraphMousePlugin;
+import drast.views.gui.graph.jungextensions.mouseplugins.CustomScalingGraphMousePlugin;
+import drast.views.gui.graph.jungextensions.mouseplugins.PanningGraphMousePlugin;
+import drast.views.gui.graph.jungextensions.mouseplugins.PopupGraphMousePlugin;
+import drast.views.gui.graph.jungextensions.renderers.CustomDefaultVertexLabelRenderer;
+import drast.views.gui.graph.jungextensions.renderers.CustomRenderer;
+import drast.views.gui.graph.jungextensions.renderers.EdgeLabelRenderer;
+import drast.views.gui.graph.jungextensions.transformers.VertexPaintTransformer;
+import drast.views.gui.graph.jungextensions.transformers.VertexShapeTransformer;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
@@ -24,8 +25,7 @@ import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 import drast.views.gui.Monitor;
-import drast.views.gui.controllers.Controller;
-import drast.views.gui.graph.jungcomponents.*;
+import drast.views.gui.graph.jungextensions.*;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import org.apache.commons.collections15.Transformer;
@@ -43,12 +43,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * This is the graph view in the UI. It uses the Jung2 library, and therefore is based on Swing. Every event that happens
- * within the tree is handled here. Events that will have changes other parts of the UI will invoke methods in the class
- * Controller reached by the field con.
+ * This is the graph view in the GUI. It uses the Jung2 library, and therefore is based on Swing. Every event that happens
+ * within the tree is handled here. Events that will should change other parts of the GUI will invoke methods in the class
+ * GraphViewController reached by the field myController.
  *
  * A Jung2 DelegateForest is used to present the tree. Vertexes in this tree are GenericTreeNodes and edges are
- * represented by the class UIEdge defined in this package.
+ * represented by the class GraphEdge defined in this package.
+ *
+ * The class creates its tree representation from the constructor when an object gets instantiated. When a new tree
+ * needs to be represented, The method updateGraph() should be called after a new root is set in its monitor Monitor.
  *
  * Created by gda10jli on 10/15/15.
  */
@@ -75,8 +78,6 @@ public class GraphView extends SwingNode implements ItemListener {
         setListeners();
         setContent(vs);
     }
-
-
 
     public void setHugeGraph(boolean trueFalse){ hugeGraph = trueFalse;}
     public boolean isHugeGraph(){ return hugeGraph;}
@@ -111,7 +112,7 @@ public class GraphView extends SwingNode implements ItemListener {
     }
 
     /**
-     * This function creates the VisualizationViewer Object.
+     * This method creates the VisualizationViewer Object.
      *
      * @param g
      */
@@ -124,6 +125,7 @@ public class GraphView extends SwingNode implements ItemListener {
     }
 
     /**
+     * Create a new graph representation from the root in the Monitor.getRootNode().
      *
      */
     public void updateGraph(){
@@ -143,6 +145,8 @@ public class GraphView extends SwingNode implements ItemListener {
     }
 
     /**
+     * Zoom out so the whole graph is seen on the screen. If the graph is too big it will zoom out as
+     * much as is permitted.
      *
      */
     public void showWholeGraphOnScreen(){
@@ -157,6 +161,11 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.repaint();
     }
 
+    /**
+     * Sets the size of the graph layout to the with and height
+     * @param width
+     * @param height
+     */
     public void setPreferredSize(int width, int height){
         vs.setPreferredSize(new Dimension(width, height));
         vs.scaleToLayout(scaler);
@@ -168,6 +177,8 @@ public class GraphView extends SwingNode implements ItemListener {
     }
 
     /**
+     *  Move the "camera" to the GenericTreeNode node in the graph. This does not zoom, only moves the camera
+     *  in X and Y axis
      *
      * @param node
      */
@@ -206,6 +217,14 @@ public class GraphView extends SwingNode implements ItemListener {
         vs.repaint();
     }
 
+    /**
+     * Saves the Whole graph to an image file.
+     *
+     * @param dirPath
+     * @param filename
+     * @param ext
+     * @return
+     */
     public String saveGraphAsImage(String dirPath, String filename, String ext){
 
         VisualizationImageServer<GenericTreeNode, GraphEdge> vis =
@@ -232,6 +251,13 @@ public class GraphView extends SwingNode implements ItemListener {
         }
     }
 
+    /**
+     * Saves the part of the graph that is shown in the graph window to an image file.
+     * @param dirPath
+     * @param filename
+     * @param ext
+     * @return
+     */
     public String savePrintScreenGraph(String dirPath, String filename, String ext) {
 
         BufferedImage bufImage = ScreenImage.createImage(getContent());

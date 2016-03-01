@@ -1,7 +1,7 @@
 package drast.views.gui.dialogs;
 
 import drast.model.filteredtree.GenericTreeNode;
-import drast.model.nodeinfo.NodeInfo;
+import drast.model.terminalvalues.TerminalValue;
 import drast.views.gui.Monitor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -94,7 +94,7 @@ public abstract class DrDialog extends Stage{
     protected abstract void dialogClose();
     public abstract Object[]  getResult();
     protected abstract Parent buildDialogContent();
-    public abstract void attributeSelected(NodeInfo info);
+    public abstract void attributeSelected(TerminalValue info);
     public void nodeSelected(GenericTreeNode node){
         if(!yesButtonPressed)
             nodeSelectedChild(node);

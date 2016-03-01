@@ -1,7 +1,8 @@
-package drast.views;
+package drast.views.xml;
 
 import drast.model.DrAST;
 import drast.model.filteredtree.GenericTreeNode;
+import drast.views.DecoratorView;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

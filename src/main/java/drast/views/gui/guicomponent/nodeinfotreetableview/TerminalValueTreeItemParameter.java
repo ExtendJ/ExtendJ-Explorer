@@ -1,6 +1,6 @@
 package drast.views.gui.guicomponent.nodeinfotreetableview;
 
-import drast.model.nodeinfo.NodeInfo;
+import drast.model.terminalvalues.TerminalValue;
 
 /**
  * Created by gda10jth on 11/30/15.
@@ -9,11 +9,11 @@ import drast.model.nodeinfo.NodeInfo;
  * This class represent a value from a parameterized attribute. The class contains the NodeInfo to the attribute, the
  * name is the parameters as a string and the computed value.
  */
-public class NodeInfoParameter extends NodeInfoView {
+public class TerminalValueTreeItemParameter extends TerminalValueTreeItemView {
     private Object value;
     private Object[] params;
 
-    public NodeInfoParameter(Object[] params, Object value, NodeInfo info){
+    public TerminalValueTreeItemParameter(Object[] params, Object value, TerminalValue info){
         super("", info);
         this.params = params;
         String name = "";

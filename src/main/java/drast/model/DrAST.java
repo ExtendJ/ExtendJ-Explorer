@@ -11,10 +11,10 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
- * This is the main class for the DrAST system. This class will create an ASTAPI object that will generate the
+ * This is the main class for the DrAST system. This class will create an ASTBrain object that will generate the
  * filtered AST.
  *
- * DrAST can be started by calling run() method on this class or DrASTUI (in the DrAST.gui package).
+ * DrAST can be started by calling run() method on this class or DrASTGUI (in the DrAST.views.gui package).
  *
  */
 public class DrAST {

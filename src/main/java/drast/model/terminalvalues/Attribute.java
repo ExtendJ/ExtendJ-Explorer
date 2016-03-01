@@ -1,4 +1,4 @@
-package drast.model.nodeinfo;
+package drast.model.terminalvalues;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -8,7 +8,7 @@ import java.util.*;
  * A Attribute holds their computed values.
  * Created by gda10jli on 10/20/15.
  */
-public class Attribute extends NodeInfo {
+public class Attribute extends TerminalValue {
     private boolean parametrized;
     private String aspect;
     private String declaredAt;
@@ -33,12 +33,12 @@ public class Attribute extends NodeInfo {
     }
 
     @Override
-    protected void setChildInfo(ArrayList<NodeInfoHolder> al) {
-        al.add(new NodeInfoHolder("Is circular", isCircular));
-        al.add(new NodeInfoHolder("Is NTA", isNTA));
-        al.add(new NodeInfoHolder("Aspect", aspect));
-        al.add(new NodeInfoHolder("Declared at", declaredAt, true));
-        al.add(new NodeInfoHolder("Kind", kind));
+    protected void setChildInfo(ArrayList<TerminalValueInfo> al) {
+        al.add(new TerminalValueInfo("Is circular", isCircular));
+        al.add(new TerminalValueInfo("Is NTA", isNTA));
+        al.add(new TerminalValueInfo("Aspect", aspect));
+        al.add(new TerminalValueInfo("Declared at", declaredAt, true));
+        al.add(new TerminalValueInfo("Kind", kind));
     }
 
     @Override

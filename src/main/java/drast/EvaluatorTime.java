@@ -1,6 +1,7 @@
 package drast;
 
 import drast.model.DrAST;
+import drast.starter.DrASTStarter;
 
 import java.io.*;
 import java.util.ArrayList;

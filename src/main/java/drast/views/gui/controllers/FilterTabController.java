@@ -16,6 +16,8 @@ import java.util.ResourceBundle;
 
 /**
  * Created by gda10jth on 2/3/16.
+ *
+ * Controller for the filter editor.
  */
 public class FilterTabController implements Initializable, ControllerInterface {
     private Monitor mon;

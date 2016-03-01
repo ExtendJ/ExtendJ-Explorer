@@ -7,7 +7,7 @@ import drast.views.gui.controllers.Controller;
 import drast.views.gui.dialogs.DrDialog;
 import drast.views.gui.graph.GraphView;
 import drast.views.gui.graph.GraphEdge;
-import drast.views.gui.guicomponent.nodeinfotreetableview.NodeInfoView;
+import drast.views.gui.guicomponent.nodeinfotreetableview.TerminalValueTreeItemView;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -16,13 +16,14 @@ import java.util.HashMap;
 
 
 /**
- * Monitor class for the UI.
- * It keeps track of the controllers, the GraphView and the ASTAPI etc.
+ * Monitor class for the GUI.
+ *
+ * It share information with most of the classes in the GUI.
  */
 public class Monitor {
     private GenericTreeNode lastRealNode;
     private GenericTreeNode selectedNode;
-    private NodeInfoView selectedInfo;
+    private TerminalValueTreeItemView selectedInfo;
     private ArrayList<GraphEdge> refEdges;
     private HashMap<GenericTreeNode,ArrayList<GraphEdge>> displayedRefEdges;
     private Controller controller;
@@ -173,9 +174,9 @@ public class Monitor {
     public Stage getParentStage(){return parentStage;}
     public void setParentStage(Stage stage){parentStage = stage;}
 
-    public NodeInfoView getSelectedInfo(){ return selectedInfo;}
+    public TerminalValueTreeItemView getSelectedInfo(){ return selectedInfo;}
 
-    public void setSelectedInfo(NodeInfoView info){ this.selectedInfo = info; }
+    public void setSelectedInfo(TerminalValueTreeItemView info){ this.selectedInfo = info; }
 
     public GenericTreeNode getSelectedNode(){ return selectedNode;}
 

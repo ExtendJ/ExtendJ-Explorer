@@ -4,6 +4,19 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class holds all configurations of the program that can be written to a file.
+ *
+ * Every entry in the configuration file is stored in an HashMap configs, where the key is
+ * the name of the configuration, and the value is the value of the configuration.
+ *
+ * A number of methods have been implemented to get different results depending on
+ * what the developer needs.
+ * 		getOrEmpty(String key)
+ * 		isEnabled(String key)
+ * 		get(String key)
+ */
+
 public class Config {
 	private HashMap<String, String> configs;
 	public static final String FILE_NAME = "DrASTGUI.cfg";
@@ -37,12 +50,21 @@ public class Config {
 		return tmp == null ? "" : tmp;
 	}
 
-	// does the config exist and is it set to 1
+	/**
+	 * This method answares the question: Does the config exist and is it set to 1?
+	 * @param name
+	 * @return
+	 */
 	public boolean isEnabled(String name){
 		String cfg = configs.get(name);
 		return cfg != null && cfg.equals("1");
 	}
 
+	/**
+	 * Try and read the configuration file, and store each entry in the HashMap configs.
+	 *
+	 * If the config file does not exist, the program will try and create a new one with some default values.
+	 */
 	private void readConfigFile(){
 		try{
 
@@ -71,6 +93,9 @@ public class Config {
 		}
 	}
 
+	/**
+	 * Save the HashMap configs to file.
+	 */
 	public void saveConfigFile(){
 		PrintWriter writer;
 		try {
