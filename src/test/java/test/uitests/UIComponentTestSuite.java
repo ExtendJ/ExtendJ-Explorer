@@ -86,7 +86,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
         mon.setGraphView(graphview);
         con.init(mon, graphview);
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-        stage.setTitle("JastAddDebugger " + ASTBrain.VERSION);
+        stage.setTitle("JastAddDebugger " + DrAST.VERSION);
         stage.setScene(new Scene(rootView, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight()));
         stage.setMaximized(true);
         stage.show();

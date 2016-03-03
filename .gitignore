@@ -7,7 +7,6 @@
 !build.xml
 !modules
 !/gradle/
-!/samples/
 !/src
 /src/gen
 !/dist

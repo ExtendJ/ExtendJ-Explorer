@@ -38,7 +38,7 @@ public class PerformanceCalcASM {
             Program program = (Program) parser.parse(scanner);
             DrAST drast = new DrAST(program);
             drast.run();
-            assertTrue("Error: The reflection of the AST took to long, exceeded 10 seconds ", drast.api().getReflectedTreeTime() < 10000l);
+            assertTrue("Error: The reflection of the AST took to long, exceeded 10 seconds ", drast.getBrain().getReflectedTreeTime() < 10000l);
         } catch (FileNotFoundException e) {
             System.out.println("File not found!");
             System.exit(1);
