@@ -162,21 +162,21 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         return true;
     }
 
+    @Override
+    public void onApplicationClose(){}
+
     /**
      * Called when a funciton starts from the Controller. A function can be a dialog.
      */
     @Override
-    public void functionStarted(){
-
-    }
+    public void functionStarted(){}
 
     /**
      * Called when a funciton stops from the Controller. A function can be a dialog.
      */
     @Override
-    public void functionStopped(){
+    public void functionStopped(){}
 
-    }
 
     @Override
     public void nodeSelected(GenericTreeNode node) {

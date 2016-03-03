@@ -164,36 +164,32 @@ public class TopMenuController implements Initializable, ControllerInterface {
     /**
      * Called when a funciton starts from the Controller. A function can be a dialog.
      */
-    public void functionStarted(){
-
-    }
+    @Override
+    public void functionStarted(){}
 
     /**
      * Called when a funciton stops from the Controller. A function can be a dialog.
      */
-    public void functionStopped(){
-
-    }
+    @Override
+    public void functionStopped(){}
 
     @Override
-    public void nodeSelected(GenericTreeNode node) {
-
-    }
+    public void nodeSelected(GenericTreeNode node) {}
 
     @Override
-    public void nodeDeselected() {
-
-    }
+    public void nodeDeselected() {}
 
     @Override
-    public void updateGUI() {
+    public void updateGUI() {}
 
-    }
+    @Override
+    public void onApplicationClose(){}
 
+    @Override
     public void onNewAPI() {
-        prevJarPath = mon.getConfig().getOrEmpty("prevJar");
-        prevFilterPath = mon.getConfig().getOrEmpty("prevFilter");
-        prevArgString = mon.getConfig().getOrEmpty("prevFullArgs");
+        prevJarPath = mon.getConfig().getOrEmpty(Config.PREV_JAR);
+        prevFilterPath = mon.getConfig().getOrEmpty(Config.PREV_FILTER);
+        prevArgString = mon.getConfig().getOrEmpty(Config.PREV_ARGS);
 
         setValuesOnMenuItems();
     }

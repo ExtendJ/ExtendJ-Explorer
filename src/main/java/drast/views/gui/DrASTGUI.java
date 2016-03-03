@@ -79,6 +79,7 @@ public class DrASTGUI extends Application implements DrASTView {
         hasRun = true;
         this.mon = new Monitor(drAST);
         launch(new String[0]);
+        con.onApplicationClose();
     }
 
     @Override
@@ -164,6 +165,7 @@ public class DrASTGUI extends Application implements DrASTView {
                 we.consume();
             }
         });
+
         stage.show();
         ScrollPane center = (ScrollPane) rootView.lookup("#graphViewScrollPane");
         center.setContent(graphview);

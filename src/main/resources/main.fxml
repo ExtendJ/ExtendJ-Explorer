@@ -56,6 +56,9 @@
                             <Label text="Node Count: " styleClass="our_label"></Label>
                             <Label text="" fx:id="nodeCountLabel"></Label>
                             <Label text="|"></Label>
+                            <Label text="Compiler: " styleClass="our_label"></Label>
+                            <Label text="" fx:id="compilerLabel"></Label>
+                            <Label text="|"></Label>
                         </HBox>
                     </VBox>
                     <VBox fx:id="consoleWindow">

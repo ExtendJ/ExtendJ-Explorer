@@ -33,10 +33,7 @@ public class GraphViewController implements Initializable, ControllerInterface {
     private Button showWholeGraphButton;
     @FXML
     private Button autoLayoutGraphButton;
-    /*
-    @FXML
-    private Button FPSCOUNTERTEST;
-    */
+
     @FXML
     private ScrollPane graphViewScrollPane;
 
@@ -63,15 +60,6 @@ public class GraphViewController implements Initializable, ControllerInterface {
 
         zoomOutButton.setOnMouseClicked(e-> graphView.zoomOut());
 
-        /*
-        FPSCOUNTERTEST.setOnAction(e->{
-            System.out.println("GOGOOG");
-            long start = System.currentTimeMillis();
-            while((System.currentTimeMillis() - start) < 13000){
-                graphView.repaint();
-            }
-        });
-        */
     }
 
     public void setNiceEdges(boolean niceEdges){
@@ -102,16 +90,14 @@ public class GraphViewController implements Initializable, ControllerInterface {
     /**
      * Called when a funciton starts from the Controller. A function can be a dialog.
      */
-    public void functionStarted(){
-
-    }
+    @Override
+    public void functionStarted(){}
 
     /**
      * Called when a funciton stops from the Controller. A function can be a dialog.
      */
-    public void functionStopped(){
-
-    }
+    @Override
+    public void functionStopped(){}
 
     @Override
     public void nodeSelected(GenericTreeNode node) {
@@ -128,6 +114,9 @@ public class GraphViewController implements Initializable, ControllerInterface {
         graphView.updateGraph();
     }
 
-    public void onNewAPI() {
-    }
+    @Override
+    public void onNewAPI() {}
+
+    @Override
+    public void onApplicationClose(){}
 }

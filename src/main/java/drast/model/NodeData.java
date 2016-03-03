@@ -57,7 +57,7 @@ public class NodeData {
      * @param e
      */
     private void addInvocationErrors(ASTBrain api, Throwable e, Method m){
-        String message = String.format("While computing %s in node %s. Cause : %s", m.getName(), node.node, e.getCause() != null ? e.getCause().toString() : e.getMessage());
+        String message = String.format("Error when computing %s in node %s. Cause : %s", m.getName(), node.node, e.getCause() != null ? e.getCause().toString() : e.getMessage());
         api.putMessage(AlertMessage.INVOCATION_ERROR, message);
         //e.printStackTrace();
     }

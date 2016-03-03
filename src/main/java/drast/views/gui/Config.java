@@ -18,6 +18,11 @@ import java.util.Map;
  */
 
 public class Config {
+
+	public static String PREV_JAR = "prevJar";
+	public static String PREV_FILTER = "prevFilter";
+	public static String PREV_ARGS = "prevFullArgs";
+
 	private HashMap<String, String> configs;
 	public static final String FILE_NAME = "DrASTGUI.cfg";
 	private String fullFilePath;

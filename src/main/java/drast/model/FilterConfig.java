@@ -153,9 +153,9 @@ public class FilterConfig {
     public boolean saveAndUpdateConfig(String text){
         String fullTmpFilePath = filterDir + filterTmpFileName;
         String fullFilePath = filterDir + filterFileName;
-        PrintWriter writer = null;
+       ;
         try {
-            writer = new PrintWriter(fullTmpFilePath, "UTF-8");
+            PrintWriter writer = new PrintWriter(fullTmpFilePath, "UTF-8");
             writer.print(text);
             writer.close();
         } catch (FileNotFoundException e) {

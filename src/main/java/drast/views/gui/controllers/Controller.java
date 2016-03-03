@@ -4,6 +4,7 @@ import drast.starter.DrASTStarter;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.terminalvalues.TerminalValue;
 import drast.views.DrASTView;
+import drast.views.gui.Config;
 import drast.views.gui.Monitor;
 import drast.views.gui.dialogs.DrDialog;
 import drast.views.gui.dialogs.LoadingDialog;
@@ -67,6 +68,7 @@ public class Controller implements Initializable {
 
     @FXML private Label appliedFiltersLabel;
     @FXML private Label appliedFiltersLabelLabel;
+    @FXML private Label compilerLabel;
     @FXML private Label nodeCountLabel;
 
 
@@ -201,6 +203,8 @@ public class Controller implements Initializable {
     protected void updateAstInfoLabels(){
         nodeCountLabel.setText(mon.getBrain().getClusteredASTSize() + "/" + mon.getBrain().getASTSize() + ".");
         String filters = mon.getBrain().getAppliedFilters();
+        if(!mon.getDrASTAPI().noRoot())
+            compilerLabel.setText(mon.getConfig().getOrEmpty(Config.PREV_JAR));
 
         if(filters == null) {
             appliedFiltersLabelLabel.setText("No filters.");
@@ -356,6 +360,14 @@ public class Controller implements Initializable {
                 controller.nodeDeselected();
         }
     }
+
+    /**
+     * Method that is called when the application is destroyed, will reset standard behaviours of certain things, like System.out etc.
+     */
+    public void onApplicationClose(){
+        controllers.forEach(ControllerInterface::onApplicationClose);
+    }
+
 
     /**
      * Compute node references again.
