@@ -89,7 +89,7 @@
     -fx-background-color: #606060;
 }
 
-.typeTreeView, .tree-cell {
+ .typeTreeView, .tree-cell {
  -fx-background-color: #606060 ;
  -fx-text-fill: white ;
 }

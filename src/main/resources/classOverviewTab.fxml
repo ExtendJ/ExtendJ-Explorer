@@ -17,6 +17,6 @@
     <Label text=" - Parents and children for each class in this tree." />
     <Label text="This is not the grammar" />
     <ScrollPane styleClass="typeListView" fx:id="scrollPaneClassFilter" prefHeight="1000">
-        <TreeView styleClass="typeTreeView" fx:id="typeListView"/>
+        <TreeView styleClass="typeTreeViewClassOverview" fx:id="typeListView"/>
     </ScrollPane>
 </VBox>

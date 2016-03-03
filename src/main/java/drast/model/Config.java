@@ -13,13 +13,19 @@ public class Config{
 	public static final String NTA_COMPUTED = "NTA-computed";
 	public static final String NTA_CACHED = "NTA-cached";
 
-	private HashMap<String, String> configs;
+	protected HashMap<String, String> configs;
 	public static final String FILE_NAME = "DrAST.cfg";
-	private String fullFilePath;
+	protected String fullFilePath;
 
 	public Config(String filePath){
 	 	configs = new HashMap<>();
 		fullFilePath = filePath + FILE_NAME;
+		readConfigFile();
+	}
+
+	public Config(String filePath, String fileName){
+		configs = new HashMap<>();
+		fullFilePath = filePath + fileName;
 		readConfigFile();
 	}
 
@@ -49,20 +55,38 @@ public class Config{
 		return configs.get(name) != null && Integer.parseInt(configs.get(name)) == 1;
 	}
 
+	/**
+	 * Returns the config name or an empty String
+	 */
+	public String getOrEmpty(String name){
+		String tmp = configs.get(name);
+		return tmp == null ? "" : tmp;
+	}
+
 	public boolean isEnabled(String name){
 		String cfg = configs.get(name);
 		return cfg != null && cfg.equals("1");
 	}
 
+	protected void printStandard(PrintWriter writer){
+		writer.println(DYNAMIC_VALUES + "=0");
+		writer.println(NTA_COMPUTED + "=0");
+		writer.println(NTA_CACHED + "=1");
+		writer.println(NTA_DEPTH + "=10");
+	}
+
+
+	/**
+	 * Try and read the configuration file, and store each entry in the HashMap configs.
+	 *
+	 * If the config file does not exist, the program will try and create a new one with some default values.
+	 */
 	private void readConfigFile(){
 		try{
 			File file = new File(fullFilePath);
 			if(!file.exists()) {
 				PrintWriter writer = new PrintWriter(fullFilePath, "UTF-8");
-				writer.println(DYNAMIC_VALUES + "=0");
-				writer.println(NTA_COMPUTED + "=0");
-				writer.println(NTA_CACHED + "=1");
-				writer.println(NTA_DEPTH + "=10");
+				printStandard(writer);
 				writer.close();
 			}
 			BufferedReader reader = new BufferedReader(new FileReader(file));

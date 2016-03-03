@@ -47,4 +47,9 @@
         <SeparatorMenuItem/>
         <CheckMenuItem text="Nice looking edges" selected="true" fx:id="niceLookingEdgesCheckMenuItem"/>
     </Menu>
+    <Menu text="Attribute settings">
+        <CheckMenuItem text="Compute all attributes" selected="true" fx:id="dynamicValuesCheckMenuItem"/>
+        <CheckMenuItem text="Show compiler-computed NTAs" selected="true" fx:id="ntaCachedCheckMenuItem"/>
+        <CheckMenuItem text="Show DrAST-computed NTAs" selected="true" fx:id="ntaComputedCheckMenuItem"/>
+    </Menu>
 </MenuBar>

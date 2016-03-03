@@ -1,16 +1,17 @@
 package drast.views.gui.controllers;
 
+import drast.model.AlertMessage;
 import drast.starter.DrASTStarter;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.terminalvalues.TerminalValue;
 import drast.views.DrASTView;
-import drast.views.gui.Config;
+import drast.views.gui.CustomOutputStream;
+import drast.views.gui.GUIConfig;
 import drast.views.gui.Monitor;
 import drast.views.gui.dialogs.DrDialog;
 import drast.views.gui.dialogs.LoadingDialog;
 import drast.views.gui.graph.GraphView;
 import drast.views.gui.guicomponent.MinimizeButton;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,9 +23,9 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 
 /**
  * This is the main controller of the GUI. It holds references to all sub controllers. If some part of the GUI does
@@ -71,6 +72,8 @@ public class Controller implements Initializable {
     @FXML private Label compilerLabel;
     @FXML private Label nodeCountLabel;
 
+    private PrintStream standardErr;
+    private PrintStream standardOut;
 
     private Monitor mon;
     private ArrayList<ControllerInterface> controllers;
@@ -204,7 +207,7 @@ public class Controller implements Initializable {
         nodeCountLabel.setText(mon.getBrain().getClusteredASTSize() + "/" + mon.getBrain().getASTSize() + ".");
         String filters = mon.getBrain().getAppliedFilters();
         if(!mon.getDrASTAPI().noRoot())
-            compilerLabel.setText(mon.getConfig().getOrEmpty(Config.PREV_JAR));
+            compilerLabel.setText(mon.getConfig().getOrEmpty(GUIConfig.PREV_JAR));
 
         if(filters == null) {
             appliedFiltersLabelLabel.setText("No filters.");
@@ -227,15 +230,27 @@ public class Controller implements Initializable {
         }
     }
 
+    public void setOutStreams(){
+        PrintStream printError = new PrintStream(new CustomOutputStream(consoleController, AlertMessage.VIEW_ERROR));
+        PrintStream printMessage = new PrintStream(new CustomOutputStream(consoleController, AlertMessage.VIEW_MESSAGE));
+        standardErr = System.err;
+        standardOut = System.out;
+        System.setErr(printError);
+        System.setOut(printMessage);
+    }
+
+    public void resetOutStreams(){
+        System.setOut(standardOut);
+        System.setErr(standardErr);
+    }
+
     public void onNewAPI(){
         controllers.forEach(ControllerInterface::onNewAPI);
-
         updateAstInfoLabels();
         updateGUI();
     }
 
     public void saveNewFilter(){
-        //addMessage("Filter update: starting");
         if(mon.getBrain().getRoot() == null)
             return;
 
@@ -362,9 +377,10 @@ public class Controller implements Initializable {
     }
 
     /**
-     * Method that is called when the application is destroyed, will reset standard behaviours of certain things, like System.out etc.
+     * Method that is called when the application is destroyed, if something nees to be reset, This will set System.err and System.out to standard stream.
      */
     public void onApplicationClose(){
+        resetOutStreams();
         controllers.forEach(ControllerInterface::onApplicationClose);
     }
 

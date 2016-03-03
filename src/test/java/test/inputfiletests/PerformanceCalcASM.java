@@ -30,7 +30,7 @@ public class PerformanceCalcASM {
 
     @Test
     public void runInputTests() {
-        System.out.println("start test in: " + TEST_DIR);
+        System.out.println("start performance input file test in: " + TEST_DIR);
         try {
             String filename = TEST_DIR + "/input.calc";
             LangScanner scanner = new LangScanner(new FileReader(filename));

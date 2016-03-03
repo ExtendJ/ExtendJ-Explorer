@@ -4,6 +4,7 @@ import drast.model.analyzer.AnalyzerHolder;
 import drast.model.filteredtree.*;
 import drast.model.terminalvalues.TerminalValue;
 
+import javax.xml.crypto.NodeSetData;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -62,14 +63,15 @@ public class ASTBrain extends Observable{
         typeErrorTracker = new HashMap<>();
         analyzer = new AnalyzerHolder();
 
+        String tmp = new File(".").getAbsolutePath();
+        config = new Config(tmp.substring(0,tmp.length()-1));
+
         if(isAPIHolder) //No root node, will stop here
             return;
         NTAMethods = new HashMap<>();
         methods = new HashMap<>();
         methodCacheField = new HashMap<>();
 
-        String tmp = new File(".").getAbsolutePath();
-        config = new Config(tmp.substring(0,tmp.length()-1));
 
         // new Node will recreate the AST and be the low level data structure of this program.
         long time = System.currentTimeMillis();
@@ -279,7 +281,7 @@ public class ASTBrain extends Observable{
             }
         }
 
-        if(config.getBoolean(Config.NTA_CACHED)) { //Todo solve the reason why the we dont find all NTAs. and then remove this crap.
+        if(config.isEnabled(Config.NTA_CACHED)) {
             node.getNodeData().setCachedNTAs(this);
             for (Node child : node.NTAChildren.values()) {
                 if (child == null)
@@ -290,7 +292,7 @@ public class ASTBrain extends Observable{
             }
         }
        // travers down the tree for the Computed NTA:s
-       if(computedNTAs.containsKey(node) && config.getBoolean(Config.NTA_COMPUTED)){
+       if(computedNTAs.containsKey(node) && config.isEnabled(Config.NTA_COMPUTED)){
            for(Node child : computedNTAs.get(node)) {
                if(!treeNodes.containsKey(child.node)) {
                    createFilteredTree(child, parent, collapse, true, 0, futureReferences);
@@ -333,11 +335,6 @@ public class ASTBrain extends Observable{
      */
     public boolean reApplyFilter(){
         boolean res = filterConfig.readFilter(filterConfig.getFilterFileName());
-        if (res) {
-            clearDisplayedReferences();
-            filteredTree = null;
-            createFilteredTree(this.tree, false);
-        }
         return res;
     }
 
@@ -348,8 +345,14 @@ public class ASTBrain extends Observable{
      */
     public boolean saveNewFilter(String text){
         boolean res = filterConfig.saveAndUpdateConfig(text);
-        if (res) {
+        return applyFilter(res);
+    }
+
+    private boolean applyFilter(boolean res){
+        if(res) {
             clearDisplayedReferences();
+            for (Object n : ASTNTAObjects)
+                treeNodes.put(n, null);
             filteredTree = null;
             createFilteredTree(this.tree, false);
         }
@@ -429,10 +432,10 @@ public class ASTBrain extends Observable{
             computedNTAs.put(node, new HashSet<>());
         computedNTAs.get(node).add(astNode);
         node.showNTAChildren.put(TerminalValue.getName(info.getMethod(), params), astNode);
-        if(config.getBoolean(Config.NTA_COMPUTED))
+        if(config.isEnabled(Config.NTA_COMPUTED))
             buildFilteredSubTree(astNode, (TreeNode) treeNodes.get(node.node));
         else {
-            String message = String.format("Computed NTA successfully, but the configuration %s is either enabled, so the NTA will not be shown. See the DrAST.cfg file.", Config.NTA_COMPUTED);
+            String message = String.format("Computed NTA successfully, but the configuration %s is not enabled, so the NTA will not be shown. See the DrAST.cfg file.", Config.NTA_COMPUTED);
             putMessage(AlertMessage.INVOCATION_WARNING, message);
         }
         return obj;

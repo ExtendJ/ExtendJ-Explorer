@@ -109,4 +109,5 @@
     <stylesheets>style/attributeView.css</stylesheets>
     <stylesheets>style/configLanguageStyle.css</stylesheets>
     <stylesheets>style/console.css</stylesheets>
+    <stylesheets>style/classOverview.css</stylesheets>
 </BorderPane>

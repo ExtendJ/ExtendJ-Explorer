@@ -39,7 +39,7 @@ public class Monitor {
     private DrASTGUI jaaUI;
     private Stage stage;
     private String defaultDirectory;
-    private Config config;
+    private GUIConfig config;
     private boolean rerunable;
     private boolean optimization;
     private boolean optimizationVarCalculated;
@@ -65,7 +65,7 @@ public class Monitor {
         selectedInfo = null;
         String tmp = new File(".").getAbsolutePath();
         defaultDirectory = tmp.substring(0,tmp.length()-1);
-        config = new Config(defaultDirectory);
+        config = new GUIConfig(defaultDirectory);
         rerunable = false;
         optimizationVarCalculated = false;
         optimization = false;
@@ -203,7 +203,7 @@ public class Monitor {
 
     public void setDefaultDirectory(String defaultDirectory) { this.defaultDirectory = defaultDirectory; }
 
-    public Config getConfig() {
+    public GUIConfig getConfig() {
         return config;
     }
 

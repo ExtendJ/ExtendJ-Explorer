@@ -37,9 +37,6 @@ public class ConsoleController implements Initializable, ControllerInterface, Ob
     @FXML private CheckBox warningsBox;
     @FXML private CheckBox errorsBox;
 
-    private PrintStream standardErr;
-    private PrintStream standardOut;
-
     private DoubleProperty consoleHeightNewShit;
 
     public void init(Monitor mon){
@@ -58,13 +55,6 @@ public class ConsoleController implements Initializable, ControllerInterface, Ob
         messagesBox.setOnAction(e->checkBoxClickEvent(messagesBox));
         warningsBox.setOnAction(e->checkBoxClickEvent(warningsBox));
         errorsBox.setOnAction(e->checkBoxClickEvent(errorsBox));
-
-        PrintStream printError = new PrintStream(new CustomOutputStream(this, AlertMessage.VIEW_ERROR));
-        PrintStream printMessage = new PrintStream(new CustomOutputStream(this, AlertMessage.VIEW_MESSAGE));
-        standardErr = System.err;
-        standardOut = System.out;
-        System.setErr(printError);
-        System.setOut(printMessage);
     }
 
     private void checkBoxClickEvent(CheckBox box){
@@ -138,10 +128,7 @@ public class ConsoleController implements Initializable, ControllerInterface, Ob
     }
 
     @Override
-    public void onApplicationClose(){
-        System.setOut(standardOut);
-        System.setErr(standardErr);
-    }
+    public void onApplicationClose(){}
 
     @Override
     public void functionStarted() {}
