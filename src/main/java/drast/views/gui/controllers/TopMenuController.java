@@ -1,8 +1,9 @@
 package drast.views.gui.controllers;
 
+import drast.model.Config;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.views.xml.DrASTXML;
-import drast.views.gui.Config;
+import drast.views.gui.GUIConfig;
 import drast.views.gui.dialogs.OpenASTDialog;
 import drast.views.gui.Monitor;
 import javafx.fxml.FXML;
@@ -41,6 +42,9 @@ public class TopMenuController implements Initializable, ControllerInterface {
     @FXML private CheckMenuItem showEdgesCheckMenuItem;
     @FXML private CheckMenuItem showNodesCheckMenuItem;
     @FXML private CheckMenuItem niceLookingEdgesCheckMenuItem;
+    @FXML private CheckMenuItem dynamicValuesCheckMenuItem;
+    @FXML private CheckMenuItem ntaCachedCheckMenuItem;
+    @FXML private CheckMenuItem ntaComputedCheckMenuItem;
 
     public void init(Monitor mon){
         this.mon = mon;
@@ -53,9 +57,14 @@ public class TopMenuController implements Initializable, ControllerInterface {
 
     private void setValuesOnMenuItems(){
         Config config = mon.getConfig();
-        showEdgesCheckMenuItem.setSelected(config.isEnabled("showEdges"));
-        showNodesCheckMenuItem.setSelected(config.isEnabled("showNodes"));
-        niceLookingEdgesCheckMenuItem.setSelected(config.isEnabled("niceEdges"));
+        showEdgesCheckMenuItem.setSelected(config.isEnabled(GUIConfig.SHOW_EDGES));
+        showNodesCheckMenuItem.setSelected(config.isEnabled(GUIConfig.SHOW_NODES));
+        niceLookingEdgesCheckMenuItem.setSelected(config.isEnabled(GUIConfig.NICE_EDGES));
+        //Model Configs
+        config = mon.getBrain().getConfig();
+        dynamicValuesCheckMenuItem.setSelected(config.isEnabled(GUIConfig.DYNAMIC_VALUES));
+        ntaCachedCheckMenuItem.setSelected(config.isEnabled(GUIConfig.NTA_CACHED));
+        ntaComputedCheckMenuItem.setSelected(config.isEnabled(GUIConfig.NTA_COMPUTED));
     }
 
     /**
@@ -87,19 +96,34 @@ public class TopMenuController implements Initializable, ControllerInterface {
         });
 
         showEdgesCheckMenuItem.setOnAction(e->{
-            saveConfig("showEdges", showEdgesCheckMenuItem);
+            saveConfig(GUIConfig.SHOW_EDGES, showEdgesCheckMenuItem, mon.getConfig());
             mon.getController().getGraphViewTabController().repaintGraph();
 
         });
 
         showNodesCheckMenuItem.setOnAction(e->{
-            saveConfig("showNodes", showNodesCheckMenuItem);
+            saveConfig(GUIConfig.SHOW_NODES, showNodesCheckMenuItem, mon.getConfig());
             mon.getController().getGraphViewTabController().repaintGraph();
         });
 
         niceLookingEdgesCheckMenuItem.setOnAction(e->{
-            saveConfig("niceEdges", niceLookingEdgesCheckMenuItem);
+            saveConfig(GUIConfig.NICE_EDGES, niceLookingEdgesCheckMenuItem, mon.getConfig());
             mon.getController().getGraphViewTabController().setNiceEdges(niceLookingEdgesCheckMenuItem.isSelected());
+        });
+
+        dynamicValuesCheckMenuItem.setOnAction(e->{
+            saveConfig(GUIConfig.DYNAMIC_VALUES, dynamicValuesCheckMenuItem, mon.getBrain().getConfig());
+            mon.getController().nodeSelected(mon.getSelectedNode(), this);
+        });
+
+        ntaCachedCheckMenuItem.setOnAction(e->{
+            saveConfig(GUIConfig.NTA_CACHED, ntaCachedCheckMenuItem, mon.getBrain().getConfig());
+            mon.getController().saveNewFilter();
+        });
+
+        ntaComputedCheckMenuItem.setOnAction(e->{
+            saveConfig(GUIConfig.NTA_COMPUTED, ntaComputedCheckMenuItem, mon.getBrain().getConfig());
+            mon.getController().saveNewFilter();
         });
 
         MenuItem exportXml = new MenuItem("XML");
@@ -146,8 +170,7 @@ public class TopMenuController implements Initializable, ControllerInterface {
 
     }
 
-    private void saveConfig(String key, CheckMenuItem Value){
-        Config config = mon.getConfig();
+    private void saveConfig(String key, CheckMenuItem Value, Config config){
         config.put(key, Value.isSelected() ? "1" : "0");
         config.saveConfigFile();
     }
@@ -187,9 +210,9 @@ public class TopMenuController implements Initializable, ControllerInterface {
 
     @Override
     public void onNewAPI() {
-        prevJarPath = mon.getConfig().getOrEmpty(Config.PREV_JAR);
-        prevFilterPath = mon.getConfig().getOrEmpty(Config.PREV_FILTER);
-        prevArgString = mon.getConfig().getOrEmpty(Config.PREV_ARGS);
+        prevJarPath = mon.getConfig().getOrEmpty(GUIConfig.PREV_JAR);
+        prevFilterPath = mon.getConfig().getOrEmpty(GUIConfig.PREV_FILTER);
+        prevArgString = mon.getConfig().getOrEmpty(GUIConfig.PREV_ARGS);
 
         setValuesOnMenuItems();
     }

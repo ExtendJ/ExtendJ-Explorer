@@ -28,6 +28,7 @@ public class PerformanceCalcASM {
 
     public PerformanceCalcASM() {}
 
+    @Test
     public void runInputTests() {
         System.out.println("start performance input file test in: " + TEST_DIR);
         try {
@@ -36,8 +37,8 @@ public class PerformanceCalcASM {
             LangParser parser = new LangParser();
             Program program = (Program) parser.parse(scanner);
             DrAST drast = new DrAST(program);
-            //drast.run();
-            //assertTrue("Error: The reflection of the AST took to long, exceeded 10 seconds ", drast.getBrain().getReflectedTreeTime() < 10000l);
+            drast.run();
+            assertTrue("Error: The reflection of the AST took to long, exceeded 10 seconds ", drast.getBrain().getReflectedTreeTime() < 10000l);
         } catch (FileNotFoundException e) {
             System.out.println("File not found!");
             System.exit(1);

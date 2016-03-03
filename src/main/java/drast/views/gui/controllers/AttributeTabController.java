@@ -180,6 +180,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     @Override
     public void nodeSelected(GenericTreeNode node) {
+        if(node == null)
+            return;
         if(node.isNode()) {
             objectInheritanceLabel.setText("Object inheritance");
             attributeLabel.setText("Attributes");
@@ -254,8 +256,10 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     public void setAttributeList(TreeNode node, boolean compute){
         Node n = node.getNode();
         if(compute) {
+            mon.getController().setOutStreams();
             mon.getBrain().compute(n);
             attributeTableView.getSelectionModel().clearSelection();
+            mon.getController().resetOutStreams();
         }
 
         ((TreeViewSkinRefresher)attributeTableView.getSkin()).refresh(); //Refreshing the css.
@@ -396,6 +400,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         ArrayList<GenericTreeNode> nodes = new ArrayList<>();
         for(Object o : mon.getBrain().getNodeReferences(value)){
             GenericTreeNode node = mon.getBrain().getTreeNode(o);
+            if(node == null)
+                continue;
             nodes.add(node);
             mon.addHighlightReferencesNodes(node);
         }
@@ -428,7 +434,12 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      * This method will call the invocation of the method that has been clicked on, after the values have been added
      */
     private void onInvokeClicked(){
+        mon.getController().setOutStreams();
+        onInvoke();
+        mon.getController().resetOutStreams();
+    }
 
+    private void onInvoke(){
         TreeNode node = (TreeNode) mon.getSelectedNode();
         TerminalValueTreeItemView selectedInfo  = attributeTableView.getSelectionModel().getSelectedItem().getValue();
         if(!selectedInfo.getTerminalValue())
