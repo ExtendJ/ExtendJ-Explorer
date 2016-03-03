@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.input.KeyCodeCombination?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.Pane?>
 <MenuBar styleClass="typeListView" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="drast.views.gui.controllers.TopMenuController">
     <Menu text="File" fx:id="topMenuFileMenu">
         <items>

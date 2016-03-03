@@ -2,8 +2,8 @@
 
 package CalcASM.src.java.gen; // The generated scanner will belong to the package lang.ast
 
-import CalcASM.src.java.gen.LangParser.Terminals; // The terminals are implicitly defined in the parser
 import CalcASM.src.java.gen.LangParser.SyntaxError;
+import CalcASM.src.java.gen.LangParser.Terminals;
 
 
 /**

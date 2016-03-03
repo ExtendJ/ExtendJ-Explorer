@@ -2,9 +2,7 @@ package drast.views.gui;
 
 import drast.model.Config;
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.PrintWriter;
 
 /**
  * This class holds all configurations of the program that can be written to a file.

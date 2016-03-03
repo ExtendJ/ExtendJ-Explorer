@@ -1,19 +1,13 @@
 package CalcASM.src.java;
 
-import CalcASM.src.java.gen.ErrorMessage;
 import CalcASM.src.java.gen.LangParser;
 import CalcASM.src.java.gen.LangScanner;
 import CalcASM.src.java.gen.Program;
 import beaver.Parser.Exception;
-import CalcASM.src.java.gen.ErrorMessage;
-import CalcASM.src.java.gen.LangParser;
-import CalcASM.src.java.gen.LangScanner;
-import CalcASM.src.java.gen.Program;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.System;
 
 /**
  * Computes the maximum statement nesting depth for a Calc program.

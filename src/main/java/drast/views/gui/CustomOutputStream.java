@@ -1,5 +1,6 @@
 package drast.views.gui;
 
+import drast.model.ASTBrain;
 import drast.model.AlertMessage;
 import drast.views.gui.controllers.ConsoleController;
 
@@ -11,13 +12,13 @@ import java.io.OutputStream;
  */
 public class CustomOutputStream extends OutputStream {
 
-    private ConsoleController controller;
+    private ASTBrain brain;
     private int type;
     private String message;
 
 
-    public CustomOutputStream(ConsoleController controller, int type){
-        this.controller = controller;
+    public CustomOutputStream(ASTBrain brain, int type){
+        this.brain = brain;
         this.type = type;
         this.message = "";
     }
@@ -25,7 +26,7 @@ public class CustomOutputStream extends OutputStream {
     @Override
     public void write(int b) throws IOException { //Todo this is kinda ugly, and it wont handle the print statements due to that those wont have a newline
         if(b == '\r' || b == '\n') {
-            controller.addMessage(new AlertMessage(type, message));
+            brain.putMessage(type, message);
             message = "";
         }else
             message += String.valueOf((char)b);

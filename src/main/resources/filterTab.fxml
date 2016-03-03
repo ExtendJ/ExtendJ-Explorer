@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Tooltip?>
-
 <?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.VBox?>
 <Tab text="Filter" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="drast.views.gui.controllers.FilterTabController">
     <VBox styleClass="paneParent">
         <Button text="Apply filter" StyleClass="updateFilterButton, our_button" fx:id="saveNewFilterButton">

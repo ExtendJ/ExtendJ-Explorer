@@ -14,8 +14,6 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
-
 /**
  * Created by gda10jth on 12/14/15.
  * This is the filter editor in the program. It uses a library called RichTextFx by Tomas Mikula. This library gives

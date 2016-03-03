@@ -1,11 +1,11 @@
 package drast.views.gui.graph.jungextensions.renderers;
 
-import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.visualization.RenderContext;
-import edu.uci.ics.jung.visualization.renderers.BasicRenderer;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.views.gui.Monitor;
 import drast.views.gui.graph.GraphEdge;
+import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.visualization.RenderContext;
+import edu.uci.ics.jung.visualization.renderers.BasicRenderer;
 
 import java.util.Collection;
 import java.util.ConcurrentModificationException;

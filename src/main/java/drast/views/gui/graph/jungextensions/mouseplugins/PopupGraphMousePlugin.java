@@ -1,5 +1,9 @@
 package drast.views.gui.graph.jungextensions.mouseplugins;
 
+import drast.model.filteredtree.GenericTreeNode;
+import drast.model.filteredtree.NodeReference;
+import drast.model.filteredtree.TreeCluster;
+import drast.views.gui.Monitor;
 import drast.views.gui.graph.GraphEdge;
 import drast.views.gui.graph.GraphView;
 import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
@@ -7,8 +11,6 @@ import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
-import drast.model.filteredtree.*;
-import drast.views.gui.Monitor;
 import javafx.application.Platform;
 
 import javax.swing.*;

@@ -5,8 +5,8 @@ import drast.model.DrAST;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.views.gui.controllers.Controller;
 import drast.views.gui.dialogs.DrDialog;
-import drast.views.gui.graph.GraphView;
 import drast.views.gui.graph.GraphEdge;
+import drast.views.gui.graph.GraphView;
 import drast.views.gui.guicomponent.nodeinfotreetableview.TerminalValueTreeItemView;
 import javafx.stage.Stage;
 

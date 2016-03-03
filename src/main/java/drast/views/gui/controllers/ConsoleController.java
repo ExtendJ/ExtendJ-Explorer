@@ -2,13 +2,10 @@ package drast.views.gui.controllers;
 
 import drast.model.AlertMessage;
 import drast.model.filteredtree.GenericTreeNode;
-import drast.views.gui.CustomOutputStream;
 import drast.views.gui.Monitor;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
@@ -16,9 +13,11 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
-import java.io.PrintStream;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.ResourceBundle;
 
 /**
  * Created by gda10jth on 2/3/16.

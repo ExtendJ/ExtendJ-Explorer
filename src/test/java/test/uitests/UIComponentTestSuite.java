@@ -1,11 +1,9 @@
 package test.uitests;
 
-import CalcASM.src.java.gen.ErrorMessage;
 import CalcASM.src.java.gen.LangParser;
 import CalcASM.src.java.gen.LangScanner;
 import CalcASM.src.java.gen.Program;
 import beaver.Parser;
-import drast.model.ASTBrain;
 import drast.model.DrAST;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.views.gui.Monitor;

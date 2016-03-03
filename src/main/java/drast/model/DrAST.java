@@ -1,14 +1,6 @@
 package drast.model;
 
-import configAST.ConfigParser;
-import configAST.ConfigScanner;
-import configAST.DebuggerConfig;
-import configAST.ErrorMessage;
 import drast.model.filteredtree.GenericTreeNode;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 
 /**
  * This is the main class for the DrAST system. This class will create an ASTBrain object that will generate the
@@ -18,7 +10,7 @@ import java.io.IOException;
  *
  */
 public class DrAST {
-	public static final String VERSION = "alphabuild-0.4.3";
+	public static final String VERSION = "build-1.0.0";
 
 	public final static String FILE_NAME = "DrAST-result";
     public final static String CLUSTER_STRING = "cluster";

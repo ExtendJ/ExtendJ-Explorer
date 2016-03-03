@@ -1,9 +1,9 @@
 package drast.views.gui.controllers;
 
 import drast.model.AlertMessage;
-import drast.starter.DrASTStarter;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.terminalvalues.TerminalValue;
+import drast.starter.DrASTStarter;
 import drast.views.DrASTView;
 import drast.views.gui.CustomOutputStream;
 import drast.views.gui.GUIConfig;
@@ -25,7 +25,9 @@ import javafx.stage.StageStyle;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 /**
  * This is the main controller of the GUI. It holds references to all sub controllers. If some part of the GUI does
@@ -231,8 +233,8 @@ public class Controller implements Initializable {
     }
 
     public void setOutStreams(){
-        PrintStream printError = new PrintStream(new CustomOutputStream(consoleController, AlertMessage.VIEW_ERROR));
-        PrintStream printMessage = new PrintStream(new CustomOutputStream(consoleController, AlertMessage.VIEW_MESSAGE));
+        PrintStream printError = new PrintStream(new CustomOutputStream(mon.getBrain(), AlertMessage.VIEW_ERROR));
+        PrintStream printMessage = new PrintStream(new CustomOutputStream(mon.getBrain(), AlertMessage.VIEW_MESSAGE));
         standardErr = System.err;
         standardOut = System.out;
         System.setErr(printError);
@@ -342,23 +344,27 @@ public class Controller implements Initializable {
     }
 
     public void runCompiler(DrASTView view, String jarPath, String filterPath, String[] args){
-            final DrASTStarter setup = new DrASTStarter(view, jarPath, filterPath, args);
-            LoadingDialog loadingDialog = new LoadingDialog(mon, "Waiting for compiler");
+        final DrASTStarter setup = new DrASTStarter(view, jarPath, filterPath, args);
+        LoadingDialog loadingDialog = new LoadingDialog(mon, "Waiting for compiler");
 
-            Task<Boolean> task = new Task<Boolean>() {
-                @Override public Boolean call() {
-                    setup.setRootExecution(false);
-                    setup.addObserver(consoleController);
-                    return setup.run();
-                }
-            };
-            loadingDialog.init();
-            task.setOnRunning((e) -> loadingDialog.show());
-            task.setOnSucceeded((e) -> {
-                loadingDialog.closeDialog();
-                setup.setRoot();
-            });
-            new Thread(task).start();
+        setOutStreams();
+        Task<Boolean> task = new Task<Boolean>() {
+            @Override public Boolean call() {
+                setup.setRootExecution(false);
+                setup.addObserver(consoleController);
+                return setup.run();
+            }
+        };
+        loadingDialog.init();
+        task.setOnRunning((e) -> loadingDialog.show());
+        task.setOnSucceeded((e) -> {
+            loadingDialog.closeDialog();
+            setup.setRoot();
+            resetOutStreams();
+        });
+        task.setOnFailed((e) -> resetOutStreams());
+        task.setOnCancelled((e) -> resetOutStreams());
+        new Thread(task).start();
     }
 
     /**

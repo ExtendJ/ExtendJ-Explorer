@@ -4,7 +4,6 @@ import drast.model.analyzer.AnalyzerHolder;
 import drast.model.filteredtree.*;
 import drast.model.terminalvalues.TerminalValue;
 
-import javax.xml.crypto.NodeSetData;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

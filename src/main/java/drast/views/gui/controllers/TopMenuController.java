@@ -2,10 +2,10 @@ package drast.views.gui.controllers;
 
 import drast.model.Config;
 import drast.model.filteredtree.GenericTreeNode;
-import drast.views.xml.DrASTXML;
 import drast.views.gui.GUIConfig;
-import drast.views.gui.dialogs.OpenASTDialog;
 import drast.views.gui.Monitor;
+import drast.views.gui.dialogs.OpenASTDialog;
+import drast.views.xml.DrASTXML;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckMenuItem;

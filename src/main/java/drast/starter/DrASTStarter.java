@@ -3,13 +3,12 @@ package drast.starter;
 import drast.model.AlertMessage;
 import drast.model.CompilerClassLoader;
 import drast.views.DrASTView;
-import drast.views.xml.DrASTXML;
 import drast.views.gui.DrASTGUI;
+import drast.views.xml.DrASTXML;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -116,7 +115,10 @@ public class DrASTStarter extends Observable {
             e.printStackTrace();
         } catch (Throwable e ){
             e.printStackTrace();
+        }finally {
+
         }
+        SystemExitControl.enableSystemExitCall();
         return false;
     }
 

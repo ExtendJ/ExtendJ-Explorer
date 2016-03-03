@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.VBox?>
-
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.control.CheckBox?>
-
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.TextFlow?>
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="drast.views.gui.controllers.ConsoleController"
       VBox.vgrow="ALWAYS"  styleClass="console_parent" >
     <HBox styleClass="paneParent, console_extra_padding">

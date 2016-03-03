@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import drast.views.gui.guicomponent.MinimizeButton?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.TextFlow?>
-<?import drast.views.gui.guicomponent.MinimizeButton?>
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="drast.views.gui.controllers.Controller" fx:id="root">
     <top>

@@ -1,12 +1,8 @@
 /* This file was generated with JastAdd2 (http://jastadd.org) version 2.1.13-47-g075c2ed */
 package CalcASM.src.java.gen;
 
-import java.util.ArrayList;
-import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
-import java.util.TreeSet;
 /**
  * @ast node
  * @declaredat /home/gda10jli/Documents/jastadddebugger-exjobb/CalcASM/src/jastadd/calc.ast:9

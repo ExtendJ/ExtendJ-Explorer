@@ -14,8 +14,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-
 
 @RunWith(Parameterized.class)
 public class ExpectedFileInputTestCalcASM extends AbstractFileInputTest {

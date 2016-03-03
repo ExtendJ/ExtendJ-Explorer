@@ -1,6 +1,5 @@
 package drast.views.gui;
 
-import configAST.ASTNodeAnnotation;
 import drast.model.AlertMessage;
 import drast.model.DrAST;
 import drast.views.DrASTView;
@@ -19,7 +18,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.reactfx.value.Var;
 
 import java.awt.*;
 import java.io.File;
