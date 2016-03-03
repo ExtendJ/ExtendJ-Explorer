@@ -151,7 +151,6 @@ public class FilterConfig {
      * @return
      */
     public boolean saveAndUpdateConfig(String text){
-        System.out.println("SAVE");
         String fullTmpFilePath = filterDir + filterTmpFileName;
         String fullFilePath = filterDir + filterFileName;
         PrintWriter writer = null;

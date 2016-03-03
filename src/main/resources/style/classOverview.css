@@ -1,0 +1,8 @@
+.typeTreeViewClassOverview{
+ -fx-background-color: #606060 ;
+ -fx-text-fill: white ;
+}
+
+.typeTreeViewClassOverview .tree-cell:selected{
+    -fx-background-color:transparent;
+}

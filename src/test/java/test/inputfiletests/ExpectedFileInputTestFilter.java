@@ -40,7 +40,7 @@ public class ExpectedFileInputTestFilter extends AbstractFileInputTest {
      */
     @Test
     public void runInputTests() {
-            System.out.println("start input file test in: " + inDirectory);
+            System.out.println("start Filter input file test in: " + inDirectory);
             try{
                 String filename = inDirectory + "/input.fcl";
                 ConfigScanner scanner = new ConfigScanner(new FileReader(filename));

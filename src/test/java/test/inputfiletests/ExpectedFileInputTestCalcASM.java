@@ -34,7 +34,7 @@ public class ExpectedFileInputTestCalcASM extends AbstractFileInputTest {
 
 	@Test
 	public void runInputTests() {
-		System.out.println("start test in: " + inDirectory);
+		System.out.println("start CalcASM input file test in: " + inDirectory);
 		try {
 			String filename = inDirectory + "/input.calc";
 			LangScanner scanner = new LangScanner(new FileReader(filename));
