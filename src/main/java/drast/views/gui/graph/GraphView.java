@@ -2,6 +2,7 @@ package drast.views.gui.graph;
 
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.filteredtree.NodeReference;
+import drast.views.gui.GUIConfig;
 import drast.views.gui.controllers.GraphViewController;
 import drast.views.gui.graph.jungextensions.mouseplugins.CustomPickingGraphMousePlugin;
 import drast.views.gui.graph.jungextensions.mouseplugins.CustomScalingGraphMousePlugin;
@@ -371,7 +372,7 @@ public class GraphView extends SwingNode implements ItemListener {
 
         bvs.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
         bvs.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
-        setNiceEdges(mon.isOptimization());
+        setNiceEdges(!mon.isOptimization() && mon.getConfig().isEnabled(GUIConfig.NICE_EDGES));
         bvs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<>());
 
         //Override the default renderers
