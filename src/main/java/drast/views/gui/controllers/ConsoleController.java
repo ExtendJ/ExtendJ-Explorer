@@ -2,6 +2,7 @@ package drast.views.gui.controllers;
 
 import drast.model.AlertMessage;
 import drast.model.filteredtree.GenericTreeNode;
+import drast.views.gui.CustomOutputStream;
 import drast.views.gui.Monitor;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -15,6 +16,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
+import java.io.PrintStream;
 import java.net.URL;
 import java.util.*;
 
@@ -35,9 +37,8 @@ public class ConsoleController implements Initializable, ControllerInterface, Ob
     @FXML private CheckBox warningsBox;
     @FXML private CheckBox errorsBox;
 
-    private enum ConsoleFilter {
-        ALL, ERROR, WARNING, MESSAGE, NEWSHIT
-    }
+    private PrintStream standardErr;
+    private PrintStream standardOut;
 
     private DoubleProperty consoleHeightNewShit;
 
@@ -57,6 +58,13 @@ public class ConsoleController implements Initializable, ControllerInterface, Ob
         messagesBox.setOnAction(e->checkBoxClickEvent(messagesBox));
         warningsBox.setOnAction(e->checkBoxClickEvent(warningsBox));
         errorsBox.setOnAction(e->checkBoxClickEvent(errorsBox));
+
+        PrintStream printError = new PrintStream(new CustomOutputStream(this, AlertMessage.VIEW_ERROR));
+        PrintStream printMessage = new PrintStream(new CustomOutputStream(this, AlertMessage.VIEW_MESSAGE));
+        standardErr = System.err;
+        standardOut = System.out;
+        System.setErr(printError);
+        System.setOut(printMessage);
     }
 
     private void checkBoxClickEvent(CheckBox box){
@@ -74,18 +82,6 @@ public class ConsoleController implements Initializable, ControllerInterface, Ob
         }) ;
     }
 
-    public void addErrors(Collection<AlertMessage> errors){
-        addConsoleTexts(errors);
-    }
-
-    public void addWarnings(Collection<AlertMessage> warnings){
-        addConsoleTexts(warnings);
-    }
-
-    public void addMessages(Collection<AlertMessage> messages){
-        addConsoleTexts(messages);
-    }
-
     public void addMessage(String message) {
         Platform.runLater(() -> addMessage(new AlertMessage(AlertMessage.VIEW_MESSAGE, message)));
     }
@@ -95,13 +91,6 @@ public class ConsoleController implements Initializable, ControllerInterface, Ob
 
     public void addWarning(String message) {
         Platform.runLater(() -> addMessage(new AlertMessage(AlertMessage.VIEW_WARNING, message)));
-    }
-
-    private void addConsoleTexts(Collection<AlertMessage> messages){
-        Platform.runLater(() -> {
-            for (AlertMessage message : messages)
-                addMessage(message);
-        });
     }
 
     @Override
@@ -149,27 +138,23 @@ public class ConsoleController implements Initializable, ControllerInterface, Ob
     }
 
     @Override
-    public void functionStarted() {
-
+    public void onApplicationClose(){
+        System.setOut(standardOut);
+        System.setErr(standardErr);
     }
 
     @Override
-    public void functionStopped() {
-
-    }
+    public void functionStarted() {}
 
     @Override
-    public void nodeSelected(GenericTreeNode node) {
-
-    }
+    public void functionStopped() {}
 
     @Override
-    public void nodeDeselected() {
-
-    }
+    public void nodeSelected(GenericTreeNode node) {}
 
     @Override
-    public void updateGUI() {
+    public void nodeDeselected() {}
 
-    }
+    @Override
+    public void updateGUI() {}
 }

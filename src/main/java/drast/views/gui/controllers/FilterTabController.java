@@ -70,32 +70,25 @@ public class FilterTabController implements Initializable, ControllerInterface {
     }
 
     @Override
+    public void onApplicationClose(){}
+
+    @Override
     public void onNewAPI() {
         loadFilterFileText();
     }
 
     @Override
-    public void functionStarted() {
-
-    }
+    public void functionStarted() {}
 
     @Override
-    public void functionStopped() {
-
-    }
+    public void functionStopped() {}
 
     @Override
-    public void nodeSelected(GenericTreeNode node) {
-
-    }
+    public void nodeSelected(GenericTreeNode node) {}
 
     @Override
-    public void nodeDeselected() {
-
-    }
+    public void nodeDeselected() {}
 
     @Override
-    public void updateGUI() {
-
-    }
+    public void updateGUI() {}
 }

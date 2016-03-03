@@ -68,32 +68,23 @@ public class ClassOverviewController implements Initializable, ControllerInterfa
     }
 
     @Override
-    public void functionStarted() {
-
-    }
+    public void onApplicationClose(){}
 
     @Override
-    public void functionStopped() {
-
-    }
+    public void functionStarted() {}
 
     @Override
-    public void nodeSelected(GenericTreeNode node) {
-
-    }
+    public void functionStopped() {}
 
     @Override
-    public void nodeDeselected() {
-
-    }
+    public void nodeSelected(GenericTreeNode node) {}
 
     @Override
-    public void updateGUI() {
-
-    }
+    public void nodeDeselected() {}
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void updateGUI() {}
 
-    }
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {}
 }

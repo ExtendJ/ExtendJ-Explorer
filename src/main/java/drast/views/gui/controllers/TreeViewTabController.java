@@ -54,19 +54,20 @@ public class TreeViewTabController implements Initializable, ChangeListener, Con
         });
     }
 
+    @Override
+    public void onApplicationClose(){}
+
     /**
      * Called when a funciton starts from the Controller. A function can be a dialog.
      */
-    public void functionStarted(){
-
-    }
+    @Override
+    public void functionStarted(){}
 
     /**
      * Called when a funciton stops from the Controller. A function can be a dialog.
      */
-    public void functionStopped(){
-
-    }
+    @Override
+    public void functionStopped(){}
 
     /**
      * Called when something changes in the tree view, e.g. a node is selected.
@@ -116,6 +117,7 @@ public class TreeViewTabController implements Initializable, ChangeListener, Con
      * of the UI, e.g. the Graph view.
      * @param node
      */
+    @Override
     public void nodeSelected(GenericTreeNode node){
         ignoreChange = true;
         treeView.getSelectionModel().select(nodeToItemRef.get(node));
@@ -125,6 +127,7 @@ public class TreeViewTabController implements Initializable, ChangeListener, Con
      * Deselects all vertexes in the tree. This method is used if the selected node is defined by some other part
      * of the UI, e.g. the Graph view.
      */
+    @Override
     public void nodeDeselected(){
         treeView.getSelectionModel().clearSelection();
     }
@@ -147,8 +150,6 @@ public class TreeViewTabController implements Initializable, ChangeListener, Con
     @Override
     public void initialize(URL url, ResourceBundle rb) {}
 
-
-    public void onNewAPI() {
-
-    }
+    @Override
+    public void onNewAPI() {}
 }
