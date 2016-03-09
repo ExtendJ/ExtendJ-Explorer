@@ -57,9 +57,8 @@ public class Node{
      * @param astBrain
      */
 
-    public static Node getNTANode(Object root, Node parent, ASTBrain astBrain){
-        return new Node(root, parent, root.getClass().getSimpleName().equals("List"), true, astBrain);
-    }
+    public static Node getNTANode(Object root, Node parent, ASTBrain astBrain){//Todo need an annotation that specify if the NTA is a List
+        return new Node(root, parent, root.getClass().getSimpleName().equals("List"), true, astBrain);     }
 
     private Node(Object root, Node parent, boolean isList, boolean NTA, ASTBrain astBrain){
         this.children = new ArrayList<>();

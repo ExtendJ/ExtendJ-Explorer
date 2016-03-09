@@ -7,12 +7,9 @@ aspect Test{
         return a;
     }
 
-    //NTA test things
-
-
-
     syn nta Num DebuggerConfig.getNum() = new Num("1");
     syn lazy String IdDecl.getString() = getID();
     syn String IdDecl.getString2() = getID();
+    syn boolean ASTNode.isTest() = true;
 
 }

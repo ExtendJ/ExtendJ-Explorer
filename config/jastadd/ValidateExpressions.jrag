@@ -65,16 +65,22 @@ aspect ValidateExpressions{
 
     eq BinExpr.validateExpr(Object attr){
         try{
+            String val = String.valueOf(attr);
             if(getValue().isBool())
-                return validateExpression((boolean) attr);
+                return validateExpression(Boolean.parseBoolean(val));
             if(getValue().isInt() || getValue().isIntArray())
-                return validateExpression((int) attr);
+                return validateExpression(Integer.valueOf(val)); //Eat my shorts
             if(getValue().isString() || getValue().isStrArray())
-                return validateExpression((String) attr);
+                return validateExpression(val);
         }catch (ClassCastException e) {
-             e.printStackTrace();
+          e.printStackTrace();
+        }catch (NumberFormatException e) {
+          //e.printStackTrace();
+          System.out.println("NumberFormatException in validateExpr(Object attr) : " + e.getMessage());
+        }catch(Throwable e){
+          //e.printStackTrace();
         }
-        return false;
+          return false;
     }
 
     syn boolean Expr.validateExpression(int attr) = false;

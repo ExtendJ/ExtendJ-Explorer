@@ -223,7 +223,7 @@ public class NodeData {
     }
 
 
-    //HERE BE DRAGONS, this code is here for shits and giggles
+    //HERE BE DRAGONS
     public void addCachedValues(ASTBrain api, Method m, Attribute attribute){
         if(attribute == null)
             return;
@@ -269,8 +269,9 @@ public class NodeData {
         }
     }
 
-    /** "Finds" the "correct" field value for the attribute.
-     * Lets be clear on this, this method is not safe at all. It can find a "false" field because we are shooting in the dark here
+    /** Finds the "correct" field value for the attribute.
+     * Lets be clear on this, this method is not safe. It can find wrong field because we are shooting in the dark here.
+     * This is due to that we are guessing the name of the field, this can be solved by an annotation that contain the name
      * @param api
      * @param method
      * @param clazz

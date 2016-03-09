@@ -84,7 +84,7 @@ public class DrASTStarter extends Observable {
                 Method mainMethod = cl.getMethod("main", String[].class);
                 mainMethod.invoke(null, new Object[]{args});
                 SystemExitControl.enableSystemExitCall();
-                return fetchRootAndStartView(cl, cl, defaultDir, time);
+                return fetchRootAndStartView(cl, defaultDir, time);
             }catch (NoSuchMethodException e) {
                 print(AlertMessage.SETUP_FAILURE ,"Could not find the compiler's main method");
                 //e.printStackTrace();
@@ -95,23 +95,19 @@ public class DrASTStarter extends Observable {
                     e.printStackTrace();
                     print(AlertMessage.SETUP_FAILURE, "compiler error : " + (e.getMessage() != null ? e.getMessage() : e.getCause()));
                 }else {
-                    fetchRootAndStartView(cl, cl, defaultDir, time);
+                    fetchRootAndStartView(cl, defaultDir, time);
                 }
             }
             SystemExitControl.enableSystemExitCall();
 
         } catch (MalformedURLException e) {
-            System.out.println("asdasdas");
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            System.out.println("asdasdas");
             e.printStackTrace();
         }catch (FileNotFoundException e) {
-            System.out.println("asdasdas");
             print(AlertMessage.SETUP_FAILURE, "Could not find jar file, check path");
             e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("asdas4das");
             e.printStackTrace();
         } catch (Throwable e ){
             e.printStackTrace();
@@ -122,7 +118,7 @@ public class DrASTStarter extends Observable {
         return false;
     }
 
-    private boolean fetchRootAndStartView(Class cl, Object main, String defaultDir, long time){
+    private boolean fetchRootAndStartView(Class<?> cl, String defaultDir, long time){
         boolean success = false;
         try {
             Field rootField = cl.getField("DrAST_root_node");
