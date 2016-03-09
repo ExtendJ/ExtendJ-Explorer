@@ -22,6 +22,7 @@ public class GUIConfig extends Config{
 	public static String PREV_JAR = "prevJar";
 	public static String PREV_FILTER = "prevFilter";
 	public static String PREV_ARGS = "prevFullArgs";
+	public static String PREV_FIRST_ARGS = "prevFirstArg";
 
 	public static final String FILE_NAME = "DrASTGUI.cfg";
 

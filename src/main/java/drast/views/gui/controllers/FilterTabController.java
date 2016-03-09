@@ -62,7 +62,7 @@ public class FilterTabController implements Initializable, ControllerInterface {
                 reader.close();
             } catch (IOException e) {
                 e.printStackTrace();
-                textContent = "Can not read the configuration file!";
+                mon.getController().addError("Can not read the configuration file!");
             }
         }
         codeArea.setText(textContent);
