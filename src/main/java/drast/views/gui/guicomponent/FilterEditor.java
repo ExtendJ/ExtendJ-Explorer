@@ -30,7 +30,8 @@ public class FilterEditor extends CodeArea {
     };
 
     // patterns for different highlighter objects
-    private static final String KEYWORD_PATTERN = "(\\b | \\s)(" + String.join("|", KEYWORDS) + ")\\b";
+    private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
+    private static final String KEYWORD_COLON_PATTERN = "(\\:" + String.join("|\\:", KEYWORDS) + ")";
     private static final String PAREN_PATTERN = "\\(|\\)";
     private static final String BRACE_PATTERN = "\\{|\\}";
     private static final String BRACKET_PATTERN = "\\[|\\]";
@@ -40,6 +41,7 @@ public class FilterEditor extends CodeArea {
 
     private static final Pattern PATTERN = Pattern.compile(
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
+                    + "|(?<KEYWORDCOLON>" + KEYWORD_COLON_PATTERN + ")"
                     + "|(?<PAREN>" + PAREN_PATTERN + ")"
                     + "|(?<BRACE>" + BRACE_PATTERN + ")"
                     + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
@@ -342,6 +344,7 @@ public class FilterEditor extends CodeArea {
         spansBuilder.add(Collections.singleton("whiteText"), 0);
         while(matcher.find()) {
             String styleClass =
+                    matcher.group("KEYWORDCOLON") != null ? null :
                     matcher.group("KEYWORD") != null ? "keyword" :
                     matcher.group("PAREN") != null ? "paren" :
                     matcher.group("BRACE") != null ? "brace" :
