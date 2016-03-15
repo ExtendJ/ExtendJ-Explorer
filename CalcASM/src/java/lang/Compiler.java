@@ -51,6 +51,7 @@ public class Compiler {
 				}
 			} else {
 				DrAST_root_node = program;
+				program.dumpTree(System.out);
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found!");

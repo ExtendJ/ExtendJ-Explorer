@@ -26,7 +26,6 @@ import configAST.ConfigParser.SyntaxError;
     return new beaver.Symbol(id, yyline + 1, yycolumn + 1, yylength(), yytext());
   }
 %}
-
 // macros
 WhiteSpace = [ ] | \t | \f | \n | \r
 Bool = (false|true)

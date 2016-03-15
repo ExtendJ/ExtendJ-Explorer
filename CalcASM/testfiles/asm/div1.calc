@@ -1,6 +1,5 @@
 let
-	a = 4
-	b = 2
+	a = 2
 in
-	a / b
+	a * 3
 end

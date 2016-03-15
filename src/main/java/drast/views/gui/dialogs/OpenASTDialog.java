@@ -71,7 +71,7 @@ public class OpenASTDialog extends DrDialog implements Initializable, ChangeList
 
 
         mon.getConfig().put("prevJar", jarField.getText());
-        mon.getConfig().put("prevFilter", filterField.getText());
+        mon.getConfig().put("prevFilter", filterPath);
         mon.getConfig().put("prevFirstArg", arg1Field.getText());
         mon.getConfig().put("prevRestArgs", args.getText());
         String fullArgString = "";
