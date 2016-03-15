@@ -147,5 +147,5 @@ List num_list =
 Num num = NUMERAL.a {: return new Num(a); :};
 Str str = STRING.a {: return new Str(a); :};
 IdDecl id_decl = ID.a {: return new IdDecl(a); :};
-LangDecl lang_id_decl = COL ID.a {: return new LangDecl(a); :};
+LangDecl lang_id_decl = LANG_ID.a {: return new LangDecl(a.toString().substring(1, a.toString().length())); :};
 Color color = COLOR.a {: return new Color(a); :};

@@ -113,7 +113,7 @@ public class DrASTGUI extends Application implements DrASTView {
             con.addMessage("Filter update: done after " + (System.currentTimeMillis() - timeStart) + " ms");
 
             if(mon.isOptimization())
-                mon.getConfig().put("niceEdges", "0");
+                mon.getConfig().put(GUIConfig.NICE_EDGES, "0");
             con.onNewAPI();
         }
     }

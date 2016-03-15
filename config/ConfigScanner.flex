@@ -32,6 +32,7 @@ WhiteSpace = [ ] | \t | \f | \n | \r
 Bool = (false|true)
 OnOff = (on|off)
 ID = [a-zA-Z][\-a-zA-Z0-9]*
+LANG_ID = :[a-zA-Z][\-a-zA-Z0-9]*
 Numeral = [0-9]+
 Color = #[0-9a-fA-F]{6}
 String = \"[^\"]*\"
@@ -44,6 +45,7 @@ CommentEndOfLine = \/\/[^\n]*
 {CommentStandard} {   }
 {CommentEndOfLine} {   }
 //token definitions
+{LANG_ID}        	{ return sym(Terminals.LANG_ID); }
 "configs"       { return sym(Terminals.CONFIGS); }
 "filter"       { return sym(Terminals.FILTER); }
 "when"       { return sym(Terminals.WHEN); }
@@ -58,7 +60,6 @@ CommentEndOfLine = \/\/[^\n]*
 "<="            { return sym(Terminals.LEQ); }
 "!="            { return sym(Terminals.NEQ); }
 ";"           	{ return sym(Terminals.SEMI); }
-":"           	{ return sym(Terminals.COL); }
 ","         	{ return sym(Terminals.COMMA); }
 "["       	    { return sym(Terminals.LSQBRACKET); }
 "]"       	    { return sym(Terminals.RSQBRACKET); }
