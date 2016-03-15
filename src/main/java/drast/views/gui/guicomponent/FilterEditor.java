@@ -30,6 +30,7 @@ public class FilterEditor extends CodeArea {
     };
 
     // patterns for different highlighter objects
+    // KEYWORD_COLON_PATTERN is a list of all keywords with colon in front. This is so :use (:show, :on, ...) does not get styled.
     private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
     private static final String KEYWORD_COLON_PATTERN = "(\\:" + String.join("|\\:", KEYWORDS) + ")";
     private static final String PAREN_PATTERN = "\\(|\\)";
