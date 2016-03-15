@@ -285,6 +285,7 @@ public class GraphView extends SwingNode implements ItemListener {
         HashMap<GenericTreeNode, ArrayList<GraphEdge>> displayedRefs = new HashMap<>();
         addReferences(refs, displayedRefs);
         mon.setDisplayedReferenceEdges(displayedRefs);
+        if(vs == null) return;
         vs.repaint();
     }
 
@@ -355,6 +356,10 @@ public class GraphView extends SwingNode implements ItemListener {
             }
         };
 
+        Transformer<GenericTreeNode, Font> fontLabelTransformer = label -> {
+            return new Font("penis", Font.PLAIN, 15);
+        };
+
         // Vertex border style transformer
         Transformer<GenericTreeNode, Stroke> vertexStrokeTransformer = item -> {
             if(item.getStyles().get("border-style").getStr().equals("dashed"))
@@ -375,6 +380,7 @@ public class GraphView extends SwingNode implements ItemListener {
         bvs.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
         setNiceEdges(!mon.isOptimization() && mon.getConfig().isEnabled(GUIConfig.NICE_EDGES));
         bvs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<>());
+        bvs.getRenderContext().setVertexFontTransformer(fontLabelTransformer);
 
         //Override the default renderers
         bvs.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);

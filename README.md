@@ -1,4 +1,4 @@
-### Latest stable build is tagged as v1.0.0 ###
+### Latest stable build is tagged as v1.0.2 ###
 
 # DrAST readme #
 This readme has the following content
@@ -27,7 +27,7 @@ git clone https://git@bitbucket.org/jastadd/jastadddebugger-exjobb.git
 ```
 OR checkout the latest stable build:
 ```
-git fetch && git checkout v1.0.0
+git fetch && git checkout v1.0.2
 ```
 
 Then go to the directory where you cloned the project, with your terminal
@@ -127,7 +127,7 @@ When running the debugger on Linux the following library dependencies are requir
 ## The Filter Configuration Language ##
 
 To filter the presentation of your AST we have implemented a simple language that helps you with this. 
-Check out the Wiki page for a small [tutorial](https://bitbucket.org/jastadd/jastadddebugger-exjobb/wiki/The%20Filter%20Configuration%20Language) in how you write and use that language.
+Check out the Wiki page for a small [tutorial](https://bitbucket.org/jastadd/drast/wiki/The%20Filter%20Configuration%20Language) in how you write and use that language.
 
 Below is a standard template for the filter. This filter means that all nodes that are of class ASTNode or a child class of ASTNode should be shown (this means all nodes will be shown).
 

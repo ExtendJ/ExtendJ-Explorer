@@ -215,9 +215,6 @@ public class DrASTGUI extends Application implements DrASTView {
      * @param args
      */
     public static void main(String[] args) {
-        /*Tilldelning e = new Tilldelning();
-        DrASTGUI gui = new DrASTGUI(e);
-        gui.run();*/
         new DrASTGUI().run();
         System.exit(0);
     }

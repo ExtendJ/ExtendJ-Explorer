@@ -69,11 +69,11 @@ public class OpenASTDialog extends DrDialog implements Initializable, ChangeList
                 filterPath = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(file.separator)) + file.separator + DrAST.DEFAULT_FILTER_NAME;
             }
         }
-
         mon.getConfig().put(GUIConfig.PREV_JAR, jarField.getText());
         mon.getConfig().put(GUIConfig.PREV_FILTER, filterPath);
         mon.getConfig().put(GUIConfig.PREV_FIRST_ARGS, arg1Field.getText());
         mon.getConfig().put(GUIConfig.PREV_ARGS, args.getText());
+
         String fullArgString = "";
         for (String s : argString)
             fullArgString += s + " ";
