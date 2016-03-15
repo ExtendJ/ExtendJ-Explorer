@@ -22,7 +22,6 @@ public class ASTBrain extends Observable{
     private HashMap<Class, ArrayList<Method>> NTAMethods;
     private HashMap<Method, Field> methodCacheField;
 
-
     private long reflectedTreeTime;
     private long filteredTreeTime;
     private Node tree;
@@ -334,7 +333,7 @@ public class ASTBrain extends Observable{
      */
     public boolean reApplyFilter(){
         boolean res = filterConfig.readFilter(filterConfig.getFilterFileName());
-        return res;
+        return applyFilter(res);
     }
 
     /**

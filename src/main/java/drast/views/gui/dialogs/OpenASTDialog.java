@@ -3,6 +3,7 @@ package drast.views.gui.dialogs;
 import drast.model.DrAST;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.terminalvalues.TerminalValue;
+import drast.views.gui.GUIConfig;
 import drast.views.gui.Monitor;
 import drast.views.gui.guicomponent.nodeinfotreetableview.TerminalValueTreeItemView;
 import javafx.beans.value.ChangeListener;
@@ -68,16 +69,15 @@ public class OpenASTDialog extends DrDialog implements Initializable, ChangeList
                 filterPath = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(file.separator)) + file.separator + DrAST.DEFAULT_FILTER_NAME;
             }
         }
+        mon.getConfig().put(GUIConfig.PREV_JAR, jarField.getText());
+        mon.getConfig().put(GUIConfig.PREV_FILTER, filterPath);
+        mon.getConfig().put(GUIConfig.PREV_FIRST_ARGS, arg1Field.getText());
+        mon.getConfig().put(GUIConfig.PREV_ARGS, args.getText());
 
-
-        mon.getConfig().put("prevJar", jarField.getText());
-        mon.getConfig().put("prevFilter", filterPath);
-        mon.getConfig().put("prevFirstArg", arg1Field.getText());
-        mon.getConfig().put("prevRestArgs", args.getText());
         String fullArgString = "";
         for (String s : argString)
             fullArgString += s + " ";
-        mon.getConfig().put("prevFullArgs", fullArgString);
+        mon.getConfig().put(GUIConfig.PREV_ARGS, fullArgString);
         mon.getConfig().saveConfigFile();
         return true;
     }
