@@ -112,47 +112,7 @@ public class CustomRenderer extends BasicRenderer<GenericTreeNode, GraphEdge> {
             }
         }
         if(!moving)
-            mon.getController().getGraphViewTabController().graphIsLoading();if(!moving)
-            mon.getController().getGraphViewTabController().graphIsLoading();
-        if(mon.getConfig().isEnabled("showEdges") && (!optimization || (optimization && !moving))) {
-            // paint all the edges
-            try {
-                Collection<GraphEdge> edges = layout.getGraph().getEdges();
-                for (GraphEdge e : edges) {
-                    renderEdge(
-                            renderContext,
-                            layout,
-                            e);
-                    renderEdgeLabel(
-                            renderContext,
-                            layout,
-                            e);
-                }
-            } catch (ConcurrentModificationException cme) {
-                renderContext.getScreenDevice().repaint();
-            }
-        }
-        if(mon.getConfig().isEnabled("showNodes")) {
-            // paint all the vertices
-            try {
-                for (GenericTreeNode v : layout.getGraph().getVertices()) {
-                    renderVertex(
-                            renderContext,
-                            layout,
-                            v);
-                    if (!optimization || (optimization && !moving)) {
-                        renderVertexLabel(
-                                renderContext,
-                                layout,
-                                v);
-                    }
-                }
-            } catch (ConcurrentModificationException cme) {
-                renderContext.getScreenDevice().repaint();
-            }
-        }
-        if(!moving)
-            mon.getController().getGraphViewTabController().graphIsLoading();
+            mon.getController().getGraphViewTabController().graphIsDone();
     }
 
     @Override

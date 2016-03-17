@@ -75,8 +75,9 @@ public class GraphView extends SwingNode implements ItemListener {
         if(mon.getRootNode() != null) {
             createTree(graph, mon.getRootNode(), true);
         }
-        addDisplayedReferences();
+
         createLayout(graph);
+        addDisplayedReferences();
         setListeners();
         setContent(vs);
     }
@@ -285,7 +286,6 @@ public class GraphView extends SwingNode implements ItemListener {
         HashMap<GenericTreeNode, ArrayList<GraphEdge>> displayedRefs = new HashMap<>();
         addReferences(refs, displayedRefs);
         mon.setDisplayedReferenceEdges(displayedRefs);
-        if(vs == null) return;
         vs.repaint();
     }
 

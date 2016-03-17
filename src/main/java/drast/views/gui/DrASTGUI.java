@@ -215,7 +215,12 @@ public class DrASTGUI extends Application implements DrASTView {
      * @param args
      */
     public static void main(String[] args) {
-        new DrASTGUI().run();
+        DrAST api = new DrAST(new Example());
+        api.run();
+        DrASTGUI drASTGUI = new DrASTGUI(api);
+        drASTGUI.run();
+
+        //new DrASTGUI().run();
         System.exit(0);
     }
 }
