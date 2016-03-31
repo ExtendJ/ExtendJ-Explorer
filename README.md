@@ -1,4 +1,4 @@
-### Latest stable build is tagged as v1.0.2 ###
+### Latest stable build is tagged as v1.0.3 ###
 
 # DrAST readme #
 This readme has the following content
