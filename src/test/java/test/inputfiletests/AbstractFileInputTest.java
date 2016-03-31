@@ -82,6 +82,6 @@ abstract public class AbstractFileInputTest {
 		xmlPrinter.printXml(inDirectory, AbstractFileInputTest.OUT_EXTENSION);
 		//int numberOfErrors = debugger.api().getErrors(AlertMessage.FILTER_ERROR).size();
 		//assertEquals("Errors parsing filter language", numberOfErrors, 0);
-		new OutoutXMLcomparer().checkOutput(debugger.getFilteredTree(), expectedFile, inDirectory);
+		new OutoutXMLcomparer().checkOutput(debugger.getBrain().getFilteredTree(), expectedFile, inDirectory);
 	}
 }

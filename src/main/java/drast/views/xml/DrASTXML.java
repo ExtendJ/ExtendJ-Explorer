@@ -132,7 +132,7 @@ public class DrASTXML extends DecoratorView {
      */
     private boolean printToXML(String filePath){
         try {
-            if(api.getFilteredTree() == null){
+            if(api.getBrain().getFilteredTree() == null){
                 System.out.println("No tree to print, root node is null");
                 return false;
             }
@@ -142,7 +142,7 @@ public class DrASTXML extends DecoratorView {
             // root elements
             Document doc = docBuilder.newDocument();
 
-            traversTreeXML(api.getFilteredTree(), doc);
+            traversTreeXML(api.getBrain().getFilteredTree(), doc);
 
             // write the content into xml file
             TransformerFactory transformerFactory = TransformerFactory.newInstance();

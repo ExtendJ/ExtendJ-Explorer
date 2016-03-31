@@ -64,10 +64,6 @@ public class DrAST {
 
     public ASTBrain getBrain(){ return brain; }
 
-	public GenericTreeNode getFilteredTree(){
-		return brain.getFilteredTree();
-	}
-
     /**
      * main function for starting a DrASTAPI session.
      * @param args

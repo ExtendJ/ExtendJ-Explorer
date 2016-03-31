@@ -151,7 +151,7 @@ public class Monitor {
     public ASTBrain getBrain(){ return jaaAPI.getBrain(); }
     public DrAST getDrASTAPI(){ return jaaAPI; }
 
-    public GenericTreeNode getRootNode(){ return jaaAPI.getFilteredTree(); }
+    public GenericTreeNode getRootNode(){ return getBrain().getFilteredTree(); }
     public Controller getController(){return controller;}
 
     public void setController(Controller controller) {
