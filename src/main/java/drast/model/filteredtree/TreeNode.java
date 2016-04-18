@@ -35,6 +35,7 @@ public class TreeNode extends GenericTreeNode {
      * Returns the Object of the AST
      * @return
      */
+    @Override
     public Node getNode(){ return node; }
 
     @Override
@@ -43,10 +44,10 @@ public class TreeNode extends GenericTreeNode {
     }
 
     @Override
-    public boolean isNTANode(){ return node.isNTA(); }
+    public boolean isNTANode(){ return node.isNTANode(); }
 
     @Override
-    public boolean isNullNode(){ return node.isNull(); }
+    public boolean isNullNode(){ return node.isNullNode(); }
 
     /**
      * Returns a iterator for the children

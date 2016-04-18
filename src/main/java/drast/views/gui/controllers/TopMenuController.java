@@ -61,7 +61,7 @@ public class TopMenuController implements Initializable, ControllerInterface {
         showNodesCheckMenuItem.setSelected(config.isEnabled(GUIConfig.SHOW_NODES));
         niceLookingEdgesCheckMenuItem.setSelected(config.isEnabled(GUIConfig.NICE_EDGES));
         //Model Configs
-        config = mon.getBrain().getConfig();
+        config = mon.getASTBrain().getConfig();
         dynamicValuesCheckMenuItem.setSelected(config.isEnabled(GUIConfig.DYNAMIC_VALUES));
         ntaCachedCheckMenuItem.setSelected(config.isEnabled(GUIConfig.NTA_CACHED));
         ntaComputedCheckMenuItem.setSelected(config.isEnabled(GUIConfig.NTA_COMPUTED));
@@ -112,17 +112,17 @@ public class TopMenuController implements Initializable, ControllerInterface {
         });
 
         dynamicValuesCheckMenuItem.setOnAction(e->{
-            saveConfig(GUIConfig.DYNAMIC_VALUES, dynamicValuesCheckMenuItem, mon.getBrain().getConfig());
+            saveConfig(GUIConfig.DYNAMIC_VALUES, dynamicValuesCheckMenuItem, mon.getASTBrain().getConfig());
             mon.getController().nodeSelected(mon.getSelectedNode(), this);
         });
 
         ntaCachedCheckMenuItem.setOnAction(e->{
-            saveConfig(GUIConfig.NTA_CACHED, ntaCachedCheckMenuItem, mon.getBrain().getConfig());
+            saveConfig(GUIConfig.NTA_CACHED, ntaCachedCheckMenuItem, mon.getASTBrain().getConfig());
             mon.getController().saveNewFilter();
         });
 
         ntaComputedCheckMenuItem.setOnAction(e->{
-            saveConfig(GUIConfig.NTA_COMPUTED, ntaComputedCheckMenuItem, mon.getBrain().getConfig());
+            saveConfig(GUIConfig.NTA_COMPUTED, ntaComputedCheckMenuItem, mon.getASTBrain().getConfig());
             mon.getController().saveNewFilter();
         });
 
@@ -213,7 +213,6 @@ public class TopMenuController implements Initializable, ControllerInterface {
         prevJarPath = mon.getConfig().getOrEmpty(GUIConfig.PREV_JAR);
         prevFilterPath = mon.getConfig().getOrEmpty(GUIConfig.PREV_FILTER);
         prevArgString = mon.getConfig().getOrEmpty(GUIConfig.PREV_ARGS);
-
         setValuesOnMenuItems();
     }
 }

@@ -101,7 +101,7 @@ public class GraphView extends SwingNode implements ItemListener {
             boolean nodeToNode = parent.isNode() && child.isNode();
 
             if(nodeToNode && !parent.getNode().isOpt())
-                edge.setLabel(child.getNode().nameFromParent);
+                edge.setLabel(child.getNode().getNameFromParent());
 
             if(nodeToNode && child.isNTANode())
                 edge.setType(GraphEdge.ATTRIBUTE_NTA);
@@ -280,7 +280,7 @@ public class GraphView extends SwingNode implements ItemListener {
      * Add edges based on attributes. This is defined in the filter language by the user.
      */
     public void addDisplayedReferences(){
-        ArrayList<NodeReference> refs = mon.getBrain().getDisplayedReferences();
+        ArrayList<NodeReference> refs = mon.getASTBrain().getDisplayedReferences();
         if(refs == null || refs.size() == 0)
             return;
         HashMap<GenericTreeNode, ArrayList<GraphEdge>> displayedRefs = new HashMap<>();

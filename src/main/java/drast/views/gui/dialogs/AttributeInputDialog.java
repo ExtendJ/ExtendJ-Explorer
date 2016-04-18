@@ -190,9 +190,9 @@ public class AttributeInputDialog extends DrDialog {
     public void attributeSelected(TerminalValue info) {
         if(info == null)
             return;
-        if(mon.getBrain().isTreeNode(info.getValue())) {
+        if(mon.getASTBrain().isTreeNode(info.getValue())) {
             mon.getController().addMessage("1(" + info + ")");
-            GenericTreeNode aNode = mon.getBrain().getTreeNode(info.getValue());
+            GenericTreeNode aNode = mon.getASTBrain().getTreeNode(info.getValue());
             if(!aNode.isNode())
                 return;
             mon.getController().addMessage("2(" + info + ")");
@@ -371,7 +371,7 @@ public class AttributeInputDialog extends DrDialog {
     }
 
     private boolean isNodeParam(Class type){
-        return mon.getBrain().isASTType(type);
+        return mon.getASTBrain().isASTType(type);
     }
 
     public Object[] getResult(){
@@ -402,7 +402,7 @@ public class AttributeInputDialog extends DrDialog {
         //mon.getController().addMessage(fNode.getNode().simpleNameClass);
         if(fNode == focusedNodeParameter.getNode())
             return;
-        if (focusedNodeParameter.type.getSimpleName().equals(fNode.getNode().simpleNameClass) ||
+        if (focusedNodeParameter.type.getSimpleName().equals(fNode.getNode().getSimpleClassName()) ||
                 fNode.getNode().isChildClassOf(focusedNodeParameter.type)) {
             int index = nodeParameters.indexOf(focusedNodeParameter);
             if(index >= 0){
@@ -410,7 +410,7 @@ public class AttributeInputDialog extends DrDialog {
             }
             focusedNodeParameter.setNode(fNode);
             mon.addDialogSelectedNodes(focusedNodeParameter.getNode());
-            params[focusedNodeParameter.pos] = fNode.getNode().node;
+            params[focusedNodeParameter.pos] = fNode.getNode().getASTObject();
             focusedNodeParameter.label.setText(focusedNodeParameter.type.getCanonicalName());
 
             Timeline timeline = new Timeline(new KeyFrame(

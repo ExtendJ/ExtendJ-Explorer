@@ -2,9 +2,11 @@ package drast.model;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Util class that works as an intermediate for the annotations of the methods
+ * Contains most of the hardcoded strings of DrAST
  */
 public class ASTAnnotation{
 
@@ -88,6 +90,21 @@ public class ASTAnnotation{
   public static boolean is(Annotation annotation, String method) {
     Object obj = compute(annotation, method);
     return obj != null ? (Boolean) obj: false;
+  }
+
+  public static boolean isList(Class clazz) {
+    return clazz.getSimpleName().equals("List");
+  }
+
+  public static String getMethodCachedField(Method method){
+    String name = method.getName();
+    if(method.getParameterCount() > 0) {
+      for (Class par : method.getParameterTypes())
+        name += "_" + par.getSimpleName();
+      name += "_values";
+    }else
+      name += "_value";
+    return name;
   }
 
   /**

@@ -15,7 +15,6 @@ import java.util.HashSet;
 
 public class FilterConfig {
     private DebuggerConfig configs; //The top node of configurations
-    private boolean noError;
     private ASTBrain api; //Reference to the ASTAPI, mainly used to contribute errors
 
     //Variable farm
@@ -41,7 +40,7 @@ public class FilterConfig {
         styleCache = new HashMap<>();
         showCache = new HashMap<>();
         configsCache = new HashMap<>();
-        noError = readFilter(filterFileName);
+        readFilter(filterFileName);
     }
 
     public String getFilterFileName(){ return filterFileName; }
@@ -59,11 +58,12 @@ public class FilterConfig {
         DebuggerConfig tmpFilter;
 
         ConfigScanner scanner;
+        PrintWriter writer = null;
+        FileReader reader = null;
         try {
             //System.out.println("checking for filter:" + fullFilePath);
             // check if file exists
             File f = new File(fullFilePath);
-            PrintWriter writer = null;
             if(!f.exists() || f.isDirectory()) {
                 writer = new PrintWriter(f, "UTF-8");
                 writer.print("/*\n" +
@@ -92,30 +92,27 @@ public class FilterConfig {
                 api.putMessage(AlertMessage.FILTER_WARNING, "No filter file found. One was created at: " + fullFilePath);
                 writer.close();
             }
-            // create the scanner
-            scanner = new ConfigScanner(new FileReader(fullFilePath));
-            try{
 
+            try{
+                // create the scanner
+                reader = new FileReader(fullFilePath);
+                scanner = new ConfigScanner(reader);
                 ConfigParser parser = new ConfigParser();
                 // parse the config file
                 tmpFilter = (DebuggerConfig) parser.parse(scanner);
                 if (!tmpFilter.errors().isEmpty()) {
                     // something went wrong, tell the user the error.
-                    String error = "";
-                    error += "Errors: ";
                     if(tmpFilter.errors().size() > 1 )
                         api.putMessage(AlertMessage.FILTER_ERROR, "Multiple errors: ");
                     else
                         api.putMessage(AlertMessage.FILTER_ERROR, "");
                     for (ErrorMessage e: tmpFilter.errors()) {
                         api.putMessage(AlertMessage.FILTER_ERROR, e.toString());
-                        error += "\n " + e;
                     }
-                    System.err.println(error);
-
                     return false;
                 }
 
+                reader.close();
                 configs = tmpFilter;
             } catch (IOException e) {
                 api.putMessage(AlertMessage.FILTER_ERROR, "IOException when reading filter file");
@@ -153,26 +150,27 @@ public class FilterConfig {
     public boolean saveAndUpdateConfig(String text){
         String fullTmpFilePath = filterDir + filterTmpFileName;
         String fullFilePath = filterDir + filterFileName;
-       ;
+        PrintWriter writer = null;
         try {
-            PrintWriter writer = new PrintWriter(fullTmpFilePath, "UTF-8");
+            writer = new PrintWriter(fullTmpFilePath, "UTF-8");
             writer.print(text);
-            writer.close();
         } catch (FileNotFoundException e) {
             api.putMessage(AlertMessage.FILTER_ERROR, "File not found when writing to filter file");
             e.printStackTrace();
-            noError = false;
         } catch (UnsupportedEncodingException e) {
             api.putMessage(AlertMessage.FILTER_ERROR, "Unsupported encoding exception");
             e.printStackTrace();
-            noError = false;
+        } finally {
+            writer.flush();
+            writer.close();
         }
-        noError = readFilter(filterTmpFileName);
+        Boolean noError = readFilter(filterTmpFileName);
         try {
             if (noError) {
                 File oldFilter = new File(fullFilePath);
                 File newFilter = new File(fullTmpFilePath);
-                oldFilter.delete();
+                if (oldFilter.exists())
+                    oldFilter.delete();
                 newFilter.renameTo(oldFilter);
                 clearCaches();
             } else {
@@ -181,7 +179,7 @@ public class FilterConfig {
             }
         }catch(Exception e){
             e.printStackTrace();
-            api.putMessage(AlertMessage.FILTER_ERROR, "Could not delete or remove new or old filter file. Permission problem?");
+            api.putMessage(AlertMessage.FILTER_ERROR, "Could not delete or remove new or old filter file.");
         }
         return noError;
     }
@@ -259,17 +257,17 @@ public class FilterConfig {
      * @return true if not filtered.
      */
     public boolean isEnabled(Node node){
-        if(configs == null || node.isNull())
+        if(configs == null || node.isNullNode())
             return false;
 
         if(!configs.getConfigs().hasUse())
             return true;
         ArrayList<Expr> exprs;
-        if(filterCache.containsKey(node.simpleNameClass))
-            exprs = filterCache.get(node.simpleNameClass);
+        if(filterCache.containsKey(node.getSimpleClassName()))
+            exprs = filterCache.get(node.getSimpleClassName());
         else{
-            exprs = configs.getFilterExpressions(node.node.getClass());
-            filterCache.put(node.simpleNameClass, exprs);
+            exprs = configs.getFilterExpressions(node.getASTClass());
+            filterCache.put(node.getSimpleClassName(), exprs);
         }
 
         if(exprs == null)
@@ -278,18 +276,18 @@ public class FilterConfig {
     }
 
     public boolean hasSubTree(Node node){
-        if(configs == null || node.isNull())
+        if(configs == null || node.isNullNode())
             return true;
 
         if(!configs.getConfigs().hasUse())
             return true;
 
         ArrayList<Expr> exprs;
-        if(subTreeCache.containsKey(node.simpleNameClass))
-            exprs = subTreeCache.get(node.simpleNameClass);
+        if(subTreeCache.containsKey(node.getSimpleClassName()))
+            exprs = subTreeCache.get(node.getSimpleClassName());
         else{
-            exprs = configs.getSubTreeExpressions(node.node.getClass());
-            subTreeCache.put(node.simpleNameClass, exprs);
+            exprs = configs.getSubTreeExpressions(node.getASTClass());
+            subTreeCache.put(node.getSimpleClassName(), exprs);
         }
         if(exprs.size() == 0)
             return true;
@@ -334,14 +332,14 @@ public class FilterConfig {
      */
     public HashMap<String, Value> getNodeStyle(Node node){
         HashMap<String, Value> map;
-        if(configs == null || node.isNull())
+        if(configs == null || node.isNullNode())
             return new HashMap<>();
 
-        if(styleCache.containsKey(node.simpleNameClass))
-            return styleCache.get(node.simpleNameClass);
+        if(styleCache.containsKey(node.getSimpleClassName()))
+            return styleCache.get(node.getSimpleClassName());
 
-        map = configs.getNodeStyles(node.node.getClass());
-        styleCache.put(node.simpleNameClass, map);
+        map = configs.getNodeStyles(node.getASTClass());
+        styleCache.put(node.getSimpleClassName(), map);
         return map;
     }
 
@@ -352,14 +350,14 @@ public class FilterConfig {
      */
     public HashSet<String> getDisplayedAttributes(Node node){
         HashSet<String> show;
-        if(configs == null || node.isNull()){
+        if(configs == null || node.isNullNode()){
             return new HashSet<>();
         }
-        if(showCache.containsKey(node.simpleNameClass))
-            show = showCache.get(node.simpleNameClass);
+        if(showCache.containsKey(node.getSimpleClassName()))
+            show = showCache.get(node.getSimpleClassName());
         else{
-            show = configs.getShow(node.node.getClass());
-            showCache.put(node.simpleNameClass, show);
+            show = configs.getShow(node.getASTClass());
+            showCache.put(node.getSimpleClassName(), show);
         }
         return show;
     }

@@ -206,8 +206,8 @@ public class Controller implements Initializable {
      * Under the graph and tree view there is a bar with labels. This method sets the right texts in these.
      */
     protected void updateAstInfoLabels(){
-        nodeCountLabel.setText(mon.getBrain().getClusteredASTSize() + "/" + mon.getBrain().getASTSize() + ".");
-        String filters = mon.getBrain().getAppliedFilters();
+        nodeCountLabel.setText(mon.getASTBrain().getClusteredASTSize() + "/" + mon.getASTBrain().getASTSize() + ".");
+        String filters = mon.getASTBrain().getAppliedFilters();
         if(!mon.getDrASTAPI().noRoot())
             compilerLabel.setText(mon.getConfig().getOrEmpty(GUIConfig.PREV_JAR));
 
@@ -233,8 +233,8 @@ public class Controller implements Initializable {
     }
 
     public void setOutStreams(){
-        PrintStream printError = new PrintStream(new CustomOutputStream(mon.getBrain(), AlertMessage.VIEW_ERROR));
-        PrintStream printMessage = new PrintStream(new CustomOutputStream(mon.getBrain(), AlertMessage.VIEW_MESSAGE));
+        PrintStream printError = new PrintStream(new CustomOutputStream(mon.getASTBrain(), AlertMessage.VIEW_ERROR));
+        PrintStream printMessage = new PrintStream(new CustomOutputStream(mon.getASTBrain(), AlertMessage.VIEW_MESSAGE));
         standardErr = System.err;
         standardOut = System.out;
         System.setErr(printError);
@@ -253,12 +253,12 @@ public class Controller implements Initializable {
     }
 
     public void saveNewFilter(){
-        if(mon.getBrain().getRoot() == null)
+        if(mon.getASTBrain().getRoot() == null)
             return;
 
         long timeStart = System.currentTimeMillis();
         String filter = filterTabController.getFilterText();
-        boolean noError = mon.getBrain().saveNewFilter(filter);
+        boolean noError = mon.getASTBrain().saveNewFilter(filter);
         if (noError) {
             updateGUI();
             addMessage("Filter update: done after " + (System.currentTimeMillis() - timeStart) + " ms");
@@ -398,7 +398,7 @@ public class Controller implements Initializable {
         GenericTreeNode node = mon.getLastRealNode();
         if(node == null)
             return;
-        node = mon.getBrain().getTreeNode(node.getNode().node);
+        node = mon.getASTBrain().getTreeNode(node.getNode());
         if(node == null)
             return;
         mon.setSelectedNode(node);

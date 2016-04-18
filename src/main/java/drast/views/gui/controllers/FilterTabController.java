@@ -53,9 +53,9 @@ public class FilterTabController implements Initializable, ControllerInterface {
     private void loadFilterFileText() {
         String line;
         String textContent = "";
-        if(mon.getBrain().getFilterFilePath() != null) {
+        if(mon.getASTBrain().getFilterFilePath() != null) {
             try {
-                BufferedReader reader = new BufferedReader(new FileReader(mon.getBrain().getFilterFilePath()));
+                BufferedReader reader = new BufferedReader(new FileReader(mon.getASTBrain().getFilterFilePath()));
                 while ((line = reader.readLine()) != null) {
                     textContent += line + "\n";
                 }

@@ -23,11 +23,11 @@ public class TreeCluster extends GenericTreeCluster {
     @Override
     protected HashMap<String, Integer> fillTypeList(HashMap<String, Integer> types) {
         for (Node node : nodes) {
-            Integer nbr = types.get(node.simpleNameClass);
+            Integer nbr = types.get(node.getSimpleClassName());
             if (nbr == null)
                 nbr = 0;
             nbr++;
-            types.put(node.simpleNameClass, nbr);
+            types.put(node.getSimpleClassName(), nbr);
         }
         int cc = 0;
         for(GenericTreeCluster cNode : getClusters()) {

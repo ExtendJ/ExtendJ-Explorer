@@ -78,8 +78,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     public void init(Monitor mon){
         this.mon = mon;
-        if(mon.getRootNode() != null)
-            formatter = new TextFormatter(mon.getBrain().getRoot().node.getClass());
+        setTextFormater();
     }
 
     /**
@@ -137,6 +136,11 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         showThisInAttributeTab(nodeInfoView);
     }
 
+    private void setTextFormater(){
+        if(mon.getASTBrain().hasRoot())
+            formatter = new TextFormatter(mon.getASTBrain().getRootClass());
+    }
+
     /**
      * Switch to the view child.
      * @param child
@@ -152,7 +156,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      * @return
      */
     private boolean printToConsole(Object value){
-        if(mon.getBrain().containsError(AlertMessage.INVOCATION_ERROR)) {
+        if(mon.getASTBrain().containsError(AlertMessage.INVOCATION_ERROR)) {
             mon.getController().addMessage("Computation unsuccessful");
             return false;
         }
@@ -222,7 +226,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             return;
         }
 
-        LinkedList list = new LinkedList(mon.getBrain().getInheritanceChain(node.getNode().simpleNameClass));
+        LinkedList<Class> list = new LinkedList<>(mon.getASTBrain().getInheritanceChain(node.getNode().getSimpleClassName()));
         Iterator<Class> it = list.descendingIterator();
         Text parent = null;
         String indent = "....";
@@ -255,7 +259,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         Node n = node.getNode();
         if(compute) {
             mon.getController().setOutStreams();
-            mon.getBrain().compute(n);
+            mon.getASTBrain().compute(n);
             attributeTableView.getSelectionModel().clearSelection();
             mon.getController().resetOutStreams();
         }
@@ -350,7 +354,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
             if(infoHolder.isParameter()){
                 for(Object param : ((TerminalValueTreeItemParameter)infoHolder).getParams()){
-                    GenericTreeNode tmp = mon.getBrain().getTreeNode(param);
+                    GenericTreeNode tmp = mon.getASTBrain().getTreeNode(param);
                     if(tmp != null)
                         mon.addSelectedParameterNodes(tmp);
                 }
@@ -396,8 +400,8 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     public ArrayList<GenericTreeNode> getNodeReferencesAndHighlightThem(Object value){
         ArrayList<GenericTreeNode> nodes = new ArrayList<>();
-        for(Object o : mon.getBrain().getNodeReferences(value)){
-            GenericTreeNode node = mon.getBrain().getTreeNode(o);
+        for(Object o : mon.getASTBrain().getNodeReferences(value)){
+            GenericTreeNode node = mon.getASTBrain().getTreeNode(o);
             if(node == null)
                 continue;
             nodes.add(node);
@@ -445,7 +449,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
         TerminalValue info = selectedInfo.getNodeInfo();
         if(info.isNTA() && !info.isParametrized()){ //Handle the non-parametrized NTA:s
-            Object obj = mon.getBrain().compute(node.getNode(), info);
+            Object obj = mon.getASTBrain().compute(node.getNode(), info);
             setAttributeList(node, false);
             if(printToConsole(obj))
                 mon.getController().updateGUI();
@@ -466,7 +470,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 return;
 
             TerminalValue dialogInfo = dialog.getInfo();
-            Object value = mon.getBrain().compute(dialog.getTreeNode().getNode(), dialog.getInfo(), result);
+            Object value = mon.getASTBrain().compute(dialog.getTreeNode().getNode(), dialog.getInfo(), result);
             printToConsole(value);
             if(info.isNTA())
                 mon.getController().updateGUI();
@@ -503,8 +507,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     }
 
     public void onNewAPI() {
-        if(mon.getBrain().getRoot() != null && mon.getBrain().getRoot().node != null)
-            formatter = new TextFormatter(mon.getBrain().getRoot().node.getClass());
+        setTextFormater();
         setAttributes();
     }
 
@@ -563,7 +566,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
 
-            if (getTreeTableRow().getItem() == null || empty) {
+            if (getTreeTableRow() == null || getTreeTableRow().getItem() == null || empty) {
                 setText(null);
                 setGraphic(null);
                 return;
@@ -647,6 +650,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         public Object getValue() {
             return value.get();
         }
+
         public void setValue(Object value) {
             this.value.set(value);
         }

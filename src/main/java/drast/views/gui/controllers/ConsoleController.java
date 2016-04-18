@@ -40,7 +40,7 @@ public class ConsoleController implements Initializable, ControllerInterface, Ob
 
     public void init(Monitor mon){
         this.mon = mon;
-        mon.getBrain().addObserver(this);
+        mon.getASTBrain().addObserver(this);
         messages = new ArrayList<>();
     }
 
@@ -123,7 +123,7 @@ public class ConsoleController implements Initializable, ControllerInterface, Ob
 
     @Override
     public void onNewAPI() {
-        mon.getBrain().addObserver(this);
+        mon.getASTBrain().addObserver(this);
     }
 
     @Override

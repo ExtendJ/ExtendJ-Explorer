@@ -107,11 +107,10 @@ public class DrASTGUI extends Application implements DrASTView {
 
             long timeStart = System.currentTimeMillis();
             mon.getDrASTAPI().run();
-            if(mon.getBrain().containsError(AlertMessage.AST_STRUCTURE_ERROR) || mon.getBrain().containsError(AlertMessage.FILTER_ERROR)){
-                return;
+            if(mon.getASTBrain().containsError(AlertMessage.AST_STRUCTURE_ERROR) || mon.getASTBrain().containsError(AlertMessage.FILTER_ERROR)){
+                con.addMessage("AST contains errors, check the console output for more information");
             }
             con.addMessage("Filter update: done after " + (System.currentTimeMillis() - timeStart) + " ms");
-
             if(mon.isOptimization())
                 mon.getConfig().put(GUIConfig.NICE_EDGES, "0");
             con.onNewAPI();
@@ -120,9 +119,9 @@ public class DrASTGUI extends Application implements DrASTView {
 
     @Override
     public void printMessage(int type, String message){
-        if(mon == null || mon.getBrain() == null)
+        if(mon == null || mon.getASTBrain() == null)
             return;
-        mon.getBrain().putMessage(type, message);
+        mon.getASTBrain().putMessage(type, message);
     }
 
     public void setFilterDir(String dir){ drAST.setFilterPath(dir);}
@@ -215,11 +214,6 @@ public class DrASTGUI extends Application implements DrASTView {
      * @param args
      */
     public static void main(String[] args) {
-        /*DrAST api = new DrAST(new Example());
-        api.run();
-        DrASTGUI drASTGUI = new DrASTGUI(api);
-        drASTGUI.run();
-*/
         new DrASTGUI().run();
         System.exit(0);
     }

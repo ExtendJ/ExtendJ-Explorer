@@ -118,7 +118,7 @@ public class UIComponentTestSuite extends UIApplicationTestHelper {
     public void treeViewStructure(){
         TreeView<GenericTreeNode> tree = find("#treeView");
         TreeItem<GenericTreeNode> treeItem = tree.getTreeItem(0);
-        compareTreeView(treeItem, mon.getBrain().getFilteredTree());
+        compareTreeView(treeItem, mon.getASTBrain().getFilteredTree());
     }
 
     private void compareTreeView(TreeItem<GenericTreeNode> parent, GenericTreeNode node) {

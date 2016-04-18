@@ -104,7 +104,7 @@ public class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
     private void collapse(){
         if(lastClicked.isNode()) {
             DelegateForest<GenericTreeNode, GraphEdge> inGraph = (DelegateForest<GenericTreeNode, GraphEdge>) vs.getGraphLayout().getGraph();
-            TreeCluster newCluster = new TreeCluster(lastClicked.getNode(), lastClicked, mon.getBrain().getFilterConfig());
+            TreeCluster newCluster = new TreeCluster(lastClicked.getNode(), lastClicked, mon.getASTBrain().getFilterConfig());
             newCluster.setExpandable(true);
 
             // remove all reference edges
@@ -283,7 +283,7 @@ public class PopupGraphMousePlugin<V, E> extends AbstractPopupGraphMousePlugin{
             boolean nodeToNode = parent.isNode() && child.isNode();
 
             if(nodeToNode && !parent.getNode().isOpt())
-                edge.setLabel(child.getNode().nameFromParent);
+                edge.setLabel(child.getNode().getNameFromParent());
 
             if(nodeToNode && child.isNTANode())
                 edge.setType(GraphEdge.ATTRIBUTE_NTA);

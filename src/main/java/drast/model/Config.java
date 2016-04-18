@@ -70,7 +70,7 @@ public class Config{
 		writer.println(DYNAMIC_VALUES + "=0");
 		writer.println(NTA_COMPUTED + "=0");
 		writer.println(NTA_CACHED + "=1");
-		writer.println(NTA_DEPTH + "=10");
+		writer.println(NTA_DEPTH + "=1");
 	}
 
 

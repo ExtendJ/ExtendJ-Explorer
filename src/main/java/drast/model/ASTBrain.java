@@ -2,11 +2,10 @@ package drast.model;
 
 import drast.model.analyzer.AnalyzerHolder;
 import drast.model.filteredtree.*;
+import drast.model.reflection.ReflectionNode;
 import drast.model.terminalvalues.TerminalValue;
 
 import java.io.File;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -18,9 +17,6 @@ import java.util.*;
  * Each node in the filtered AST is a sub class of the GenericTreeNode.
  */
 public class ASTBrain extends Observable{
-    private HashMap<Class, ArrayList<AbstractMap.SimpleEntry<Method, Annotation>>> methods;
-    private HashMap<Class, ArrayList<Method>> NTAMethods;
-    private HashMap<Method, Field> methodCacheField;
 
     private long reflectedTreeTime;
     private long filteredTreeTime;
@@ -35,8 +31,10 @@ public class ASTBrain extends Observable{
     private HashMap<Class, HashSet<Class>> directChildren;
     private HashMap<Object, GenericTreeNode> treeNodes;
     private HashMap<Node, HashSet<Node>> computedNTAs; //This might be a temporary solution,
-    private HashSet<Object> ASTObjects;
-    private HashSet<Object> ASTNTAObjects;
+
+    private HashSet<Object> ASTObjects; //Flat structure of the AST
+    private HashSet<Object> ASTNTAObjects;  //Flat structure of the TNA AST
+
     private ArrayList<NodeReference> displayedReferences;
     private HashMap<Integer, Boolean> typeErrorTracker;
     private String directoryPath;
@@ -66,14 +64,10 @@ public class ASTBrain extends Observable{
 
         if(isAPIHolder) //No root node, will stop here
             return;
-        NTAMethods = new HashMap<>();
-        methods = new HashMap<>();
-        methodCacheField = new HashMap<>();
-
 
         // new Node will recreate the AST and be the low level data structure of this program.
         long time = System.currentTimeMillis();
-        tree = new Node(root, this, listRoot);
+        tree = ReflectionNode.getReflectedTree(root, this, listRoot);
         reflectedTreeTime = System.currentTimeMillis() - time;
         this.filteredTree = null;
         analyzer.executeRTAnalyzers(tree);
@@ -85,23 +79,20 @@ public class ASTBrain extends Observable{
 
     }
 
-    protected ArrayList<AbstractMap.SimpleEntry<Method, Annotation>> getMethods(Class clazz){ return methods.get(clazz); }
-    protected void putMethods(Class clazz, ArrayList<AbstractMap.SimpleEntry<Method, Annotation>> methods){ this.methods.put(clazz, methods); }
-
-    protected ArrayList<Method> getNTAMethods(Class clazz){ return NTAMethods.get(clazz); }
-    protected void putNTAMethods(Class clazz, ArrayList<Method> methods){ this.NTAMethods.put(clazz, methods); }
-
-    protected Field getCachedField(Method method){ return methodCacheField.get(method); }
-    protected void putCachedField(Method method, Field field){ this.methodCacheField.put(method, field); }
-
     public AnalyzerHolder getAnalyzer(){ return analyzer; }
 
     public Node getRoot(){return tree; }
 
+    public boolean hasRoot(){ return tree != null && !tree.isNullNode(); }
+
+    public Class getRootClass(){return tree.getASTClass(); }
+
     public long getReflectedTreeTime(){ return reflectedTreeTime; }
+
     public long getFilteredTreeTime(){ return filteredTreeTime; }
 
     public String getFilterFilePath(){return directoryPath; }
+
     public String getDirectoryPath(){return directoryPath;}
 
     public boolean containsError(int type){ return typeErrorTracker.containsKey(type) && typeErrorTracker.get(type); }
@@ -130,16 +121,16 @@ public class ASTBrain extends Observable{
      */
     private void addTypeInheritance(Node node){
         // Add the type and it superclasses
-        if(node.isNull() || inheritedTypes.containsKey(node.getSimpleNameClass()))
+        if(node.isNullNode() || inheritedTypes.containsKey(node.getSimpleClassName()))
             return;
         LinkedHashSet<Class> set = new LinkedHashSet<>();
-        Class c = node.node.getClass();
+        Class c = node.getASTClass();
         while(c != null){
             set.add(c);
             allTypes.add(c);
             c = c.getSuperclass();
         }
-        inheritedTypes.put(node.getSimpleNameClass(), set);
+        inheritedTypes.put(node.getSimpleClassName(), set);
     }
 
     /**
@@ -148,18 +139,18 @@ public class ASTBrain extends Observable{
      * @param node
      */
     private void setDirectParentsAndChildren(Node node){
-        if(node.isNull()) //Null node or Root node
+        if(node.isNullNode()) //Null node or Root node
             return;
-        Class c = node.node.getClass();
+        Class c = node.getASTClass();
         if(!directParents.containsKey(c))
             directParents.put(c, new HashSet<>());
-        if(node.parent != null)
-            directParents.get(c).add(node.parent.node.getClass());
+        if(node.getParent() != null)
+            directParents.get(c).add(node.getParent().getASTClass());
         if(!directChildren.containsKey(c))
             directChildren.put(c, new HashSet<>());
-        for(Node child : node.children){
-            if(!child.isNull())
-                directChildren.get(c).add(child.node.getClass());
+        for(Node child : node.getChildren()){
+            if(!child.isNullNode())
+                directChildren.get(c).add(child.getASTClass());
         }
     }
 
@@ -190,13 +181,12 @@ public class ASTBrain extends Observable{
         if (enabled) {
             normalNodes++;
             return new TreeNode(node, parent, filterConfig);
-        } else if (node.isNull()){
+        } else if (node.isNullNode())
             return new TreeNode(node, parent, filterConfig);
-        } else if(parent != null && parent.isCluster()){
+        else if(parent != null && parent.isCluster())
             return parent;
-        } else {
+        else
             return new TreeCluster(node, parent, filterConfig);
-        }
     }
 
     private void createFilteredTree(Node node, GenericTreeNode parent, boolean collapseTree, boolean firstTime, int depth, ArrayList<NodeReference> futureReferences){
@@ -209,7 +199,7 @@ public class ASTBrain extends Observable{
         if (!collapse)
             collapse = !filterConfig.hasSubTree(node);
 
-        treeNodes.put(node.node, gNode);
+        treeNodes.put(node.getASTObject(), gNode);
 
         if(parent != null)
             parent.addChild(node, gNode);
@@ -231,7 +221,7 @@ public class ASTBrain extends Observable{
         if(!collapse)
             gNode.setDisplayedAttributes(futureReferences, displayedAttributes, this);
 
-        for(Node child : node.children)
+        for(Node child : node.getChildren())
             createFilteredTree(child, gNode, collapse, firstTime, depth, futureReferences);
 
         clusterClusters(gNode);
@@ -267,32 +257,27 @@ public class ASTBrain extends Observable{
         // Create the nta nodes specified by the Configuration language, and traverse down the NTA:s
         if(depth > 0) {
             for (String s : displayedAttributes) {
-                if (!node.showNTAChildren.containsKey(s))
+                if (!node.containsNTAMethod(s))
                     continue;
-                Node ntaNode = node.showNTAChildren.get(s);
-                if (ntaNode == null) {
-                    ntaNode = Node.getNTANode(node.getNodeData().computeMethod(s), node, this);
-                    node.showNTAChildren.put(s, ntaNode);
-                    ASTNTAObjects.add(ntaNode.node);
-                }
+                Node ntaNode = node.getNTATree(s, this);
                 createFilteredTree(ntaNode, parent, collapse, true, depth - 1, futureReferences);
             }
         }
 
         if(config.isEnabled(Config.NTA_CACHED)) {
             node.getNodeData().setCachedNTAs(this);
-            for (Node child : node.NTAChildren.values()) {
+            for (Node child : node.getNTAChildren().values()) {
                 if (child == null)
                     continue;
-                if (!ASTNTAObjects.contains(child.node))
-                    ASTNTAObjects.add(child.node);
+                if (!ASTNTAObjects.contains(child.getASTObject()))
+                    ASTNTAObjects.add(child.getASTObject());
                 createFilteredTree(child, parent, collapse, true, 0, futureReferences);
             }
         }
        // travers down the tree for the Computed NTA:s
        if(computedNTAs.containsKey(node) && config.isEnabled(Config.NTA_COMPUTED)){
            for(Node child : computedNTAs.get(node)) {
-               if(!treeNodes.containsKey(child.node)) {
+               if(!treeNodes.containsKey(child.getASTObject())) {
                    createFilteredTree(child, parent, collapse, true, 0, futureReferences);
                }
            }
@@ -379,6 +364,7 @@ public class ASTBrain extends Observable{
     public HashMap<Class, HashSet<Class>> getDirectParents(){ return directParents; }
     public HashMap<Class, HashSet<Class>> getDirectChildren(){ return directChildren; }
 
+    public GenericTreeNode getTreeNode(Node node){ return treeNodes.get(node.getASTObject()); }
     public GenericTreeNode getTreeNode(Object node){ return treeNodes.get(node); }
     public boolean isTreeNode(Object node){ return treeNodes.containsKey(node); }
 
@@ -425,13 +411,13 @@ public class ASTBrain extends Observable{
         if(!info.isNTA() || ASTNTAObjects.contains(obj) || containsError(AlertMessage.INVOCATION_ERROR))
             return obj;
 
-        Node astNode = Node.getNTANode(obj, node, this);
+        Node astNode = node.getNTATree(obj, node, this);
         if(!computedNTAs.containsKey(node))
             computedNTAs.put(node, new HashSet<>());
         computedNTAs.get(node).add(astNode);
-        node.showNTAChildren.put(TerminalValue.getName(info.getMethod(), params), astNode);
-        if(config.isEnabled(Config.NTA_COMPUTED))
-            buildFilteredSubTree(astNode, (TreeNode) treeNodes.get(node.node));
+        node.putNTA(TerminalValue.getName(info.getMethod(), params), astNode);
+        if(config.isEnabled(Config.NTA_COMPUTED) && treeNodes.get(node).isNode())
+            buildFilteredSubTree(astNode, (TreeNode) treeNodes.get(node));
         else {
             String message = String.format("Computed NTA successfully, but the configuration %s is not enabled, so the NTA will not be shown. See the DrAST.cfg file.", Config.NTA_COMPUTED);
             putMessage(AlertMessage.INVOCATION_WARNING, message);

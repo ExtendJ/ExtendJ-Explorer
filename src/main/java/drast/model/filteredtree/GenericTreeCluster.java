@@ -60,6 +60,7 @@ public abstract  class GenericTreeCluster extends GenericTreeNode{
     /**
     * Cluster has not "real" node
     */
+    @Override
     public Node getNode(){ return null; }
 
     /**
