@@ -12,6 +12,8 @@ import java.util.HashMap;
 
 /**
  * Created by gda10jth on 2/18/16.
+ * Do not use System.out.print(ln) here, atm is the model locked to the main thread, will crash DrAST.
+ * This needs to bee fixed, cause is that if the model is run through the GUI which overrides the standard out/err it will cause a deadlock
  */
 public class ReflectionNode implements Node {
 
@@ -168,8 +170,6 @@ public class ReflectionNode implements Node {
 
         if(methods == null)
             methods = getMethods(root);
-
-        System.out.println(String.format("Class %s - Object %s - Methods %s", root.getClass(), root + "@" + root.hashCode(), methods.size()));
 
         if(astBrain.getConfig().getBoolean(Config.NTA_CACHED)) //Find this nodes cached NTA:s
             getNodeData().setCachedNTAs(astBrain);
