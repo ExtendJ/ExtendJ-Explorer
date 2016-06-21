@@ -67,10 +67,10 @@ public class ReflectionNode implements Node {
     }
 
     public static void createNTATree(Node node, Object root, ASTBrain astBrain){
-        if (!node.getNTAChildren().containsKey(root)){
-            Node temp = node.getNTATree(root, node, astBrain);
-            node.getNTAChildren().put(root, temp);
-        }
+        if (node.getNTAChildren().containsKey(root) || astBrain.isASTObject(root))
+            return;
+        Node temp = node.getNTATree(root, node, astBrain);
+        node.getNTAChildren().put(root, temp);
     }
 
     public Node getNTATree(String s, ASTBrain astBrain){
@@ -165,8 +165,11 @@ public class ReflectionNode implements Node {
      */
     private void traversDown(Object root, ASTBrain astBrain) {
         ArrayList<AbstractMap.SimpleEntry<Method, Annotation>> methods = cachedMethods.get(root.getClass());
+
         if(methods == null)
             methods = getMethods(root);
+
+        System.out.println(String.format("Class %s - Object %s - Methods %s", root.getClass(), root + "@" + root.hashCode(), methods.size()));
 
         if(astBrain.getConfig().getBoolean(Config.NTA_CACHED)) //Find this nodes cached NTA:s
             getNodeData().setCachedNTAs(astBrain);
