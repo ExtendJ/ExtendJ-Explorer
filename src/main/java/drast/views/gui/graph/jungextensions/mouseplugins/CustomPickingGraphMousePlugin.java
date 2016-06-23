@@ -28,10 +28,12 @@ public class CustomPickingGraphMousePlugin<V, E> extends PickingGraphMousePlugin
      * rendering the graph
      */
     public void mouseDragged(MouseEvent e) {
-        if(locked == false){
+        if(!locked && e != null){
             VisualizationViewer<V,E> vv = (VisualizationViewer)e.getSource();
             ((CustomRenderer)vv.getRenderer()).setMoving(true);
-            super.mouseDragged(e);
+            try {
+                super.mouseDragged(e);
+            } catch (NullPointerException ex) {} //For some reason the lib gets a null pointer, down attribute might be null
         }
     }
 

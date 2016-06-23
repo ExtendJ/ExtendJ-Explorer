@@ -1,5 +1,1 @@
-let
-	a = 2
-in
-	a * 3
-end
+ask user ask user let r=3.14 in r end

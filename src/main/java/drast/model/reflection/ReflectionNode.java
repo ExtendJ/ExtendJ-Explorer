@@ -5,13 +5,10 @@ import drast.model.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 
 /**
- * Created by gda10jth on 2/18/16.
+ * Created by Joel Lindholm on 2/18/16.
  * Do not use System.out.print(ln) here, atm is the model locked to the main thread, will crash DrAST.
  * This needs to bee fixed, cause is that if the model is run through the GUI which overrides the standard out/err it will cause a deadlock
  */
@@ -19,7 +16,6 @@ public class ReflectionNode implements Node {
 
     private Object ASTObject;
     private Node parent;
-    private int id;
     private String nameFromParent;
     private String simpleNameClass;
     private ArrayList<Node> children;
@@ -28,7 +24,6 @@ public class ReflectionNode implements Node {
     private boolean isList;
     private boolean isOpt;
     private boolean isNTA;
-    private int level;
     private NodeData nodeData;
 
     private static Method orderMethod;
@@ -53,7 +48,7 @@ public class ReflectionNode implements Node {
         cachedMethods = null;
         cachedNTAMethods = null;
         this.nameFromParent = "";
-        init(root, null, isList, false, false, 1, astBrain);
+        init(root, null, isList, false, false, astBrain);
     }
 
 
@@ -88,7 +83,7 @@ public class ReflectionNode implements Node {
     private ReflectionNode(Object root, Node parent, boolean isList, boolean NTA, ASTBrain astBrain){
         this.nameFromParent = "";
         this.isNTA = NTA;
-        init(root, parent, false, isList, true,  1, astBrain);
+        init(root, parent, isList, false, true, astBrain);
     }
 
     /**
@@ -97,13 +92,12 @@ public class ReflectionNode implements Node {
      * @param name
      * @param isList
      * @param isOpt
-     * @param level
      * @param astBrain
      */
 
-    private ReflectionNode(Object root, Node parent, String name, boolean isList, boolean isOpt, boolean isNTA, int level, ASTBrain astBrain){
+    private ReflectionNode(Object root, Node parent, String name, boolean isList, boolean isOpt, boolean isNTA, ASTBrain astBrain){
         this.nameFromParent =  name.equals(simpleNameClass) || name.length() == 0 ?  "" : name;
-        init(root, parent, isList, isOpt, isNTA, level, astBrain);
+        init(root, parent, isList, isOpt, isNTA, astBrain);
     }
 
     /**
@@ -112,16 +106,14 @@ public class ReflectionNode implements Node {
      * @param root
      * @param isList
      * @param isOpt
-     * @param level
      * @param astBrain
      */
-    private void init(Object root, Node parent, boolean isList, boolean isOpt, boolean isNTA, int level, ASTBrain astBrain){
+    private void init(Object root, Node parent, boolean isList, boolean isOpt, boolean isNTA, ASTBrain astBrain){
         this.ASTObject = root;
         this.parent = parent;
         this.nodeData = new ReflectionNodeData(this);
         this.isOpt = isOpt;
         this.isList = isList;
-        this.level = level;
         this.children = new ArrayList<>();
         this.NTAChildren = new HashMap<>();
         this.showNTAChildren = new HashMap<>();
@@ -131,7 +123,6 @@ public class ReflectionNode implements Node {
         if(cachedNTAMethods == null)
             cachedNTAMethods = new HashMap<>();
 
-        id = System.identityHashCode(this.toString());
         if(root != null)
             this.simpleNameClass = root.getClass().getSimpleName();
         else
@@ -140,13 +131,9 @@ public class ReflectionNode implements Node {
         if(root != null) {
             astBrain.addASTObject(ASTObject, isNTA);
             try {
-                if (isList) {
-                    for (Object child : (Iterable<?>) root) {
-                        checkASTStructure(child, root, astBrain);
-                        children.add(new ReflectionNode(child, this, isOpt ? nameFromParent : "", child instanceof Collection, false, isNTA, 1, astBrain));
-                    }
-                }
+                addListOptNodes(root, isList, isOpt, astBrain);
             }catch (ClassCastException e){
+                e.printStackTrace();
                 String message = isNTA ? "Object : " + root + " is not a type of the AST" : e.getMessage();
                 astBrain.putMessage(AlertMessage.AST_STRUCTURE_WARNING, message);
                 return;
@@ -158,6 +145,39 @@ public class ReflectionNode implements Node {
     private void checkASTStructure(Object child, Object root, ASTBrain astBrain){
         if (child instanceof Collection && ASTAnnotation.isList(child.getClass()) && isOpt)
             astBrain.putMessage(AlertMessage.AST_STRUCTURE_WARNING, "A List is a direct child to a Opt parent, parent : " + root + ", -> child : " + child);
+    }
+
+
+    private void addListOptNodes(Object root, boolean isList, boolean isOpt,  ASTBrain astBrain){
+        if(isOpt && !isIterable(root))
+            handleOptNode(root, astBrain);
+        else if (isList || isOpt)
+            iterIterable(root, (Iterable<?>) root, astBrain);
+    }
+
+    private boolean isIterable(Object root){
+        return root != null && root instanceof Iterable<?>;
+    }
+
+    private void handleOptNode(Object root, ASTBrain astBrain){
+        try {
+            Method m = root.getClass().getMethod("astChildren");
+            if(m == null)
+                return;
+            Object obj = m.invoke(root);
+            if(obj == null)
+                return;
+            iterIterable(root, (Iterable<?>) obj, astBrain);
+        } catch (NoSuchMethodException e) {}
+        catch (InvocationTargetException e) {}
+        catch (IllegalAccessException e) {}
+    }
+
+    private void iterIterable(Object root, Iterable<?> iter, ASTBrain astBrain){
+        for (Object child : iter) {
+            checkASTStructure(child, root, astBrain);
+            children.add(new ReflectionNode(child, this, isOpt ? nameFromParent : "", child instanceof Collection, false, isNTA, astBrain));
+        }
     }
 
     /**
@@ -183,7 +203,7 @@ public class ReflectionNode implements Node {
                 children.add(new ReflectionNode(obj, this, name,
                         !ASTAnnotation.isSingleChild(a),
                         ASTAnnotation.isOptChild(a),
-                        isNTA, level + 1, astBrain));
+                        isNTA, astBrain));
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
@@ -226,7 +246,7 @@ public class ReflectionNode implements Node {
                  orderMethod = orderSuperClass.getDeclaredMethod("getIndexOfChild", orderSuperClass);
             for(int i = 0; i < children.size(); i++){
                 Node temp = children.get(i);
-                int newPos = (int) orderMethod.invoke(getASTObject(), new Object[]{temp.getASTObject()});
+                int newPos = (int) orderMethod.invoke(getASTObject(), temp.getASTObject());
                 children.set(i, children.get(newPos));
                 children.set(newPos, temp);
             }
@@ -263,9 +283,6 @@ public class ReflectionNode implements Node {
 
     @Override
     public boolean isNTANode() { return isNTA; }
-
-    @Override
-    public int getLevel(){ return level;}
 
     @Override
     public void putNTA(String methodName, Node node){ showNTAChildren.put(methodName, node);}

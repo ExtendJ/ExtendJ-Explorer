@@ -21,8 +21,6 @@ public interface Node {
 
     boolean isNTANode();
 
-    int getLevel();
-
     NodeData getNodeData();
 
     String getSimpleClassName();
