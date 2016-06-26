@@ -416,8 +416,9 @@ public class ASTBrain extends Observable{
             computedNTAs.put(node, new HashSet<>());
         computedNTAs.get(node).add(astNode);
         node.putNTA(TerminalValue.getName(info.getMethod(), params), astNode);
-        if(config.isEnabled(Config.NTA_COMPUTED) && treeNodes.get(node).isNode())
-            buildFilteredSubTree(astNode, (TreeNode) treeNodes.get(node));
+        GenericTreeNode parent = treeNodes.get(node.getASTObject());
+        if(config.isEnabled(Config.NTA_COMPUTED) && parent.isNode())
+            buildFilteredSubTree(astNode, (TreeNode) parent);
         else {
             String message = String.format("Computed NTA successfully, but the configuration %s is not enabled, so the NTA will not be shown. See the DrAST.cfg file.", Config.NTA_COMPUTED);
             putMessage(AlertMessage.INVOCATION_WARNING, message);

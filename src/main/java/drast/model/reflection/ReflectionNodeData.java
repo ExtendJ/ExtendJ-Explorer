@@ -232,12 +232,9 @@ public class ReflectionNodeData implements NodeData {
         if(attribute == null)
             return;
         Pair<Field, Field> fieldPair = getCacheField(m, ASTObject.getClass());
-        if(fieldPair.getSecond() == null)
-            attribute.setEvaluated(false);
-        else
-            attribute.setEvaluated(((boolean) getFieldValue(fieldPair.getSecond())));
-        
-        if(!attribute.isEvaluated())
+
+        attribute.setEvaluated(isComputed(fieldPair.getSecond()));
+        if(!attribute.isEvaluated() && !attribute.isParametrized())
             return;
 
         Object value = getFieldValue(fieldPair.getFirst());
@@ -317,7 +314,7 @@ public class ReflectionNodeData implements NodeData {
         for(Method m : methods){
             Pair<Field, Field> fieldPair = getCacheField(m, ASTObject.getClass());
             Field field = fieldPair.getSecond();
-            if (field == null || !((boolean) getFieldValue(field)))
+            if (field == null || (!isComputed(field) && m.getParameterCount() == 0))
                 continue;
             field = getCacheField(m, ASTObject.getClass()).getFirst();
             Object value = getFieldValue(field);
@@ -325,6 +322,13 @@ public class ReflectionNodeData implements NodeData {
                 values.put(m, value);
         }
         return values;
+    }
+
+    private boolean isComputed(Field field){
+        if (field == null)
+            return false;
+        Object obj = getFieldValue(field);
+        return obj != null && (obj.getClass() == Boolean.class || obj.getClass() == boolean.class) && ((boolean) obj);
     }
 
     private Object getFieldValue(Field field){
