@@ -19,17 +19,15 @@ public class Attribute extends TerminalValue {
     private HashMap<String, Object[]> usedParameters;
     private String lastComputedkey;
 
-    public Attribute(String name, Object value, Method m) {
-        super(name, value, m);
+    public Attribute(String name, Method m) {
+        super(name, null, m, false);
         computedValues = new HashMap<>();
         usedParameters = new HashMap<>();
     }
 
 
-    public Attribute(String name, Object value, Method m, String kind) {
-        super(name, value, m);
-        computedValues = new HashMap<>();
-        usedParameters = new HashMap<>();
+    public Attribute(String name, Method m, String kind) {
+        this(name, m);
         this.kind = kind;
     }
 
@@ -44,7 +42,6 @@ public class Attribute extends TerminalValue {
 
     @Override
     public String getKind() { return kind; }
-
 
     public void setKind(String kind) { this.kind = kind; }
 

@@ -1,4 +1,4 @@
-### Latest stable build is tagged as v1.0.4 ###
+### Latest stable build is tagged as v1.0.5 ###
 
 # DrAST readme #
 This readme has the following content
@@ -27,7 +27,7 @@ git clone https://git@bitbucket.org/jastadd/jastadddebugger-exjobb.git
 ```
 OR checkout the latest stable build:
 ```
-git fetch && git checkout v1.0.4
+git fetch && git checkout v1.0.5
 ```
 
 Then go to the directory where you cloned the project, with your terminal

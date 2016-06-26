@@ -67,8 +67,8 @@ public class ASTAnnotation{
     Object obj = compute(annotation, AST_METHOD_KIND);
     if(obj == null)
       return null;
-    String kind = compute(annotation, AST_METHOD_KIND).toString();
-    if(kind == null)
+    String kind = String.valueOf(compute(annotation, AST_METHOD_KIND));
+    if(kind.equals("null"))
       return null;
     switch (kind){
       case AST_KIND_SYN:
@@ -98,27 +98,30 @@ public class ASTAnnotation{
 
   public static String getMethodCachedField(Method method){
     String name = method.getName();
-    if(method.getParameterCount() > 0) {
+    if(method.getParameterCount() == 0)
+      return name + "_value";
       for (Class par : method.getParameterTypes())
         name += "_" + par.getSimpleName();
       name += "_values";
-    }else
-      name += "_value";
     return name;
+  }
+
+  public static String getMethodComputedField(Method method){
+    String name = method.getName();
+    for (Class par : method.getParameterTypes())
+      name += "_" + par.getSimpleName();
+    return name + "_computed";
   }
 
   /**
    * Returns the name given by the parent node, by the annotations.
    * @param annotation
    * @return
-   * @throws NoSuchMethodException
-   * @throws InvocationTargetException
-   * @throws IllegalAccessException
    */
   public static Object compute(Annotation annotation, String methodName)  {
     try {
       if (annotation.getClass().getMethod(methodName) != null)
-        return annotation.getClass().getMethod(methodName).invoke(annotation, new Object[]{});
+        return annotation.getClass().getMethod(methodName).invoke(annotation);
     }catch (Throwable e){
       e.getStackTrace();
     }

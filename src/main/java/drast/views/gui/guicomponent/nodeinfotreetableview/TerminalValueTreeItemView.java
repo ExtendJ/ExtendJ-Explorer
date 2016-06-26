@@ -23,6 +23,8 @@ public class TerminalValueTreeItemView {
         this.terminalValue = terminalValue;
     }
 
+    public boolean isComputable(){ return terminalValue.isParametrized() || !terminalValue.isEvaluated(); }
+
     public boolean getTerminalValue(){ return terminalValue != null; }
     public boolean isParameter(){ return false; }
     public String getName(){ return label; }

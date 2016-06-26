@@ -22,7 +22,7 @@ public class ReflectionNodeData implements NodeData {
     private HashMap<Method, HashMap<Object[], Object>> invokedValues;
     private Node node; //The node the content is a part of
     private Object ASTObject; //The node the content is a part of
-    private HashMap<Method, Field> cachedMethodFields;
+    private HashMap<Method, Pair<Field, Field>> cachedMethodFields;
 
     /**
      * Constructor for the NodeData, which will init the HashSet/HashMap
@@ -98,7 +98,7 @@ public class ReflectionNodeData implements NodeData {
             addInvocationErrors(api, e, attribute.getMethod());
             obj = e.getCause() != null ? e.getCause() : e.getMessage();
         }
-
+        attribute.setEvaluated(true);
         attribute.addComputedValue(params, obj);
         if(!invokedValues.containsKey(method))
             invokedValues.put(method, new HashMap<>());
@@ -190,7 +190,7 @@ public class ReflectionNodeData implements NodeData {
      */
     @Override
     public Attribute computeAttribute(ASTBrain api, Method m, Object[] params){
-        Attribute attribute = new Attribute(m.getName(), null, m);
+        Attribute attribute = new Attribute(m.getName(), m);
         attribute.setParametrized(m.getParameterCount() > 0);
         for(Annotation a : m.getAnnotations()) {
             if (ASTAnnotation.isAttribute(a)){
@@ -231,11 +231,20 @@ public class ReflectionNodeData implements NodeData {
     public void addCachedValues(Method m, Attribute attribute){
         if(attribute == null)
             return;
-        Object obj = getFieldValue(getField(m, ASTObject.getClass()));
+        Pair<Field, Field> fieldPair = getCacheField(m, ASTObject.getClass());
+        if(fieldPair.getSecond() == null)
+            attribute.setEvaluated(false);
+        else
+            attribute.setEvaluated(((boolean) getFieldValue(fieldPair.getSecond())));
+        
+        if(!attribute.isEvaluated())
+            return;
+
+        Object value = getFieldValue(fieldPair.getFirst());
         if (attribute.isParametrized()) {
-            if (obj == null || !(obj instanceof Map))
+            if (value == null || !(value instanceof Map))
                 return;
-            Map map = (Map) obj;
+            Map map = (Map) value;
             for (Map.Entry par : (Set<Map.Entry>) map.entrySet()) {
                 if (m.getParameterCount() > 1  && par.getKey() instanceof Collection)
                     attribute.addComputedValue(((java.util.List) par.getKey()).toArray(), par.getValue());
@@ -243,7 +252,7 @@ public class ReflectionNodeData implements NodeData {
                     attribute.addComputedValue(new Object[]{par.getKey()}, par.getValue());
             }
         } else
-            attribute.setValue(obj);
+            attribute.setValue(value);
     }
 
     @Override
@@ -277,21 +286,27 @@ public class ReflectionNodeData implements NodeData {
      * @param clazz
      * @return
      */
-    private Field getField(Method method, Class clazz){
+    private Pair<Field, Field> getCacheField(Method method, Class clazz){
         if(cachedMethodFields.get(method) != null) {
             return cachedMethodFields.get(method);
         }
         String name = ASTAnnotation.getMethodCachedField(method);
+        String computed = ASTAnnotation.getMethodComputedField(method);
+        Pair<Field, Field> fields = new Pair<>();
         while(clazz != null) {
             for (Field field : clazz.getDeclaredFields()) {
-                if (field.getName().contains(name)) {
-                    cachedMethodFields.put(method, field);
-                    return field;
-                }
+                if(fields.isComplete())
+                    break;
+                String filedName = field.getName();
+                if (filedName.contains(name))
+                    fields.putFirst(field);
+                else if(filedName.contains(computed))
+                    fields.putSecond(field);
             }
             clazz = clazz.getSuperclass();
         }
-        return null;
+        cachedMethodFields.put(method, fields);
+        return fields;
     }
 
     private HashMap<Method, Object> findFieldNames(){
@@ -300,8 +315,12 @@ public class ReflectionNodeData implements NodeData {
         if(methods == null || methods.size() == 0)
             return values;
         for(Method m : methods){
-            Field f = getField(m, ASTObject.getClass());
-            Object value = getFieldValue(f);
+            Pair<Field, Field> fieldPair = getCacheField(m, ASTObject.getClass());
+            Field field = fieldPair.getSecond();
+            if (field == null || !((boolean) getFieldValue(field)))
+                continue;
+            field = getCacheField(m, ASTObject.getClass()).getFirst();
+            Object value = getFieldValue(field);
             if(value != null)
                 values.put(m, value);
         }
@@ -319,5 +338,21 @@ public class ReflectionNodeData implements NodeData {
         }
         return null;
     }
+
+    private class Pair<T, E> {
+        private T first;
+        private E sec;
+
+        public Pair() {}
+
+        public T getFirst() { return first; }
+        public E getSecond() { return sec; }
+
+        public void putFirst(T first) { this.first = first; }
+        public void putSecond(E sec) { this.sec = sec; }
+
+        public boolean isComplete(){ return first != null && sec != null; }
+    }
+
 
 }

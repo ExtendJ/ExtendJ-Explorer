@@ -16,6 +16,7 @@ import drast.views.gui.guicomponent.TextFormatter;
 import drast.views.gui.guicomponent.nodeinfotreetableview.TerminalValueTreeItem;
 import drast.views.gui.guicomponent.nodeinfotreetableview.TerminalValueTreeItemParameter;
 import drast.views.gui.guicomponent.nodeinfotreetableview.TerminalValueTreeItemView;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
@@ -131,7 +132,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
         mouseMenu = new ContextMenu();
         MenuItem cmItem1 = new MenuItem("Compute");
-        cmItem1.setOnAction(e ->  { onInvokeClicked();});
+        cmItem1.setOnAction(e ->  onComputeClicked());
         mouseMenu.getItems().add(cmItem1);
         showThisInAttributeTab(nodeInfoView);
     }
@@ -271,7 +272,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         attributeTableView.setShowRoot(false);
         mainParent.setExpanded(true);
 
-
         addSectionToAttributeList("Attributes", n.getNodeData().getAttributes(), mainParent);
         addSectionToAttributeList("Nonterminal attributes", n.getNodeData().getNTAs(), mainParent);
         addSectionToAttributeList("Tokens", n.getNodeData().getTokens(), mainParent);
@@ -284,7 +284,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      * @param parent
      */
     private void addSectionToAttributeList(String label, Collection<TerminalValue> list, TreeItem parent){
-        if(list.size() == 0)
+        if(list == null || list.size() == 0)
             return;
 
         TreeItem<TerminalValueTreeItemView> tokensItem = new TreeItem<>(new TerminalValueTreeItemView(label));
@@ -344,33 +344,35 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             mon.getHighlightReferencesNodes().clear();
 
         if(newValue != null) {
-            TerminalValueTreeItemView infoHolder = newValue.getValue();
-            TerminalValue info = null;
-            Object value = null;
-            if(infoHolder.getTerminalValue()) {
-                info = infoHolder.getNodeInfo();
-                value = infoHolder.getValue();
-            }
-
-            if(infoHolder.isParameter()){
-                for(Object param : ((TerminalValueTreeItemParameter)infoHolder).getParams()){
-                    GenericTreeNode tmp = mon.getASTBrain().getTreeNode(param);
-                    if(tmp != null)
-                        mon.addSelectedParameterNodes(tmp);
-                }
-
-            }
-
-            mon.setSelectedInfo(infoHolder);
-            mon.getController().attributeInNodeSelected(info);
-            setAttributeInfo(info, value);
-            setReference(value);
-
+            setNewTerminalInfoValue(newValue.getValue());
         }else{
             mon.setSelectedInfo(null);
             setAttributeInfo(null, null);
             setReference(null);
         }
+    }
+
+    public void setNewTerminalInfoValue(TerminalValueTreeItemView newValue){
+        TerminalValue info = null;
+        Object value = null;
+        if(newValue.getTerminalValue()) {
+            info = newValue.getNodeInfo();
+            value = newValue.getValue();
+        }
+
+        if(newValue.isParameter()){
+            for(Object param : ((TerminalValueTreeItemParameter) newValue).getParams()){
+                GenericTreeNode tmp = mon.getASTBrain().getTreeNode(param);
+                if(tmp != null)
+                    mon.addSelectedParameterNodes(tmp);
+            }
+
+        }
+
+        mon.setSelectedInfo(newValue);
+        mon.getController().attributeInNodeSelected(info);
+        setAttributeInfo(info, value);
+        setReference(value);
     }
 
     /**
@@ -411,7 +413,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     }
 
     private ArrayList<TableViewAttributeInfo> toArray(ArrayList<TerminalValueInfo> infoList){
-        ArrayList<TableViewAttributeInfo> al = new ArrayList();
+        ArrayList<TableViewAttributeInfo> al = new ArrayList<>();
         for (TerminalValueInfo info : infoList)
             al.add(new TableViewAttributeInfo(info.getName(), info.getValue(), info.isFilePointer()));
         return al;
@@ -435,27 +437,37 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     /**
      * This method will call the invocation of the method that has been clicked on, after the values have been added
      */
-    private void onInvokeClicked(){
+    private void onComputeClicked(){
         mon.getController().setOutStreams();
-        onInvoke();
+        onCompute();
         mon.getController().resetOutStreams();
     }
 
-    private void onInvoke(){
+    private void onCompute() {
         TreeNode node = (TreeNode) mon.getSelectedNode();
-        TerminalValueTreeItemView selectedInfo  = attributeTableView.getSelectionModel().getSelectedItem().getValue();
-        if(!selectedInfo.getTerminalValue())
+        TerminalValueTreeItemView selectedInfo = attributeTableView.getSelectionModel().getSelectedItem().getValue();
+        if (!selectedInfo.getTerminalValue())
             return;
 
         TerminalValue info = selectedInfo.getNodeInfo();
-        if(info.isNTA() && !info.isParametrized()){ //Handle the non-parametrized NTA:s
-            Object obj = mon.getASTBrain().compute(node.getNode(), info);
-            setAttributeList(node, false);
-            if(printToConsole(obj))
-                mon.getController().updateGUI();
-            return;
-        }
+        if (info.isParametrized())//Handle the non-parametrized Terminal values
+            computeParameterizedTerminal(node, info);
+        else
+            computeNonParameterizedTerminal(node, info, selectedInfo);
+    }
 
+    public void computeNonParameterizedTerminal(TreeNode node, TerminalValue info, TerminalValueTreeItemView row){
+        Object obj = mon.getASTBrain().compute(node.getNode(), info);
+        if (info.isNTA() && printToConsole(obj)) {
+            setAttributeList(node, false);
+            mon.getController().updateGUI();
+        }else{
+            attributeTableView.refresh();
+            setNewTerminalInfoValue(row);
+        }
+    }
+
+    public void computeParameterizedTerminal(TreeNode node, TerminalValue info){
         AttributeInputDialog dialog = new AttributeInputDialog(info, node, mon);
         dialog.setNodeInfoPos(attributeTableView.getSelectionModel().getSelectedIndex());
         dialog.init();
@@ -504,7 +516,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
         });
         dialog.show();
-
     }
 
     public void onNewAPI() {
@@ -583,18 +594,15 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             TerminalValue info = view.getNodeInfo();
             if(info == null || item != null)
                 return;
-            if (info.isParametrized() || info.isNTA()) {
+            if (view.isComputable()) {
                 setText("right click to compute");
                 setStyle("-fx-text-fill:#999999;");
             }
 
             setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.SECONDARY) {
-                    boolean yep = (info.isNTA() || info.isParametrized()) && info.getValue() == null;
-                    if(getTreeTableRow().getItem() != null &&
-                            (yep && !mon.isFunctionRunning())) {
+                    if(getTreeTableRow().getItem() != null && (view.isComputable() && !mon.isFunctionRunning()))
                         mouseMenu.show(this, event.getScreenX(), event.getScreenY());
-                    }
                 }
             });
         }

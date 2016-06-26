@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public class Token extends TerminalValue {
 
-    public Token(String name, Object value, Method m){ super(name, value, m);}
+    public Token(String name, Object value, Method m){ super(name, value, m, true);}
 
     @Override
     public String print(){ return getName(method, null); }

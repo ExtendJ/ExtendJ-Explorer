@@ -11,11 +11,13 @@ public abstract class TerminalValue implements Comparable<TerminalValue>{
     protected Object value; //The value of the attribute
     protected Method method; //The method which is used to invoke the attribute
     protected String name;
+    boolean evaluated;
 
-    public TerminalValue(String name, Object value, Method method){
+    public TerminalValue(String name, Object value, Method method, boolean evaluated){
         this.name = name;
         this.value = value;
         this.method = method;
+        this.evaluated = evaluated;
     }
 
     public Object getValue(){ return value; }
@@ -47,6 +49,12 @@ public abstract class TerminalValue implements Comparable<TerminalValue>{
     public int compareTo(TerminalValue o) {
         return name.compareTo(o.name);
     }
+
+    /**
+     * Returns true or false if the this TerminalValue is computed or not
+     */
+    public boolean isEvaluated() { return evaluated; }
+    public void setEvaluated(boolean evaluated) { this.evaluated = evaluated; }
 
     /**
      * Check if a attribute is parametrized
