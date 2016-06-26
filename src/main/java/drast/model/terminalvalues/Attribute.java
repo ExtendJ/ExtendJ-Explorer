@@ -18,6 +18,7 @@ public class Attribute extends TerminalValue {
     private HashMap<String, Object> computedValues;
     private HashMap<String, Object[]> usedParameters;
     private String lastComputedkey;
+
     public Attribute(String name, Object value, Method m) {
         super(name, value, m);
         computedValues = new HashMap<>();

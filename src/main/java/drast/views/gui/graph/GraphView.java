@@ -14,6 +14,7 @@ import drast.views.gui.graph.jungextensions.mouseplugins.PopupGraphMousePlugin;
 import drast.views.gui.graph.jungextensions.renderers.CustomDefaultVertexLabelRenderer;
 import drast.views.gui.graph.jungextensions.renderers.CustomRenderer;
 import drast.views.gui.graph.jungextensions.renderers.EdgeLabelRenderer;
+import drast.views.gui.graph.jungextensions.transformers.VertexEdgeTransformer;
 import drast.views.gui.graph.jungextensions.transformers.VertexPaintTransformer;
 import drast.views.gui.graph.jungextensions.transformers.VertexShapeTransformer;
 import edu.uci.ics.jung.algorithms.layout.Layout;
@@ -70,7 +71,7 @@ public class GraphView extends SwingNode implements ItemListener {
         hugeGraph = false;
         scaler = new ScalingControllerMinLimit(this);
         this.mon = mon;
-        DirectedOrderedSparseMultigraph<GenericTreeNode, GraphEdge> n = new DirectedOrderedSparseMultigraph<GenericTreeNode, GraphEdge>();
+        DirectedOrderedSparseMultigraph<GenericTreeNode, GraphEdge> n = new DirectedOrderedSparseMultigraph<>();
         graph = new DelegateForest<>(n);
         if(mon.getRootNode() != null) {
             createTree(graph, mon.getRootNode(), true);
@@ -124,7 +125,7 @@ public class GraphView extends SwingNode implements ItemListener {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         vs = new CustomVisualizationViewer<>(layout, screenSize);
         vs.setRenderer(new CustomRenderer(mon));
-        setVisualizationTransformers(vs);
+        setVisualizationTransformers();
     }
 
     /**
@@ -141,6 +142,7 @@ public class GraphView extends SwingNode implements ItemListener {
             createTree(graph, mon.getRootNode(), true);
         TreeLayout<GenericTreeNode, GraphEdge> layout = new TreeLayout<>(graph, 150, 100);
         vs.setGraphLayout(layout);
+        setVisualizationTransformers();
         addDisplayedReferences();
         panToNode(mon.getRootNode());
         showWholeGraphOnScreen();
@@ -234,7 +236,7 @@ public class GraphView extends SwingNode implements ItemListener {
                 new VisualizationImageServer<>(vs.getGraphLayout(),
                         vs.getGraphLayout().getSize());
 
-        setVisualizationTransformers(vis);
+        setVisualizationTransformers();
 
         try {
             // Create the buffered image
@@ -319,11 +321,6 @@ public class GraphView extends SwingNode implements ItemListener {
         }
     }
 
-    private final static float dash[] = {5.0f};
-    private final static Stroke refStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
-    private final static Stroke dashedStroke = new BasicStroke(0.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
-    private final static Stroke normalStroke = new BasicStroke(1.0f);
-
     /**
      * This method sets all the transformers on the layout
      *
@@ -331,60 +328,37 @@ public class GraphView extends SwingNode implements ItemListener {
      * generics that defines what (the first generic) will be transformed to what (the second generic). An example:
      * to define a color on a vertex, a Transformer<GenericTreeNode, Color> is used. it "transform" a GenericTreeNode to
      * a Color.
-     * @param bvs
      */
-    public void setVisualizationTransformers(BasicVisualizationServer<GenericTreeNode, GraphEdge> bvs){
-        bvs.setBackground(new Color(255,255,255));
+    public void setVisualizationTransformers(){
+        vs.setBackground(new Color(255,255,255));
 
         // Vertex text transformer
-        Transformer <GenericTreeNode, String> toStringTransformer = fNode -> fNode.toGraphString();
+        Transformer <GenericTreeNode, String> toStringTransformer = GenericTreeNode::toGraphString;
+
         // Edge color transformer
-        Transformer<GraphEdge, Paint> edgePaintTransformer = edge -> edge.getColor();
+        Transformer<GraphEdge, Paint> edgePaintTransformer = GraphEdge::getColor;
 
-        // Edge stroke transformer
-        Transformer<GraphEdge, Stroke> edgeStrokeTransformer = edge -> {
-            switch (edge.getType()){
-                case GraphEdge.STANDARD :
-                case GraphEdge.ATTRIBUTE_NTA :
-                    return normalStroke;
-                case GraphEdge.ATTRIBUTE_REF :
-                case GraphEdge.DISPLAYED_REF :
-                    return refStroke;
-                case GraphEdge.CLUSTER :
-                default :
-                    return dashedStroke;
-            }
-        };
-
-        Transformer<GenericTreeNode, Font> fontLabelTransformer = label -> {
-            return new Font("penis", Font.PLAIN, 15);
-        };
+        Transformer<GenericTreeNode, Font> fontLabelTransformer = label -> new Font("someFontTextThisCanBeAnythingANYTHING", Font.PLAIN, 15);
 
         // Vertex border style transformer
-        Transformer<GenericTreeNode, Stroke> vertexStrokeTransformer = item -> {
-            if(item.getStyles().get("border-style").getStr().equals("dashed"))
-               return dashedStroke;
-            return normalStroke;
-        };
-
         // Build the VisualizationViewer that holds the graph and all transformers.
-        bvs.scaleToLayout(scaler);
+        vs.scaleToLayout(scaler);
 
-        bvs.getRenderContext().setVertexStrokeTransformer(vertexStrokeTransformer);
-        bvs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
-        bvs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
-        bvs.getRenderContext().setVertexLabelRenderer(new CustomDefaultVertexLabelRenderer(java.awt.Color.blue));
-        bvs.getRenderContext().setVertexShapeTransformer(new VertexShapeTransformer(vs.getRenderContext()));
+        vs.getRenderContext().setVertexStrokeTransformer(new VertexEdgeTransformer(mon));
+        vs.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vs.getPickedVertexState(), mon));
+        vs.getRenderContext().setVertexLabelTransformer(toStringTransformer);
+        vs.getRenderContext().setVertexLabelRenderer(new CustomDefaultVertexLabelRenderer(java.awt.Color.blue));
+        vs.getRenderContext().setVertexShapeTransformer(new VertexShapeTransformer(vs.getRenderContext()));
 
-        bvs.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
-        bvs.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
+        vs.getRenderContext().setEdgeStrokeTransformer(GraphEdge.getEdgeTransformer(mon));
+        vs.getRenderContext().setEdgeDrawPaintTransformer(edgePaintTransformer);
         setNiceEdges(!mon.isOptimization() && mon.getConfig().isEnabled(GUIConfig.NICE_EDGES));
-        bvs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<>());
-        bvs.getRenderContext().setVertexFontTransformer(fontLabelTransformer);
+        vs.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<>());
+        vs.getRenderContext().setVertexFontTransformer(fontLabelTransformer);
 
         //Override the default renderers
-        bvs.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
-        bvs.getRenderer().setEdgeLabelRenderer(new EdgeLabelRenderer<>());
+        vs.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
+        vs.getRenderer().setEdgeLabelRenderer(new EdgeLabelRenderer<>());
     }
 
     /**

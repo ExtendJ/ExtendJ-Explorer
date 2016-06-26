@@ -115,7 +115,8 @@ public class GraphViewController implements Initializable, ControllerInterface {
     }
 
     @Override
-    public void onNewAPI() {}
+    public void onNewAPI() {
+    }
 
     @Override
     public void onApplicationClose(){}

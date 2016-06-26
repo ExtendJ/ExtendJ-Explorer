@@ -37,7 +37,6 @@ public class CustomVisualizationViewer<V, E> extends VisualizationViewer<V, E> {
         if(vd.equals(ld) == false) {
             scaler.scale(this, (float)(vd.getWidth()/ld.getWidth()), new Point2D.Double());
         }
-        //
         setPreferredSize(getSize());
     }
 }

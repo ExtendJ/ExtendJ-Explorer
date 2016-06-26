@@ -103,7 +103,7 @@ public class DrASTGUI extends Application implements DrASTView {
         else {
             mon.clean(drAST);
             mon.setDefaultDirectory(defaultDir);
-            mon.setRerunable(opened);
+            mon.setReRunnable(opened);
 
             long timeStart = System.currentTimeMillis();
             mon.getDrASTAPI().run();

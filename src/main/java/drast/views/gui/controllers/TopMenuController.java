@@ -90,7 +90,7 @@ public class TopMenuController implements Initializable, ControllerInterface {
 
         rerunCompiler.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
         rerunCompiler.setOnAction(e->{
-            if(mon.isRerunable()){
+            if(mon.isReRunnable()){
                 mon.getController().runCompiler(mon.getDrASTUI(), prevJarPath, prevFilterPath, prevArgString.split(" "));
             }
         });

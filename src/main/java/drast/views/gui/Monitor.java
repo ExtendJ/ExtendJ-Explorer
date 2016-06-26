@@ -40,7 +40,7 @@ public class Monitor {
     private Stage stage;
     private String defaultDirectory;
     private GUIConfig config;
-    private boolean rerunable;
+    private boolean reRunnable;
     private boolean optimization;
     private boolean optimizationVarCalculated;
 
@@ -66,7 +66,7 @@ public class Monitor {
         String tmp = new File(".").getAbsolutePath();
         defaultDirectory = tmp.substring(0,tmp.length()-1);
         config = new GUIConfig(defaultDirectory);
-        rerunable = false;
+        reRunnable = false;
         optimizationVarCalculated = false;
         optimization = false;
     }
@@ -207,11 +207,11 @@ public class Monitor {
         return config;
     }
 
-    public boolean isRerunable() {
-        return rerunable;
+    public boolean isReRunnable() {
+        return reRunnable;
     }
 
-    public void setRerunable(boolean rerunable) {
-        this.rerunable = rerunable;
+    public void setReRunnable(boolean reRunnable) {
+        this.reRunnable = reRunnable;
     }
 }

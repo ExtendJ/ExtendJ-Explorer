@@ -37,19 +37,19 @@ public class ReflectionNodeData implements NodeData {
     }
 
     public Collection<TerminalValue> getAttributes(){
-        ArrayList temp = attributes;
+        ArrayList<TerminalValue> temp = attributes;
         attributes = null;
         return temp;
     }
 
     public Collection<TerminalValue> getNTAs(){
-        ArrayList temp = NTAs;
+        ArrayList<TerminalValue> temp = NTAs;
         NTAs = null;
         return temp;
     }
 
     public Collection<TerminalValue> getTokens(){
-        ArrayList temp = tokens;
+        ArrayList<TerminalValue> temp = tokens;
         tokens = null;
         return temp;
     }
@@ -214,14 +214,12 @@ public class ReflectionNodeData implements NodeData {
         return attribute;
     }
 
+
     private void invokeValue(Attribute attribute, ASTBrain api, Method m, Object[] params){
         try {
-            if ((attribute.isParametrized() || attribute.isNTA())) {
-                if(attribute.isNTA() && !attribute.isParametrized())
-                    attribute.setValue(m.invoke(ASTObject));
-            }else if(params != null && params.length == m.getParameterCount())
+            if (attribute.isParametrized() && params != null && params.length == m.getParameterCount())
                 attribute.setValue(m.invoke(ASTObject, params));
-            else if(ASTObject != null)
+            else if(!attribute.isParametrized() && ASTObject != null)
                 attribute.setValue(m.invoke(ASTObject));
         } catch (Throwable e) {
             addInvocationErrors(api, e, m);

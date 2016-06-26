@@ -2,6 +2,7 @@ package drast.model;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Config{
@@ -11,18 +12,19 @@ public class Config{
 	public static final String NTA_COMPUTED = "NTA-computed";
 	public static final String NTA_CACHED = "NTA-cached";
 
-	protected HashMap<String, String> configs;
+	protected LinkedHashMap<String, String> configs;
 	public static final String FILE_NAME = "DrAST.cfg";
 	protected String fullFilePath;
 
+
 	public Config(String filePath){
-	 	configs = new HashMap<>();
+	 	configs = new LinkedHashMap<>();
 		fullFilePath = filePath + FILE_NAME;
 		readConfigFile();
 	}
 
 	public Config(String filePath, String fileName){
-		configs = new HashMap<>();
+		configs = new LinkedHashMap<>();
 		fullFilePath = filePath + fileName;
 		readConfigFile();
 	}
@@ -41,7 +43,17 @@ public class Config{
 	 * @return
 	 */
 	public int getInt(String name){
-		return  configs.get(name) != null ? Integer.parseInt(configs.get(name)) : 0;
+		return configs.get(name) != null ? Integer.parseInt(configs.get(name)) : 0;
+	}
+
+	/**
+	 * Get the int value for the config with the name "name"
+	 * They float, they all float... and when you're down here with me, fat boy, you'll float too.
+	 * @param name
+	 * @return
+	 */
+	public float getFloat(String name){
+		return configs.get(name) != null ? Float.parseFloat(configs.get(name)) : 0f;
 	}
 
 	/**

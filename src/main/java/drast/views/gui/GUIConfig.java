@@ -31,6 +31,20 @@ public class GUIConfig extends Config{
 	public static final String SHOW_EDGES = "showEdges";
 	public static final String NICE_EDGES = "niceEdges";
 
+	public static final String NORMAL_EDGE_WIDTH = "normalEdgeWidth";
+	public static final String REF_EDGE_WIDTH = "refEdgeWidth";
+	public static final String DASHED_EDGE_WIDTH = "dashedEdgeWidth";
+
+	public static final String NORMAL_VERTEX_EDGE_WIDTH = "normalVertexEdgeWidth";
+	public static final String DASHED_VERTEX_EDGE_WIDTH = "dashedVertexEdgeWidth";
+
+	public static final float F_NORMAL_EDGE_WIDTH = 1.0f;
+	public static final float F_REF_EDGE_WIDTH = 2.0f;
+	public static final float F_DASHED_EDGE_WIDTH = 0.2f;
+
+	public static final float F_NORMAL_VERTEX_EDGE_WIDTH = 1.0f;
+	public static final float F_DASHED_VERTEX_EDGE_WIDTH = 0.2f;
+
 	public GUIConfig(String filePath, String fileName){
 		super(filePath, fileName);
 	}
@@ -45,5 +59,12 @@ public class GUIConfig extends Config{
 		writer.println(SHOW_NODES + "=1");
 		writer.println(SHOW_EDGES + "=1");
 		writer.println(NICE_EDGES + "=1");
+
+		writer.println(NORMAL_EDGE_WIDTH + "=" + F_NORMAL_EDGE_WIDTH);
+		writer.println(REF_EDGE_WIDTH + "=" + F_REF_EDGE_WIDTH);
+		writer.println(DASHED_EDGE_WIDTH + "=" + F_DASHED_EDGE_WIDTH);
+
+		writer.println(NORMAL_VERTEX_EDGE_WIDTH + "="+ F_NORMAL_VERTEX_EDGE_WIDTH);
+		writer.println(DASHED_VERTEX_EDGE_WIDTH + "=" + F_DASHED_VERTEX_EDGE_WIDTH);
 	}
 }

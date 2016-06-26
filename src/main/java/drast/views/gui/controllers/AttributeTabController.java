@@ -486,17 +486,18 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 return;
             Attribute at = (Attribute) infoView.getNodeInfo();
             Attribute atd = (Attribute) dialogInfo;
+            String lastKey = atd.getLastComputedKey();
             for(Map.Entry<String, Object> entry : at.getComputedEntrys()){
-                if(entry.getKey().equals(atd.getLastComputedKey())) {
+                if(entry.getKey().equals(lastKey)) {
                     for(TreeItem<TerminalValueTreeItemView> view : treeItem.getChildren()){
-                        if(view.getValue().getName().equals(atd.getLastComputedKey())) {
+                        if(view.getValue().getName().equals(lastKey)) {
                             attributeTableView.getSelectionModel().select(view);
                             return;
                         }
                     }
                 }
             }
-            TerminalValueTreeItemView temp = new TerminalValueTreeItemParameter(atd.getUsedParameters().get(atd.getLastComputedKey()), value, atd);
+            TerminalValueTreeItemView temp = new TerminalValueTreeItemParameter(atd.getUsedParameters().get(lastKey), value, atd);
             TreeItem<TerminalValueTreeItemView> tempTree = new TreeItem<>(temp);
             treeItem.getChildren().add(tempTree);
             attributeTableView.getSelectionModel().select(tempTree);
