@@ -46,44 +46,61 @@ import java.util.*;
 /**
  * This is a controller class that keeps track of the attribute tab. The tab shows information of the clicked node in
  * the tree. There are two VBoxes with stuff that is used depending on what is clicked on:
- *  - clusterInfoView when a cluster is clicked.
- *  - nodeInfoView when a node is clicked.
- *
+ * - clusterInfoView when a cluster is clicked.
+ * - nodeInfoView when a node is clicked.
  */
 public class AttributeTabController implements Initializable, ChangeListener<TreeItem<TerminalValueTreeItemView>>, ControllerInterface {
     private Monitor mon;
     private ContextMenu mouseMenu;
     private TextFormatter formatter;
 
-    @FXML private TreeTableView<TerminalValueTreeItemView> attributeTableView;
-    @FXML private TreeTableColumn<TerminalValueTreeItemView, String> attributeNameCol;
-    @FXML private TreeTableColumn<TerminalValueTreeItemView, Object> attributeValueCol;
+    @FXML
+    private TreeTableView<TerminalValueTreeItemView> attributeTableView;
+    @FXML
+    private TreeTableColumn<TerminalValueTreeItemView, String> attributeNameCol;
+    @FXML
+    private TreeTableColumn<TerminalValueTreeItemView, Object> attributeValueCol;
 
-    @FXML private TableView<TableViewAttributeInfo> attributeInfoTableView;
-    @FXML private TableColumn<TableViewAttributeInfo, String> attributeInfoNameCol;
-    @FXML private TableColumn<TableViewAttributeInfo, Object> attributeInfoValueCol;
+    @FXML
+    private TableView<TableViewAttributeInfo> attributeInfoTableView;
+    @FXML
+    private TableColumn<TableViewAttributeInfo, String> attributeInfoNameCol;
+    @FXML
+    private TableColumn<TableViewAttributeInfo, Object> attributeInfoValueCol;
 
-    @FXML private TableView<ClusterInfo> clusterInfoTableView;
-    @FXML private TableColumn<ClusterInfo, String> clusterInfoNameCol;
-    @FXML private TableColumn<ClusterInfo, Object> clusterInfoCountCol;
+    @FXML
+    private TableView<ClusterInfo> clusterInfoTableView;
+    @FXML
+    private TableColumn<ClusterInfo, String> clusterInfoNameCol;
+    @FXML
+    private TableColumn<ClusterInfo, Object> clusterInfoCountCol;
 
-    @FXML private TextFlow nodeNameLabel;
-    @FXML private Label attributeInfoLabel;
-    @FXML private Label objectInheritanceLabel;
-    @FXML private Label attributeLabel;
+    @FXML
+    private TextFlow nodeNameLabel;
+    @FXML
+    private Label attributeInfoLabel;
+    @FXML
+    private Label objectInheritanceLabel;
+    @FXML
+    private Label attributeLabel;
 
-    @FXML private VBox clickedNodeInfoPane;
-    @FXML private VBox nodeInfoView;
-    @FXML private VBox clusterInfoView;
-    @FXML private Label clusterInfoNumberLabel;
+    @FXML
+    private VBox clickedNodeInfoPane;
+    @FXML
+    private VBox nodeInfoView;
+    @FXML
+    private VBox clusterInfoView;
+    @FXML
+    private Label clusterInfoNumberLabel;
 
-    public void init(Monitor mon){
+    public void init(Monitor mon) {
         this.mon = mon;
         setTextFormater();
     }
 
     /**
      * Will set all the listeners and the start values for the gui components.
+     *
      * @param url
      * @param rb
      */
@@ -99,14 +116,14 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         clusterInfoCountCol.setCellValueFactory(new PropertyValueFactory("count"));
         attributeNameCol.setCellValueFactory(param -> {
             TerminalValueTreeItemView info = param.getValue().getValue();
-            if(info != null) {
+            if (info != null) {
                 return new ReadOnlyStringWrapper(formatter.format(info.getName()));
             }
             return null;
         });
         attributeValueCol.setCellValueFactory(param -> {
             TerminalValueTreeItemView info = param.getValue().getValue();
-            if(info != null)
+            if (info != null)
                 return new ReadOnlyObjectWrapper(formatter.format(info.getValue()));
             return null;
         });
@@ -132,32 +149,34 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
         mouseMenu = new ContextMenu();
         MenuItem cmItem1 = new MenuItem("Compute");
-        cmItem1.setOnAction(e ->  onComputeClicked());
+        cmItem1.setOnAction(e -> onComputeClicked());
         mouseMenu.getItems().add(cmItem1);
         showThisInAttributeTab(nodeInfoView);
     }
 
-    private void setTextFormater(){
-        if(mon.getASTBrain().hasRoot())
+    private void setTextFormater() {
+        if (mon.getASTBrain().hasRoot())
             formatter = new TextFormatter(mon.getASTBrain().getRootClass());
     }
 
     /**
      * Switch to the view child.
+     *
      * @param child
      */
-    private void showThisInAttributeTab(VBox child){
+    private void showThisInAttributeTab(VBox child) {
         clickedNodeInfoPane.getChildren().clear();
         clickedNodeInfoPane.getChildren().add(child);
     }
 
     /**
      * Used when computing and invoking methods in this controller. prints errors, values and warnings to the console.
+     *
      * @param value
      * @return
      */
-    private boolean printToConsole(Object value){
-        if(mon.getASTBrain().containsError(AlertMessage.INVOCATION_ERROR)) {
+    private boolean printToConsole(Object value) {
+        if (mon.getASTBrain().containsError(AlertMessage.INVOCATION_ERROR)) {
             mon.getController().addMessage("Computation unsuccessful");
             return false;
         }
@@ -166,31 +185,34 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     }
 
     @Override
-    public void onApplicationClose(){}
+    public void onApplicationClose() {
+    }
 
     /**
      * Called when a funciton starts from the Controller. A function can be a dialog.
      */
     @Override
-    public void functionStarted(){}
+    public void functionStarted() {
+    }
 
     /**
      * Called when a funciton stops from the Controller. A function can be a dialog.
      */
     @Override
-    public void functionStopped(){}
+    public void functionStopped() {
+    }
 
 
     @Override
     public void nodeSelected(GenericTreeNode node) {
-        if(node == null)
+        if (node == null)
             return;
-        if(node.isNode()) {
+        if (node.isNode()) {
             objectInheritanceLabel.setText("Object inheritance");
             attributeLabel.setText("Attributes");
             showThisInAttributeTab(nodeInfoView);
             setAttributes();
-        }else{
+        } else {
             showThisInAttributeTab(clusterInfoView);
             setClusterInfo();
         }
@@ -210,18 +232,18 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      * Sets the attributes in the tableview, called when a node has been selected.
      * Will Clear the list if the selected node is null or not a "real" node
      */
-    public void setAttributes(){
+    public void setAttributes() {
         GenericTreeNode node = mon.getSelectedNode();
         nodeNameLabel.getChildren().clear();
-        if(node == null || !node.isNode() || node.isNullNode()) {
-            if(attributeTableView.getRoot() != null && attributeTableView.getRoot().getChildren() != null) {
+        if (node == null || !node.isNode() || node.isNullNode()) {
+            if (attributeTableView.getRoot() != null && attributeTableView.getRoot().getChildren() != null) {
                 attributeTableView.getRoot().getChildren().clear();
                 attributeInfoTableView.getItems().clear();
                 objectInheritanceLabel.setText("");
                 attributeLabel.setText("");
             }
             clusterInfoNumberLabel.setText("");
-            if(clusterInfoTableView != null){
+            if (clusterInfoTableView != null) {
                 clusterInfoTableView.getItems().clear();
             }
             return;
@@ -232,11 +254,11 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         Text parent = null;
         String indent = "....";
         int i = 0;
-        while (it.hasNext()){
+        while (it.hasNext()) {
             Class p = it.next();
-            if(i == list.size()-1) {
+            if (i == list.size() - 1) {
                 parent = new Text("   " + p.getTypeName() + "\n");
-            }else {
+            } else {
                 parent = new Text(" " + new String(new char[i]).replace("\0", indent) + p.getTypeName() + "\n");
             }
 
@@ -245,7 +267,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             //indent += "\t";
             nodeNameLabel.getChildren().add(parent);
         }
-        if(parent != null)
+        if (parent != null)
             parent.getStyleClass().add("class-type-text");
 
         setAttributeList((TreeNode) node, true);
@@ -253,19 +275,20 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     /**
      * Sets the attributeTableView, which all the attributes for the given node
+     *
      * @param node
      * @param compute
      */
-    public void setAttributeList(TreeNode node, boolean compute){
+    public void setAttributeList(TreeNode node, boolean compute) {
         Node n = node.getNode();
-        if(compute) {
+        if (compute) {
             mon.getController().setOutStreams();
             mon.getASTBrain().compute(n);
             attributeTableView.getSelectionModel().clearSelection();
             mon.getController().resetOutStreams();
         }
 
-        ((TreeViewSkinRefresher)attributeTableView.getSkin()).refresh(); //Refreshing the css.
+        ((TreeViewSkinRefresher) attributeTableView.getSkin()).refresh(); //Refreshing the css.
 
         TreeItem<TerminalValueTreeItemView> mainParent = new TreeItem<>(null);
         attributeTableView.setRoot(mainParent);
@@ -279,12 +302,13 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     /**
      * Add all NodeInfos from list to the parent with the name label.
+     *
      * @param label
      * @param list
      * @param parent
      */
-    private void addSectionToAttributeList(String label, Collection<TerminalValue> list, TreeItem parent){
-        if(list == null || list.size() == 0)
+    private void addSectionToAttributeList(String label, Collection<TerminalValue> list, TreeItem parent) {
+        if (list == null || list.size() == 0)
             return;
 
         TreeItem<TerminalValueTreeItemView> tokensItem = new TreeItem<>(new TerminalValueTreeItemView(label));
@@ -293,32 +317,32 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         // go through all methods and sort them on kind
         HashMap<String, ArrayList<TerminalValue>> methods = new HashMap<>();
         for (TerminalValue info : list) {
-            if(!methods.containsKey(info.getKind())){
+            if (!methods.containsKey(info.getKind())) {
                 methods.put(info.getKind(), new ArrayList<>());
             }
             methods.get(info.getKind()).add(info);
         }
 
         // Add all methods to the list
-        for(Map.Entry<String, ArrayList<TerminalValue>> entry : methods.entrySet()){
-            if(entry.getValue().size() > 0) {
+        for (Map.Entry<String, ArrayList<TerminalValue>> entry : methods.entrySet()) {
+            if (entry.getValue().size() > 0) {
                 TreeItem<TerminalValueTreeItemView> kindLabel;
-                if(entry.getValue().get(0).getKind() != null) {
+                if (entry.getValue().get(0).getKind() != null) {
                     kindLabel = new TreeItem<>(new TerminalValueTreeItemView(entry.getKey()));
                     kindLabel.setExpanded(true);
                     tokensItem.getChildren().add(kindLabel);
-                }else
+                } else
                     kindLabel = tokensItem;
 
                 for (TerminalValue info : entry.getValue()) {
                     TreeItem<TerminalValueTreeItemView> methodItem = new TreeItem<>(new TerminalValueTreeItem(info));
                     kindLabel.getChildren().add(methodItem);
-                    if(!info.isAttribute() || !info.isParametrized())
+                    if (!info.isAttribute() || !info.isParametrized())
                         continue;
 
                     Attribute attr = (Attribute) info;
                     methodItem.setExpanded(true);
-                    for(Map.Entry<String, Object> computedEntry : attr.getComputedEntrys()){
+                    for (Map.Entry<String, Object> computedEntry : attr.getComputedEntrys()) {
                         Object[] params = attr.getUsedParameters().get(computedEntry.getKey());
                         TreeItem<TerminalValueTreeItemView> computedItem = new TreeItem<>(new TerminalValueTreeItemParameter(params, computedEntry.getValue(), info));
                         methodItem.getChildren().add(computedItem);
@@ -333,6 +357,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      * Listener for the attribute treetableview, sets the attributeInfoTableView for the selected attribute.
      * It will also remove old references, and add new references if the value of selected attribute is a AST node.
      * Also tells the main controller that an attribute was selected.
+     *
      * @param observable
      * @param oldValue
      * @param newValue
@@ -340,30 +365,30 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     @Override
     public void changed(ObservableValue<? extends TreeItem<TerminalValueTreeItemView>> observable, TreeItem<TerminalValueTreeItemView> oldValue, TreeItem<TerminalValueTreeItemView> newValue) {
         mon.clearSelectedParameterNodes();
-        if(oldValue != null && oldValue.getValue() != null)
+        if (oldValue != null && oldValue.getValue() != null)
             mon.getHighlightReferencesNodes().clear();
 
-        if(newValue != null) {
+        if (newValue != null) {
             setNewTerminalInfoValue(newValue.getValue());
-        }else{
+        } else {
             mon.setSelectedInfo(null);
             setAttributeInfo(null, null);
             setReference(null);
         }
     }
 
-    public void setNewTerminalInfoValue(TerminalValueTreeItemView newValue){
+    public void setNewTerminalInfoValue(TerminalValueTreeItemView newValue) {
         TerminalValue info = null;
         Object value = null;
-        if(newValue.getTerminalValue()) {
+        if (newValue.getTerminalValue()) {
             info = newValue.getNodeInfo();
             value = newValue.getValue();
         }
 
-        if(newValue.isParameter()){
-            for(Object param : ((TerminalValueTreeItemParameter) newValue).getParams()){
+        if (newValue.isParameter()) {
+            for (Object param : ((TerminalValueTreeItemParameter) newValue).getParams()) {
                 GenericTreeNode tmp = mon.getASTBrain().getTreeNode(param);
-                if(tmp != null)
+                if (tmp != null)
                     mon.addSelectedParameterNodes(tmp);
             }
 
@@ -377,10 +402,11 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     /**
      * Fill the attributeInfoTableView with information about the attribute
+     *
      * @param info
      */
-    private void setAttributeInfo(TerminalValue info, Object value){
-        if(info == null ) {
+    private void setAttributeInfo(TerminalValue info, Object value) {
+        if (info == null) {
             attributeInfoLabel.setText("");
             attributeInfoTableView.getItems().clear();
             return;
@@ -391,20 +417,21 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     /**
      * Adds references from the selected node in the monitor and the values found in the AttributeInfo supplied.
+     *
      * @param value
      */
-    public void setReference(Object value){
+    public void setReference(Object value) {
         ArrayList<GenericTreeNode> newRefs = null;
-        if(value != null)
+        if (value != null)
             newRefs = getNodeReferencesAndHighlightThem(value);
         mon.getGraphView().setReferenceEdges(newRefs, mon.getSelectedNode());
     }
 
-    public ArrayList<GenericTreeNode> getNodeReferencesAndHighlightThem(Object value){
+    public ArrayList<GenericTreeNode> getNodeReferencesAndHighlightThem(Object value) {
         ArrayList<GenericTreeNode> nodes = new ArrayList<>();
-        for(Object o : mon.getASTBrain().getNodeReferences(value)){
+        for (Object o : mon.getASTBrain().getNodeReferences(value)) {
             GenericTreeNode node = mon.getASTBrain().getTreeNode(o);
-            if(node == null)
+            if (node == null)
                 continue;
             nodes.add(node);
             mon.addHighlightReferencesNodes(node);
@@ -412,7 +439,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         return nodes;
     }
 
-    private ArrayList<TableViewAttributeInfo> toArray(ArrayList<TerminalValueInfo> infoList){
+    private ArrayList<TableViewAttributeInfo> toArray(ArrayList<TerminalValueInfo> infoList) {
         ArrayList<TableViewAttributeInfo> al = new ArrayList<>();
         for (TerminalValueInfo info : infoList)
             al.add(new TableViewAttributeInfo(info.getName(), info.getValue(), info.isFilePointer()));
@@ -422,22 +449,22 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     /**
      * set the information of the cluster table view.
      */
-    private void setClusterInfo(){
-        GenericTreeCluster cluster = (GenericTreeCluster)mon.getSelectedNode();
+    private void setClusterInfo() {
+        GenericTreeCluster cluster = (GenericTreeCluster) mon.getSelectedNode();
         clusterInfoNumberLabel.setText("Cluster. " + cluster.getNodeCount() + " node" + (cluster.getNodeCount() == 1 ? "" : "s"));
 
         ArrayList<ClusterInfo> itemList = new ArrayList<>();
-        for(Map.Entry<String, Integer> type : cluster.getTypeList().entrySet()){
+        for (Map.Entry<String, Integer> type : cluster.getTypeList().entrySet()) {
             itemList.add(new ClusterInfo(type.getKey(), type.getValue()));
         }
-        ObservableList<ClusterInfo> items = FXCollections.observableArrayList (itemList);
+        ObservableList<ClusterInfo> items = FXCollections.observableArrayList(itemList);
         clusterInfoTableView.setItems(items);
     }
 
     /**
      * This method will call the invocation of the method that has been clicked on, after the values have been added
      */
-    private void onComputeClicked(){
+    private void onComputeClicked() {
         mon.getController().setOutStreams();
         onCompute();
         mon.getController().resetOutStreams();
@@ -456,53 +483,53 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             computeNonParameterizedTerminal(node, info, selectedInfo);
     }
 
-    public void computeNonParameterizedTerminal(TreeNode node, TerminalValue info, TerminalValueTreeItemView row){
+    public void computeNonParameterizedTerminal(TreeNode node, TerminalValue info, TerminalValueTreeItemView row) {
         Object obj = mon.getASTBrain().compute(node.getNode(), info);
         if (info.isNTA() && printToConsole(obj)) {
             setAttributeList(node, false);
             mon.getController().updateGUI();
-        }else{
+        } else {
             attributeTableView.refresh();
             setNewTerminalInfoValue(row);
         }
     }
 
-    public void computeParameterizedTerminal(TreeNode node, TerminalValue info){
+    public void computeParameterizedTerminal(TreeNode node, TerminalValue info) {
         AttributeInputDialog dialog = new AttributeInputDialog(info, node, mon);
         dialog.setNodeInfoPos(attributeTableView.getSelectionModel().getSelectedIndex());
         dialog.init();
 
         dialog.setOnCloseRequest(event -> {
             mon.getController().nodeSelected(dialog.getTreeNode(), this);
-            if(!dialog.invokeButtonPressed())
+            if (!dialog.invokeButtonPressed())
                 return;
 
             Object[] result = dialog.getResult();
-            if(result == null ||  mon.getLastRealNode() == null)
+            if (result == null || mon.getLastRealNode() == null)
                 return;
 
             TerminalValue dialogInfo = dialog.getInfo();
             Object value = mon.getASTBrain().compute(dialog.getTreeNode().getNode(), dialog.getInfo(), result);
             printToConsole(value);
-            if(info.isNTA())
+            if (info.isNTA())
                 mon.getController().updateGUI();
 
-            if(!dialogInfo.isAttribute() || !dialogInfo.isParametrized()){
+            if (!dialogInfo.isAttribute() || !dialogInfo.isParametrized()) {
                 attributeTableView.refresh();
                 return;
             }
 
             TreeItem<TerminalValueTreeItemView> treeItem = attributeTableView.getTreeItem(dialog.getNodeInfoPos());
             TerminalValueTreeItemView infoView = treeItem.getValue();
-            if(infoView == null || infoView.getNodeInfo() == null || !infoView.getNodeInfo().isAttribute())
+            if (infoView == null || infoView.getNodeInfo() == null || !infoView.getNodeInfo().isAttribute())
                 return;
             Attribute at = (Attribute) infoView.getNodeInfo();
             Attribute atd = (Attribute) dialogInfo;
             String lastKey = atd.getLastComputedKey();
-            for(Map.Entry<String, Object> entry : at.getComputedEntrys()){
-                if(entry.getKey().equals(lastKey)) {
-                    for(TreeItem<TerminalValueTreeItemView> view : treeItem.getChildren()){
-                        if(view.getValue().getName().equals(lastKey)) {
+            for (Map.Entry<String, Object> entry : at.getComputedEntrys()) {
+                if (entry.getKey().equals(lastKey)) {
+                    for (TreeItem<TerminalValueTreeItemView> view : treeItem.getChildren()) {
+                        if (view.getValue().getName().equals(lastKey)) {
                             attributeTableView.getSelectionModel().select(view);
                             return;
                         }
@@ -526,7 +553,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     /**
      * Class for the cells in the tableviews
      */
-    private class AttributeInfoValueCell extends TableCell<TableViewAttributeInfo, Object>{
+    private class AttributeInfoValueCell extends TableCell<TableViewAttributeInfo, Object> {
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
@@ -537,12 +564,12 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 return;
             }
 
-            TableViewAttributeInfo info = (TableViewAttributeInfo)getTableRow().getItem();
+            TableViewAttributeInfo info = (TableViewAttributeInfo) getTableRow().getItem();
 
             String text = item.toString();
-            if(info.isFilePointer()){
+            if (info.isFilePointer()) {
                 setText(text.substring(text.lastIndexOf('/') + 1) + " (" + text + ")");
-                HBox box= new HBox();
+                HBox box = new HBox();
 
                 ImageView imageview = new ImageView();
                 imageview.setFitHeight(16);
@@ -551,9 +578,9 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 imageview.setCursor(Cursor.HAND);
 
                 String filePath = text.substring(0, text.indexOf(':'));
-                imageview.setOnMouseClicked(e ->{
+                imageview.setOnMouseClicked(e -> {
                     boolean success = DrASTGUI.openFile(new File(filePath));
-                    if(!success){
+                    if (!success) {
                         mon.getController().addError("File \"" + filePath + "\" could not be opened on this system");
                     }
                 });
@@ -562,7 +589,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
                 setGraphic(box);
                 Tooltip.install(imageview, new Tooltip("open \"" + filePath + "\""));
                 setContentDisplay(ContentDisplay.RIGHT);
-            }else{
+            } else {
                 setText(formatter.format(text));
                 setCursor(Cursor.DEFAULT);
             }
@@ -573,7 +600,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     /**
      * Class for the cells in the tableviews
      */
-    private class AttributeValueCell extends TreeTableCell<TerminalValueTreeItemView, Object>{
+    private class AttributeValueCell extends TreeTableCell<TerminalValueTreeItemView, Object> {
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
@@ -588,11 +615,11 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             setStyle("-fx-text-fill:#ffffff;");
 
             TerminalValueTreeItemView view = getTreeTableRow().getItem();
-            if(view.isParameter())
+            if (view.isParameter())
                 return;
 
             TerminalValue info = view.getNodeInfo();
-            if(info == null || item != null)
+            if (info == null || item != null)
                 return;
             if (view.isComputable()) {
                 setText("right click to compute");
@@ -601,25 +628,29 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
             setOnMouseClicked(event -> {
                 if (event.getButton() == MouseButton.SECONDARY) {
-                    if(getTreeTableRow().getItem() != null && (view.isComputable() && !mon.isFunctionRunning()))
+                    if (getTreeTableRow().getItem() != null && (view.isComputable() && !mon.isFunctionRunning()))
                         mouseMenu.show(this, event.getScreenX(), event.getScreenY());
                 }
             });
         }
     }
 
-    public class ClusterInfo{
+    public class ClusterInfo {
         private String typeName;
         private int count;
 
-        public ClusterInfo(String typeName, int count){
+        public ClusterInfo(String typeName, int count) {
             this.typeName = typeName;
             this.count = count;
         }
 
-        public String getTypeName(){return typeName;}
+        public String getTypeName() {
+            return typeName;
+        }
 
-        public int getCount(){return count;}
+        public int getCount() {
+            return count;
+        }
     }
 
     private class TreeViewSkinRefresher<AttributeInfo> extends TreeTableViewSkin {
@@ -628,7 +659,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             super(treeView);
         }
 
-        public void refresh(){
+        public void refresh() {
             super.flow.recreateCells();
         }
     }
@@ -644,13 +675,15 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         private final SimpleObjectProperty value;
         private boolean filePointer;
 
-        public TableViewAttributeInfo(String name, Object value, boolean filePointer){
+        public TableViewAttributeInfo(String name, Object value, boolean filePointer) {
             this.name = new SimpleStringProperty(name);
             this.value = new SimpleObjectProperty(value);
             this.filePointer = filePointer;
         }
 
-        public String getName(){ return name.get(); }
+        public String getName() {
+            return name.get();
+        }
 
         public void setName(String name) {
             this.name.set(name);
@@ -664,7 +697,9 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             this.value.set(value);
         }
 
-        public boolean isFilePointer(){return filePointer;}
+        public boolean isFilePointer() {
+            return filePointer;
+        }
 
     }
 }

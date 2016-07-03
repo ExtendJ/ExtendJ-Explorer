@@ -237,8 +237,8 @@ public class Controller implements Initializable {
         PrintStream printMessage = new PrintStream(new CustomOutputStream(mon.getASTBrain(), AlertMessage.VIEW_MESSAGE));
         standardErr = System.err;
         standardOut = System.out;
-        System.setErr(printError);
-        System.setOut(printMessage);
+        //System.setErr(printError);
+        //System.setOut(printMessage);
     }
 
     public void resetOutStreams(){

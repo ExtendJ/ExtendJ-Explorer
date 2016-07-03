@@ -231,7 +231,7 @@ public class ReflectionNodeData implements NodeData {
     public void addCachedValues(Method m, Attribute attribute){
         if(attribute == null)
             return;
-        Pair<Field, Field> fieldPair = getCacheField(m, ASTObject.getClass());
+        Pair<Field, Field> fieldPair = getCacheFields(m, ASTObject.getClass());
 
         attribute.setEvaluated(isComputed(fieldPair.getSecond()));
         if(!attribute.isEvaluated() && !attribute.isParametrized())
@@ -254,6 +254,7 @@ public class ReflectionNodeData implements NodeData {
 
     @Override
     public void setCachedNTAs(ASTBrain api){
+
         HashMap<Object, Method> values = new HashMap<>();
         try {
             for(Map.Entry<Method, Object> e : findFieldNames().entrySet()){
@@ -283,7 +284,7 @@ public class ReflectionNodeData implements NodeData {
      * @param clazz
      * @return
      */
-    private Pair<Field, Field> getCacheField(Method method, Class clazz){
+    private Pair<Field, Field> getCacheFields(Method method, Class clazz){
         if(cachedMethodFields.get(method) != null) {
             return cachedMethodFields.get(method);
         }
@@ -312,11 +313,11 @@ public class ReflectionNodeData implements NodeData {
         if(methods == null || methods.size() == 0)
             return values;
         for(Method m : methods){
-            Pair<Field, Field> fieldPair = getCacheField(m, ASTObject.getClass());
+            Pair<Field, Field> fieldPair = getCacheFields(m, ASTObject.getClass());
             Field field = fieldPair.getSecond();
-            if (field == null || (!isComputed(field) && m.getParameterCount() == 0))
+            if (!isComputed(field) && m.getParameterCount() == 0)
                 continue;
-            field = getCacheField(m, ASTObject.getClass()).getFirst();
+            field = getCacheFields(m, ASTObject.getClass()).getFirst();
             Object value = getFieldValue(field);
             if(value != null)
                 values.put(m, value);
@@ -328,7 +329,9 @@ public class ReflectionNodeData implements NodeData {
         if (field == null)
             return false;
         Object obj = getFieldValue(field);
-        return obj != null && (obj.getClass() == Boolean.class || obj.getClass() == boolean.class) && ((boolean) obj);
+        if(obj != null && (obj.getClass() == Boolean.class || obj.getClass() == boolean.class))
+            return (boolean) obj;
+        return obj != null;
     }
 
     private Object getFieldValue(Field field){

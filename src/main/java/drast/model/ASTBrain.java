@@ -334,8 +334,7 @@ public class ASTBrain extends Observable{
     private boolean applyFilter(boolean res){
         if(res) {
             clearDisplayedReferences();
-            for (Object n : ASTNTAObjects)
-                treeNodes.put(n, null);
+            treeNodes.clear();
             filteredTree = null;
             createFilteredTree(this.tree, false);
         }
