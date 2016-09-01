@@ -31,6 +31,7 @@ public class ReflectionNode implements Node {
 
     private static HashMap<Class, ArrayList<Method>> cachedNTAMethods;
     private static HashMap<Class, ArrayList<AbstractMap.SimpleEntry<Method, Annotation>>> cachedMethods;
+    private static HashMap<String, HashSet<Class>> classParents;
 
     /**
      * This is THE method for creating the Reflected tree from the root, only use this
@@ -51,7 +52,6 @@ public class ReflectionNode implements Node {
         init(root, null, isList, false, false, astBrain);
     }
 
-
     /**
      * This is THE method used to create NTA´s and their subtrees
      * Will traverse the children of the given root, and create its subtree
@@ -60,20 +60,26 @@ public class ReflectionNode implements Node {
      */
 
     public Node getNTATree(Object root, Node parent, ASTBrain astBrain){
-        return new ReflectionNode(root, parent, ASTAnnotation.isList(root.getClass()), true, astBrain);
+        if(ReflectionNode.isChildClass(root, ASTAnnotation.AST_SUPER_CLASS, true))
+            return new ReflectionNode(root, parent, ASTAnnotation.isList(root.getClass()), true, astBrain);
+        return null;
     }
 
     public static void createNTATree(Node node, Object root, ASTBrain astBrain){
         if (node.getNTAChildren().containsKey(root) || astBrain.isASTObject(root))
             return;
         Node temp = node.getNTATree(root, node, astBrain);
-        node.getNTAChildren().put(root, temp);
+        if(temp != null)
+            node.getNTAChildren().put(root, temp);
     }
 
     public Node getNTATree(String s, ASTBrain astBrain){
         Node ntaNode = showNTAChildren.get(s);
         if (ntaNode == null) {
-            ntaNode = getNTATree(getNodeData().computeMethod(s), this, astBrain);
+            Object obj = getNodeData().computeMethod(s);
+            ntaNode = getNTATree(obj, this, astBrain);
+            if(ntaNode == null)
+                return null;
             showNTAChildren.put(s, ntaNode);
             astBrain.addASTObject(ntaNode.getASTObject(), true);
         }
@@ -122,6 +128,9 @@ public class ReflectionNode implements Node {
             cachedMethods = new HashMap<>();
         if(cachedNTAMethods == null)
             cachedNTAMethods = new HashMap<>();
+        if(classParents == null)
+            classParents = new HashMap<>();
+
 
         if(root != null)
             this.simpleNameClass = root.getClass().getSimpleName();
@@ -161,7 +170,7 @@ public class ReflectionNode implements Node {
 
     private void handleOptNode(Object root, ASTBrain astBrain){
         try {
-            Method m = root.getClass().getMethod("astChildren");
+            Method m = root.getClass().getMethod(ASTAnnotation.AST_ORDER_METHOD);
             if(m == null)
                 return;
             Object obj = m.invoke(root);
@@ -262,14 +271,26 @@ public class ReflectionNode implements Node {
     }
 
     @Override
-    public boolean isChildClassOf(Class parent){
+    public boolean isChildClassOf(Class parent){ return isChildClass(ASTObject, parent.getName(), false); }
+
+    private static boolean isChildClass(Object ASTObject, String name, boolean simple){
+        if(ASTObject == null || name  == null)
+            return false;
         Class clazz = ASTObject.getClass();
+        if(!classParents.containsKey(name))
+            classParents.put(name, new HashSet<>());
+        HashSet<Class> children = classParents.get(name);
+        if(children.contains(clazz))
+            return true;
         while(clazz != null){
-            if(clazz.getName().equals(parent.getName()))
+            String n = simple ? clazz.getSimpleName() : clazz.getName();
+            if(n.equals(name)) {
+                children.add(ASTObject.getClass());
                 return true;
+            }
+            clazz = clazz.getSuperclass();
         }
         return false;
-
     }
 
     @Override

@@ -259,7 +259,9 @@ public class ASTBrain extends Observable{
             for (String s : displayedAttributes) {
                 if (!node.containsNTAMethod(s))
                     continue;
-                Node ntaNode = node.getNTATree(s, this);
+                Node ntaNode = node.getNTATree(s, node, this);
+                if(ntaNode == null)
+                    continue;
                 createFilteredTree(ntaNode, parent, collapse, true, depth - 1, futureReferences);
             }
         }
@@ -411,6 +413,9 @@ public class ASTBrain extends Observable{
             return obj;
 
         Node astNode = node.getNTATree(obj, node, this);
+        if(astNode == null)
+            return obj;
+
         if(!computedNTAs.containsKey(node))
             computedNTAs.put(node, new HashSet<>());
         computedNTAs.get(node).add(astNode);

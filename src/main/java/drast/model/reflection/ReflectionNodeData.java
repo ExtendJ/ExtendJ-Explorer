@@ -84,7 +84,7 @@ public class ReflectionNodeData implements NodeData {
 
         if(!terminalValue.isAttribute()){
             api.putMessage(AlertMessage.INVOCATION_ERROR, "Can only do compute on attributes");
-            return  null;
+            return null;
         }
 
         Attribute attribute = (Attribute) terminalValue;

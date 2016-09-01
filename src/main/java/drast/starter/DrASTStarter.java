@@ -46,25 +46,31 @@ public class DrASTStarter extends Observable {
         init(jarPath, filterPath, args);
     }
 
-    private void init(String jarPath, String filterPath, String[] args){
+    private void init(String jarPath, String filterPath, String[] args) {
         this.jarPath = jarPath;
         this.args = args;
         this.filterPath = filterPath;
     }
 
-    public void setRootExecution(boolean setRoot){ this.setRoot = setRoot; }
+    public void setRootExecution(boolean setRoot) {
+        this.setRoot = setRoot;
+    }
 
-    public void setRoot(){ task.setRoot(root, filterPath, defaultDir, true);}
+    public void setRoot() {
+        task.setRoot(root, filterPath, defaultDir, true);
+    }
 
-    private void print(int type, String message){
+    private void print(int type, String message) {
         setChanged();
         notifyObservers(new AlertMessage(type, message));
     }
 
-    public Object getRoot(){return root; }
+    public Object getRoot() {
+        return root;
+    }
 
-    public boolean run(){
-        try{
+    public boolean run() {
+        try {
             URL url = new URL("file:" + jarPath);
             ArrayList<URL> urlList = new ArrayList<>();
             urlList.add(url);
@@ -73,7 +79,7 @@ public class DrASTStarter extends Observable {
             // Find and instantiate the main java file in the jar.
             File file = new File(jarPath);
             defaultDir = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf(file.separator)) + file.separator;
-            JarFile j =  new JarFile(file);
+            JarFile j = new JarFile(file);
             String mainClassName = j.getManifest().getMainAttributes().getValue("Main-Class");
             Class cl = Class.forName(mainClassName, true, urlClassLoader);
 
@@ -85,16 +91,16 @@ public class DrASTStarter extends Observable {
                 mainMethod.invoke(null, new Object[]{args});
                 SystemExitControl.enableSystemExitCall();
                 return fetchRootAndStartView(cl, defaultDir, time);
-            }catch (NoSuchMethodException e) {
-                print(AlertMessage.SETUP_FAILURE ,"Could not find the compiler's main method");
+            } catch (NoSuchMethodException e) {
+                print(AlertMessage.SETUP_FAILURE, "Could not find the compiler's main method");
                 //e.printStackTrace();
-            }catch (IllegalAccessException e) {
+            } catch (IllegalAccessException e) {
                 e.printStackTrace();
-            }catch (InvocationTargetException e) {
-                if(e.getTargetException().getClass() != SystemExitControl.ExitTrappedException.class) {
+            } catch (InvocationTargetException e) {
+                if (e.getTargetException().getClass() != SystemExitControl.ExitTrappedException.class) {
                     e.printStackTrace();
                     print(AlertMessage.SETUP_FAILURE, "compiler error : " + (e.getMessage() != null ? e.getMessage() : e.getCause()));
-                }else {
+                } else {
                     fetchRootAndStartView(cl, defaultDir, time);
                 }
             }
@@ -104,38 +110,38 @@ public class DrASTStarter extends Observable {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        }catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             print(AlertMessage.SETUP_FAILURE, "Could not find jar file, check path");
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (Throwable e ){
+        } catch (Throwable e) {
             e.printStackTrace();
-        }finally {
+        } finally {
 
         }
         SystemExitControl.enableSystemExitCall();
         return false;
     }
 
-    private boolean fetchRootAndStartView(Class<?> cl, String defaultDir, long time){
+    private boolean fetchRootAndStartView(Class<?> cl, String defaultDir, long time) {
         boolean success = false;
         try {
             Field rootField = cl.getField("DrAST_root_node");
             rootField.setAccessible(true);
             root = rootField.get(cl);
-            print(AlertMessage.VIEW_MESSAGE , "Compiler finished after : " + (System.currentTimeMillis() - time) + " ms");
+            print(AlertMessage.VIEW_MESSAGE, "Compiler finished after : " + (System.currentTimeMillis() - time) + " ms");
 
             success = true;
         } catch (NoSuchFieldException e) {
             print(AlertMessage.SETUP_FAILURE, "Could not find field : DrAST_root_node in the main class. \n" +
-                    "Make sure this is implemented correctly check the README file for instructions");
+                    "Make sure this is implemented correctly, check the README file for instructions");
             //e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
 
-        if(success){
+        if (success) {
             // If we got the root without crashing sent the root a task.(success)
             if (task == null && taskName != null) {
                 switch (taskName) {
@@ -147,7 +153,7 @@ public class DrASTStarter extends Observable {
                         break;
                 }
             }
-            if(setRoot && task != null)
+            if (setRoot && task != null)
                 task.setRoot(root, filterPath, defaultDir, true);
         }
 

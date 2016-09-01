@@ -74,6 +74,8 @@ public class Controller implements Initializable {
     @FXML private Label compilerLabel;
     @FXML private Label nodeCountLabel;
 
+    private static final boolean debugging = false;
+
     private PrintStream standardErr;
     private PrintStream standardOut;
 
@@ -233,12 +235,14 @@ public class Controller implements Initializable {
     }
 
     public void setOutStreams(){
+        if(debugging)
+            return;
         PrintStream printError = new PrintStream(new CustomOutputStream(mon.getASTBrain(), AlertMessage.VIEW_ERROR));
         PrintStream printMessage = new PrintStream(new CustomOutputStream(mon.getASTBrain(), AlertMessage.VIEW_MESSAGE));
         standardErr = System.err;
         standardOut = System.out;
-        //System.setErr(printError);
-        //System.setOut(printMessage);
+        System.setErr(printError);
+        System.setOut(printMessage);
     }
 
     public void resetOutStreams(){

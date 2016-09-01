@@ -32,7 +32,6 @@ public class TextFormatter {
 
 
     private String asString(Object obj) {
-        System.out.println(obj.getClass());
         if(obj.getClass().isPrimitive() || WRAPPER_TYPES.contains(obj.getClass()))
             return String.valueOf(obj);
         return String.format("%s@%s", obj.getClass().getName(), Integer.toHexString(System.identityHashCode(obj)));

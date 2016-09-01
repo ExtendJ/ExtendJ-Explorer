@@ -191,7 +191,6 @@ public class DrASTGUI extends Application implements DrASTView {
                 return true;
             } else if (OSDetector.isLinux()){
                 Runtime.getRuntime().exec(new String[]{"xdg-open",file.getAbsolutePath()});
-                System.out.println(file.getAbsolutePath());
             } else if(OSDetector.isMac()) {
                 Runtime.getRuntime().exec(new String[]{"open", file.getAbsolutePath()});
                 return true;

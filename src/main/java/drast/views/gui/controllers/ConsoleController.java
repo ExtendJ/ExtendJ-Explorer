@@ -26,7 +26,6 @@ public class ConsoleController implements Initializable, ControllerInterface, Ob
     private Monitor mon;
     private ArrayList<AlertMessage> messages;
 
-
     // Console stuff
     @FXML private TextFlow consoleTextFlow;
     @FXML private ScrollPane consoleScrollPane;

@@ -83,7 +83,6 @@ public class AttributeInputDialog extends DrDialog {
         params = new Object[m.getParameterCount()];
         for(int i=0; i< m.getParameterCount();i++)
             params[i] = null;
-
     }
 
     /**

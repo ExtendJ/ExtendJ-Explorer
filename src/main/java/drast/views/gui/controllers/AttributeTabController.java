@@ -643,7 +643,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
             this.typeName = typeName;
             this.count = count;
         }
-
         public String getTypeName() {
             return typeName;
         }
