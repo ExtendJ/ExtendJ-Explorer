@@ -29,11 +29,8 @@ public class OutoutXMLcomparer {
 
     private void checkOutput(GenericTreeNode root, Tree expectedRoot, String inDirectory, int level) {
         level++;
-       // System.out.println("==================" + nodeName(root) );
-       // System.out.println("==================" + expectedRoot.getName());
         assertEquals("Output is not the same", nodeName(root), expectedRoot.getName());
         for(GenericTreeNode child : root.getChildren()){
-            //System.out.println(nodeName(child));
             boolean s = expectedRoot.containsChild(nodeName(child));
             assertEquals("Test Failed: " + inDirectory + ". Extra child: " + nodeName(child) + " in parent: " + root.toString(),
                     s,
@@ -58,7 +55,7 @@ public class OutoutXMLcomparer {
         dbf.setNamespaceAware(true);
         dbf.setIgnoringElementContentWhitespace(true);
 
-        Document doc = null;
+        Document doc;
         try {
             DocumentBuilder builder = dbf.newDocumentBuilder();
             InputSource is = new InputSource(expected);
@@ -83,9 +80,7 @@ public class OutoutXMLcomparer {
     }
 
     private void readXML(Node node, Tree parent){
-
         Tree treeNode = new Tree(node.getNodeName());
-        //System.out.println(node.getNodeName() + " " + treeNode);
         parent.addChild(treeNode);
         NodeList list = node.getChildNodes();
         for (int i = 0; i < list.getLength(); i++){
@@ -110,9 +105,7 @@ public class OutoutXMLcomparer {
         public ArrayList<Tree> getChildren(){return children;}
         public void addChild(Tree child){children.add(child);}
         public boolean containsChild(String childName){
-            //System.out.println("---- " + name + " ----------- " +  childName + " " + checkedCount);
             for(Tree child : children){
-                //System.out.println("Child: " + child.getName() + ": " + child.isChecked() + " " + child);
                 if(!child.isChecked() && child.getName().equals(childName)){
                     child.setChecked();
                     checkedCount++;

@@ -13,12 +13,16 @@ import java.util.Set;
 public class TextFormatter {
     private String rules;
 
-    public TextFormatter(Class rootClass){
+    public TextFormatter(){
         rules = "(java.lang.)";
         rules += "|(java.util.)";
         rules += "|(java.io.)";
         rules += "|(java.net.)";
         rules += "|(java.math.)";
+    }
+
+    public TextFormatter(Class rootClass){
+        this();
         rules += "|(" +rootClass.getPackage().getName() + ".)";
     }
 

@@ -217,7 +217,8 @@ public class ReflectionNode implements Node {
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
-        reOrderChildren();
+        if(!isNullNode())
+            reOrderChildren();
         astBrain.getAnalyzer().executeDuringRTAnalyzers(this);
     }
 
@@ -256,6 +257,8 @@ public class ReflectionNode implements Node {
             for(int i = 0; i < children.size(); i++){
                 Node temp = children.get(i);
                 int newPos = (int) orderMethod.invoke(getASTObject(), temp.getASTObject());
+                if(newPos >= children.size() || newPos < 0)
+                    continue;
                 children.set(i, children.get(newPos));
                 children.set(newPos, temp);
             }

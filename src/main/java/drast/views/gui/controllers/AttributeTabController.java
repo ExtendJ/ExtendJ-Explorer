@@ -95,7 +95,6 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
 
     public void init(Monitor mon) {
         this.mon = mon;
-        setTextFormater();
     }
 
     /**
@@ -106,6 +105,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        setTextFormater();
         // node information views
         attributeTableView.getSelectionModel().selectedItemProperty().addListener(this);
         attributeInfoNameCol.setCellValueFactory(new PropertyValueFactory("name"));
@@ -155,8 +155,10 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
     }
 
     private void setTextFormater() {
-        if (mon.getASTBrain().hasRoot())
+        if (mon != null && mon.getASTBrain().hasRoot())
             formatter = new TextFormatter(mon.getASTBrain().getRootClass());
+        else
+            formatter = new TextFormatter();
     }
 
     /**
@@ -545,6 +547,7 @@ public class AttributeTabController implements Initializable, ChangeListener<Tre
         dialog.show();
     }
 
+    @Override
     public void onNewAPI() {
         setTextFormater();
         setAttributes();

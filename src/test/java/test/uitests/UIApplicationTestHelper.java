@@ -14,7 +14,7 @@ public abstract class UIApplicationTestHelper extends ApplicationTest {
     private static final NodeFinder nodeFinder = serviceContext().getNodeFinder();
     public static <T extends Node> T find(String query) {
         try {
-            return nodeFinder.lookup(query).queryFirst();
+            return nodeFinder.lookup(query).query();
         }
         catch (NodeFinderException exception) {
             throw exception;

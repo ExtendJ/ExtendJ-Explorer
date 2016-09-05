@@ -24,6 +24,7 @@ public class ReflectionNodeData implements NodeData {
     private Object ASTObject; //The node the content is a part of
     private HashMap<Method, Pair<Field, Field>> cachedMethodFields;
 
+    private static TerminalComparator comparator;
     /**
      * Constructor for the NodeData, which will init the HashSet/HashMap
      * @param node
@@ -34,22 +35,34 @@ public class ReflectionNodeData implements NodeData {
         invokedValues = new HashMap<>();
         if(cachedMethodFields == null)
             cachedMethodFields = new HashMap<>();
+        if(comparator == null)
+            comparator = new TerminalComparator();
+    }
+
+    public class TerminalComparator implements Comparator<TerminalValue> {
+        @Override
+        public int compare(TerminalValue link1, TerminalValue link2) {
+            return link1.getName().compareTo(link2.getName());
+        }
     }
 
     public Collection<TerminalValue> getAttributes(){
         ArrayList<TerminalValue> temp = attributes;
+        attributes.sort(comparator);
         attributes = null;
         return temp;
     }
 
     public Collection<TerminalValue> getNTAs(){
         ArrayList<TerminalValue> temp = NTAs;
+        NTAs.sort(comparator);
         NTAs = null;
         return temp;
     }
 
     public Collection<TerminalValue> getTokens(){
         ArrayList<TerminalValue> temp = tokens;
+        tokens.sort(comparator);
         tokens = null;
         return temp;
     }
