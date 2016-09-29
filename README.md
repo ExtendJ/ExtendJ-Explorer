@@ -16,7 +16,7 @@ This readme has the following content
 
 
 # Getting started #
-### Important 1: This tool is based on Java 8. If you have an older version installed the tool will not work. ###
+### Important 1: This tool is based on Java 8. If you have an older version installed the tool will not work. There has also been problems running it on some versions of OpenJDK. Please use Oracle Java if you experience problems. ###
 ### Important 2: This tool requires at least JastAdd version 2.2.2. ###
 ### Important 3: If your only interested in using the tool, get the latest stable jar file from the Downloads section on Bitbucket. ###
 ## Get the project on you machine ##
