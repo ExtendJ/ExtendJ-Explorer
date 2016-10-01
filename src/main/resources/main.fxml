@@ -45,9 +45,7 @@
 
                         <HBox styleClass="graphInfo">
                             <Label styleClass="our_label" text="Node Count: " />
-                            <Label fx:id="nodeCountLabel" text="N/A" />
-                            <Label styleClass="our_label" text="| Compiler: " />
-                            <Label fx:id="compilerLabel" text="N/A" />
+                            <Label fx:id="nodeCountLabel" text="NA" />
                         </HBox>
                     </VBox>
                     <VBox fx:id="consoleWindow">
@@ -99,7 +97,11 @@
                      <content>
                         <VBox minHeight="200.0">
                            <children>
-                               <Button fx:id="loadFile" mnemonicParsing="false" styleClass="our_button" text="Load File" />
+                               <HBox>
+                                   <Button fx:id="rebuildAst" mnemonicParsing="false" styleClass="our_button" text="Rebuild AST" />
+                                   <Button fx:id="saveFile" mnemonicParsing="false" styleClass="our_button" text="Save File" />
+                                   <Button fx:id="loadFile" mnemonicParsing="false" styleClass="our_button" text="Load File" />
+                               </HBox>
                               <VBox fx:id="inputFileContainer" />
                            </children>
                         </VBox>

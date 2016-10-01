@@ -6,7 +6,6 @@ import drast.export.XMLExport;
 import drast.model.DrASTSettings;
 import drast.model.filteredtree.GenericTreeNode;
 import drast.views.gui.GUIData;
-import drast.views.gui.dialogs.OpenASTDialog;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckMenuItem;
@@ -67,10 +66,7 @@ public class TopMenuController implements Initializable, ControllerInterface {
     exitMenuItem.setOnAction(event -> mon.getController().exitProgram());
 
     openMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
-    openMenuItem.setOnAction(event -> {
-      OpenASTDialog dialog = new OpenASTDialog(mon);
-      dialog.show();
-    });
+    openMenuItem.setOnAction(event -> mon.getController().loadFile());
 
     toggleMinimizeMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F));
     toggleMinimizeMenuItem.setOnAction(e -> mon.getController().toggleMinimizeWindows());

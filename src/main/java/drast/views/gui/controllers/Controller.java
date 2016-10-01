@@ -32,6 +32,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,8 @@ public class Controller implements Initializable {
   @FXML private Button saveFilter;
   @FXML private Button loadFilter;
 
+  @FXML private Button rebuildAst;
+  @FXML private Button saveFile;
   @FXML private Button loadFile;
   @FXML private VBox inputFileContainer;
 
@@ -161,7 +164,7 @@ public class Controller implements Initializable {
       if (file != null) {
         try {
           if (!file.exists()) {
-            // If the file does not exist yet, ensure it has the ".fcl" extension.
+            // If the file does not exist yet, ensure it has the filter file extension.
             if (!file.getName().endsWith(DrAST.FILTER_EXTENSION)) {
               file = new File(file.getPath() + DrAST.FILTER_EXTENSION);
             }
@@ -195,29 +198,41 @@ public class Controller implements Initializable {
       }
     });
 
-    loadFile.setOnAction(event -> {
+    loadFile.setOnAction(event -> loadFile());
+
+    rebuildAst.setOnAction(event -> parseSourceCode());
+
+    saveFile.setOnAction(event -> {
+      String path = DrASTSettings.get(DrASTSettings.PREV_FIRST_ARG, "");
+      File prev = new File(path);
       FileChooser fileChooser = new FileChooser();
-      fileChooser.setTitle("Open Input File");
-      File prevFile = new File(DrASTSettings.get(DrASTSettings.PREV_FIRST_ARG, ""));
-      if (prevFile.isFile() && prevFile.getParentFile() != null
-          && prevFile.getParentFile().isDirectory()) {
-        fileChooser.setInitialDirectory(prevFile.getParentFile());
+      fileChooser.setTitle("Save File As...");
+      if (prev.isFile() && prev.getParentFile().isDirectory()) {
+        fileChooser.setInitialDirectory(prev.getParentFile());
+      } else {
+        fileChooser.setInitialDirectory(mon.getDefaultSettingsDirectory());
       }
-      File file = fileChooser.showOpenDialog(loadFile.getScene().getWindow());
-      if (file != null && file.isFile()) {
-        String[] tailArgs = DrASTSettings.get(DrASTSettings.PREV_TAIL_ARGS, "").split("\\s\\+", 0);
-        List<String> args = new ArrayList<>(tailArgs.length + 1);
-        args.add(file.getAbsolutePath());
-        for (String arg : tailArgs) {
-          if (!arg.isEmpty()) {
-            args.add(arg);
+      fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Java Files", "*.java"));
+      File file = fileChooser.showSaveDialog(saveFile.getScene().getWindow());
+      if (file != null) {
+        try {
+          if (!file.exists()) {
+            // If the file does not exist yet, ensure it has the ".java" extension.
+            if (!file.getName().endsWith(".java")) {
+              file = new File(file.getPath() + ".java");
+            }
           }
+          try (PrintWriter writer = new PrintWriter(file, "UTF-8")) {
+            writer.print(sourceEditor.getText());
+            Log.info("Saved file: %s", file.getAbsolutePath());
+          }
+          DrASTSettings.put(DrASTSettings.PREV_FIRST_ARG, file.getAbsolutePath());
+        } catch (IOException e) {
+          throw new Error(e);
         }
-        String[] allArgs = new String[args.size()];
-        args.toArray(allArgs);
-        runCompiler(mon.getDrASTUI(), DrASTSettings.get(DrASTSettings.PREV_JAR, ""), allArgs);
       }
     });
+
     updateAstInfoLabels();
   }
 
@@ -281,7 +296,6 @@ public class Controller implements Initializable {
     nodeCountLabel.setText(String.format("%s/%s",
         mon.getTreeTraverser().getClusteredASTSize(),
         mon.getTreeTraverser().getASTSize()));
-    compilerLabel.setText(DrASTSettings.get(DrASTSettings.PREV_JAR, "N/A"));
   }
 
   public void toggleMinimizeWindows() {
@@ -423,42 +437,23 @@ public class Controller implements Initializable {
         .forEach(controller -> controller.nodeSelected(node));
   }
 
-  public void runCompiler(DrASTGUI view, String jarFile, String[] args) {
-    String firstArg = args[0];
-    sourceEditor.loadFile(new File(firstArg));
+  private void runCompiler(DrASTGUI view, String text) {
     LoadingDialog loadingDialog = new LoadingDialog(mon);
 
     Task<Boolean> task = new Task<Boolean>() {
       @Override public Boolean call() {
         try {
           setOutStreams();
-          return ASTProvider.parseAst(jarFile, args, view::setRoot);
+          return ASTProvider.parseAst(text, view::setRoot);
         } finally {
           resetOutStreams();
         }
       }
     };
-    task.setOnRunning(e -> loadingDialog.show());
-    task.setOnSucceeded(e -> {
-      loadingDialog.hide();
-      if (task.getValue()) {
-        // The compiler run succeeded: save the compiler settings.
-        String[] tailArgs = new String[args.length > 1 ? args.length - 1 : 0];
-        if (args.length > 1) {
-          System.arraycopy(args, 1, tailArgs, 0, args.length - 1);
-        }
-
-        DrASTSettings.put(DrASTSettings.PREV_JAR, jarFile);
-        DrASTSettings.put(DrASTSettings.PREV_FIRST_ARG, args[0]);
-        DrASTSettings.put(DrASTSettings.PREV_TAIL_ARGS, String.join(" ", tailArgs));
-        DrASTSettings.put(DrASTSettings.PREV_ARGS, String.join(" ", args));
-      } else {
-        // Compiler failed - restore the old source file view.
-        sourceEditor.loadFile(new File(DrASTSettings.get(DrASTSettings.PREV_FIRST_ARG, "")));
-      }
-    });
-    task.setOnFailed(e -> loadingDialog.hide());
-    task.setOnCancelled(e -> loadingDialog.hide());
+    task.setOnRunning((e) -> loadingDialog.show());
+    task.setOnSucceeded((e) -> loadingDialog.hide());
+    task.setOnFailed((e) -> loadingDialog.hide());
+    task.setOnCancelled((e) -> loadingDialog.hide());
     new Thread(task).start();
   }
 
@@ -506,6 +501,22 @@ public class Controller implements Initializable {
     return graphViewTabController;
   }
 
+  public boolean loadSourceFile(String path) {
+    return loadSourceFile(new File(path));
+  }
+
+  private boolean loadSourceFile(File file) {
+    if (file.isFile() && sourceEditor.loadFile(file)) {
+      parseSourceCode();
+      return true;
+    }
+    return false;
+  }
+
+  public void parseSourceCode() {
+    mon.getController().runCompiler(mon.getDrASTUI(), sourceEditor.getText());
+  }
+
   public void loadPreviousFilter() {
     File previousFilter = DrASTSettings.getFilterFile();
     loadFilter(previousFilter);
@@ -528,5 +539,22 @@ public class Controller implements Initializable {
       return true;
     }
     return false;
+  }
+
+  public void loadFile() {
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Select Java Source File");
+    File current = new File(DrASTSettings.get(DrASTSettings.PREV_FIRST_ARG, ""));
+    if (current.isFile() && current.getParentFile() != null) {
+      fileChooser.setInitialDirectory(current.getParentFile());
+    } else {
+      fileChooser.setInitialDirectory(mon.getDefaultSettingsDirectory());
+    }
+    File file = fileChooser.showOpenDialog(loadFile.getScene().getWindow());
+    if (file != null) {
+      if (loadSourceFile(file)) {
+        DrASTSettings.put(DrASTSettings.PREV_FIRST_ARG, file.getAbsolutePath());
+      }
+    }
   }
 }

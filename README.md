@@ -1,7 +1,8 @@
-# DrAST - Interactive JastAdd AST Viewer
+# ExtendJ Explorer
 
-[![Build Status](https://travis-ci.org/llbit/DrAST.svg?branch=master)](https://travis-ci.org/llbit/DrAST)
-[![Test Coverage](https://codecov.io/gh/llbit/DrAST/branch/master/graph/badge.svg)](https://codecov.io/gh/llbit/DrAST)
+This is a fork of the interactive JastAdd AST Visualizer calld DrAST.
+
+Below is the README from DrAST.
 
 This file has the following content:
 

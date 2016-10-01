@@ -68,7 +68,7 @@ public class JavaSourceEditor extends CodeArea {
           "static", "final", "volatile",
           "switch", "case", "default",
           "void", "int", "byte", "char", "short", "long", "double", "float",
-          "package", "class", "interface", "enum", "@interface", "extends", "implements",
+          "package", "import", "class", "interface", "enum", "@interface", "extends", "implements",
           "new", "super", "this", "if", "while", "do", "return", "break", "continue",
           "for", "try", "catch", "throw", "throws" };
 
@@ -116,6 +116,7 @@ public class JavaSourceEditor extends CodeArea {
       } else if (event.isControlDown() && event.getCode() == KeyCode.V) {
         pastePerformed(event);
       } else if (event.isControlDown() && event.getCode() == KeyCode.S) {
+        con.parseSourceCode();
       }
     });
 
@@ -138,6 +139,7 @@ public class JavaSourceEditor extends CodeArea {
 
       }
     });
+    setText("public class Main {\n}");
   }
 
   /**

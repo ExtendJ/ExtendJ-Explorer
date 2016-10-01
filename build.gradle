@@ -16,6 +16,10 @@ if (matcher?.matches() && (!matcher?.group(5) || Integer.parseInt(matcher?.group
 	throw new GradleException('Must Build with Java 8 update 40 or later')
 }
 
+if (!file('extendj/jastadd_modules').exists()) {
+	throw new GradleException('ExtendJ seems to be missing. Please run "git submodule init", then "git submodule update".')
+}
+
 repositories {
 	mavenCentral()
 }
@@ -32,6 +36,7 @@ apply plugin: 'jastadd'
 apply plugin: 'jacoco'
 
 project.version = '1.2.0'
+
 mainClassName = 'drast.views.gui.DrASTGUI'
 
 defaultTasks 'jar'
@@ -39,7 +44,7 @@ defaultTasks 'jar'
 sourceSets {
 	main {
 		java {
-			srcDirs = ['src/main/java', 'src/gen']
+			srcDirs = ['src/main/java', 'src/gen', 'extendj/java8/src', 'extendj/src/frontend']
 		}
 		resources {
 			srcDir 'src/main/resources'
@@ -54,9 +59,11 @@ dependencies {
 	compile 'net.sf.jung:jung-api:2.0.1'
 	compile 'net.sf.jung:jung-visualization:2.0.1'
 	compile 'net.sf.jung:jung-algorithms:2.0.1'
-	compile 'net.sf.beaver:beaver-rt:0.9.11'
 	compile 'com.google.code.findbugs:jsr305:3.0.1'
 	compile 'org.apache.commons:commons-lang3:3.5'
+
+	// Note: the Beaver dependency has been removed because it
+	// conflicts with ExtendJ's modified beaver.Symbol class.
 
 	testCompile 'junit:junit:4.11'
 	testCompile 'org.testfx:testfx-core:4.0.+'
@@ -66,6 +73,18 @@ dependencies {
 	jflexConf 'de.jflex:jflex:1.6.1'
 	beaverConf 'net.sf.beaver:beaver-cc:0.9.11'
 	jastaddparserConf 'org.jastadd:jastaddparser:1.0.3'
+}
+
+jastadd {
+	configureModuleBuild()
+	modules 'extendj/jastadd_modules'
+	module = 'java8 frontend'
+
+	astPackage = 'org.extendj.ast'
+	genDir = 'src/gen'
+	parser.name = 'JavaParser'
+	parser.genDir = project.file('src/gen/org/extendj/parser')
+	scanner.genDir = project.file('src/gen/org/extendj/scanner')
 }
 
 compileJava.dependsOn 'generateFilterLangJava', 'generateScanner', 'generateParser'
@@ -143,7 +162,7 @@ task generateParser(type: JavaExec) {
 jar {
 	destinationDir = projectDir
 	manifest.attributes 'Main-Class': project.mainClassName
-	baseName = 'DrAST'
+	baseName = 'ExJExplorer'
 	from {
 		configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
 	}

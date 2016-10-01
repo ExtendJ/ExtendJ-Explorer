@@ -2,9 +2,9 @@ package drast.views.gui;
 
 import drast.Log;
 import drast.model.DrAST;
+import drast.model.DrASTSettings;
 import drast.model.TreeFilter;
 import drast.views.gui.controllers.Controller;
-import drast.views.gui.dialogs.OpenASTDialog;
 import drast.views.gui.graph.GraphView;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -95,7 +95,7 @@ public class DrASTGUI extends Application {
     mon.setGraphView(graphview);
     con.init(mon);
     Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-    stage.setTitle("DrAST " + DrAST.DRAST_VERSION);
+    stage.setTitle("ExtendJ Explorer (DrAST) " + DrAST.DRAST_VERSION);
     stage.setScene(
         new Scene(rootView, primaryScreenBounds.getWidth(), primaryScreenBounds.getHeight() - 100));
 
@@ -104,9 +104,12 @@ public class DrASTGUI extends Application {
     center.setContent(graphview);
     Platform.runLater(
         () -> graphview.setPreferredSize((int) center.getWidth(), (int) center.getHeight()));
+    // Load filter first, to avoid building the AST twice.
     con.loadPreviousFilter();
-    OpenASTDialog dialog = new OpenASTDialog(mon);
-    dialog.show();
+    // Load the source code. This rebuilds the AST.
+    if (!con.loadSourceFile(DrASTSettings.get(DrASTSettings.PREV_FIRST_ARG, ""))) {
+      con.parseSourceCode();
+    }
   }
 
   /**

@@ -6,11 +6,10 @@
 !gradlew
 !build.gradle
 !build.xml
-!modules
+!extendj
 !/gradle/
 !/src
 /src/gen
-!/dist
 
 !/CalcASM
 /CalcASM/filter.fcl
