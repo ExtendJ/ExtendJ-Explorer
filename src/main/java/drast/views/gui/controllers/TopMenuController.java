@@ -1,11 +1,12 @@
 package drast.views.gui.controllers;
 
-import drast.model.Config;
+import drast.Log;
+import drast.export.DotExport;
+import drast.export.XMLExport;
+import drast.model.DrASTSettings;
 import drast.model.filteredtree.GenericTreeNode;
-import drast.views.gui.GUIConfig;
-import drast.views.gui.Monitor;
+import drast.views.gui.GUIData;
 import drast.views.gui.dialogs.OpenASTDialog;
-import drast.views.xml.DrASTXML;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckMenuItem;
@@ -24,195 +25,181 @@ import java.util.ResourceBundle;
 
 /**
  * Created by gda10jth on 11/20/15.
- *
- * Controller for the top menu.
+ * <p>
+ * Controller for the main menu.
  */
 public class TopMenuController implements Initializable, ControllerInterface {
-    private Monitor mon;
-    private String prevJarPath;
-    private String prevFilterPath;
-    private String prevArgString;
+  private GUIData mon;
 
-    @FXML private Menu topMenuFileMenu;
-    @FXML private Menu topMenuExportMenu;
-    @FXML private MenuItem exitMenuItem;
-    @FXML private MenuItem toggleMinimizeMenuItem;
-    @FXML private MenuItem openMenuItem;
-    @FXML private MenuItem rerunCompiler;
-    @FXML private CheckMenuItem showEdgesCheckMenuItem;
-    @FXML private CheckMenuItem showNodesCheckMenuItem;
-    @FXML private CheckMenuItem niceLookingEdgesCheckMenuItem;
-    @FXML private CheckMenuItem dynamicValuesCheckMenuItem;
-    @FXML private CheckMenuItem ntaCachedCheckMenuItem;
-    @FXML private CheckMenuItem ntaComputedCheckMenuItem;
+  @FXML private Menu topMenuFileMenu;
+  @FXML private Menu topMenuExportMenu;
+  @FXML private MenuItem exitMenuItem;
+  @FXML private MenuItem toggleMinimizeMenuItem;
+  @FXML private MenuItem openMenuItem;
+  @FXML private CheckMenuItem showEdgesCheckMenuItem;
+  @FXML private CheckMenuItem showNodesCheckMenuItem;
+  @FXML private CheckMenuItem niceLookingEdgesCheckMenuItem;
+  @FXML private CheckMenuItem dynamicValuesCheckMenuItem;
+  @FXML private CheckMenuItem ntaCachedCheckMenuItem;
+  @FXML private CheckMenuItem ntaComputedCheckMenuItem;
 
-    public void init(Monitor mon){
-        this.mon = mon;
-        prevJarPath = "";
-        prevFilterPath = "";
-        prevArgString = "";
-        setValuesOnMenuItems();
-        mon.getController().getGraphViewTabController().setNiceEdges(niceLookingEdgesCheckMenuItem.isSelected());
-    }
+  @Override public void init(GUIData mon) {
+    this.mon = mon;
+    setValuesOnMenuItems();
+    mon.getController().getGraphViewTabController()
+        .setNiceEdges(niceLookingEdgesCheckMenuItem.isSelected());
+  }
 
-    private void setValuesOnMenuItems(){
-        Config config = mon.getConfig();
-        showEdgesCheckMenuItem.setSelected(config.isEnabled(GUIConfig.SHOW_EDGES));
-        showNodesCheckMenuItem.setSelected(config.isEnabled(GUIConfig.SHOW_NODES));
-        niceLookingEdgesCheckMenuItem.setSelected(config.isEnabled(GUIConfig.NICE_EDGES));
-        //Model Configs
-        config = mon.getASTBrain().getConfig();
-        dynamicValuesCheckMenuItem.setSelected(config.isEnabled(GUIConfig.DYNAMIC_VALUES));
-        ntaCachedCheckMenuItem.setSelected(config.isEnabled(GUIConfig.NTA_CACHED));
-        ntaComputedCheckMenuItem.setSelected(config.isEnabled(GUIConfig.NTA_COMPUTED));
-    }
+  private void setValuesOnMenuItems() {
+    showEdgesCheckMenuItem.setSelected(DrASTSettings.getFlag(DrASTSettings.SHOW_EDGES));
+    showNodesCheckMenuItem.setSelected(DrASTSettings.getFlag(DrASTSettings.SHOW_NODES));
+    niceLookingEdgesCheckMenuItem.setSelected(DrASTSettings.getFlag(DrASTSettings.CURVED_EDGES));
+    dynamicValuesCheckMenuItem.setSelected(DrASTSettings.getFlag(DrASTSettings.DYNAMIC_VALUES));
+    ntaCachedCheckMenuItem.setSelected(DrASTSettings.getFlag(DrASTSettings.NTA_CACHED));
+    ntaComputedCheckMenuItem.setSelected(DrASTSettings.getFlag(DrASTSettings.NTA_COMPUTED));
+  }
 
-    /**
-     * Initialize all buttons in the menu.
-     * @param location
-     * @param resources
-     */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        exitMenuItem.setOnAction(event1 -> {
-            mon.getController().exitProgram();
-        });
+  /**
+   * Initialize all buttons in the menu.
+   */
+  @Override public void initialize(URL location, ResourceBundle resources) {
+    exitMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
+    exitMenuItem.setOnAction(event -> mon.getController().exitProgram());
 
-        openMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
-        openMenuItem.setOnAction(event1 -> {
-            OpenASTDialog test = new OpenASTDialog(mon);
-            test.init();
-            test.show();
-        });
+    openMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
+    openMenuItem.setOnAction(event -> {
+      OpenASTDialog dialog = new OpenASTDialog(mon);
+      dialog.show();
+    });
 
-        toggleMinimizeMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F));
-        toggleMinimizeMenuItem.setOnAction(e -> mon.getController().toggleMinimizeWindows());
+    toggleMinimizeMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.F));
+    toggleMinimizeMenuItem.setOnAction(e -> mon.getController().toggleMinimizeWindows());
 
-        rerunCompiler.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
-        rerunCompiler.setOnAction(e->{
-            if(mon.isReRunnable()){
-                mon.getController().runCompiler(mon.getDrASTUI(), prevJarPath, prevFilterPath, prevArgString.split(" "));
-            }
-        });
+    showEdgesCheckMenuItem.setOnAction(e -> {
+      saveConfig(DrASTSettings.SHOW_EDGES, showEdgesCheckMenuItem);
+      mon.getController().getGraphViewTabController().repaintGraph();
 
-        showEdgesCheckMenuItem.setOnAction(e->{
-            saveConfig(GUIConfig.SHOW_EDGES, showEdgesCheckMenuItem, mon.getConfig());
-            mon.getController().getGraphViewTabController().repaintGraph();
+    });
 
-        });
+    showNodesCheckMenuItem.setOnAction(e -> {
+      saveConfig(DrASTSettings.SHOW_NODES, showNodesCheckMenuItem);
+      mon.getController().getGraphViewTabController().repaintGraph();
+    });
 
-        showNodesCheckMenuItem.setOnAction(e->{
-            saveConfig(GUIConfig.SHOW_NODES, showNodesCheckMenuItem, mon.getConfig());
-            mon.getController().getGraphViewTabController().repaintGraph();
-        });
+    niceLookingEdgesCheckMenuItem.setOnAction(e -> {
+      saveConfig(DrASTSettings.CURVED_EDGES, niceLookingEdgesCheckMenuItem);
+      mon.getController().getGraphViewTabController()
+          .setNiceEdges(niceLookingEdgesCheckMenuItem.isSelected());
+    });
 
-        niceLookingEdgesCheckMenuItem.setOnAction(e->{
-            saveConfig(GUIConfig.NICE_EDGES, niceLookingEdgesCheckMenuItem, mon.getConfig());
-            mon.getController().getGraphViewTabController().setNiceEdges(niceLookingEdgesCheckMenuItem.isSelected());
-        });
+    dynamicValuesCheckMenuItem.setOnAction(e -> {
+      saveConfig(DrASTSettings.DYNAMIC_VALUES, dynamicValuesCheckMenuItem);
+      mon.getController().nodeSelected(mon.getSelectedNode(), this);
+    });
 
-        dynamicValuesCheckMenuItem.setOnAction(e->{
-            saveConfig(GUIConfig.DYNAMIC_VALUES, dynamicValuesCheckMenuItem, mon.getASTBrain().getConfig());
-            mon.getController().nodeSelected(mon.getSelectedNode(), this);
-        });
+    ntaCachedCheckMenuItem.setOnAction(e -> {
+      saveConfig(DrASTSettings.NTA_CACHED, ntaCachedCheckMenuItem);
+      mon.getController().saveFilter();
+    });
 
-        ntaCachedCheckMenuItem.setOnAction(e->{
-            saveConfig(GUIConfig.NTA_CACHED, ntaCachedCheckMenuItem, mon.getASTBrain().getConfig());
-            mon.getController().saveNewFilter();
-        });
+    ntaComputedCheckMenuItem.setOnAction(e -> {
+      saveConfig(DrASTSettings.NTA_COMPUTED, ntaComputedCheckMenuItem);
+      mon.getController().saveFilter();
+    });
 
-        ntaComputedCheckMenuItem.setOnAction(e->{
-            saveConfig(GUIConfig.NTA_COMPUTED, ntaComputedCheckMenuItem, mon.getASTBrain().getConfig());
-            mon.getController().saveNewFilter();
-        });
+    MenuItem exportXml = new MenuItem("XML");
+    exportXml.setOnAction(event -> {
+      String fileName = "graph_to_xml" + new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
+      File dirPath = openDirectoryBrowser("Choose XML location", fileName);
+      if (dirPath == null) {
+        return;
+      }
 
-        MenuItem exportXml = new MenuItem("XML");
-        exportXml.setOnAction(event -> {
-            String fileName = "graph_to_xml" + new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
-            File dirPath = openDirectoryBrowser("Choose XML location", fileName);
-            if(dirPath == null) return;
+      String path =
+          String.format("%s%s%s.xml", dirPath.getParent(), File.separator, dirPath.getName());
+      boolean success = XMLExport.export(mon.getDrASTAPI(), path);
+      if (success) {
+        Log.info("XML file saved to: %s", new File(path).getAbsolutePath());
+      } else {
+        Log.error("XML file was not generated.");
+      }
+    });
 
-            DrASTXML xmlBuilder = new DrASTXML(mon.getDrASTAPI());
-            boolean success = xmlBuilder.printXml(dirPath.getParent() + dirPath.separator, dirPath.getName(), ".xml");
-            if(success)
-                mon.getController().addMessage("XML file saved to: " + xmlBuilder.getAbsoluteFilePath());
-            else
-                mon.getController().addError("XML file where not genereated.");
-        });
+    MenuItem exportDot = new MenuItem("GraphViz Dot");
+    exportDot.setOnAction(event -> {
+      String fileName = "graph_to_dot" + new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
+      File dirPath = openDirectoryBrowser("Dot Output File", fileName);
+      if (dirPath == null) {
+        return;
+      }
 
-        Menu imageMenu = new Menu("Image (png)");
-        MenuItem exportImage = new MenuItem("Whole graph");
-        exportImage.setOnAction(event -> {
-            String fileName = "whole_graph_" + new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
-            File dirPath = openDirectoryBrowser("Choose image location", fileName);
-            if(dirPath == null) return;
+      String path =
+          String.format("%s%s%s.dot", dirPath.getParent(), File.separator, dirPath.getName());
+      boolean success = DotExport.export(mon.getDrASTAPI(), path);
+      if (success) {
+        Log.info("Dotfile saved to: %s", new File(path).getAbsolutePath());
+      } else {
+        Log.error("Dotfile was not generated.");
+      }
+    });
 
-            String absPath = mon.getGraphView().saveGraphAsImage(dirPath.getParent() + dirPath.separator, dirPath.getName(), "png");
-            if(absPath.length() > 1) {
-                mon.getController().addMessage("Image saved to: " + absPath);
-            }
-        });
-        MenuItem exportImagePrintScreen = new MenuItem("On screen");
-        exportImagePrintScreen.setOnAction(event -> {
-            String fileName = "screen_graph_" + new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
-            File dirPath = openDirectoryBrowser("Choose image location", fileName);
-            if(dirPath == null) return;
+    Menu imageMenu = new Menu("Image (png)");
+    MenuItem exportImage = new MenuItem("Whole graph");
+    exportImage.setOnAction(event -> {
+      String fileName = "whole_graph_" + new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
+      File dirPath = openDirectoryBrowser("Choose image location", fileName);
+      if (dirPath == null) {
+        return;
+      }
 
-            String absPath = mon.getGraphView().savePrintScreenGraph(dirPath.getParent() + dirPath.separator, dirPath.getName(), "png");
-            if(absPath.length() > 1) {
-                mon.getController().addMessage("Image saved to: " + absPath);
-            }
-        });
-        topMenuExportMenu.getItems().add(exportXml);
-        topMenuExportMenu.getItems().add(imageMenu);
-        imageMenu.getItems().add(exportImage);
-        imageMenu.getItems().add(exportImagePrintScreen);
+      String absPath = mon.getGraphView()
+          .saveGraphAsImage(dirPath.getParent() + File.separator, dirPath.getName());
+      if (absPath.length() > 1) {
+        Log.info("Image saved to: " + absPath);
+      }
+    });
+    MenuItem exportImagePrintScreen = new MenuItem("On screen");
+    exportImagePrintScreen.setOnAction(event -> {
+      String fileName = "screen_graph_" + new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
+      File dirPath = openDirectoryBrowser("Choose image location", fileName);
+      if (dirPath == null) {
+        return;
+      }
 
-    }
+      String absPath = mon.getGraphView()
+          .savePrintScreenGraph(dirPath.getParent() + File.separator, dirPath.getName());
+      if (absPath.length() > 1) {
+        Log.info("Image saved to: " + absPath);
+      }
+    });
+    topMenuExportMenu.getItems().addAll(exportXml, exportDot, imageMenu);
+    imageMenu.getItems().add(exportImage);
+    imageMenu.getItems().add(exportImagePrintScreen);
 
-    private void saveConfig(String key, CheckMenuItem Value, Config config){
-        config.put(key, Value.isSelected() ? "1" : "0");
-        config.saveConfigFile();
-    }
+  }
 
-    private File openDirectoryBrowser(String title, String fileName){
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(title);
-        chooser.setInitialFileName(fileName);
-        File defaultDirectory = new File(mon.getDefaultDirectory());
-        chooser.setInitialDirectory(defaultDirectory);
-        return chooser.showSaveDialog(mon.getStage());
-    }
+  private void saveConfig(String key, CheckMenuItem Value) {
+    DrASTSettings.put(key, Value.isSelected() ? "1" : "0");
+  }
 
-    /**
-     * Called when a funciton starts from the Controller. A function can be a dialog.
-     */
-    @Override
-    public void functionStarted(){}
+  private File openDirectoryBrowser(String title, String fileName) {
+    FileChooser chooser = new FileChooser();
+    chooser.setTitle(title);
+    chooser.setInitialFileName(fileName);
+    chooser.setInitialDirectory(mon.getDefaultSettingsDirectory());
+    return chooser.showSaveDialog(mon.getStage());
+  }
 
-    /**
-     * Called when a funciton stops from the Controller. A function can be a dialog.
-     */
-    @Override
-    public void functionStopped(){}
+  @Override public void nodeSelected(GenericTreeNode node) {
+  }
 
-    @Override
-    public void nodeSelected(GenericTreeNode node) {}
+  @Override public void nodeDeselected() {
+  }
 
-    @Override
-    public void nodeDeselected() {}
+  @Override public void updateGUI() {
+  }
 
-    @Override
-    public void updateGUI() {}
-
-    @Override
-    public void onApplicationClose(){}
-
-    @Override
-    public void onNewAPI() {
-        prevJarPath = mon.getConfig().getOrEmpty(GUIConfig.PREV_JAR);
-        prevFilterPath = mon.getConfig().getOrEmpty(GUIConfig.PREV_FILTER);
-        prevArgString = mon.getConfig().getOrEmpty(GUIConfig.PREV_ARGS);
-        setValuesOnMenuItems();
-    }
+  @Override public void onSetRoot() {
+    setValuesOnMenuItems();
+  }
 }

@@ -4,11 +4,6 @@
 <MenuBar styleClass="typeListView" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="drast.views.gui.controllers.TopMenuController">
     <Menu text="File" fx:id="topMenuFileMenu">
         <items>
-            <MenuItem text="" fx:id="rerunCompiler">
-                <graphic>
-                        <Label styleClass="MenuItemText" text="Run compiler again"></Label>
-                </graphic>
-            </MenuItem>
             <MenuItem text="" fx:id="openMenuItem" >
                 <graphic>
                     <Label styleClass="MenuItemText" text="Open..." ></Label>
@@ -41,7 +36,7 @@
         <CheckMenuItem text="Show edges" selected="true" fx:id="showEdgesCheckMenuItem"/>
         <CheckMenuItem text="Show nodes" selected="true" fx:id="showNodesCheckMenuItem"/>
         <SeparatorMenuItem/>
-        <CheckMenuItem text="Nice looking edges" selected="true" fx:id="niceLookingEdgesCheckMenuItem"/>
+        <CheckMenuItem text="Curved edges" selected="true" fx:id="niceLookingEdgesCheckMenuItem"/>
     </Menu>
     <Menu text="Attribute settings">
         <CheckMenuItem text="Compute all attributes" selected="true" fx:id="dynamicValuesCheckMenuItem"/>

@@ -1,0 +1,50 @@
+FilterRules ::= Rule*;
+
+/** A rule can be used to set properties for a particular ASTNode. */
+Rule ::= PathPart* [Condition:Expr] Show:Attribute* Style*;
+
+/** Include the selected node in the filtered tree and set properties. */
+IncludeRule : Rule;
+
+/** Exclude the selected node from the filtered tree and set properties. */
+ExcludeRule : Rule;
+
+abstract PathPart;
+
+/** Matches exactly one node of a given type in a tree path. */
+TypedNode : PathPart ::= <TYPE> [Condition:Expr];
+
+/** Matches one node in a path. */
+AnyNode : PathPart ::= [Condition:Expr];
+
+/** Matches zero or more nodes in a path. */
+AnyNodeSequence : PathPart;
+
+abstract Expr;
+
+abstract BinaryExpr : Expr ::= Left:Expr Right:Expr;
+
+abstract BinaryBoolExpr : BinaryExpr;
+AndExpr : BinaryBoolExpr;
+OrExpr : BinaryBoolExpr;
+NotEqExpr : BinaryBoolExpr;
+EqExpr : BinaryBoolExpr;
+GtExpr : BinaryBoolExpr;
+GtEqExpr : BinaryBoolExpr;
+LtExpr : BinaryBoolExpr;
+LtEqExpr : BinaryBoolExpr;
+
+ParExpr : Expr ::= Expr;
+NotExpr : Expr ::= Expr;
+
+TrueLiteral : Expr;
+FalseLiteral : Expr;
+
+abstract Literal : Expr ::= <VALUE>;
+IntLiteral : Literal;
+DoubleLiteral : Literal;
+StringLiteral : Literal;
+
+Attribute : Expr ::= <NAME> Arg:Expr*;
+
+Style ::= <NAME> <VALUE>;

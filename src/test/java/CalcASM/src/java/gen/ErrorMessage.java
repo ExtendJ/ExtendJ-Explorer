@@ -6,30 +6,30 @@ package CalcASM.src.java.gen;
  * @declaredat /home/gda10jli/Documents/jastadddebugger-exjobb/CalcASM/src/jastadd/Errors.jrag:5
  */
 public class ErrorMessage extends Object implements Comparable<ErrorMessage> {
-  
-		protected final String message;
 
-  
-		protected final int lineNumber;
+  protected final String message;
 
-  
-		public ErrorMessage(String message, int lineNumber) {
-			this.message = message;
-			this.lineNumber = lineNumber;
-		}
 
-  
-		public int compareTo(ErrorMessage other) {
-			if (lineNumber == other.lineNumber) {
-				return message.compareTo(other.message);
-			}
-			return Integer.compare(lineNumber, other.lineNumber); 
-		}
+  protected final int lineNumber;
 
-  
-		public String toString() {
-			return "Error at line " + lineNumber + ": " + message;
-		}
+
+  public ErrorMessage(String message, int lineNumber) {
+    this.message = message;
+    this.lineNumber = lineNumber;
+  }
+
+
+  public int compareTo(ErrorMessage other) {
+    if (lineNumber == other.lineNumber) {
+      return message.compareTo(other.message);
+    }
+    return Integer.compare(lineNumber, other.lineNumber);
+  }
+
+
+  public String toString() {
+    return "Error at line " + lineNumber + ": " + message;
+  }
 
 
 }

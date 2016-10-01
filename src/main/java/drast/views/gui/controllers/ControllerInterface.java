@@ -1,27 +1,19 @@
 package drast.views.gui.controllers;
 
 import drast.model.filteredtree.GenericTreeNode;
-import drast.views.gui.Monitor;
+import drast.views.gui.GUIData;
 
 /**
  * Created by gda10jth on 2/3/16.
  */
-public interface ControllerInterface {
-    void init(Monitor mon);
+interface ControllerInterface {
+  void init(GUIData mon);
 
-    void onNewAPI();
-    /**
-     * Called when a funciton starts from the Controller. A function can be a dialog.
-     */
-    void functionStarted();
-    /**
-     * Called when a funciton stops from the Controller. A function can be a dialog.
-     */
-    void functionStopped();
-    void nodeSelected(GenericTreeNode node);
-    void nodeDeselected();
+  void onSetRoot();
 
-    void updateGUI();
+  void nodeSelected(GenericTreeNode node);
 
-    void onApplicationClose();
+  void nodeDeselected();
+
+  void updateGUI();
 }

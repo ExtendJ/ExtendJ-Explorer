@@ -1,0 +1,201 @@
+/* Copyright (c) 2016, The JastAdd Team
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *   1. Redistributions of source code must retain the above copyright
+ *      notice, this list of conditions and the following disclaimer.
+ *
+ *   2. Redistributions in binary form must reproduce the above
+ *      copyright notice, this list of conditions and the following
+ *      disclaimer in the documentation and/or other materials provided
+ *      with the distribution.
+ *
+ *   3. The name of the author may not be used to endorse or promote
+ *      products derived from this software without specific prior
+ *      written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+ * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+import drast.model.Message;
+import drast.model.Node;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+
+/**
+ * Attributes for evaluating filter expressions.
+ *
+ * @author Jesper Öqvist
+ */
+aspect Eval {
+
+  /** Remove the quote marks from a string literal. */
+  public static String ASTNode.trimStringLiteral(String literal) {
+    return literal.substring(1, literal.length() - 1);
+  }
+
+  /** @return the attributes that should be displayed for matched nodes. */
+  syn lazy java.util.List<Attribute> Rule.shownAttributes() {
+    if (getNumShow() == 0) {
+      return Collections.emptyList();
+    }
+    ArrayList<Attribute> list = new ArrayList<>(getNumShow());
+    for (Attribute attribute : getShowList()) {
+      list.add(attribute);
+    }
+    return list;
+  }
+
+  syn lazy Map<String, String> Rule.styleMap() {
+    if (getNumStyle() == 0) {
+      return Collections.emptyMap();
+    }
+    Map<String, String> map = new HashMap<>();
+    for (Style style : getStyleList()) {
+      String name = trimStringLiteral(style.getNAME());
+      String value = trimStringLiteral(style.getVALUE());
+      map.put(name, value);
+    }
+    return map;
+  }
+
+  /** Returns a typename for a given value. */
+  public static String ASTNode.typeOf(Object value) {
+    if (value != null) {
+      return value.getClass().getName();
+    } else {
+      return "null";
+    }
+  }
+
+  syn boolean Rule.isInclude() = false;
+  eq IncludeRule.isInclude() = true;
+
+  syn boolean Rule.isExclude() = false;
+  eq ExcludeRule.isExclude() = true;
+
+  syn boolean PathPart.isTypedNode() = false;
+  eq TypedNode.isTypedNode() = true;
+
+  syn String PathPart.typeName() {
+    throw new Error("Typename is undefined for non typename path part.");
+  }
+  eq TypedNode.typeName() = getTYPE();
+
+  syn Object Expr.evalSafely(Node node, Consumer<Message> logger) {
+    try {
+      return eval(node);
+    } catch (Throwable e) {
+      logger.accept(Message.error("Error while while evaluating expression '%s': %s",
+          unparse(), e.getMessage()));
+    }
+    return null;
+  }
+
+  syn Object[] Attribute.evalArgsSafely(Node node, Consumer<Message> logger) {
+    if (getNumArg() == 0) {
+      return null;
+    }
+    try {
+      Object[] args = new Object[getNumArg()];
+      for (int i = 0; i < getNumArg(); ++i) {
+        args[i] = getArg(i).eval(node);
+      }
+      return args;
+    } catch (Throwable e) {
+      logger.accept(Message.error("Error while while evaluating attribute '%s': %s",
+          unparse(), e.getMessage()));
+    }
+    return null;
+  }
+
+  syn boolean Expr.evalCondition(Node node, Consumer<Message> logger) {
+    try {
+      Object result = eval(node);
+      if (result instanceof Boolean) {
+        return (Boolean) result;
+      } else {
+        logger.accept(Message.error(
+            "Condition '%s' has wrong result type. Expected boolean, got: %s",
+            unparse(), typeOf(result)));
+        return false;
+      }
+    } catch (Throwable e) {
+      logger.accept(Message.error("Error while while evaluating expression '%s': %s",
+          unparse(), e.getMessage()));
+    }
+    return false;
+  }
+
+  syn Object Expr.eval(Node node);
+
+  eq ParExpr.eval(Node node) = getExpr().eval(node);
+  eq NotExpr.eval(Node node) {
+    Object value = getExpr().eval(node);
+    if (value instanceof Boolean) {
+      return !((Boolean) value);
+    }
+    throw new Error(String.format("Can not negate value of type %s in expression %s",
+          typeOf(value), unparse()));
+  }
+
+  eq TrueLiteral.eval(Node node) = true;
+  eq FalseLiteral.eval(Node node) = false;
+
+  eq AndExpr.eval(Node node) =
+    ((Boolean) getLeft().eval(node)) && ((Boolean) getRight().eval(node));
+
+  eq OrExpr.eval(Node node) =
+    ((Boolean) getLeft().eval(node)) || ((Boolean) getRight().eval(node));
+
+  eq EqExpr.eval(Node node) = getLeft().eval(node).equals(getRight().eval(node));
+
+  eq NotEqExpr.eval(Node node) = !getLeft().eval(node).equals(getRight().eval(node));
+
+  eq GtExpr.eval(Node node) = compare(getLeft().eval(node), getRight().eval(node)) > 0;
+
+  eq GtEqExpr.eval(Node node) = compare(getLeft().eval(node), getRight().eval(node)) >= 0;
+
+  eq LtExpr.eval(Node node) = compare(getLeft().eval(node), getRight().eval(node)) < 0;
+
+  eq LtEqExpr.eval(Node node) = compare(getLeft().eval(node), getRight().eval(node)) <= 0;
+
+  syn int BinaryExpr.compare(Object v1, Object v2) {
+    if (v1 instanceof Comparable && v2 instanceof Comparable) {
+      return ((Comparable) v1).compareTo((Comparable) v2);
+    }
+    throw new Error(String.format("Incomparable types: % and %s in expression %s",
+          typeOf(v1), typeOf(v2), unparse()));
+  }
+
+  eq IntLiteral.eval(Node node) = Integer.parseInt(getVALUE());
+  eq StringLiteral.eval(Node node) = trimStringLiteral(getVALUE());
+  eq DoubleLiteral.eval(Node node) = Double.parseDouble(getVALUE());
+
+  eq Attribute.eval(Node node) {
+    Object[] params = new Object[getNumArg()];
+    for (int i = 0; i < getNumArg(); ++i) {
+      params[i] = getArg(i).eval(node);
+    }
+    return node.computeMethod(getNAME(), params);
+  }
+}

@@ -1,29 +1,40 @@
 buildscript {
 	repositories.mavenCentral()
-	repositories.jcenter()
-}
-
-if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
-	throw new GradleException("Must Build with Java 1.8")
-}
-// check for java  8u20
-def matcher = System.getProperty("java.runtime.version") =~ /(\d*)\.(\d*)\.(\d*)(_(\d*))?(\D.*)/
-if (matcher?.matches() && (!matcher?.group(5) || Integer.parseInt(matcher?.group(5)) < 20)) {
-	throw new GradleException("Must Build with Java 8 update 20 or later")
-}
-
-//Temp for local JastAdd2 with the new annotations, remove this when its standard in JastAdd
-repositories {
-	mavenCentral()
-	flatDir {
-		dirs 'tools'
+	repositories.mavenLocal()
+	dependencies {
+		classpath 'org.jastadd:jastaddgradle:1.10.2'
 	}
 }
 
-ant.importBuild 'build.xml'
+if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
+	throw new GradleException('Must Build with Java 1.8')
+}
+
+// Check for java  8u40.
+def matcher = System.getProperty('java.runtime.version') =~ /(\d*)\.(\d*)\.(\d*)(_(\d*))?(\D.*)/
+if (matcher?.matches() && (!matcher?.group(5) || Integer.parseInt(matcher?.group(5)) < 40)) {
+	throw new GradleException('Must Build with Java 8 update 40 or later')
+}
+
+repositories {
+	mavenCentral()
+}
+
+configurations {
+	jflexConf
+	jastaddparserConf
+	beaverConf
+}
 
 apply plugin: 'java'
 apply plugin: 'application'
+apply plugin: 'jastadd'
+apply plugin: 'jacoco'
+
+project.version = '1.2.0'
+mainClassName = 'drast.views.gui.DrASTGUI'
+
+defaultTasks 'jar'
 
 sourceSets {
 	main {
@@ -34,48 +45,117 @@ sourceSets {
 			srcDir 'src/main/resources'
 		}
 	}
-	model {
-		java {
-			srcDirs = ['src/main/java/drast/model', 'src/gen']
-		}
-	}
 }
 
 dependencies {
-	compile 'net.sf.beaver:beaver-rt:0.9.11'
 	compile 'org.fxmisc.richtext:richtextfx:0.6.10'
 	compile 'org.apache.ant:ant:1.9.4'
 	compile 'net.sf.jung:jung-graph-impl:2.0.1'
 	compile 'net.sf.jung:jung-api:2.0.1'
 	compile 'net.sf.jung:jung-visualization:2.0.1'
 	compile 'net.sf.jung:jung-algorithms:2.0.1'
+	compile 'net.sf.beaver:beaver-rt:0.9.11'
+	compile 'com.google.code.findbugs:jsr305:3.0.1'
+	compile 'org.apache.commons:commons-lang3:3.5'
 
-	testCompile 'junit:junit:4.+'
-	testCompile "org.testfx:testfx-core:4.0.+"
-	testCompile "org.testfx:testfx-junit:4.0.+"
+	testCompile 'junit:junit:4.11'
+	testCompile 'org.testfx:testfx-core:4.0.+'
+	testCompile 'org.testfx:testfx-junit:4.0.+'
+	testCompile 'com.google.truth:truth:0.30'
+
+	jflexConf 'de.jflex:jflex:1.6.1'
+	beaverConf 'net.sf.beaver:beaver-cc:0.9.11'
+	jastaddparserConf 'org.jastadd:jastaddparser:1.0.3'
 }
 
-gradle.projectsEvaluated {
-	compileJava.dependsOn(gen)
+compileJava.dependsOn 'generateFilterLangJava', 'generateScanner', 'generateParser'
+
+clean.dependsOn 'cleanGeneratedJava'
+
+task cleanGeneratedJava(type: Delete) {
+	description 'Remove generated Java code.'
+	delete project.file('src/gen')
 }
 
-task gui(type: Jar) {
+task generateFilterLangJava(type: org.jastadd.JastAddTask) {
+	description 'Generate Java source files from JastAdd aspects.'
+
+	outputDir = project.file('src/gen')
+	sources = project.fileTree('src/jastadd')
+		.include('**/*.ast')
+		.include('**/*.jadd')
+		.include('**/*.jrag')
+
+	options = [ '--beaver',
+		'--package=org.jastadd.drast.filterlang',
+		'--visitCheck=false' ]
+
+	doFirst {
+		project.file('src/gen/org/jastadd/drast/filterlang').mkdirs()
+	}
+}
+
+task generateScanner(type: JavaExec) {
+	classpath = configurations.jflexConf
+	main = 'jflex.Main'
+	args '-d', project.file('src/gen/org/jastadd/drast/filterlang/').path,
+		project.file('src/scanner/FilterScanner.flex').path
+
+	inputs.files project.file('src/scanner/FilterScanner.flex')
+	outputs.files project.file('src/gen/org/jastadd/drast/filterlang/FilterScanner.java')
+
+	doFirst {
+		project.file('src/gen/drast/filterlang').mkdirs()
+	}
+}
+
+task preprocessParser(type: JavaExec) {
+	classpath = configurations.jastaddparserConf
+	main = 'org.jastadd.jastaddparser.Main'
+	args project.file('src/parser/FilterParser.parser').path,
+		project.file('src/gen/FilterParser.beaver').path
+
+	inputs.files project.file('src/parser/FilterParser.parser')
+	outputs.files project.file('src/gen/FilterParser.beaver')
+
+	doFirst {
+		project.file('src/gen').mkdirs()
+	}
+}
+
+task generateParser(type: JavaExec) {
+	dependsOn 'preprocessParser'
+
+	classpath = configurations.beaverConf
+	main = 'beaver.comp.run.Make'
+	args '-d', project.file('src/gen/org/jastadd/drast/filterlang').path,
+		'-t', '-c', '-w',
+		project.file('src/gen/FilterParser.beaver').path
+
+	inputs.files project.file('src/gen/FilterParser.beaver')
+	outputs.files project.file('src/gen/org/jastadd/drast/filterlang/FilterParser.java')
+
+	doFirst {
+		project.file('src/gen/org/jastadd/drast/filterlang').mkdirs()
+	}
+}
+
+jar {
 	destinationDir = projectDir
-	manifest.attributes 'Main-Class': 'drast.views.gui.DrASTGUI'
-	mainClassName = 'drast.views.gui.DrASTGUI'
-	baseName = "DrAST"
-	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-	with jar
-}
-
-task model(type: Jar) {
-	classifier = 'model'
-	destinationDir = projectDir
-	manifest.attributes 'Main-Class': 'drast.model.DrAST'
-	mainClassName = 'drast.model.DrAST'
-	baseName = "DrAST"
+	manifest.attributes 'Main-Class': project.mainClassName
+	baseName = 'DrAST'
 	from {
-		sourceSets.model.output
 		configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-	}	with jar
+	}
 }
+
+// Code coverage with Jacoco:
+jacocoTestReport {
+	reports {
+		xml.enabled = true
+		html.enabled = true
+	}
+}
+
+check.dependsOn jacocoTestReport
+

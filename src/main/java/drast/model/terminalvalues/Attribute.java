@@ -1,7 +1,10 @@
 package drast.model.terminalvalues;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Class that holds the terminal Attributes
@@ -9,122 +12,124 @@ import java.util.*;
  * Created by gda10jli on 10/20/15.
  */
 public class Attribute extends TerminalValue {
-    private boolean parametrized;
-    private String aspect;
-    private String declaredAt;
-    private boolean isCircular;
-    private boolean isNTA;
-    private String kind;
-    private HashMap<String, Object> computedValues;
-    private HashMap<String, Object[]> usedParameters;
-    private String lastComputedkey;
+  private boolean parametrized;
+  private String aspect;
+  private String declaredAt;
+  private boolean isCircular;
+  private boolean isNTA;
+  private String kind;
+  private HashMap<String, Object> computedValues;
+  private final HashMap<String, Object[]> usedParameters;
+  private String lastComputedKey;
 
-    public Attribute(String name, Method m) {
-        super(name, null, m, false);
-        computedValues = new HashMap<>();
-        usedParameters = new HashMap<>();
+  public Attribute(String name, Method m) {
+    super(name, null, m, false);
+    computedValues = new HashMap<>();
+    usedParameters = new HashMap<>();
+  }
+
+
+  @Override protected void setChildInfo(ArrayList<AttributeInfo> al) {
+    al.add(new AttributeInfo("Is circular", isCircular));
+    al.add(new AttributeInfo("Is NTA", isNTA));
+    al.add(new AttributeInfo("Aspect", aspect));
+    al.add(new AttributeInfo("Declared at", declaredAt, true));
+    al.add(new AttributeInfo("Kind", kind));
+  }
+
+  @Override public String getKind() {
+    return kind;
+  }
+
+  public void setKind(String kind) {
+    this.kind = kind;
+  }
+
+  @Override public String toString() {
+    return getName(method, null);
+  }
+
+  @Override public boolean isParametrized() {
+    return parametrized;
+  }
+
+  public void setParametrized(boolean parametrized) {
+    this.parametrized = parametrized;
+  }
+
+  public void setCircular(boolean isCircular) {
+    this.isCircular = isCircular;
+  }
+
+  /**
+   * Check if the Attribute is a non-terminal attribute
+   */
+  @Override public boolean isNTA() {
+    return isNTA;
+  }
+
+  public void setNTA(boolean NTA) {
+    this.isNTA = NTA;
+  }
+
+  public void setAspect(String aspect) {
+    this.aspect = aspect;
+  }
+
+  /**
+   * Check if a attribute is parametrized
+   */
+  @Override public boolean isAttribute() {
+    return true;
+  }
+
+  public void setDeclaredAt(String declaredAt) {
+    this.declaredAt = declaredAt;
+  }
+
+  /**
+   * Adds a computed value to its List of computed values.
+   * If the attribute is non-parametrized it will write to the attributes main value
+   */
+  public void addComputedValue(Object[] params, Object value) {
+    if (!isParametrized() && this.value == null) {
+      this.value = value;
     }
-
-
-    public Attribute(String name, Method m, String kind) {
-        this(name, m);
-        this.kind = kind;
+    if (computedValues == null) {
+      computedValues = new HashMap<>();
     }
+    String key = getKey(params);
+    lastComputedKey = key;
+    computedValues.put(key, value);
+    usedParameters.put(key, params);
+  }
 
-    @Override
-    protected void setChildInfo(ArrayList<TerminalValueInfo> al) {
-        al.add(new TerminalValueInfo("Is circular", isCircular));
-        al.add(new TerminalValueInfo("Is NTA", isNTA));
-        al.add(new TerminalValueInfo("Aspect", aspect));
-        al.add(new TerminalValueInfo("Declared at", declaredAt, true));
-        al.add(new TerminalValueInfo("Kind", kind));
+  public boolean containsValue(Object[] params) {
+    return computedValues.containsKey(getKey(params));
+  }
+
+  public Object getComputedValue(Object[] params) {
+    return computedValues.get(getKey(params));
+  }
+
+  public Set<Map.Entry<String, Object>> getComputedEntries() {
+    return computedValues.entrySet();
+  }
+
+  public HashMap<String, Object[]> getUsedParameters() {
+    return usedParameters;
+  }
+
+  public String getLastComputedKey() {
+    return lastComputedKey;
+  }
+
+  private String getKey(Object[] params) {
+    String key = "";
+    for (Object obj : params) {
+      key += (obj == null ? null : obj.hashCode()) + " : ";
     }
-
-    @Override
-    public String getKind() { return kind; }
-
-    public void setKind(String kind) { this.kind = kind; }
-
-    @Override
-    public String print(){ return getName(method, null); }
-
-    @Override
-    public boolean isParametrized() { return parametrized; }
-    public void setParametrized(boolean parametrized) { this.parametrized = parametrized; }
-
-    /**
-     * Returns if the Attribute isCircular
-     * @return
-     */
-    public boolean isCircular() { return isCircular; }
-    public void setCircular(boolean isCircular) { this.isCircular = isCircular; }
-
-    /**
-     * Check if the Attribute is a non-terminal attribute
-     */
-    public boolean isNTA() { return isNTA; }
-    public void setNTA(boolean NTA) { this.isNTA = NTA; }
-
-    /**
-     * Returns the name of the Aspect in which the Attribute was declared.
-     * @return
-     */
-    public String getAspect() { return aspect; }
-    public void setAspect(String aspect) { this.aspect = aspect; }
-
-    /**
-     * Check if a attribute is parametrized
-     * @return
-     */
-    public boolean isAttribute(){ return true; }
-
-    /**
-     * Returns the file path to where the Attribute was declared
-     */
-    public String getDeclaredAt() { return declaredAt; }
-    public void setDeclaredAt(String declaredAt) { this.declaredAt = declaredAt; }
-
-    /**
-     * Adds a computed value to its List of computed values.
-     * If the attribute is non-parametrized it will write to the attributes main value
-     * @param params
-     * @param value
-     */
-    public void addComputedValue(Object[] params, Object value){
-        if(!isParametrized() && this.value == null){
-            this.value = value;
-        }
-        if(computedValues == null)
-            computedValues = new HashMap<>();
-        String key = getKey(params);
-        lastComputedkey = key;
-        computedValues.put(key, value);
-        usedParameters.put(key, params);
-    }
-
-    public boolean containsValue(Object[] params){
-        return  computedValues.containsKey(getKey(params));
-    }
-
-    public Object getComputedValue(Object[] params){
-        return computedValues.get(getKey(params));
-    }
-
-    public Set<Map.Entry<String, Object>> getComputedEntrys(){ return computedValues.entrySet(); }
-
-    public Collection<Object> getComputedValues(){ return computedValues.values(); }
-
-    public HashMap<String, Object[]> getUsedParameters(){
-        return usedParameters;
-    }
-
-    public String getLastComputedKey(){return lastComputedkey;}
-
-    private String getKey(Object[] params){
-        String key = "";
-        for (Object obj : params)
-            key += (obj == null ? null : obj.hashCode()) + " : ";
-        return key;
-    }
+    return key;
+  }
 
 }

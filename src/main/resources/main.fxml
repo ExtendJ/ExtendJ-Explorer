@@ -1,77 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import drast.views.gui.guicomponent.MinimizeButton?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="drast.views.gui.controllers.Controller" fx:id="root">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="root" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="drast.views.gui.controllers.Controller">
     <top>
         <HBox styleClass="topParent">
-            <fx:include fx:id="topMenu" source="/topMenu.fxml"/>
+            <fx:include fx:id="topMenu" source="/topMenu.fxml" />
         </HBox>
     </top>
     <center>
-        <SplitPane styleClass="boobs" fx:id="centerSplitPane" orientation="HORIZONTAL" dividerPositions="0.2,0.8">
+        <SplitPane fx:id="centerSplitPane" dividerPositions="0.2, 0.8" orientation="HORIZONTAL" styleClass="boobs">
             <!-- Left window -->
-            <VBox styleClass="paneParent" fx:id="leftWindow">
+            <VBox fx:id="leftWindow" styleClass="paneParent">
                 <VBox styleClass="topRigthAlign">
-                    <MinimizeButton styleClass="minimizeButton" fx:id="minimizeLeftSide">
+                    <MinimizeButton fx:id="minimizeLeftSide" styleClass="minimizeButton">
                         <tooltip>
-                            <Tooltip text="Minimize"/>
+                            <Tooltip text="Minimize" />
                         </tooltip>
                     </MinimizeButton>
                 </VBox>
-                <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" fx:id="leftWindowContent">
+                <TabPane fx:id="leftWindowContent" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                     <tabs>
                         <Tab text="Node data">
-                            <fx:include fx:id="attributeTab" source="/attributeTab.fxml"/>
-                        </Tab>
-                        <Tab text="Class overview"  fx:id="classOverviewTabNode">
-                            <fx:include fx:id="classOverview" source="/classOverviewTab.fxml" />
+                            <fx:include fx:id="attributeTab" source="/attributeTab.fxml" />
                         </Tab>
                     </tabs>
                 </TabPane>
             </VBox>
             <!-- Middle window -->
-            <VBox >
-                <SplitPane orientation="VERTICAL" dividerPositions="0.8" fx:id="consoleAndGraphSplitPane">
+            <VBox>
+                <SplitPane fx:id="consoleAndGraphSplitPane" dividerPositions="0.8" orientation="VERTICAL">
                     <VBox>
-                        <TabPane tabClosingPolicy="UNAVAILABLE" fx:id="astViewTabs">
-                            <tabs>
-                                <Tab text="Graph" fx:id="graphViewTabNode">
-                                    <fx:include fx:id="graphViewTab" source="/graphViewTab.fxml"/>
-                                </Tab>
-                                <Tab text="Tree" fx:id="treeViewTabNode">
-                                    <fx:include fx:id="textTreeTab" source="/treeViewTab.fxml"/>
-                                </Tab>
-                            </tabs>
-                        </TabPane>
+                        <fx:include fx:id="graphViewTab" source="/graphViewTab.fxml" />
 
                         <HBox styleClass="graphInfo">
-                            <Label text="|" styleClass="dividerLabel"></Label>
-                            <Label text="Filters: " fx:id="appliedFiltersLabelLabel" styleClass="our_label"></Label>
-                            <Label text="" fx:id="appliedFiltersLabel"></Label>
-                            <Label text="|"></Label>
-                            <Label text="Node Count: " styleClass="our_label"></Label>
-                            <Label text="" fx:id="nodeCountLabel"></Label>
-                            <Label text="|"></Label>
-                            <Label text="Compiler: " styleClass="our_label"></Label>
-                            <Label text="" fx:id="compilerLabel"></Label>
-                            <Label text="|"></Label>
+                            <Label styleClass="our_label" text="Node Count: " />
+                            <Label fx:id="nodeCountLabel" text="N/A" />
+                            <Label styleClass="our_label" text="| Compiler: " />
+                            <Label fx:id="compilerLabel" text="N/A" />
                         </HBox>
                     </VBox>
                     <VBox fx:id="consoleWindow">
                         <VBox styleClass="paneParent">
                             <VBox styleClass="topRigthAlign">
-                                <MinimizeButton styleClass="minimizeButton" fx:id="minimizeConsole">
+                                <MinimizeButton fx:id="minimizeConsole" styleClass="minimizeButton">
                                     <tooltip>
-                                        <Tooltip text="Minimize"/>
+                                        <Tooltip text="Minimize" />
                                     </tooltip>
                                 </MinimizeButton>
                             </VBox>
                         </VBox>
-                        <VBox fx:id="consoleWindowContent" VBox.vgrow="ALWAYS" >
-                            <fx:include fx:id="console" source="/console.fxml"/>
+                        <VBox fx:id="consoleWindowContent" VBox.vgrow="ALWAYS">
+                            <fx:include fx:id="console" source="/console.fxml" />
                         </VBox>
                     </VBox>
 
@@ -79,27 +69,50 @@
                 </SplitPane>
             </VBox>
             <!-- right window -->
-            <VBox styleClass="paneParent" fx:id="rightWindow">
+            <VBox fx:id="rightWindow" styleClass="paneParent">
                     <VBox styleClass="topLeftAlign">
-                        <MinimizeButton styleClass="minimizeButton" fx:id="minimizeRightSide">
+                        <MinimizeButton fx:id="minimizeRightSide" styleClass="minimizeButton">
                             <tooltip>
-                                <Tooltip text="Minimize"/>
+                                <Tooltip text="Minimize" />
                             </tooltip>
                         </MinimizeButton>
                     </VBox>
-                <SplitPane orientation="VERTICAL" dividerPositions="0.5" fx:id="rightWindowContent">
-                    <TabPane tabClosingPolicy="UNAVAILABLE">
-                        <tabs>
-                            <fx:include fx:id="filterTab" source="/filterTab.fxml"/>
-                        </tabs>
-                    </TabPane>
+                <SplitPane fx:id="rightWindowContent" dividerPositions="0.5" orientation="VERTICAL">
+               <items>
+                  <TitledPane text="Filter">
+                     <content>
+                        <VBox minHeight="200.0">
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <Button fx:id="applyFilter" mnemonicParsing="false" styleClass="our_button" text="Apply Filter" />
+                                    <Button fx:id="saveFilter" mnemonicParsing="false" styleClass="our_button" text="Save Filter" />
+                                    <Button fx:id="loadFilter" mnemonicParsing="false" styleClass="our_button" text="Load Filter" />
+                                 </children>
+                              </HBox>
+                              <VBox fx:id="filterContainer" />
+                           </children>
+                        </VBox>
+                     </content>
+                  </TitledPane>
+                  <TitledPane text="Source File">
+                     <content>
+                        <VBox minHeight="200.0">
+                           <children>
+                               <Button fx:id="loadFile" mnemonicParsing="false" styleClass="our_button" text="Load File" />
+                              <VBox fx:id="inputFileContainer" />
+                           </children>
+                        </VBox>
+                     </content>
+                  </TitledPane>
+               </items>
                 </SplitPane>
             </VBox>
         </SplitPane>
     </center>
     <bottom>
         <HBox styleClass="paneParent, bottombar">
-            <Label text="Joel Lindholm | Johan Thorsberg 2015-2016"/>
+            <Label text="Joel Lindholm | Johan Thorsberg 2015-2016" />
         </HBox>
     </bottom>
     <stylesheets>style/style.css</stylesheets>

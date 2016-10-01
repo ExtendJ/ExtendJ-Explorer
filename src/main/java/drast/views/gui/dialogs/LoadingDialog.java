@@ -2,92 +2,48 @@ package drast.views.gui.dialogs;
 
 import drast.model.filteredtree.GenericTreeNode;
 import drast.model.terminalvalues.TerminalValue;
-import drast.views.gui.Monitor;
-import javafx.application.Platform;
-import javafx.scene.Parent;
+import drast.views.gui.GUIData;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.StageStyle;
 
-import java.awt.*;
-import java.util.Timer;
-import java.util.TimerTask;
-
 /**
  * Created by gda10jth on 2/17/16.
  */
 public class LoadingDialog extends DrDialog {
-    private String text;
-    private Label label;
-    private String dotts;
-    Toolkit toolkit;
 
-    Timer timer;
-    public LoadingDialog(Monitor mon, String text) {
-        super(mon, StageStyle.UNDECORATED);
-        initModality(Modality.NONE);
+  public LoadingDialog(GUIData mon) {
+    super(mon, StageStyle.UNDECORATED);
+    initModality(Modality.NONE);
 
-        this.text = text;
-        toolkit = Toolkit.getDefaultToolkit();
-        timer = new Timer();
-        dotts = "...";
-    }
+    buildDialogContent(parentNode);
+  }
 
-    @Override
-    protected boolean yesButtonClicked() {
-        return false;
-    }
+  @Override protected boolean yesButtonClicked() {
+    return false;
+  }
 
-    @Override
-    protected void loadStyleSheets(Scene scene) {
-        scene.getStylesheets().add("/style/loadingDialog.css");
-    }
+  @Override protected void loadStyleSheets(Scene scene) {
+    scene.getStylesheets().add("/style/loadingDialog.css");
+  }
 
-    @Override
-    protected void dialogClose() {
-        timer.cancel();
-        timer = null;
-    }
+  @Override protected void dialogClose() {
+  }
 
-    @Override
-    public Object[] getResult() {
-        return new Object[0];
-    }
+  private void buildDialogContent(VBox parent) {
+    parent.getStyleClass().add("loading_parent");
+    Label label = new Label("Waiting for compiler...");
+    label.getStyleClass().add("loading_label");
+    parent.getChildren().add(label);
+  }
 
-    @Override
-    protected Parent buildDialogContent() {
-        VBox parent = new VBox();
-        parent.getStyleClass().add("loading_parent");
-        label = new Label();
-        label.getStyleClass().add("loading_label");
-        parent.getChildren().add(label);
-        loadingAnimation();
-        return parent;
-    }
+  @Override public void attributeSelected(TerminalValue info) {
 
-    protected void loadingAnimation(){
-        label.setText(text + dotts);
-        dotts = dotts.length() > 2 ? "" : dotts + ".";
-        //if(timer != null)
-            //timer.schedule(new RemindTask(), 1000);
-    }
+  }
 
-    @Override
-    public void attributeSelected(TerminalValue info) {
+  @Override protected void nodeSelectedChild(GenericTreeNode node) {
 
-    }
-
-    @Override
-    protected void nodeSelectedChild(GenericTreeNode node) {
-
-    }
-
-    class RemindTask extends TimerTask {
-
-        public void run() {
-            Platform.runLater(() -> loadingAnimation());
-        }
-    }
+  }
 }

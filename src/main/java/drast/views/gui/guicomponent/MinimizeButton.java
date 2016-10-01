@@ -4,20 +4,27 @@ import javafx.scene.control.Button;
 
 /**
  * Created by gda10jth on 2/5/16.
- *
+ * <p>
  * A JavaFX button extension that holds a minimized value
  */
 public class MinimizeButton extends Button {
-    private boolean minimizeNext;
+  private boolean minimizeNext;
 
-    public MinimizeButton(){
-        super();
-        minimizeNext = true;
-        setText("-");
-    }
+  public MinimizeButton() {
+    super();
+    minimizeNext = true;
+    setText("-");
+  }
 
-    public void setMinimized(boolean minimized){ minimizeNext = !minimized;}
+  public void setMinimized(boolean minimized) {
+    minimizeNext = !minimized;
+  }
 
-    public boolean minimizeNext(){return minimizeNext;}
-    public boolean isMinimized(){return !minimizeNext;}
+  public boolean minimizeNext() {
+    return minimizeNext;
+  }
+
+  public boolean isMinimized() {
+    return !minimizeNext;
+  }
 }

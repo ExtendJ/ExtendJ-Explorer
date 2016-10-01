@@ -1,348 +1,495 @@
+/* Copyright (c) 2016, The JastAdd Team
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *   1. Redistributions of source code must retain the above copyright
+ *      notice, this list of conditions and the following disclaimer.
+ *
+ *   2. Redistributions in binary form must reproduce the above
+ *      copyright notice, this list of conditions and the following
+ *      disclaimer in the documentation and/or other materials provided
+ *      with the distribution.
+ *
+ *   3. The name of the author may not be used to endorse or promote
+ *      products derived from this software without specific prior
+ *      written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+ * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package drast.model.reflection;
 
-import drast.model.*;
+import drast.Log;
+import drast.model.ASTAnnotation;
+import drast.model.DrASTSettings;
+import drast.model.FilteredTreeBuilder;
+import drast.model.Node;
+import drast.model.terminalvalues.Attribute;
+import drast.model.terminalvalues.TerminalValue;
+import drast.model.terminalvalues.Token;
+import org.apache.commons.lang3.reflect.MethodUtils;
 
+import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
+ * This class represents an AST node in the filtered tree.
+ *
  * Created by Joel Lindholm on 2/18/16.
- * Do not use System.out.print(ln) here, atm is the model locked to the main thread, will crash DrAST.
- * This needs to bee fixed, cause is that if the model is run through the GUI which overrides the standard out/err it will cause a deadlock
  */
 public class ReflectionNode implements Node {
 
-    private Object ASTObject;
-    private Node parent;
-    private String nameFromParent;
-    private String simpleNameClass;
-    private ArrayList<Node> children;
-    private HashMap<Object, Node> NTAChildren;
-    private HashMap<String,Node> showNTAChildren;
+  /** The AST node which this filtered tree node corresponds to. */
+  @Nonnull private final Object astNode;
+
+  /** The parent node of this filtered tree node. */
+  private final Node parent;
+
+  /** The name of this node in the parent node. */
+  private String nameFromParent = "";
+
+  /** The AST node type name. */
+  private final String simpleClassName;
+
+  /** AST child nodes. */
+  private final List<Node> children = new ArrayList<>();
+
+  /** NTA child nodes. */
+  private final Map<Object, Node> ntaChildren = new HashMap<>();
+
+  private final boolean isList;
+  private final boolean isOpt;
+  private final boolean isNTA;
+
+  private List<TerminalValue> attributes = Collections.emptyList();
+  private List<TerminalValue> tokens = Collections.emptyList();
+  private List<TerminalValue> nonterminalAttributes = Collections.emptyList();
+  private final Map<Method, Map<Object[], Object>> invokedValues = new HashMap<>();
+  private final Map<Method, Pair<Field, Field>> cachedMethodFields = new HashMap<>();
+
+  /** This array contains the typenames of the AST supertypes for this node. */
+  private final String[] classHierarchy;
+
+  /**
+   * @return a builder to construct the DrAST representation of the given compiler AST node.
+   */
+  public static Builder builder(Object astObject) {
+    return new Builder().astObject(astObject);
+  }
+
+  /**
+   * This is used to build reflection nodes for the DrAST representation of the
+   * compiler AST.
+   */
+  public static class Builder {
+    private Object astObject = null;
+    private Node parent = null;
+    private String name = "";
     private boolean isList;
     private boolean isOpt;
-    private boolean isNTA;
-    private NodeData nodeData;
+    private boolean isNta;
+    private Collection<Builder> childBuilders = Collections.emptySet();
+    private String[] classHierarchy = {};
 
-    private static Method orderMethod;
-    private static Class orderSuperClass;
-
-    private static HashMap<Class, ArrayList<Method>> cachedNTAMethods;
-    private static HashMap<Class, ArrayList<AbstractMap.SimpleEntry<Method, Annotation>>> cachedMethods;
-    private static HashMap<String, HashSet<Class>> classParents;
-
-    /**
-     * This is THE method for creating the Reflected tree from the root, only use this
-     * on a new instance of the model as it cachesThings in static fields
-     * @param root
-     * @param astBrain used for contributing errors and warnings, during the traversal of the AST.
-     */
-    public static Node getReflectedTree(Object root, ASTBrain astBrain, boolean isList){
-        return new ReflectionNode(root, astBrain, isList);
+    public Builder astObject(Object astObject) {
+      this.astObject = astObject;
+      return this;
     }
 
-    private ReflectionNode(Object root, ASTBrain astBrain, boolean isList){
-        orderMethod = null;
-        orderSuperClass = null;
-        cachedMethods = null;
-        cachedNTAMethods = null;
-        this.nameFromParent = "";
-        init(root, null, isList, false, false, astBrain);
+    public Builder parent(Node parent) {
+      this.parent = parent;
+      return this;
     }
 
-    /**
-     * This is THE method used to create NTA´s and their subtrees
-     * Will traverse the children of the given root, and create its subtree
-     * @param root
-     * @param astBrain
-     */
-
-    public Node getNTATree(Object root, Node parent, ASTBrain astBrain){
-        if(ReflectionNode.isChildClass(root, ASTAnnotation.AST_SUPER_CLASS, true))
-            return new ReflectionNode(root, parent, ASTAnnotation.isList(root.getClass()), true, astBrain);
-        return null;
+    public Builder isList(boolean list) {
+      isList = list;
+      return this;
     }
 
-    public static void createNTATree(Node node, Object root, ASTBrain astBrain){
-        if (node.getNTAChildren().containsKey(root) || astBrain.isASTObject(root))
-            return;
-        Node temp = node.getNTATree(root, node, astBrain);
-        if(temp != null)
-            node.getNTAChildren().put(root, temp);
+    public Builder isOpt(boolean opt) {
+      isOpt = opt;
+      return this;
     }
 
-    public Node getNTATree(String s, ASTBrain astBrain){
-        Node ntaNode = showNTAChildren.get(s);
-        if (ntaNode == null) {
-            Object obj = getNodeData().computeMethod(s);
-            ntaNode = getNTATree(obj, this, astBrain);
-            if(ntaNode == null)
-                return null;
-            showNTAChildren.put(s, ntaNode);
-            astBrain.addASTObject(ntaNode.getASTObject(), true);
+    public Builder name(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder isNta(boolean nta) {
+      isNta = nta;
+      return this;
+    }
+
+    public Builder children(Collection<Builder> childBuilders) {
+      this.childBuilders = childBuilders;
+      return this;
+    }
+
+    public Builder classHierarchy(String[] classHierarchy) {
+      this.classHierarchy = classHierarchy;
+      return this;
+    }
+
+    public Node build() {
+      if (astObject == null) {
+        return new NullNode(name);
+      } else {
+        ReflectionNode node = new ReflectionNode(astObject, parent, name, isList, isOpt, isNta,
+            classHierarchy);
+        node.children.addAll(childBuilders.stream().map(builder -> builder.parent(node).build())
+            .collect(Collectors.toList()));
+        return node;
+      }
+    }
+
+    public Object astObject() {
+      return astObject;
+    }
+
+    public boolean isNta() {
+      return isNta;
+    }
+
+    public boolean isOpt() {
+      return isOpt;
+    }
+
+    public boolean isList() {
+      return isList;
+    }
+
+    public String name() {
+      return name;
+    }
+  }
+
+  private ReflectionNode(@Nonnull Object astNode, Node parent, String name, boolean isList,
+      boolean isOpt, boolean isNTA, String[] classHierarchy) {
+    this.astNode = astNode;
+    this.parent = parent;
+    this.simpleClassName = this.astNode.getClass().getSimpleName();
+    this.nameFromParent = name.equals(simpleClassName) || name.isEmpty() ? "" : name;
+    this.isOpt = isOpt;
+    this.isList = isList;
+    this.isNTA = isNTA;
+    this.classHierarchy = classHierarchy;
+  }
+
+  @Override public void addNtaChild(Object childObject, @Nonnull Node node) {
+    ntaChildren.put(childObject, node);
+  }
+
+  /**
+   * Finds the fields storing the cache flag and cache value for attributes.
+   * The field identification is based on the field name, and may produce false positives.
+   * If cache fields were annotated we could ensure that we don't identify false cache fields.
+   */
+  @Override public Pair<Field, Field> getCacheFields(Method method) {
+    if (cachedMethodFields.get(method) != null) {
+      return cachedMethodFields.get(method);
+    }
+    Class<?> klass = getAstClass();
+    String valueFieldName = ASTAnnotation.getCacheValueFieldName(method);
+    String computedFlagFieldName = ASTAnnotation.getComputedFlagFieldName(method);
+    Field cachedField = null;
+    Field computedField = null;
+    outer:
+    while (klass != null) {
+      for (Field field : klass.getDeclaredFields()) {
+        String filedName = field.getName();
+        // TODO(joqvist): why use contains here instead of equals?
+        if (filedName.contains(valueFieldName)) {
+          cachedField = field;
+          if (computedField != null) {
+            break outer;
+          }
+        } else if (filedName.contains(computedFlagFieldName)) {
+          computedField = field;
+          if (cachedField != null) {
+            break outer;
+          }
         }
-        return ntaNode;
+      }
+      klass = klass.getSuperclass();
     }
+    Pair<Field, Field> fields = new Pair<>(cachedField, computedField);
+    cachedMethodFields.put(method, fields);
+    return fields;
+  }
 
-    private ReflectionNode(Object root, Node parent, boolean isList, boolean NTA, ASTBrain astBrain){
-        this.nameFromParent = "";
-        this.isNTA = NTA;
-        init(root, parent, isList, false, true, astBrain);
-    }
+  @Override public boolean isChildClassOf(Class parent, FilteredTreeBuilder traverser) {
+    return traverser.isChildClass(astNode, parent.getName());
+  }
 
-    /**
-     * This is the constructor used during the traversal of the AST
-     * @param root
-     * @param name
-     * @param isList
-     * @param isOpt
-     * @param astBrain
-     */
+  @Override public boolean isOpt() {
+    return isOpt;
+  }
 
-    private ReflectionNode(Object root, Node parent, String name, boolean isList, boolean isOpt, boolean isNTA, ASTBrain astBrain){
-        this.nameFromParent =  name.equals(simpleNameClass) || name.length() == 0 ?  "" : name;
-        init(root, parent, isList, isOpt, isNTA, astBrain);
-    }
+  @Override public boolean isList() {
+    return isList;
+  }
 
-    /**
-     * Continues the traversal.
-     * If the isList is true, this method will iterate over all the children in the "List"
-     * @param root
-     * @param isList
-     * @param isOpt
-     * @param astBrain
-     */
-    private void init(Object root, Node parent, boolean isList, boolean isOpt, boolean isNTA, ASTBrain astBrain){
-        this.ASTObject = root;
-        this.parent = parent;
-        this.nodeData = new ReflectionNodeData(this);
-        this.isOpt = isOpt;
-        this.isList = isList;
-        this.children = new ArrayList<>();
-        this.NTAChildren = new HashMap<>();
-        this.showNTAChildren = new HashMap<>();
+  @Override public boolean isNullNode() {
+    return false;
+  }
 
-        if(cachedMethods == null)
-            cachedMethods = new HashMap<>();
-        if(cachedNTAMethods == null)
-            cachedNTAMethods = new HashMap<>();
-        if(classParents == null)
-            classParents = new HashMap<>();
+  @Override public boolean isNTANode() {
+    return isNTA;
+  }
 
+  @Override public String getSimpleClassName() {
+    return simpleClassName;
+  }
 
-        if(root != null)
-            this.simpleNameClass = root.getClass().getSimpleName();
-        else
-            this.simpleNameClass = "Null";
+  @Override public String getNameFromParent() {
+    return nameFromParent;
+  }
 
-        if(root != null) {
-            astBrain.addASTObject(ASTObject, isNTA);
-            try {
-                addListOptNodes(root, isList, isOpt, astBrain);
-            }catch (ClassCastException e){
-                e.printStackTrace();
-                String message = isNTA ? "Object : " + root + " is not a type of the AST" : e.getMessage();
-                astBrain.putMessage(AlertMessage.AST_STRUCTURE_WARNING, message);
-                return;
-            }
-            traversDown(root, astBrain);
+  @Override public Class<?> getAstClass() {
+    return astNode.getClass();
+  }
+
+  @Override public Map<Object, Node> getNtaChildren() {
+    return ntaChildren;
+  }
+
+  @Override public Object getAstObject() {
+    return astNode;
+  }
+
+  @Override public Node getParent() {
+    return parent;
+  }
+
+  @Override public Collection<Node> getChildren() {
+    return children;
+  }
+
+  @Override public String toString() {
+    return simpleClassName;
+  }
+
+  @Override public void computeAttributes() {
+    attributes = new ArrayList<>();
+    tokens = new ArrayList<>();
+    nonterminalAttributes = new ArrayList<>();
+    for (Method method : astNode.getClass().getMethods()) {
+      TerminalValue info;
+      for (Annotation a : method.getAnnotations()) {
+        if (ASTAnnotation.isAttribute(a)) {
+          info = getAttributeInfo(method);
+          if (info.isNTA()) {
+            nonterminalAttributes.add(info);
+          } else {
+            attributes.add(info);
+          }
+          break;
+        } else if (ASTAnnotation.isToken(a)) {
+          info = computeToken(method);
+          tokens.add(info);
+          break;
         }
+      }
     }
+  }
 
-    private void checkASTStructure(Object child, Object root, ASTBrain astBrain){
-        if (child instanceof Collection && ASTAnnotation.isList(child.getClass()) && isOpt)
-            astBrain.putMessage(AlertMessage.AST_STRUCTURE_WARNING, "A List is a direct child to a Opt parent, parent : " + root + ", -> child : " + child);
+  /**
+   * Creates a Attribute and invokes the method with the supplied parameters, if any.
+   * Will also add the specific information about the Attribute, which is derived form the annotations.
+   * If forceComputation is true it will compute the non-parametrized NTA:s
+   */
+  private Attribute getAttributeInfo(Method method) {
+    Attribute attribute = new Attribute(method.getName(), method);
+    attribute.setParametrized(method.getParameterCount() > 0);
+    for (Annotation a : method.getAnnotations()) {
+      if (ASTAnnotation.isAttribute(a)) {
+        attribute.setKind(ASTAnnotation.getKind(a));
+        attribute.setCircular(ASTAnnotation.is(a, ASTAnnotation.AST_METHOD_CIRCULAR));
+        attribute.setNTA(ASTAnnotation.is(a, ASTAnnotation.AST_METHOD_NTA));
+      } else if (ASTAnnotation.isSource(a)) {
+        attribute.setAspect(ASTAnnotation.getString(a, ASTAnnotation.AST_METHOD_ASPECT));
+        attribute.setDeclaredAt(ASTAnnotation.getString(a, ASTAnnotation.AST_METHOD_DECLARED_AT));
+      }
     }
-
-
-    private void addListOptNodes(Object root, boolean isList, boolean isOpt,  ASTBrain astBrain){
-        if(isOpt && !isIterable(root))
-            handleOptNode(root, astBrain);
-        else if (isList || isOpt)
-            iterIterable(root, (Iterable<?>) root, astBrain);
+    if (invokedValues.containsKey(method)) {
+      for (Map.Entry<Object[], Object> e : invokedValues.get(method).entrySet()) {
+        attribute.addComputedValue(e.getKey(), e.getValue());
+      }
     }
-
-    private boolean isIterable(Object root){
-        return root != null && root instanceof Iterable<?>;
-    }
-
-    private void handleOptNode(Object root, ASTBrain astBrain){
-        try {
-            Method m = root.getClass().getMethod(ASTAnnotation.AST_ORDER_METHOD);
-            if(m == null)
-                return;
-            Object obj = m.invoke(root);
-            if(obj == null)
-                return;
-            iterIterable(root, (Iterable<?>) obj, astBrain);
-        } catch (NoSuchMethodException e) {}
-        catch (InvocationTargetException e) {}
-        catch (IllegalAccessException e) {}
-    }
-
-    private void iterIterable(Object root, Iterable<?> iter, ASTBrain astBrain){
-        for (Object child : iter) {
-            checkASTStructure(child, root, astBrain);
-            children.add(new ReflectionNode(child, this, isOpt ? nameFromParent : "", child instanceof Collection, false, isNTA, astBrain));
+    addCachedValues(method, attribute);
+    if (DrASTSettings.getFlag(DrASTSettings.DYNAMIC_VALUES)) {
+      try {
+        if (!attribute.isParametrized()) {
+          attribute.setValue(method.invoke(astNode));
         }
+      } catch (Throwable e) {
+        addInvocationErrors(e, method);
+        attribute.setValue(e.getCause());
+      }
+    }
+    return attribute;
+  }
+
+  /**
+   * Get the Token of the method in the obj.
+   */
+  private Token computeToken(Method m) {
+    String name = m.getName();
+    try {
+      return new Token(name, m.invoke(astNode), m);
+    } catch (Throwable e) {
+      addInvocationErrors(e, m);
+      return new Token(name, e.getCause().toString(), m);
+    }
+  }
+
+  private void addCachedValues(Method method, Attribute attribute) {
+    if (attribute == null) {
+      return;
+    }
+    Pair<Field, Field> fieldPair = getCacheFields(method);
+
+    attribute.setEvaluated(FilteredTreeBuilder.isComputed(astNode, fieldPair.getSecond()));
+    if (!attribute.isEvaluated() && !attribute.isParametrized()) {
+      return;
     }
 
-    /**
-     * Iterates through the methods of the root and fins the references to the children, for each child is traverses down
-     * @param root
-     * @param astBrain
-     */
-    private void traversDown(Object root, ASTBrain astBrain) {
-        ArrayList<AbstractMap.SimpleEntry<Method, Annotation>> methods = cachedMethods.get(root.getClass());
-
-        if(methods == null)
-            methods = getMethods(root);
-
-        if(astBrain.getConfig().getBoolean(Config.NTA_CACHED)) //Find this nodes cached NTA:s
-            getNodeData().setCachedNTAs(astBrain);
-
-        try {
-            for (AbstractMap.SimpleEntry<Method, Annotation> p : methods) {
-                Annotation a = p.getValue();
-                Object obj = p.getKey().invoke(root, new Object[p.getKey().getParameterCount()]);
-                String name = ASTAnnotation.getString(a, ASTAnnotation.AST_METHOD_NAME);
-                nullCheck(obj, astBrain, name);
-                children.add(new ReflectionNode(obj, this, name,
-                        !ASTAnnotation.isSingleChild(a),
-                        ASTAnnotation.isOptChild(a),
-                        isNTA, astBrain));
-            }
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+    Object value = FilteredTreeBuilder.getFieldValue(astNode, fieldPair.getFirst());
+    if (attribute.isParametrized()) {
+      if (value == null || !(value instanceof Map)) {
+        return;
+      }
+      Map<?, ?> map = (Map) value;
+      for (Map.Entry par : map.entrySet()) {
+        if (method.getParameterCount() > 1 && par.getKey() instanceof Collection) {
+          attribute.addComputedValue(((java.util.List) par.getKey()).toArray(), par.getValue());
+        } else {
+          attribute.addComputedValue(new Object[] {par.getKey()}, par.getValue());
         }
-        if(!isNullNode())
-            reOrderChildren();
-        astBrain.getAnalyzer().executeDuringRTAnalyzers(this);
+      }
+    } else {
+      attribute.setValue(value);
+    }
+  }
+
+  private void addInvocationErrors(Throwable e, Method m) {
+    Log.error("Error when computing %s in node %s. Cause : %s",
+        m.getName(), astNode,
+        e.getCause() != null ? e.getCause().toString() : e.getMessage());
+  }
+
+  private static Class classOf(Object arg) {
+    if (arg == null) {
+      return Object.class;
+    } else {
+      return arg.getClass();
+    }
+  }
+
+  @Override public Object computeMethod(String name, Object... args) {
+    try {
+      return MethodUtils.invokeMethod(astNode, name, args);
+    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+      throw new Error(e);
+    }
+  }
+
+  public static Method getMethodForArgs(Class<?> klass, String name, Object[] args)
+      throws NoSuchMethodException {
+    Method method;
+    if (args != null) {
+      Class[] paramTypes = new Class[args.length];
+      for (int i = 0; i < args.length; ++i) {
+        paramTypes[i] = classOf(args[i]);
+      }
+      method = klass.getMethod(name, paramTypes);
+    } else {
+      method = klass.getMethod(name);
+    }
+    return method;
+  }
+
+  /**
+   * Computes the method in the NodeInfo, with the given parameters, and adds it to the cached list of the Attribute.
+   * If the params == null and the method is not parametrized it will compute the method will 0 arguments, otherwise it will return null and add a error to the api.
+   *
+   * @return true if the invocation was successful.
+   */
+  @Override public Object computeAttribute(TerminalValue terminalValue, Object[] par) {
+    Object[] params = par;
+    Method method = terminalValue.getMethod();
+    if ((par != null && par.length != method.getParameterCount()) || (par == null
+        && method.getParameterCount() != 0)) {
+      Log.error("Wrong number of arguments for the method: " + method);
+      return null;
+    }
+    if (params == null) {
+      params = new Object[method.getParameterCount()];
     }
 
-    private ArrayList<AbstractMap.SimpleEntry<Method, Annotation>> getMethods(Object root){
-        ArrayList<AbstractMap.SimpleEntry<Method, Annotation>> methods = new ArrayList<>();
-        ArrayList<Method> NTAMethods = new ArrayList<>();
-        for (Method m : root.getClass().getMethods()) {
-            for (Annotation a : m.getAnnotations()) {
-                if (ASTAnnotation.isChild(a)) {
-                    methods.add(new AbstractMap.SimpleEntry<>(m,a));
-                } else if (ASTAnnotation.isAttribute(a) && ASTAnnotation.is(a, ASTAnnotation.AST_METHOD_NTA)) {
-                    if (m.getParameterCount() == 0)
-                        showNTAChildren.put(m.getName(), null);
-                    NTAMethods.add(m);
-                }
-            }
-        }
-        cachedMethods.put(root.getClass(), methods);
-        cachedNTAMethods.put(root.getClass(), NTAMethods);
-        return methods;
+    if (!terminalValue.isAttribute()) {
+      Log.error("Can only do compute on attributes");
+      return null;
     }
 
-
-    private void reOrderChildren(){
-        if(children.size() < 2)
-            return;
-        try {
-            if(orderSuperClass == null) {
-                Class tempClass = getASTClass();
-                while (tempClass != null && !tempClass.getSimpleName().equals("ASTNode"))
-                    tempClass = tempClass.getSuperclass();
-                orderSuperClass = tempClass;
-            }
-            if(orderMethod == null)
-                 orderMethod = orderSuperClass.getDeclaredMethod("getIndexOfChild", orderSuperClass);
-            for(int i = 0; i < children.size(); i++){
-                Node temp = children.get(i);
-                int newPos = (int) orderMethod.invoke(getASTObject(), temp.getASTObject());
-                if(newPos >= children.size() || newPos < 0)
-                    continue;
-                children.set(i, children.get(newPos));
-                children.set(newPos, temp);
-            }
-        } catch (IllegalAccessException e){
-        } catch (InvocationTargetException e){
-        } catch (NoSuchMethodException e){
-        } catch (ClassCastException e) {}
+    Attribute attribute = (Attribute) terminalValue;
+    if (attribute.containsValue(params)) {
+      return attribute.getComputedValue(params);
     }
 
-    private void nullCheck(Object obj, ASTBrain astBrain, String name){
-        if(obj == null)
-            astBrain.putMessage(AlertMessage.AST_STRUCTURE_WARNING, String.format("The child %s is null, can't continue the traversal of this path", name));
+    Object obj;
+    try {
+      obj = method.invoke(astNode, params);
+    } catch (Throwable e) {
+      addInvocationErrors(e, attribute.getMethod());
+      obj = e.getCause() != null ? e.getCause() : e.getMessage();
     }
-
-    @Override
-    public boolean isChildClassOf(Class parent){ return isChildClass(ASTObject, parent.getName(), false); }
-
-    private static boolean isChildClass(Object ASTObject, String name, boolean simple){
-        if(ASTObject == null || name  == null)
-            return false;
-        Class clazz = ASTObject.getClass();
-        if(!classParents.containsKey(name))
-            classParents.put(name, new HashSet<>());
-        HashSet<Class> children = classParents.get(name);
-        if(children.contains(clazz))
-            return true;
-        while(clazz != null){
-            String n = simple ? clazz.getSimpleName() : clazz.getName();
-            if(n.equals(name)) {
-                children.add(ASTObject.getClass());
-                return true;
-            }
-            clazz = clazz.getSuperclass();
-        }
-        return false;
+    attribute.setEvaluated(true);
+    attribute.addComputedValue(params, obj);
+    if (!invokedValues.containsKey(method)) {
+      invokedValues.put(method, new HashMap<>());
     }
+    invokedValues.get(method).put(params, obj);
+    return obj;
+  }
 
-    @Override
-    public boolean isOpt(){return isOpt;}
+  @Override public Collection<TerminalValue> getAttributes() {
+    return attributes;
+  }
 
-    @Override
-    public boolean isList(){ return isList; }
+  @Override public Collection<TerminalValue> getNTAs() {
+    return nonterminalAttributes;
+  }
 
-    @Override
-    public boolean isNullNode() { return ASTObject == null; }
+  @Override public Collection<TerminalValue> getTokens() {
+    return tokens;
+  }
 
-    @Override
-    public boolean isNTANode() { return isNTA; }
-
-    @Override
-    public void putNTA(String methodName, Node node){ showNTAChildren.put(methodName, node);}
-
-    @Override
-    public boolean containsNTAMethod(String methodName) { return showNTAChildren.containsKey(methodName); }
-
-    @Override
-    public NodeData getNodeData(){ return nodeData;}
-
-    @Override
-    public String getSimpleClassName() { return simpleNameClass; }
-
-    @Override
-    public String getNameFromParent() { return nameFromParent; }
-
-    @Override
-    public Class getASTClass() { return ASTObject.getClass(); }
-
-    @Override
-    public HashMap<Object, Node> getNTAChildren() { return NTAChildren; }
-
-    @Override
-    public ArrayList<Method> getNTAMethods(Class clazz) { return cachedNTAMethods.get(clazz); }
-
-    @Override
-    public Object getASTObject() { return ASTObject; }
-
-    @Override
-    public Node getParent() {  return parent; }
-
-    @Override
-    public Collection<Node> getChildren() { return children; }
-
-    @Override
-    public String toString() { return simpleNameClass; }
-
-
+  @Override public String[] getClassHierarchy() {
+    return classHierarchy;
+  }
 }

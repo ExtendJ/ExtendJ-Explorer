@@ -5,18 +5,24 @@ package CalcASM.src.java.gen;
  * @aspect UserTest
  * @declaredat /home/gda10jli/Documents/jastadddebugger-exjobb/CalcASM/src/jastadd/UserTest.jrag:11
  */
- class Counter extends Object {
-  
-		private int value;
+class Counter extends Object {
 
-  
-		public Counter() { value = 0; }
+  private int value;
 
-  
-		public void add(int value) { this.value += value; }
 
-  
-		public int value() { return value; }
+  public Counter() {
+    value = 0;
+  }
+
+
+  public void add(int value) {
+    this.value += value;
+  }
+
+
+  public int value() {
+    return value;
+  }
 
 
 }

@@ -4,7 +4,6 @@ package CalcASM.src.java.gen;
 /**
  * @ast node
  * @production List : {@link ASTNode};
-
  */
 public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
   /**
@@ -13,15 +12,18 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
   public List() {
     super();
   }
+
   /**
    * Initializes the child array to the correct size.
    * Initializes List and Opt nta children.
+   *
    * @apilevel internal
    * @ast method
    * @declaredat ASTNode:10
    */
   public void init$Children() {
   }
+
   /**
    * @declaredat ASTNode:12
    */
@@ -31,10 +33,12 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
       addChild(initialChildren[i]);
     }
   }
+
   /**
    * @declaredat ASTNode:19
    */
   private boolean list$touched = true;
+
   /**
    * @declaredat ASTNode:21
    */
@@ -42,6 +46,7 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
     addChild(node);
     return this;
   }
+
   /**
    * @declaredat ASTNode:26
    */
@@ -51,6 +56,7 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
     }
     return this;
   }
+
   /**
    * @declaredat ASTNode:33
    */
@@ -60,6 +66,7 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
 
     super.insertChild(node, i);
   }
+
   /**
    * @declaredat ASTNode:40
    */
@@ -69,6 +76,7 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
 
     super.addChild(node);
   }
+
   /**
    * @apilevel low-level
    * @declaredat ASTNode:50
@@ -79,6 +87,7 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
 
     super.removeChild(i);
   }
+
   /**
    * @declaredat ASTNode:57
    */
@@ -93,6 +102,7 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
 
     return getNumChildNoTransform();
   }
+
   /**
    * @apilevel internal
    * @declaredat ASTNode:71
@@ -100,6 +110,7 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
   public void flushAttrCache() {
     super.flushAttrCache();
   }
+
   /**
    * @apilevel internal
    * @declaredat ASTNode:77
@@ -107,6 +118,7 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
   public void flushCollectionCache() {
     super.flushCollectionCache();
   }
+
   /**
    * @apilevel internal
    * @declaredat ASTNode:83
@@ -115,6 +127,7 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
     List node = (List) super.clone();
     return node;
   }
+
   /**
    * @apilevel internal
    * @declaredat ASTNode:90
@@ -131,21 +144,24 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
       throw new Error("Error: clone not supported for " + getClass().getName());
     }
   }
+
   /**
    * Create a deep copy of the AST subtree at this node.
    * The copy is dangling, i.e. has no parent.
+   *
    * @return dangling copy of the subtree at this node
    * @apilevel low-level
-   * @deprecated Please use treeCopy or treeCopyNoTransform instead
    * @declaredat ASTNode:109
+   * @deprecated Please use treeCopy or treeCopyNoTransform instead
    */
-  @Deprecated
-  public List<T> fullCopy() {
+  @Deprecated public List<T> fullCopy() {
     return treeCopyNoTransform();
   }
+
   /**
    * Create a deep copy of the AST subtree at this node.
    * The copy is dangling, i.e. has no parent.
+   *
    * @return dangling copy of the subtree at this node
    * @apilevel low-level
    * @declaredat ASTNode:119
@@ -163,10 +179,12 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
     }
     return tree;
   }
+
   /**
    * Create a deep copy of the AST subtree at this node.
    * The subtree of this node is traversed to trigger rewrites before copy.
    * The copy is dangling, i.e. has no parent.
+   *
    * @return dangling copy of the subtree at this node
    * @apilevel low-level
    * @declaredat ASTNode:139
@@ -175,11 +193,12 @@ public class List<T extends ASTNode> extends ASTNode<T> implements Cloneable {
     doFullTraversal();
     return treeCopyNoTransform();
   }
+
   /**
    * @apilevel internal
    * @declaredat ASTNode:146
    */
   protected boolean is$Equal(ASTNode node) {
-    return super.is$Equal(node);    
+    return super.is$Equal(node);
   }
 }

@@ -11,52 +11,54 @@ import java.awt.geom.Point2D;
 
 /**
  * Created by gda10jli on 12/14/15.
- *
+ * <p>
  * An extension of the TranslatingGraphMousePlugin. It has the same behavior as its parent, but also tells
  * the CustomRenderer when the user is dragging the mouse. This is so some optimizations can take place by the
  * CustomRenderer.
  */
 public class PanningGraphMousePlugin extends TranslatingGraphMousePlugin {
 
-    public PanningGraphMousePlugin(int modifiers) {
-        super(modifiers);
+  public PanningGraphMousePlugin(int modifiers) {
+    super(modifiers);
+  }
+
+  /**
+   * Check the modifiers. If accepted, translate the graph according
+   * to the dragging of the mouse pointer
+   *
+   * @param e the event
+   * !NOTE! method almost unchanged, added a null check for down an exception was thrown otherwise
+   */
+  @Override public void mouseDragged(MouseEvent e) {
+    VisualizationViewer vv = (VisualizationViewer) e.getSource();
+    boolean accepted = checkModifiers(e);
+    if (accepted && down != null) { //
+      MutableTransformer modelTransformer =
+          vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT);
+      vv.setCursor(cursor);
+      try {
+        Point2D q = vv.getRenderContext().getMultiLayerTransformer().inverseTransform(down);
+        Point2D p = vv.getRenderContext().getMultiLayerTransformer().inverseTransform(e.getPoint());
+        float dx = (float) (p.getX() - q.getX());
+        float dy = (float) (p.getY() - q.getY());
+
+        modelTransformer.translate(dx, dy);
+        down.x = e.getX();
+        down.y = e.getY();
+      } catch (RuntimeException ex) {
+        System.err.println("down = " + down + ", e = " + e);
+        throw ex;
+      }
+
+      e.consume();
+      vv.repaint();
+      ((CustomRenderer) vv.getRenderer()).setMoving(true);
     }
+  }
 
-    /**
-     * Check the modifiers. If accepted, translate the graph according
-     * to the dragging of the mouse pointer
-     * @param e the event
-     * !NOTE! method almost unchanged, added a null check for down an exception was thrown otherwise
-     */
-    public void mouseDragged(MouseEvent e) {
-        VisualizationViewer vv = (VisualizationViewer)e.getSource();
-        boolean accepted = checkModifiers(e);
-        if(accepted && down != null) { //
-            MutableTransformer modelTransformer = vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT);
-            vv.setCursor(cursor);
-            try {
-                Point2D q = vv.getRenderContext().getMultiLayerTransformer().inverseTransform(down);
-                Point2D p = vv.getRenderContext().getMultiLayerTransformer().inverseTransform(e.getPoint());
-                float dx = (float) (p.getX()-q.getX());
-                float dy = (float) (p.getY()-q.getY());
-
-                modelTransformer.translate(dx, dy);
-                down.x = e.getX();
-                down.y = e.getY();
-            } catch(RuntimeException ex) {
-                System.err.println("down = "+down+", e = "+e);
-                throw ex;
-            }
-
-            e.consume();
-            vv.repaint();
-            ((CustomRenderer)vv.getRenderer()).setMoving(true);
-        }
-    }
-
-    public void mouseReleased(MouseEvent e) {
-        VisualizationViewer vv = (VisualizationViewer)e.getSource();
-        ((CustomRenderer)vv.getRenderer()).setMoving(false);
-        super.mouseReleased(e);
-    }
+  @Override public void mouseReleased(MouseEvent e) {
+    VisualizationViewer vv = (VisualizationViewer) e.getSource();
+    ((CustomRenderer) vv.getRenderer()).setMoving(false);
+    super.mouseReleased(e);
+  }
 }

@@ -11,39 +11,36 @@ import java.util.Map;
  */
 public class TreeClusterParent extends GenericTreeCluster {
 
-    public TreeClusterParent(GenericTreeNode parent){
-        super(parent);
-    }
+  public TreeClusterParent(GenericTreeNode parent) {
+    super(parent);
+  }
 
-    @Override
-    protected HashMap<String, Integer> fillTypeList(HashMap<String, Integer> types) {
-        for (GenericTreeNode node : clusters) {
-            TreeCluster cluster = (TreeCluster) node;
-            for (Map.Entry<String, Integer> e : cluster.getTypeList().entrySet()) {
-                types.put(e.getKey(), types.containsKey(e.getKey()) ? types.get(e.getKey()) + e.getValue() : e.getValue());
-            }
-        }
-        return types;
+  @Override protected HashMap<String, Integer> fillTypeList(HashMap<String, Integer> types) {
+    for (GenericTreeNode node : clusters) {
+      TreeCluster cluster = (TreeCluster) node;
+      for (Map.Entry<String, Integer> e : cluster.getTypeList().entrySet()) {
+        types.put(e.getKey(),
+            types.containsKey(e.getKey()) ? types.get(e.getKey()) + e.getValue() : e.getValue());
+      }
     }
+    return types;
+  }
 
-    @Override
-    public void addChild(Node node, GenericTreeNode child) {
-        if(!child.isCluster())
-            return;
-        TreeCluster cluster = (TreeCluster) child;
-        clusters.add(cluster);
-        cluster.clusterRef = this;
-        nodeCount += cluster.getNodeCount();
+  @Override public void addChild(Node node, GenericTreeNode child) {
+    if (!child.isCluster()) {
+      return;
     }
+    TreeCluster cluster = (TreeCluster) child;
+    clusters.add(cluster);
+    cluster.clusterRef = this;
+    nodeCount += cluster.getNodeCount();
+  }
 
-    @Override
-    public boolean isCluster() {
-        return false;
-    }
+  @Override public boolean isCluster() {
+    return false;
+  }
 
-    @Override
-    public boolean isClusterParent() {
-        return true;
-    }
-
+  @Override public boolean isClusterParent() {
+    return true;
+  }
 }

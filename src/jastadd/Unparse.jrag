@@ -1,0 +1,42 @@
+/**
+  * Attributes for unparsing filter expressions.
+  * @author Jesper Öqvist
+  */
+aspect Unparse {
+  @Override public String Expr.toString() {
+    return unparse();
+  }
+
+  syn String Expr.unparse();
+
+  eq Attribute.unparse() = String.format("%s(%s)", getNAME(), argListToString());
+
+  syn String Attribute.argListToString() {
+    String result = "";
+    for (Expr arg : getArgList()) {
+      if (!result.isEmpty()) {
+        result += ", ";
+      }
+      result += arg.toString();
+    }
+    return result;
+  }
+
+  eq Literal.unparse() = getVALUE();
+  eq ParExpr.unparse() = String.format("(%s)", getExpr().unparse());
+  eq NotExpr.unparse() = "!" + getExpr().unparse();
+  eq TrueLiteral.unparse() = "true";
+  eq FalseLiteral.unparse() = "false";
+  eq BinaryExpr.unparse() = String.format("%s %s %s",
+      getLeft().unparse(), operator(), getRight().unparse());
+
+  syn String BinaryExpr.operator();
+  eq AndExpr.operator() = "&&";
+  eq OrExpr.operator() = "||";
+  eq EqExpr.operator() = "==";
+  eq NotEqExpr.operator() = "!=";
+  eq GtExpr.operator() = ">";
+  eq GtEqExpr.operator() = ">=";
+  eq LtExpr.operator() = "<";
+  eq LtEqExpr.operator() = "<=";
+}

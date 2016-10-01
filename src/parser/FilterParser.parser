@@ -1,0 +1,174 @@
+// Filter language parser grammar.
+// Author: Jesper Öqvist, 2016
+%header {:
+ package org.jastadd.drast.filterlang;
+:};
+
+%embed {:
+  static public class SyntaxError extends RuntimeException {
+    public SyntaxError(String message) {
+      super(message);
+    }
+  }
+
+  {
+    report = new beaver.Parser.Events() {
+      @Override public void scannerError(beaver.Scanner.Exception error) {
+        throw new SyntaxError(String.format("%d,%d: Scanner Error: %s",
+            error.line, error.column, error.getMessage()));
+      }
+
+      @Override public void syntaxError(beaver.Symbol token) {
+        String value;
+        if (token.value != null) {
+          value = String.format("\"%s\"", token.value);
+        } else {
+          value = "#" + token.getId();
+        }
+        int start = token.getStart();
+        throw new SyntaxError(String.format("%d,%d: Syntax Error: unexpected token %s",
+            beaver.Symbol.getLine(start), beaver.Symbol.getColumn(start), value));
+      }
+    };
+  }
+:};
+
+%goal config;
+%goal expression;
+
+FilterRules config = rule_list_opt {: return new FilterRules(rule_list_opt); :};
+List rule_list_opt = {: return new List(); :} | rule_list;
+List rule_list =
+    rule {: return new List().add(rule); :}
+  | rule_list rule {: return rule_list.add(rule); :}
+  ;
+
+// All permutations of condition, show, and stylesheet.
+Rule rule =
+    basic_rule
+
+  | basic_rule.r condition show stylesheet
+    {: r.setCondition(condition); r.setShowList(show); r.setStyleList(stylesheet); return r; :}
+  | basic_rule.r condition stylesheet show
+    {: r.setCondition(condition); r.setShowList(show); r.setStyleList(stylesheet); return r; :}
+  | basic_rule.r show condition stylesheet
+    {: r.setCondition(condition); r.setShowList(show); r.setStyleList(stylesheet); return r; :}
+  | basic_rule.r show stylesheet condition
+    {: r.setCondition(condition); r.setShowList(show); r.setStyleList(stylesheet); return r; :}
+  | basic_rule.r stylesheet condition show
+    {: r.setCondition(condition); r.setShowList(show); r.setStyleList(stylesheet); return r; :}
+  | basic_rule.r stylesheet show condition
+    {: r.setCondition(condition); r.setShowList(show); r.setStyleList(stylesheet); return r; :}
+
+  | basic_rule.r condition show
+    {: r.setCondition(condition); r.setShowList(show); return r; :}
+  | basic_rule.r show condition
+    {: r.setCondition(condition); r.setShowList(show); return r; :}
+
+  | basic_rule.r condition stylesheet
+    {: r.setCondition(condition); r.setStyleList(stylesheet); return r; :}
+  | basic_rule.r stylesheet condition
+    {: r.setCondition(condition); r.setStyleList(stylesheet); return r; :}
+
+  | basic_rule.r show stylesheet
+    {: r.setShowList(show); r.setStyleList(stylesheet); return r; :}
+  | basic_rule.r stylesheet show
+    {: r.setShowList(show); r.setStyleList(stylesheet); return r; :}
+
+  | basic_rule.r condition
+    {: r.setCondition(condition); return r; :}
+  | basic_rule.r show
+    {: r.setShowList(show); return r; :}
+  | basic_rule.r stylesheet
+    {:  r.setStyleList(stylesheet); return r; :}
+  ;
+
+Rule basic_rule =
+    INCLUDE path {: return new IncludeRule(path, new Opt(), new List(), new List()); :}
+  | EXCLUDE path {: return new ExcludeRule(path, new Opt(), new List(), new List()); :}
+  | SET path {: return new Rule(path, new Opt(), new List(), new List()); :}
+  ;
+
+Expr condition = WHEN LBRACE expression RBRACE {: return expression; :};
+
+List show = SHOW LBRACE show_list_opt RBRACE {: return show_list_opt; :};
+
+List show_list_opt = {: return new List(); :} | show_list;
+List show_list =
+    attribute {: return new List().add(attribute); :}
+  | show_list attribute {: return show_list.add(attribute); :}
+  ;
+
+List stylesheet = STYLE LBRACE dict_opt RBRACE {: return dict_opt; :};
+
+List dict_opt = {: return new List(); :} | dict;
+List dict =
+    style {: return new List().add(style); :}
+  | dict style {: return dict.add(style); :}
+  ;
+
+Style style = STRING.name COLON STRING.value {: return new Style(name, value); :};
+
+List path =
+    path_part {: return new List().add(path_part); :}
+  | path path_part {: return path.add(path_part); :}
+  ;
+PathPart path_part =
+    STAR inline_condition {: return new AnyNode(inline_condition); :}
+  | DOUBLESTAR {: return new AnyNodeSequence(); :}
+  | ID inline_condition {: return new TypedNode(ID, inline_condition); :}
+  ;
+
+Opt inline_condition =
+    {: return new Opt(); :}
+  | LBRACE RBRACE {: return new Opt(); :}
+  | LBRACE expression RBRACE {: return new Opt(expression); :}
+  ;
+
+Expr expression =
+    and_expr
+  | expression.left OR and_expr.right {: return new OrExpr(left, right); :}
+  ;
+Expr and_expr =
+    comparison
+  | and_expr.left AND comparison.right {: return new AndExpr(left, right); :}
+  ;
+Expr comparison =
+    operand
+  | operand.left EQ operand.right {: return new EqExpr(left, right); :}
+  | operand.left NOTEQ operand.right {: return new NotEqExpr(left, right); :}
+  | operand.left GT operand.right {: return new GtExpr(left, right); :}
+  | operand.left GTEQ operand.right {: return new GtEqExpr(left, right); :}
+  | operand.left LT operand.right {: return new LtExpr(left, right); :}
+  | operand.left LTEQ operand.right {: return new LtEqExpr(left, right); :}
+  ;
+Expr operand = constant | attribute | par_expr | not_expr;
+Expr par_expr = LPAREN expression RPAREN {: return expression; :};
+Expr not_expr = NOT operand {: return new NotExpr(operand); :};
+Expr attribute =
+    ID args_opt {: return new Attribute(ID, args_opt); :}
+  | WHEN.id args_opt {: return new Attribute(id, args_opt); :}
+  | STYLE.id args_opt {: return new Attribute(id, args_opt); :}
+  | SHOW.id args_opt {: return new Attribute(id, args_opt); :}
+  | INCLUDE.id args_opt {: return new Attribute(id, args_opt); :}
+  | EXCLUDE.id args_opt {: return new Attribute(id, args_opt); :}
+  | SET.id args_opt {: return new Attribute(id, args_opt); :}
+  ;
+List args_opt =
+    {: return new List(); :}
+  | LPAREN RPAREN {: return new List(); :}
+  | LPAREN arg_list RPAREN {: return arg_list; :}
+  ;
+List arg_list =
+    operand {: return new List().add(operand); :}
+  | arg_list COMMA operand {: return arg_list.add(operand); :}
+  ;
+Expr constant =
+    true
+  | false
+  | INT {: return new IntLiteral(INT); :}
+  | STRING {: return new StringLiteral(STRING); :}
+  | FLOAT {: return new DoubleLiteral(FLOAT); :}
+  ;
+BoolExpr true = TRUE {: return new TrueLiteral(); :};
+BoolExpr false = FALSE {: return new FalseLiteral(); :};

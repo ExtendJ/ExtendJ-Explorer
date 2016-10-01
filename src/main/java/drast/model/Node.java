@@ -1,9 +1,12 @@
 package drast.model;
 
+import drast.model.reflection.Pair;
+import drast.model.terminalvalues.TerminalValue;
+
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class represents the Node in the AST, it holds all its terminal attributes and references to its children.
@@ -11,40 +14,49 @@ import java.util.HashMap;
  */
 public interface Node {
 
-    boolean isChildClassOf(Class parent);
+  Pair<Field, Field> getCacheFields(Method method);
 
-    boolean isOpt();
+  boolean isChildClassOf(Class parent, FilteredTreeBuilder traverser);
 
-    boolean isList();
+  boolean isOpt();
 
-    boolean isNullNode();
+  boolean isList();
 
-    boolean isNTANode();
+  boolean isNullNode();
 
-    NodeData getNodeData();
+  boolean isNTANode();
 
-    String getSimpleClassName();
+  String getSimpleClassName();
 
-    String getNameFromParent();
+  String getNameFromParent();
 
-    Class getASTClass();
+  Class<?> getAstClass();
 
-    HashMap<Object, Node> getNTAChildren();
+  Map<Object, ? extends Node> getNtaChildren();
 
-    ArrayList<Method> getNTAMethods(Class clazz);
+  Object getAstObject();
 
-    Object getASTObject();
+  Node getParent();
 
-    Node getParent();
+  Collection<? extends Node> getChildren();
 
-    Collection<Node> getChildren();
+  /**
+   * Computes all methods of the node. This will clear the old values except the invoked ones.
+   * This is used for onDemand execution attributes values.
+   */
+  void computeAttributes();
 
-    Node getNTATree(Object root, Node parent, ASTBrain astBrain);
+  Object computeMethod(String name, Object... args);
 
-    Node getNTATree(String methodName, ASTBrain astBra);
+  Object computeAttribute(TerminalValue terminalValue, Object[] par);
 
-    boolean containsNTAMethod(String methodName);
+  Collection<TerminalValue> getAttributes();
 
-    void putNTA(String methodName, Node node);
+  Collection<TerminalValue> getNTAs();
 
+  Collection<TerminalValue> getTokens();
+
+  String[] getClassHierarchy();
+
+  void addNtaChild(Object childObject, Node node);
 }

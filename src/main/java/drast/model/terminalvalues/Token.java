@@ -9,26 +9,34 @@ import java.util.ArrayList;
  */
 public class Token extends TerminalValue {
 
-    public Token(String name, Object value, Method m){ super(name, value, m, true);}
+  public Token(String name, Object value, Method m) {
+    super(name, value, m, true);
+  }
 
-    @Override
-    public String print(){ return getName(method, null); }
+  @Override public String toString() {
+    return getName(method, null);
+  }
 
-    @Override
-    protected void setChildInfo(ArrayList<TerminalValueInfo> al) { }
+  @Override protected void setChildInfo(ArrayList<AttributeInfo> al) {
+  }
 
-    @Override
-    public boolean isParametrized() { return false; }
+  @Override public boolean isParametrized() {
+    return false;
+  }
 
-    public boolean isNTA() { return false; }
+  @Override public boolean isNTA() {
+    return false;
+  }
 
-    /**
-     * Check if a attribute is parametrized
-     * @return
-     */
-    public boolean isAttribute(){ return false; }
+  /**
+   * Check if a attribute is parametrized
+   */
+  @Override public boolean isAttribute() {
+    return false;
+  }
 
-    @Override
-    public String getKind() { return null; }
+  @Override public String getKind() {
+    return null;
+  }
 
 }
