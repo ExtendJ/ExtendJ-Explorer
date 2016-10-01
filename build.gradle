@@ -42,7 +42,7 @@ sourceSets {
 }
 
 dependencies {
-	compile files('tools/beaver-rt.jar')
+	compile 'net.sf.beaver:beaver-rt:0.9.11'
 	compile 'org.fxmisc.richtext:richtextfx:0.6.10'
 	compile 'org.apache.ant:ant:1.9.4'
 	compile 'net.sf.jung:jung-graph-impl:2.0.1'
