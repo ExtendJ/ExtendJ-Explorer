@@ -1,8 +1,9 @@
 # ExtendJ Explorer
 
-This is a fork of the interactive JastAdd AST Visualizer calld DrAST.
+This is a fork of [DrAST](https://bitbucket.org/jastadd/drast), an interactive AST viewer
+for JastAdd projects. ExtendJ Explorer is a built for easily viewing ExtendJs AST.
 
-Below is the README from DrAST.
+Below are the contents of the original DrAST README.
 
 This file has the following content:
 
